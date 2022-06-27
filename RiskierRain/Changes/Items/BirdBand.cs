@@ -18,7 +18,7 @@ namespace RiskierRain.Items
         public float regenDurationBase = 0.3f;
         public float regenDurationStack = 0.3f;
 
-        public override string ItemName => "Borbo\u2019s Band";
+        public override string ItemName => "Dev\u2019s Item";
 
         public override string ItemLangTokenName => "BIRDBAND";
 
@@ -28,7 +28,7 @@ namespace RiskierRain.Items
             $"for <style=cIsDamage>{regenDurationBase + regenDurationStack} seconds</style> <style=cStack>(+{regenDurationStack} seconds per stack)</style>, " +
             $"restoring <style=cIsHealing>10% of your maximum health</style> per second. Recharges every 5 seconds.";
 
-        public override string ItemLore => "";
+        public override string ItemLore => "Every content pack gotta have one, huh?";
 
         public override ItemTier Tier => ItemTier.Tier2;
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDefenseAndHealing;

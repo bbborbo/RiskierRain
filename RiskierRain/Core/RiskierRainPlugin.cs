@@ -20,6 +20,9 @@ using RoR2.Projectile;
 using ThreeEyedGames;
 using On.RoR2.ContentManagement;
 using UnityEngine.AddressableAssets;
+using RiskierRain.SurvivorTweaks;
+using RiskierRain.Skills;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -32,9 +35,13 @@ namespace RiskierRain
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
+
+    [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("Withor.AcridBiteLunge", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.johnedwa.RTAutoSprintEx", BepInDependency.DependencyFlags.SoftDependency)]
 
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(guid, modName, version)]
@@ -51,11 +58,16 @@ namespace RiskierRain
 
         public static AssetBundle assetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
         public static AssetBundle assetBundle2 = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borbobundle);
+        public static AssetBundle iconBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.dsticons);
         public static string assetsPath = "Assets/BorboItemIcons/";
         public static string modelsPath = "Assets/Models/Prefabs/";
         public static string iconsPath = "Assets/Textures/Icons/";
+
         public static bool isAELoaded = Tools.isLoaded("com.Borbo.ArtificerExtended");
         public static bool isHBULoaded = Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
+        public static bool isScepterLoaded = Tools.isLoaded("com.DestroyedClone.AncientScepter");
+        public static bool autosprintLoaded = Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
+        public static bool acridLungeLoaded = Tools.isLoaded("Withor.AcridBiteLunge");
 
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> EnableConfig { get; set; }
@@ -66,9 +78,10 @@ namespace RiskierRain
         public static ConfigEntry<bool> StateOfEconomy { get; set; }
         public static ConfigEntry<bool> StateOfElites { get; set; }
         public static ConfigEntry<bool> StateOfDifficulty { get; set; }
+        public static ConfigEntry<bool> StateOfSurvivors { get; set; }
 
         public static ConfigEntry<bool>[] DisableConfigCategories = new ConfigEntry<bool>[(int)BalanceCategory.Count] 
-        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty };
+        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty, StateOfSurvivors };
 
         public static string drizzleDesc = $"Simplifies difficulty for players new to the game. Weeping and gnashing is replaced by laughter and tickles." +
                 $"<style=cStack>\n\n>Player Health Regeneration: <style=cIsHealing>+50%</style> " +
@@ -545,6 +558,22 @@ namespace RiskierRain
 
                 //this.DoSadistScavenger();
             }
+
+            currentCategory = BalanceCategory.StateOfSurvivors;
+            if (IsCategoryEnabled(currentCategory))
+            {
+                // CONTENT...
+                // ITEMS: chefs stache, malware stick, new lopper, whetstone
+                // EQUIPMENT: old guillotine
+                // ENEMIES: Chipchip the Wicked (debuff)
+
+                #region dead
+                InitializeSkills();
+                InitializeTweaks();
+                #endregion
+
+                //this.DoSadistScavenger();
+            }
         }
 
         #region modify items and equips
@@ -902,6 +931,90 @@ namespace RiskierRain
 
             EliteEquipmentStatusDictionary.Add(equipment, itemEnabled);
             return itemEnabled;
+        }
+        #endregion
+
+        void InitializeTweaks()
+        {
+            var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
+
+            foreach (var tweakType in TweakTypes)
+            {
+                SurvivorTweakModule module = (SurvivorTweakModule)Activator.CreateInstance(tweakType);
+
+                string name = module.survivorName == "" ? module.bodyName : module.survivorName;
+                bool isEnabled = CustomConfigFile.Bind<bool>("Survivor Tweaks",
+                    $"Enable Tweaks For: {module.survivorName}", true,
+                    $"Should DuckSurvivorTweaks change {module.survivorName}?").Value;
+                if (isEnabled)
+                {
+                    module.Init();
+                }
+                //TweakStatusDictionary.Add(module.ToString(), isEnabled);
+            }
+        }
+
+
+        #region skills
+        public static List<Type> entityStates = new List<Type>();
+        public static List<SkillBase> Skills = new List<SkillBase>();
+        public static List<ScepterSkillBase> ScepterSkills = new List<ScepterSkillBase>();
+        public static Dictionary<SkillBase, bool> SkillStatusDictionary = new Dictionary<SkillBase, bool>();
+
+        private void InitializeSkills()
+        {
+            var SkillTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SkillBase)));
+
+            foreach (var skillType in SkillTypes)
+            {
+                SkillBase skill = (SkillBase)System.Activator.CreateInstance(skillType);
+
+                if (ValidateSkill(skill))
+                {
+                    skill.Init(CustomConfigFile);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void InitializeScepterSkills()
+        {
+            var SkillTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ScepterSkillBase)));
+
+            foreach (var skillType in SkillTypes)
+            {
+                ScepterSkillBase skill = (ScepterSkillBase)System.Activator.CreateInstance(skillType);
+
+                if (ValidateScepterSkill(skill))
+                {
+                    skill.Init(CustomConfigFile);
+                }
+            }
+        }
+
+        bool ValidateSkill(SkillBase item)
+        {
+            var forceUnlock = true;
+
+            if (forceUnlock)
+            {
+                Skills.Add(item);
+            }
+            SkillStatusDictionary.Add(item, forceUnlock);
+
+            return forceUnlock;
+        }
+
+        bool ValidateScepterSkill(ScepterSkillBase item)
+        {
+            var forceUnlock = isScepterLoaded;
+
+            if (forceUnlock)
+            {
+                ScepterSkills.Add(item);
+            }
+
+            return forceUnlock;
         }
         #endregion
     }

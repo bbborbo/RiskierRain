@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using static RiskierRain.CoreModules.StatHooks;
 
 namespace RiskierRain.CoreModules
 {
@@ -64,11 +65,29 @@ namespace RiskierRain.CoreModules
         public static List<GameObject> masterPrefabs = new List<GameObject>();
         public static List<GameObject> bodyPrefabs = new List<GameObject>();
 
+        public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
+        public static string shredKeywordToken = "DUCK_SHRED_KEYWORD";
+
         public override void Init()
         {
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
             AddTrophyHunterDebuffs();
+            AddBanditExecutionDebuff();
+            AddShredDebuff();
+            AddCooldownBuff();
+            AddAspdPenaltyDebuff();
+
+            On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
+
+            LanguageAPI.Add(executeKeywordToken,
+                $"<style=cKeywordName>Finisher</style>" +
+                $"<style=cSub>Enemies targeted by this skill can be " +
+                $"<style=cIsHealth>instantly killed</style> if below " +
+                $"<style=cIsHealth>{Tools.ConvertDecimal(survivorExecuteThreshold)} health</style>.</style>");
+
+            LanguageAPI.Add(shredKeywordToken, $"<style=cKeywordName>Shred</style>" +
+                $"<style=cSub>Apply a stacking debuff that increases ALL damage taken by {shredArmorReduction}% per stack. Critical Strikes apply more Shred.</style>");
 
             AddExecutionDebuff();
             AddLuckBuff();
@@ -77,6 +96,108 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+
+        public static BuffDef banditShredDebuff;
+        public static int shredArmorReduction = 15;
+        private void AddShredDebuff()
+        {
+            banditShredDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                banditShredDebuff.buffColor = Color.red;
+                banditShredDebuff.canStack = true;
+                banditShredDebuff.isDebuff = true;
+                banditShredDebuff.name = "BanditShredDebuff";
+                banditShredDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            }
+            buffDefs.Add(banditShredDebuff);
+        }
+
+        private void RecalcStats_Stats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            if (self.HasBuff(Assets.aspdPenaltyDebuff))
+            {
+                self.attackSpeed *= (1 - Assets.aspdPenaltyPercent);
+            }
+            int shredBuffCount = self.GetBuffCount(Assets.banditShredDebuff);
+            if (shredBuffCount > 0)
+            {
+                self.armor -= shredBuffCount * shredArmorReduction;
+            }
+            if (self.HasBuff(captainCdrBuff))
+            {
+                SkillLocator skillLocator = self.skillLocator;
+                if (skillLocator != null)
+                {
+                    float mult = (1 - captainCdrPercent);
+                    ApplyCooldownScale(skillLocator.primary, mult);
+                    ApplyCooldownScale(skillLocator.secondary, mult);
+                    ApplyCooldownScale(skillLocator.utility, mult);
+                    ApplyCooldownScale(skillLocator.special, mult);
+                }
+            }
+        }
+
+        public static BuffDef aspdPenaltyDebuff;
+        public static float aspdPenaltyPercent = 0.20f;
+        private void AddAspdPenaltyDebuff()
+        {
+            aspdPenaltyDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                aspdPenaltyDebuff.buffColor = Color.red;
+                aspdPenaltyDebuff.canStack = false;
+                aspdPenaltyDebuff.isDebuff = false;
+                aspdPenaltyDebuff.name = "AttackSpeedPenalty";
+                aspdPenaltyDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
+            }
+            buffDefs.Add(aspdPenaltyDebuff);
+        }
+
+
+        public static BuffDef captainCdrBuff;
+        public static float captainCdrPercent = 0.25f;
+
+        private void AddCooldownBuff()
+        {
+            captainCdrBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                captainCdrBuff.buffColor = Color.yellow;
+                captainCdrBuff.canStack = false;
+                captainCdrBuff.isDebuff = false;
+                captainCdrBuff.name = "CaptainBeaconCdr";
+                captainCdrBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+            }
+            buffDefs.Add(captainCdrBuff);
+        }
+
+        public static BuffDef desperadoExecutionDebuff;
+        public static BuffDef lightsoutExecutionDebuff;
+        public static float survivorExecuteThreshold = 0.15f;
+        public static float banditExecutionThreshold = 0.1f;
+        public static float harvestExecutionThreshold = 0.2f;
+
+        private void AddBanditExecutionDebuff()
+        {
+            desperadoExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                desperadoExecutionDebuff.buffColor = Color.black;
+                desperadoExecutionDebuff.canStack = false;
+                desperadoExecutionDebuff.isDebuff = true;
+                desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
+                desperadoExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            }
+            buffDefs.Add(desperadoExecutionDebuff);
+            lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                lightsoutExecutionDebuff.buffColor = Color.black;
+                lightsoutExecutionDebuff.canStack = false;
+                lightsoutExecutionDebuff.isDebuff = true;
+                lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
+                lightsoutExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            }
+            buffDefs.Add(lightsoutExecutionDebuff);
         }
 
         public static BuffDef bossHunterDebuff;

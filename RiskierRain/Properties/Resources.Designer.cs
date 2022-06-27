@@ -103,6 +103,16 @@ namespace RiskierRain.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] dsticons {
+            get {
+                object obj = ResourceManager.GetObject("dsticons", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] DuckItemPack {
             get {
                 object obj = ResourceManager.GetObject("DuckItemPack", resourceCulture);

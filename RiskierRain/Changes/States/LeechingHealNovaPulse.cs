@@ -65,7 +65,7 @@ namespace RiskierRain.States.LeechingHealNovaController
 				this.healPulse.Update(Time.fixedDeltaTime);
 				if (duration < base.fixedAge)
 				{
-					EntityState.Destroy(this.outer.gameObject);
+					Destroy(this.outer.gameObject);
 				}
 			}
 		}

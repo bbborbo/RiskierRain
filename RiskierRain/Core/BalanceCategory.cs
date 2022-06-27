@@ -12,6 +12,7 @@ namespace RiskierRain
         StateOfInteraction,
         StateOfDamage,
         StateOfDifficulty,
+        StateOfSurvivors,
         Count
     }
 }

@@ -7,17 +7,17 @@
   <ItemGroup>
     <None Remove="borbobundle" />
     <None Remove="borboitemicons" />
-    <None Remove="Resources\dsticons" />
-    <None Remove="Resources\difficultyplusbundle" />
-    <None Remove="Resources\difficultyplus" />
+    <None Remove="Properties\dsticons" />
+    <None Remove="Properties\difficultyplusbundle" />
+    <None Remove="Properties\difficultyplus" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="borbobundle" />
     <EmbeddedResource Include="borboitemicons" />
-    <EmbeddedResource Include="Resources\dsticons" />
-    <EmbeddedResource Include="Resources\difficultyplusbundle" />
-    <EmbeddedResource Include="Resources\difficultyplus" />
+    <EmbeddedResource Include="Properties\dsticons" />
+    <EmbeddedResource Include="Properties\difficultyplusbundle" />
+    <EmbeddedResource Include="Properties\difficultyplus" />
   </ItemGroup>
 
   <ItemGroup>

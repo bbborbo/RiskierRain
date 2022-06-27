@@ -57,12 +57,11 @@ namespace RiskierRain
         public const string modName = "RiskierRain";
         public const string version = "1.0.0";
 
-        public static AssetBundle assetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
-        public static AssetBundle assetBundle2 = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borbobundle);
-        public static AssetBundle iconBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.dsticons);
-        public static string assetsPath = "Assets/BorboItemIcons/";
+        public static AssetBundle mainAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.itmightbebad);
+        public static AssetBundle placeholderAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
         public static string modelsPath = "Assets/Models/Prefabs/";
         public static string iconsPath = "Assets/Textures/Icons/";
+        public static string eliteMaterialsPath = "Assets/Textures/Materials/Elite/";
 
         public static bool isAELoaded = Tools.isLoaded("com.Borbo.ArtificerExtended");
         public static bool isHBULoaded = Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
@@ -80,9 +79,10 @@ namespace RiskierRain
         public static ConfigEntry<bool> StateOfElites { get; set; }
         public static ConfigEntry<bool> StateOfDifficulty { get; set; }
         public static ConfigEntry<bool> StateOfSurvivors { get; set; }
+        public static ConfigEntry<bool> StateOfCommencement { get; set; }
 
         public static ConfigEntry<bool>[] DisableConfigCategories = new ConfigEntry<bool>[(int)BalanceCategory.Count] 
-        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty, StateOfSurvivors };
+        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty, StateOfSurvivors, StateOfCommencement };
 
         public static string drizzleDesc = $"Simplifies difficulty for players new to the game. Weeping and gnashing is replaced by laughter and tickles." +
                 $"<style=cStack>\n\n>Player Health Regeneration: <style=cIsHealing>+50%</style> " +
@@ -111,10 +111,12 @@ namespace RiskierRain
         {
             InitializeConfig();
             InitializeItems();
+            InitializeSkills();
             //InitializeEquipment();
             //InitializeEliteEquipment();
             //InitializeScavengers();
-            InitializeEverything();
+            //InitializeEverything();
+            RoR2Application.onLoad += InitializeEverything;
 
             if (isAELoaded)
             {
@@ -569,8 +571,22 @@ namespace RiskierRain
                 // ENEMIES: Chipchip the Wicked (debuff)
 
                 #region dead
-                InitializeSkills();
-                InitializeTweaks();
+                InitializeSurvivorTweaks();
+                #endregion
+
+                //this.DoSadistScavenger();
+            }
+
+            currentCategory = BalanceCategory.StateOfCommencement;
+            if (IsCategoryEnabled(currentCategory))
+            {
+                // CONTENT...
+                // ITEMS: chefs stache, malware stick, new lopper, whetstone
+                // EQUIPMENT: old guillotine
+                // ENEMIES: Chipchip the Wicked (debuff)
+
+                #region dead
+                MakePillarsFun();
                 #endregion
 
                 //this.DoSadistScavenger();
@@ -831,15 +847,20 @@ namespace RiskierRain
 
             var itemEnabled = item.Tier == ItemTier.NoTier;
 
-            if (category != BalanceCategory.None && category != BalanceCategory.Count && !itemEnabled)
+            if (!itemEnabled)
             {
                 string name = item.ItemName.Replace("'", "");
-                itemEnabled = IsCategoryEnabled(category) &&
-                CustomConfigFile.Bind<bool>(category.ToString() + " Content", $"Enable Item: {name}", true, "Should this item appear in runs?").Value;
-            }
-            else
-            {
-                Debug.Log($"{item.ItemName} item initializing into Balance Category: {category}!!");
+                if (category != BalanceCategory.None && category != BalanceCategory.Count && !itemEnabled)
+                {
+                    itemEnabled = IsCategoryEnabled(category) &&
+                    CustomConfigFile.Bind<bool>(category.ToString() + " Content", $"Enable Item: {name}", true, "Should this item appear in runs?").Value;
+                }
+                else
+                {
+                    itemEnabled = IsCategoryEnabled(category) &&
+                    CustomConfigFile.Bind<bool>("Uncategorized Content", $"Enable Item: {name}", true, "Should this item appear in runs?").Value;
+                    Debug.Log($"{name} item initializing into Balance Category: {category}!!");
+                }
             }
 
             //ItemStatusDictionary.Add(item, itemEnabled);
@@ -935,7 +956,7 @@ namespace RiskierRain
         }
         #endregion
 
-        void InitializeTweaks()
+        void InitializeSurvivorTweaks()
         {
             var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
 
@@ -964,6 +985,8 @@ namespace RiskierRain
 
         private void InitializeSkills()
         {
+            if (StateOfSurvivors.Value == false)
+                return;
             var SkillTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SkillBase)));
 
             foreach (var skillType in SkillTypes)

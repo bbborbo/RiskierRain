@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Changes.Equipment
+namespace RiskierRain.Equipment
 {
     class GoldBomb
     {

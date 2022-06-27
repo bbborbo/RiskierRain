@@ -63,16 +63,6 @@ namespace RiskierRain.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] borbobundle {
-            get {
-                object obj = ResourceManager.GetObject("borbobundle", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] borboitemicons {
             get {
                 object obj = ResourceManager.GetObject("borboitemicons", resourceCulture);
@@ -83,49 +73,9 @@ namespace RiskierRain.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] difficultyplus {
+        internal static byte[] itmightbebad {
             get {
-                object obj = ResourceManager.GetObject("difficultyplus", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] difficultyplusbundle {
-            get {
-                object obj = ResourceManager.GetObject("difficultyplusbundle", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] dsticons {
-            get {
-                object obj = ResourceManager.GetObject("dsticons", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] DuckItemPack {
-            get {
-                object obj = ResourceManager.GetObject("DuckItemPack", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] itempackbundle {
-            get {
-                object obj = ResourceManager.GetObject("itempackbundle", resourceCulture);
+                object obj = ResourceManager.GetObject("itmightbebad", resourceCulture);
                 return ((byte[])(obj));
             }
         }

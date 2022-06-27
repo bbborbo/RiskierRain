@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using RiskierRain.CoreModules;
-using RiskierRain.EntityState;
+using RiskierRain.EntityState.Captain;
 using EntityStates;
 using R2API;
 using RoR2;

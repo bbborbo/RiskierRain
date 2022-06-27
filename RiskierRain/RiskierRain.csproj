@@ -5,19 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="borbobundle" />
     <None Remove="borboitemicons" />
-    <None Remove="Properties\dsticons" />
-    <None Remove="Properties\difficultyplusbundle" />
-    <None Remove="Properties\difficultyplus" />
+    <None Remove="itmightbebad" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="borbobundle" />
     <EmbeddedResource Include="borboitemicons" />
-    <EmbeddedResource Include="Properties\dsticons" />
-    <EmbeddedResource Include="Properties\difficultyplusbundle" />
-    <EmbeddedResource Include="Properties\difficultyplus" />
+    <EmbeddedResource Include="itmightbebad" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>

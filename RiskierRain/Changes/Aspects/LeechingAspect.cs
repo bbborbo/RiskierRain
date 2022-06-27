@@ -45,7 +45,7 @@ namespace RiskierRain.Equipment
         public override Color EliteBuffColor => Color.magenta;
 
         //public override Material EliteOverlayMaterial { get; set; } = LegacyResourcesAPI.Load<Material>("materials/matElitePoisonOverlay");
-        public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.assetBundle.LoadAsset<Material>(RiskierRainPlugin.assetsPath + "matLeeching.mat");
+        public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         public override string EliteRampTextureName { get; set; } = "texRampLeeching";
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier2;
 

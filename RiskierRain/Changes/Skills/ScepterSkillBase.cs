@@ -86,7 +86,7 @@ namespace RiskierRain.Skills
             skillDef.skillDescriptionToken = Token + SkillLangTokenName + "_DESCRIPTION";
             skillDef.activationStateMachineName = "Weapon";
 
-            skillDef.icon = RiskierRainPlugin.iconBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + IconName + ".png");
+            skillDef.icon = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Skill/" + IconName + ".png");
 
             #region SkillData
             skillDef.baseMaxStock = SkillData.baseMaxStock;

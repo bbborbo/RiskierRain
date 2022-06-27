@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.EntityState
+namespace RiskierRain.EntityState.Captain
 {
     class ThermalCannonPrep : BaseSkillState
 	{

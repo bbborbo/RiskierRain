@@ -13,7 +13,7 @@ namespace RiskierRain.CoreModules
     {
         //i love you nebby <3
         public static List<CustomEliteDef> Elites = new List<CustomEliteDef>();
-        public static Texture defaultShaderRamp = RiskierRainPlugin.assetBundle.LoadAsset<Texture>(RiskierRainPlugin.assetsPath + "texRampFrenzied.tex");
+        public static Texture defaultShaderRamp = RiskierRainPlugin.mainAssetBundle.LoadAsset<Texture>(RiskierRainPlugin.eliteMaterialsPath + "texRampFrenzied.tex");
 
         public override void Init()
         {

@@ -35,9 +35,9 @@ namespace RiskierRain.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => RiskierRainPlugin.assetBundle.LoadAsset<GameObject>(RiskierRainPlugin.modelsPath + "Item/CobaltShield.prefab");
+        public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.modelsPath + "Item/CobaltShield.prefab");
 
-        public override Sprite ItemIcon => RiskierRainPlugin.assetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Item/texIconCobaltShield.png");
+        public override Sprite ItemIcon => RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Item/texIconCobaltShield.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -114,7 +114,7 @@ namespace RiskierRain.Items
                 cobaltDefense.buffColor = new Color(0.15f, 0.4f, 0.9f);
                 cobaltDefense.canStack = false;
                 cobaltDefense.isDebuff = false;
-                cobaltDefense.iconSprite = RiskierRainPlugin.assetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                cobaltDefense.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
             Assets.buffDefs.Add(cobaltDefense);
         }

@@ -186,7 +186,7 @@ namespace RiskierRain.Equipment
             CustomEliteDef BED = ScriptableObject.CreateInstance<CustomEliteDef>();
             BED.eliteDef = EliteDef;
             BED.eliteTier = EliteTier;
-            BED.eliteRamp = RiskierRainPlugin.assetBundle.LoadAsset<Texture>(RiskierRainPlugin.assetsPath + EliteRampTextureName + ".png");
+            BED.eliteRamp = RiskierRainPlugin.mainAssetBundle.LoadAsset<Texture>(RiskierRainPlugin.eliteMaterialsPath + EliteRampTextureName + ".png");
             BED.overlayMaterial = EliteOverlayMaterial;
             BED.spawnEffect = null;
             EliteModule.Elites.Add(BED);

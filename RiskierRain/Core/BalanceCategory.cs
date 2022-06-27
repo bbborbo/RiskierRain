@@ -13,6 +13,7 @@ namespace RiskierRain
         StateOfDamage,
         StateOfDifficulty,
         StateOfSurvivors,
+        StateOfCommencement,
         Count
     }
 }

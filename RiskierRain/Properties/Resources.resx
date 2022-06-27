@@ -118,25 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="borbobundle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\borbobundle;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="borboitemicons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\borboitemicons;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="difficultyplus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>difficultyplus;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="difficultyplusbundle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>difficultyplusbundle;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="dsticons" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>dsticons;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="DuckItemPack" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\duckitempack;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="itempackbundle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\itempackbundle;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="itmightbebad" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\itmightbebad;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RiskierRain.EntityState
+namespace RiskierRain.EntityState.Captain
 {
     class VulcanSlug : BaseSkillState
     {

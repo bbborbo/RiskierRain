@@ -32,7 +32,7 @@ namespace RiskierRain.Equipment
 
         public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
-        public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.assetBundle.LoadAsset<Material>(RiskierRainPlugin.assetsPath + "matVolatile.mat");
+        public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
         public override string EliteRampTextureName { get; set; } = "texRampVolatile";
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
 
@@ -217,7 +217,7 @@ namespace RiskierRain.Equipment
             ProjectileGhostController pgc = projectileGhost.GetComponent<ProjectileGhostController>();
             pc.ghost = pgc;
 
-            Material material1 = RiskierRainPlugin.assetBundle.LoadAsset<Material>(RiskierRainPlugin.assetsPath + "matVolatile.mat");
+            Material material1 = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
             Material material2 = new Material(Shader.Find("Standard"));
             Tools.GetMaterial(projectileGhost, "Mesh", Color.red, ref material1);
             Tools.GetMaterial(projectileGhost, "GameObject (1)", Color.green, ref material2);

@@ -120,13 +120,13 @@ namespace RiskierRain.Items
 
         public static GameObject LoadDropPrefab(string prefabName)
         {
-            GameObject prefab = RiskierRainPlugin.assetBundle2.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");
+            GameObject prefab = RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");
             return prefab;
         }
 
         public static GameObject LoadDisplayPrefab(string prefabName)
         {
-            GameObject prefab = RiskierRainPlugin.assetBundle2.LoadAsset<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab");
+            GameObject prefab = RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab");
             if(prefab == null)
             {
                 prefab = LoadDisplayPrefab(prefabName);
@@ -136,7 +136,7 @@ namespace RiskierRain.Items
 
         public static Sprite LoadItemIcon(string spriteName)
         {
-            Sprite icon = RiskierRainPlugin.assetBundle2.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
+            Sprite icon = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
             return icon;
         }
     }

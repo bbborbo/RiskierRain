@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS1566: Error reading resource 'RiskierRain.dsticons' -- 'Could not find file 'C:\Users\bbborbo\source\repos\RiskierRain\RiskierRain\dsticons'.'
+dotnet_diagnostic.CS1566.severity = none

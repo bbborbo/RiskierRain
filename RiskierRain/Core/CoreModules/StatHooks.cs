@@ -11,6 +11,11 @@ namespace RiskierRain.CoreModules
 {
     public class StatHooks : CoreModule
     {
+        public static void ApplyCooldownScale(GenericSkill skillSlot, float cooldownScale)
+        {
+            if (skillSlot != null)
+                skillSlot.cooldownScale *= cooldownScale;
+        }
         public class BorboStatHookEventArgs : EventArgs
         {
             /// <summary>Added to the direct multiplier to attack speed. ATTACK_SPEED ~ (BASE_ATTACK_SPEED + baseAttackSpeedAdd) * (ATTACK_SPEED_MULT + attackSpeedMultAdd).</summary>

@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRain.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -52,11 +53,8 @@ namespace RiskierRain.Items
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)
                 {
-                    if (skillLocator.primary != null)
-                        skillLocator.primary.cooldownScale *= cdrBoost;
-
-                    if (skillLocator.secondary != null)
-                        skillLocator.secondary.cooldownScale *= cdrBoost;
+                    ApplyCooldownScale(skillLocator.primary, cdrBoost);
+                    ApplyCooldownScale(skillLocator.secondary, cdrBoost);
                 }
             }
         }

@@ -32,7 +32,6 @@ namespace RiskierRain
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Borbo.DuckSurvivorTweaks", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
@@ -56,7 +55,6 @@ namespace RiskierRain
         public static string modelsPath = "Assets/Models/Prefabs/";
         public static string iconsPath = "Assets/Textures/Icons/";
         public static bool isAELoaded = Tools.isLoaded("com.Borbo.ArtificerExtended");
-        public static bool isDSTLoaded = Tools.isLoaded("com.Borbo.DuckSurvivorTweaks");
         public static bool isHBULoaded = Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
 
         internal static ConfigFile CustomConfigFile { get; set; }

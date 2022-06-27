@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using static RiskierRain.CoreModules.StatHooks;
 
 namespace RiskierRain.Items
 {
@@ -120,17 +121,10 @@ namespace RiskierRain.Items
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)
                 {
-                    if (skillLocator.primary != null)
-                        skillLocator.primary.cooldownScale *= cdrBoost;
-
-                    if (skillLocator.secondary != null)
-                        skillLocator.secondary.cooldownScale *= cdrBoost;
-
-                    if (skillLocator.utility != null)
-                        skillLocator.utility.cooldownScale *= cdrBoost;
-
-                    if (skillLocator.special != null)
-                        skillLocator.special.cooldownScale *= cdrBoost;
+                    ApplyCooldownScale(skillLocator.primary, cdrBoost);
+                    ApplyCooldownScale(skillLocator.secondary, cdrBoost);
+                    ApplyCooldownScale(skillLocator.utility, cdrBoost);
+                    ApplyCooldownScale(skillLocator.special, cdrBoost);
                 }
             }
         }

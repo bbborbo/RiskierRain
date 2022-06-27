@@ -35,7 +35,7 @@ namespace RiskierRain.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.modelsPath + "Item/CobaltShield.prefab");
+        public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.dropPrefabsPath + "Item/CobaltShield.prefab");
 
         public override Sprite ItemIcon => RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Item/texIconCobaltShield.png");
 

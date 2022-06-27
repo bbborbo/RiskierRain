@@ -98,7 +98,7 @@ namespace RiskierRain
 		{
 			ItemBase pickup = null;
 			string fullName = pillar.name;
-			string pillarType = fullName.Substring(11, fullName.Length);
+			string pillarType = fullName.Substring(11, 4);
 			switch (pillarType)
 			{
 				default:
@@ -106,10 +106,10 @@ namespace RiskierRain
 				case "Mass":
 					pickup = (MassAnomaly.instance);
 					break;
-				case "Design":
+				case "Desi":
 					pickup = (DesignAnomaly.instance);
 					break;
-				case "Blood":
+				case "Bloo":
 					pickup = (BloodAnomaly.instance);
 					break;
 				case "Soul":

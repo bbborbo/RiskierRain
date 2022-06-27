@@ -36,7 +36,7 @@ namespace RiskierRain.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Healing };
 
-        public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.modelsPath + "Item/Beans.prefab");
+        public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.dropPrefabsPath + "Item/Beans.prefab");
 
         public override Sprite ItemIcon => RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Item/texIconBeans.png");
 

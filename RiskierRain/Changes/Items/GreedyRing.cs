@@ -64,7 +64,6 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
         {
-            return;
             CreateItem();
             CreateLang();
             CreateBuff();

@@ -17,7 +17,7 @@ namespace RiskierRain.Items
     {
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;
-        public static Sprite mochaCustomSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.png").WaitForCompletion(); //LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon");
+        public static Sprite mochaCustomSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.png").WaitForCompletion(); //
 
         public static int stageDuration = 80;
         public static int pickupDuration = 20;
@@ -97,6 +97,7 @@ namespace RiskierRain.Items
 
         private void MochaSpeed(CharacterBody sender, StatHookEventArgs args)
         {
+            //Debug.Log("dsfjhgbds");
             int mochaCount = GetCount(sender);
             if(mochaCount > 0 && sender.HasBuff(mochaBuffActive))
             {

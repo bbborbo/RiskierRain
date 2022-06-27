@@ -88,14 +88,14 @@ namespace RiskierRain.Items
                         float attackEndDamage = damageInfo.damage;
                         float retaliationChance = procChancePerPercentBase + procChancePerPercentStack * (itemCount - 1);
 
-                        float maxHealthFractionDealt = (attackEndDamage / victimMaxHealth) * 100;
+                        float maxHealthFractionDealt = Mathf.Min(attackEndDamage / victimMaxHealth * 100, 90);
                         float maxHealthFractionPerRetaliation = Mathf.RoundToInt(100 / retaliationChance);
 
-                        Debug.Log($"Required: {maxHealthFractionPerRetaliation}% - Dealt: {maxHealthFractionDealt}%");
+                        //Debug.Log($"Required: {maxHealthFractionPerRetaliation}% - Dealt: {maxHealthFractionDealt}%");
 
                         float remainderFractionPercent = maxHealthFractionDealt % maxHealthFractionPerRetaliation;
                         int wholeRetaliations = (int)((maxHealthFractionDealt - remainderFractionPercent) / maxHealthFractionPerRetaliation);
-                        Debug.Log($"Whole: {wholeRetaliations} - Remainder: {remainderFractionPercent * retaliationChance}%");
+                        //Debug.Log($"Whole: {wholeRetaliations} - Remainder: {remainderFractionPercent * retaliationChance}%");
 
                         float rollMultiplier = 100;
                         if (wholeRetaliations < 1)

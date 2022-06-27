@@ -154,8 +154,8 @@ namespace RiskierRain.Items
         }
 
         static string baseName = "CoinGunDamageBoost";
-        //static Sprite defaultSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
-        Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.png").WaitForCompletion();
+        static Sprite defaultSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
+        //Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.png").WaitForCompletion();
         BuffDef GenerateCoinDamageBuff(ref BuffDef coinBuff, string coinType, Color color, Sprite sprite = null)
         {
             coinBuff = ScriptableObject.CreateInstance<BuffDef>();

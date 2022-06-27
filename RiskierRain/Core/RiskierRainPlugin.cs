@@ -59,7 +59,7 @@ namespace RiskierRain
 
         public static AssetBundle mainAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.itmightbebad);
         public static AssetBundle placeholderAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
-        public static string modelsPath = "Assets/Models/Prefabs/";
+        public static string dropPrefabsPath = "Assets/Models/DropPrefabs";
         public static string iconsPath = "Assets/Textures/Icons/";
         public static string eliteMaterialsPath = "Assets/Textures/Materials/Elite/";
 
@@ -81,7 +81,7 @@ namespace RiskierRain
         public static ConfigEntry<bool> StateOfSurvivors { get; set; }
         public static ConfigEntry<bool> StateOfCommencement { get; set; }
 
-        public static ConfigEntry<bool>[] DisableConfigCategories = new ConfigEntry<bool>[(int)BalanceCategory.Count] 
+        public static ConfigEntry<bool>[] EnableConfigCategories = new ConfigEntry<bool>[(int)BalanceCategory.Count] 
         { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty, StateOfSurvivors, StateOfCommencement };
 
         public static string drizzleDesc = $"Simplifies difficulty for players new to the game. Weeping and gnashing is replaced by laughter and tickles." +
@@ -99,7 +99,7 @@ namespace RiskierRain
         {
             bool enabled = true;
 
-            if (EnableConfig.Value && DisableConfigCategories[(int)category].Value)
+            if (EnableConfig.Value && !EnableConfigCategories[(int)category].Value)
             {
                 enabled = false;
             }
@@ -729,9 +729,9 @@ namespace RiskierRain
                 "This is primarily meant for modpack users with tons of mods installed. " +
                 "If you have any issues or feedback on my mod balance, please feel free to send in feedback with the contact info in the README or Thunderstore description.");
 
-            for (int i = 0; i < DisableConfigCategories.Length; i++)
+            for (int i = 0; i < EnableConfigCategories.Length; i++)
             {
-                DisableConfigCategories[i] = AddConfigCategory((BalanceCategory)i);
+                EnableConfigCategories[i] = AddConfigCategory((BalanceCategory)i);
             }
         }
 
@@ -743,7 +743,7 @@ namespace RiskierRain
                 "Disable Balance Categories",
                 categoryName,
                 false,
-                $"Set this to TRUE if you would like to DISABLE changes for the balance category: {categoryName}"
+                $"Set this to TRUE if you would like to ENABLE changes for the balance category: {categoryName}"
                 );
 
             return newCategoryConfig;
@@ -827,16 +827,16 @@ namespace RiskierRain
             foreach (var itemType in ItemTypes)
             {
                 ItemBase item = (ItemBase)System.Activator.CreateInstance(itemType);
-                if (item.IsHidden)
-                    return;
-
-                if (ValidateItem(item, Items))
+                if (!item.IsHidden)
                 {
-                    item.Init(CustomConfigFile);
-                }
-                else
-                {
-                    Debug.Log("Item: " + item.ItemName + " Did not initialize!");
+                    if (ValidateItem(item, Items))
+                    {
+                        item.Init(CustomConfigFile);
+                    }
+                    else
+                    {
+                        Debug.Log("Item: " + item.ItemName + " Did not initialize!");
+                    }
                 }
             }
         }
@@ -985,7 +985,7 @@ namespace RiskierRain
 
         private void InitializeSkills()
         {
-            if (StateOfSurvivors.Value == false)
+            if (!IsCategoryEnabled(BalanceCategory.StateOfSurvivors))
                 return;
             var SkillTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SkillBase)));
 

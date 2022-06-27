@@ -14,7 +14,8 @@ namespace RiskierRain.CoreModules
     internal class ContentPacks : IContentPackProvider
     {
         internal ContentPack contentPack = new ContentPack();
-        public string identifier => "BORBO";
+
+        public string identifier => RiskierRainPlugin.modName;
 
         public void Initialize()
         {

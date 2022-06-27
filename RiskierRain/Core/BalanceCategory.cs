@@ -11,6 +11,7 @@ namespace RiskierRain
         StateOfHealth,
         StateOfInteraction,
         StateOfDamage,
+        StateOfDifficulty,
         Count
     }
 }

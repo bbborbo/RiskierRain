@@ -124,4 +124,16 @@
   <data name="borboitemicons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\borboitemicons;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="difficultyplus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\difficultyplus;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="difficultyplusbundle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\difficultyplusbundle;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DuckItemPack" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\duckitempack;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="itempackbundle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\itempackbundle;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

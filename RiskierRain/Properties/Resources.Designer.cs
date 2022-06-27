@@ -79,5 +79,45 @@ namespace RiskierRain.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] difficultyplus {
+            get {
+                object obj = ResourceManager.GetObject("difficultyplus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] difficultyplusbundle {
+            get {
+                object obj = ResourceManager.GetObject("difficultyplusbundle", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DuckItemPack {
+            get {
+                object obj = ResourceManager.GetObject("DuckItemPack", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] itempackbundle {
+            get {
+                object obj = ResourceManager.GetObject("itempackbundle", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

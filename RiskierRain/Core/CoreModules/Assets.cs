@@ -68,6 +68,7 @@ namespace RiskierRain.CoreModules
         {
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
+            AddTrophyHunterDebuffs();
 
             AddExecutionDebuff();
             AddLuckBuff();
@@ -76,6 +77,31 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static BuffDef bossHunterDebuff;
+        public static BuffDef bossHunterDebuffWithScalpel;
+        private void AddTrophyHunterDebuffs()
+        {
+            bossHunterDebuff = ScriptableObject.CreateInstance<BuffDef>();
+
+            bossHunterDebuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
+            bossHunterDebuff.canStack = false;
+            bossHunterDebuff.isDebuff = true;
+            bossHunterDebuff.name = "TrophyHunterDebuff";
+            bossHunterDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
+
+            buffDefs.Add(bossHunterDebuff);
+
+            bossHunterDebuffWithScalpel = ScriptableObject.CreateInstance<BuffDef>();
+
+            bossHunterDebuffWithScalpel.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
+            bossHunterDebuffWithScalpel.canStack = false;
+            bossHunterDebuffWithScalpel.isDebuff = true;
+            bossHunterDebuffWithScalpel.name = "TrophyHunterScalpelDebuff";
+            bossHunterDebuffWithScalpel.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
+
+            buffDefs.Add(bossHunterDebuffWithScalpel);
         }
 
         public static BuffDef shatterspleenSpikeBuff;

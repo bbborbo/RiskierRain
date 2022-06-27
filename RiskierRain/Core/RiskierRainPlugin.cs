@@ -33,19 +33,23 @@ namespace RiskierRain
 
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.DuckSurvivorTweaks", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Borbo.DifficultyPLUS", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
 
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [BepInPlugin("com.HouseOfFruits.RiskierRain", "RiskierRain", "1.0.0")]
+    [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(PrefabAPI), 
         nameof(DirectorAPI), 
         nameof(ItemAPI), nameof(RecalculateStatsAPI), nameof(EliteAPI))]
 
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
+        public const string guid = "com." + teamName + "." + modName;
+        public const string teamName = "HouseOfFruits";
+        public const string modName = "RiskierRain";
+        public const string version = "1.0.0";
+
         public static AssetBundle assetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
         public static AssetBundle assetBundle2 = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borbobundle);
         public static string assetsPath = "Assets/BorboItemIcons/";
@@ -66,7 +70,19 @@ namespace RiskierRain
         public static ConfigEntry<bool> StateOfDifficulty { get; set; }
 
         public static ConfigEntry<bool>[] DisableConfigCategories = new ConfigEntry<bool>[(int)BalanceCategory.Count] 
-        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage };
+        { StateOfDefenseAndHealing, StateOfHealth, StateOfInteraction, StateOfDamage, StateOfDifficulty };
+
+        public static string drizzleDesc = $"Simplifies difficulty for players new to the game. Weeping and gnashing is replaced by laughter and tickles." +
+                $"<style=cStack>\n\n>Player Health Regeneration: <style=cIsHealing>+50%</style> " +
+                $"\n>Difficulty Scaling: <style=cIsHealing>-50%</style> " +
+                $"\n>Player Damage Reduction: <style=cIsHealing>+38%</style>";
+        public static string rainstormDesc = $"This is the way the game is meant to be played! Test your abilities and skills against formidable foes." +
+                $"<style=cStack>\n\n>Player Health Regeneration: +0% " +
+                $"\n>Difficulty Scaling: +0% ";
+        public static string monsoonDesc = $"For hardcore players. Every bend introduces pain and horrors of the planet. You will die." +
+                $"<style=cStack>\n\n>Player Health Regeneration: <style=cIsHealth>-40%</style> " +
+                $"\n>Difficulty Scaling: <style=cIsHealth>+50%</style>";
+
         bool IsCategoryEnabled(BalanceCategory category)
         {
             bool enabled = true;
@@ -422,6 +438,115 @@ namespace RiskierRain
 
                 //this.DoSadistScavenger();
             }
+
+            currentCategory = BalanceCategory.StateOfDifficulty;
+            if (IsCategoryEnabled(currentCategory))
+            {
+                // CONTENT...
+                // ITEMS: chefs stache, malware stick, new lopper, whetstone
+                // EQUIPMENT: old guillotine
+                // ENEMIES: Chipchip the Wicked (debuff)
+
+                #region difficulty dependent difficulty
+                //ambient level
+                if (GetConfigBool(currentCategory, true, "Difficulty: Difficulty Dependent Ambient Difficulty Boost"))
+                {
+                    AmbientLevelDifficulty();
+                    FixMoneyAndExpRewards(); //related to ambient difficulty boost
+                }
+
+                //elite stats
+                if (GetConfigBool(currentCategory, true, "Elite: Elite Stats and Ocurrences"))
+                {
+                    ChangeEliteStats();
+                }
+
+                //teleporter particle
+                if (GetConfigBool(currentCategory, true, "Difficulty: Teleporter Particle Radius"))
+                {
+                    DifficultyDependentTeleParticles();
+                }
+
+                //monsoon stat boost
+                if (GetConfigBool(currentCategory, true, "Difficulty: Monsoon Stat Booster"))
+                {
+                    //MonsoonStatBoost();
+                }
+                #endregion
+
+                #region packets
+                //economy
+
+                // boss item drop
+                if (GetConfigBool(currentCategory, true, "Boss: Boss Item Drops"))
+                {
+                    BossesDropBossItems();
+                    TricornRework();
+                    DirectorAPI.InteractableActions += DeleteYellowPrinters;
+                }
+
+                //overloading elite
+                if (GetConfigBool(currentCategory, true, "Elite: Overloading Elite Rework"))
+                {
+                    OverloadingEliteChanges();
+                }
+
+                //blazing elite
+                //BlazingEliteChanges();
+
+                //newt shrine
+                if (GetConfigBool(currentCategory, true, "Lunar: Newt Shrine"))
+                {
+                    NerfBazaarStuff();
+                }
+
+                On.RoR2.Run.BeginStage += GetChestCostForStage;
+
+                if (GetConfigBool(currentCategory, true, "Economy: Gold Gain and Chest Scaling"))
+                {
+                    FixMoneyScaling();
+                }
+
+                //elite gold
+                if (GetConfigBool(currentCategory, true, "Economy: Elite Gold Rewards"))
+                {
+                    EliteGoldReward();
+                }
+
+                //printer
+                if (GetConfigBool(currentCategory, true, "Economy: Printer"))
+                {
+                    DirectorAPI.InteractableActions += PrinterOccurrenceHook;
+                }
+
+                //scrapper
+                if (GetConfigBool(currentCategory, true, "Economy: Scrapper"))
+                {
+                    DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
+                }
+
+                //equipment barrels and shops
+                if (GetConfigBool(currentCategory, true, "Economy: Equipment Barrel/Shop"))
+                {
+                    DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
+                }
+
+                //blood shrine
+                if (GetConfigBool(currentCategory, true, "Economy: Blood Shrine"))
+                {
+                    BloodShrineRewardRework();
+                }
+                #endregion
+
+                LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
+                // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
+
+                LanguageAPI.Add("DIFFICULTY_NORMAL_DESCRIPTION", rainstormDesc + "</style>");
+
+                LanguageAPI.Add("DIFFICULTY_HARD_DESCRIPTION", monsoonDesc + "</style>");
+
+                //this.DoSadistScavenger();
+            }
         }
 
         #region modify items and equips
@@ -553,7 +678,7 @@ namespace RiskierRain
         #region config
         private void InitializeConfig()
         {
-            CustomConfigFile = new ConfigFile(Paths.ConfigPath + "\\RiskierRain.cfg", true);
+            CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
 
             EnableConfig = CustomConfigFile.Bind<bool>("Allow Config Options", "Enable Config", false,
                 "Set this to true to enable config options. Please keep in mind that it was not within my design intentions to play this way. " +

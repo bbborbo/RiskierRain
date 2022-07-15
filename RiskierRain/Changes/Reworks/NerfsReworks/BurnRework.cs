@@ -40,7 +40,7 @@ namespace RiskierRain
             On.RoR2.StrengthenBurnUtils.CheckDotForUpgrade += OverrideIgnitionBurn;
             LanguageAPI.Add("ITEM_STRENGTHENBURN_PICKUP", "Ignites on hit. Your ignite effects deal triple damage.");
             LanguageAPI.Add("ITEM_STRENGTHENBURN_DESC", 
-                $"{ignitionTankBurnChance}% chance to ignite on hit. " +
+                $"<style=cIsDamage>{ignitionTankBurnChance}%</style> chance to ignite on hit. " +
                 $"All ignition effects deal <style=cIsDamage>+{Tools.ConvertDecimal(ignitionBurnDamage)}</style> " +
                 $"<style=cStack>(+{Tools.ConvertDecimal(ignitionBurnDamage)} per stack)</style> more damage and last " +
                 $"<style=cIsUtility>+{Tools.ConvertDecimal(ignitionBurnDuration)}</style> " +

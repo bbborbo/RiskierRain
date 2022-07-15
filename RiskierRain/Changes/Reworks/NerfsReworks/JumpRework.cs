@@ -198,7 +198,7 @@ namespace RiskierRain
         private void UrnOnJump(CharacterMotor motor)
         {
             CharacterBody body = motor.body;
-            if (body.outOfCombat)
+            if (body.outOfDanger)
                 return;
 
             int itemCount = 0;

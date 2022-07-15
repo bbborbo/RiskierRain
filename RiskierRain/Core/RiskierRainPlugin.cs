@@ -360,6 +360,7 @@ namespace RiskierRain
                 // damage
                 this.NerfBands();
                 this.StickyRework();
+                BurnReworks();
                 #endregion
 
                 #region PACKETS

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static RiskierRain.BurnStatHook;
 
 namespace RiskierRain.Items
 {
@@ -21,7 +22,7 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "CHEFITEM";
 
-        public override string ItemPickupDesc => "Chance to Ignite enemies on hit. Enemies take more damage from you while they burn.";
+        public override string ItemPickupDesc => "Ignites on hit. Enemies take more damage from you while they burn.";
 
         public override string ItemFullDescription => $"<style=cIsDamage>{burnProcChanceBase + burnProcChanceStack}%</style> <style=cStack>(+{burnProcChanceStack}% per stack)</style> " +
             $"chance to <style=cIsDamage>ignite</style> enemies on hit for <style=cIsDamage>{(burnDuration/2)*100}% damage</style>. " +
@@ -45,8 +46,18 @@ namespace RiskierRain.Items
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += BurnOnHit;
+            //On.RoR2.GlobalEventManager.OnHitEnemy += BurnOnHit;
+            BurnStatCoefficient += AddBurnChance;
             On.RoR2.HealthComponent.TakeDamage += TakeMoreDamageWhileBurning;
+        }
+
+        private void AddBurnChance(CharacterBody sender, BurnEventArgs args)
+        {
+            if(GetCount(sender) > 0)
+            {
+                Debug.Log("g");
+                args.burnChance += RiskierRainPlugin.stacheBurnChance;
+            }
         }
 
         public override void Init(ConfigFile config)
@@ -96,7 +107,7 @@ namespace RiskierRain.Items
                 {
                     CharacterBody victimBody = self.body;
 
-                    int currentBuffCount = victimBody.GetBuffCount(RoR2Content.Buffs.OnFire);
+                    int currentBuffCount = RiskierRainPlugin.GetBurnCount(victimBody);
                     int maxBuffCount = maxBurnBonusBase + maxBurnBonusStack * GetCount(attackerBody);
 
                     damageInfo.damage *= 1 + bonusDamagePerBurn * Mathf.Min(currentBuffCount, maxBuffCount);

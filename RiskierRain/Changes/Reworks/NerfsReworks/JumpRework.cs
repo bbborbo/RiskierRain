@@ -33,7 +33,7 @@ namespace RiskierRain
         public int urnBallCountStack = 0;
         public float urnBallYawSpread = 25f;
         public float urnBallDamageCoefficient = 2.5f;
-        public float urnBallChance = 0.2f;
+        public float urnBallChance = 0.3f;
 
         public static int jarJumpCount = 1;
 
@@ -183,7 +183,7 @@ namespace RiskierRain
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_PICKUP", "Triple jump. Jumping fires tar balls in front of you.");
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_DESC",
                 $"Gain <style=cIsUtility>{urnJumpCount}</style> jumps. " +
-                $"Jumping has a <style=cIsUtility>{Tools.ConvertDecimal(urnBallChance)} chance</style> to fire " +
+                $"While in danger, jumping has a <style=cIsUtility>{Tools.ConvertDecimal(urnBallChance)} chance</style> to fire " +
                 $"<style=cIsDamage>sentient tar pots</style> in a spread in front of you, dealing " +
                 $"<style=cIsDamage>{urnBallCountBase}x{Tools.ConvertDecimal(urnBallDamageCoefficient)}</stack> damage " +
                 $"and <style=cIsUtility>slowing</style> enemies hit.");
@@ -198,6 +198,9 @@ namespace RiskierRain
         private void UrnOnJump(CharacterMotor motor)
         {
             CharacterBody body = motor.body;
+            if (body.outOfCombat)
+                return;
+
             int itemCount = 0;
             Inventory inv = body.inventory;
             if (inv)

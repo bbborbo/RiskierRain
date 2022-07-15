@@ -21,7 +21,7 @@ namespace RiskierRain.Items
         public static int stackStationaryArmor = 80;
         public override string ItemName => "Cobalt Shield";
 
-        public override string ItemLangTokenName => "BORBOBUNGUSITEM";
+        public override string ItemLangTokenName => "CUCKLER";
 
         public override string ItemPickupDesc => "Become immune to knockback. Greatly reduces incoming damage while stationary.";
 

@@ -77,6 +77,7 @@ namespace RiskierRain.CoreModules
             AddShredDebuff();
             AddCooldownBuff();
             AddAspdPenaltyDebuff();
+            AddHopooDamageBuff();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -98,6 +99,27 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
         }
 
+        public static BuffDef hopooDamageBuff;
+        public static BuffDef hopooDamageBuffTemporary;
+        private void AddHopooDamageBuff()
+        {
+            hopooDamageBuff = CreateHopooDamageBuff("Permanent");
+            hopooDamageBuffTemporary = CreateHopooDamageBuff("Temporary");
+            buffDefs.Add(hopooDamageBuff);
+            buffDefs.Add(hopooDamageBuffTemporary);
+        }
+        private BuffDef CreateHopooDamageBuff(string suffix)
+        {
+            BuffDef hopoo = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                hopoo.buffColor = Color.cyan;
+                hopoo.canStack = true;
+                hopoo.isDebuff = false;
+                hopoo.name = "HopooFeatherDamageBuff" + suffix;
+                hopoo.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+            }
+            return hopoo;
+        }
 
         public static BuffDef banditShredDebuff;
         public static int shredArmorReduction = 15;

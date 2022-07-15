@@ -159,6 +159,7 @@ namespace RiskierRain
                 MonsterToothNerf();
 
                 // mobility
+                JumpReworks();
                 IL.EntityStates.GenericCharacterMain.ProcessJump += FeatherNerf;
                 GoatHoofNerf();
                 EnergyDrinkNerf();

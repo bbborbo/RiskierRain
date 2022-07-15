@@ -170,8 +170,8 @@ namespace RiskierRain
             });
         }
 
-        public static float featherJumpVerticalBonus = 1.0f; //1.5f
-        public static float featherJumpHorizontalBonus = 1.3f; //1.5f
+        public static float doubleJumpVerticalBonus = 1.0f; //1.5f
+        public static float doubleJumpHorizontalBonus = 1.3f; //1.5f
         private void FeatherNerf(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -188,7 +188,7 @@ namespace RiskierRain
                 x => x.MatchStloc(out horizontalBoostLoc)
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, featherJumpHorizontalBonus);
+            c.Emit(OpCodes.Ldc_R4, doubleJumpHorizontalBonus);
             c.Index++;
 
             int verticalBoostLoc = 4;
@@ -197,7 +197,7 @@ namespace RiskierRain
                 x => x.MatchStloc(out verticalBoostLoc)
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, featherJumpVerticalBonus);
+            c.Emit(OpCodes.Ldc_R4, doubleJumpVerticalBonus);
         }
 
 

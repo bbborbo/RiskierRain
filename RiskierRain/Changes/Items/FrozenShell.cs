@@ -44,7 +44,7 @@ namespace RiskierRain.Items
         {
             ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
-            return IDR;
+            return null;
         }
 
         public override void Hooks()
@@ -128,6 +128,11 @@ namespace RiskierRain.Items
                 this.body.AddBuff(iceBarrierBuffIndex);
                 hasBuff = true;
             }
+        }
+        void OnDestroy()
+        {
+            if(hasBuff)
+                this.body.RemoveBuff(iceBarrierBuffIndex);
         }
     }
 }

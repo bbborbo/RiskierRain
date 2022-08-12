@@ -70,28 +70,7 @@ namespace RiskierRain.Equipment
         {
             orig();
 
-            EquipmentDef def = instance.EquipDef;
-            if (def != null)
-            {
-                foreach (GameObject bodyPrefab in BodyCatalog.bodyPrefabs)
-                {
-                    CharacterModel model = bodyPrefab.GetComponentInChildren<CharacterModel>();
-                    if (model)
-                    {
-                        ItemDisplayRuleSet idrs = model.itemDisplayRuleSet;
-                        if (idrs)
-                        {
-                            // clone the original item display rule
-
-                            Array.Resize(ref idrs.keyAssetRuleGroups, idrs.keyAssetRuleGroups.Length + 1);
-                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].displayRuleGroup = idrs.FindDisplayRuleGroup(RoR2Content.Items.ExecuteLowHealthElite);
-                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].keyAsset = def;
-
-                            idrs.GenerateRuntimeValues();
-                        }
-                    }
-                }
-            }
+            CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
         }
 
         public override void Hooks()

@@ -14,7 +14,7 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "BROKENSCALPEL";
 
-        public override string ItemPickupDesc => "Having fulfilled it's purpose, the blade shattered into a hundred fragments.";
+        public override string ItemPickupDesc => "The blade has shattered into a hundred fragments.";
 
         public override string ItemFullDescription => "The blade has shattered...";
 

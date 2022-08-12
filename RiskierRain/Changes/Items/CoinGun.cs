@@ -212,30 +212,35 @@ namespace RiskierRain.Items
                     body.SetBuffCount(coinBuff.buffIndex, 0);
                 }
             }*/
-            body.SetBuffCount(CoinGun.bronzeDamageBuff.buffIndex, 0);
-            body.SetBuffCount(CoinGun.silverDamageBuff.buffIndex, 0);
-            body.SetBuffCount(CoinGun.goldDamageBuff.buffIndex, 0);
-            body.SetBuffCount(CoinGun.platinumDamageBuff.buffIndex, 0);
+            ResetAllBuffs();
 
             //find which buff to use
             BuffIndex coinDamageBuff = BuffIndex.None;
-            if(damageBoostCount <= CoinGun.maxBronze)
+            if (damageBoostCount <= CoinGun.maxBronze)
             {
                 coinDamageBuff = CoinGun.bronzeDamageBuff.buffIndex;
             }
-            else if(damageBoostCount > CoinGun.maxBronze && damageBoostCount <= CoinGun.maxSilver)
+            else if (damageBoostCount > CoinGun.maxBronze && damageBoostCount <= CoinGun.maxSilver)
             {
                 coinDamageBuff = CoinGun.silverDamageBuff.buffIndex;
             }
-            else if(damageBoostCount > CoinGun.maxSilver && damageBoostCount <= CoinGun.maxGold)
+            else if (damageBoostCount > CoinGun.maxSilver && damageBoostCount <= CoinGun.maxGold)
             {
                 coinDamageBuff = CoinGun.goldDamageBuff.buffIndex;
             }
-            else if(damageBoostCount > CoinGun.maxGold )//&& damageBoostCount <= CoinGun.maxGoldChunks)
+            else if (damageBoostCount > CoinGun.maxGold)//&& damageBoostCount <= CoinGun.maxGoldChunks)
             {
                 coinDamageBuff = CoinGun.platinumDamageBuff.buffIndex;
             }
             body.SetBuffCount(coinDamageBuff, damageBoostCount);
+        }
+
+        private void ResetAllBuffs()
+        {
+            body.SetBuffCount(CoinGun.bronzeDamageBuff.buffIndex, 0);
+            body.SetBuffCount(CoinGun.silverDamageBuff.buffIndex, 0);
+            body.SetBuffCount(CoinGun.goldDamageBuff.buffIndex, 0);
+            body.SetBuffCount(CoinGun.platinumDamageBuff.buffIndex, 0);
         }
 
         private void Start()
@@ -249,6 +254,10 @@ namespace RiskierRain.Items
                 Debug.Log(CoinGun.lastChestBaseCost + " was less than Coin Gun's detected amount: " + fixedBaseChestCost);
                 fixedBaseChestCost = CoinGun.lastChestBaseCost;
             }
+        }
+        void OnDestroy()
+        {
+            ResetAllBuffs();
         }
     }
 }

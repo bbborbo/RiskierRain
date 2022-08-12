@@ -10,11 +10,13 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static RiskierRain.CoreModules.StatHooks;
+using RoR2.EntitlementManagement;
 
 namespace RiskierRain.Items
 {
     class Mocha2 : ItemBase<Mocha2>
     {
+        static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;
         public static Sprite mochaCustomSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.png").WaitForCompletion(); //
@@ -52,13 +54,19 @@ namespace RiskierRain.Items
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel"); //Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/PickupCoffee.prefab").WaitForCompletion();// 
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/AttackSpeedAndMoveSpeed/texCoffeeIcon.png").WaitForCompletion(); //
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
+        }
+
+        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        {
+            orig();
+            CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
         }
 
         public override void Hooks()
@@ -68,6 +76,19 @@ namespace RiskierRain.Items
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
             On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
             GetStatCoefficients += MochaSpeed;
+            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            RoR2Application.onLoad += YoinkMochaAssets;
+        }
+
+        private void YoinkMochaAssets()
+        {
+            if (CheckDLC1Entitlement())
+            {
+                Sprite mochaSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/AttackSpeedAndMoveSpeed/texCoffeeIcon.png").WaitForCompletion();
+                instance.ItemsDef.pickupIconSprite = mochaSprite;
+                GameObject mochaModel = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/PickupCoffee.prefab").WaitForCompletion();
+                instance.ItemsDef.pickupModelPrefab = mochaModel;
+            }
         }
 
         private void MochaExpiredBuff(On.RoR2.CharacterBody.orig_OnBuffFinalStackLost orig, CharacterBody self, BuffDef buffDef)
@@ -89,7 +110,7 @@ namespace RiskierRain.Items
                 {
                     int itemCount = GetCount(self);
                     BorboMochaBehavior mochaBehavior = self.AddItemBehavior<BorboMochaBehavior>(itemCount);
-                    if(mochaBehavior && oldItemCount < itemCount)
+                    if (mochaBehavior && oldItemCount < itemCount)
                         mochaBehavior.SetMochaBuff(30);
                 }
             }
@@ -99,7 +120,7 @@ namespace RiskierRain.Items
         {
             //Debug.Log("dsfjhgbds");
             int mochaCount = GetCount(sender);
-            if(mochaCount > 0 && sender.HasBuff(mochaBuffActive))
+            if (mochaCount > 0 && sender.HasBuff(mochaBuffActive))
             {
                 args.moveSpeedMultAdd += mspdBoostBase + mspdBoostStack * (mochaCount - 1);
 
@@ -116,7 +137,7 @@ namespace RiskierRain.Items
             {
                 //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
                 float cdrBoost = 1 - aspdBoostBase;
-                if(mochaCount > 1)
+                if (mochaCount > 1)
                     cdrBoost *= Mathf.Pow(1 - aspdBoostStack, mochaCount - 1);
 
                 SkillLocator skillLocator = self.skillLocator;
@@ -145,7 +166,7 @@ namespace RiskierRain.Items
             {
                 mochaBuffActive.name = baseName + "Active";
                 mochaBuffActive.iconSprite = mochaCustomSprite;
-                mochaBuffActive.buffColor = new Color(0.6f,0.3f,0.1f);
+                mochaBuffActive.buffColor = new Color(0.6f, 0.3f, 0.1f);
                 mochaBuffActive.canStack = true;
                 mochaBuffActive.isDebuff = false;
             }
@@ -153,7 +174,7 @@ namespace RiskierRain.Items
             {
                 mochaBuffInactive.name = baseName + "Active";
                 mochaBuffInactive.iconSprite = mochaCustomSprite;
-                mochaBuffInactive.buffColor = new Color(0.1f,0.1f,0.2f);
+                mochaBuffInactive.buffColor = new Color(0.1f, 0.1f, 0.2f);
                 mochaBuffInactive.canStack = false;
                 mochaBuffInactive.isDebuff = false;
             };
@@ -177,7 +198,7 @@ namespace RiskierRain.Items
         {
             int currentBuffCount = body.GetBuffCount(Mocha2.mochaBuffActive);
             float startingBuffCount = targetCount / durationPerBuff;
-            if(startingBuffCount > currentBuffCount)
+            if (startingBuffCount > currentBuffCount)
             {
                 for (int i = currentBuffCount; i < startingBuffCount; i++)
                     AddMochaBuff((i + 1) * durationPerBuff);

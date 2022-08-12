@@ -112,7 +112,7 @@ namespace RiskierRain
             InitializeConfig();
             InitializeItems();
             InitializeSkills();
-            //InitializeEquipment();
+            InitializeEquipment();
             //InitializeEliteEquipment();
             //InitializeScavengers();
             //InitializeEverything();

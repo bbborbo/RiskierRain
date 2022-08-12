@@ -58,6 +58,32 @@ namespace RiskierRain.Equipment
         public EquipmentDef EquipDef;
         public virtual string OptionalDefString { get; set; } = "";
 
+
+        internal static void CloneVanillaDisplayRules(UnityEngine.Object newDef, UnityEngine.Object vanillaDef)
+        {
+            return;
+            if (newDef != null)
+            {
+                foreach (GameObject bodyPrefab in BodyCatalog.bodyPrefabs)
+                {
+                    CharacterModel model = bodyPrefab.GetComponentInChildren<CharacterModel>();
+                    if (model)
+                    {
+                        ItemDisplayRuleSet idrs = model.itemDisplayRuleSet;
+                        if (idrs)
+                        {
+                            // clone the original item display rule
+
+                            Array.Resize(ref idrs.keyAssetRuleGroups, idrs.keyAssetRuleGroups.Length + 1);
+                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].displayRuleGroup = idrs.FindDisplayRuleGroup(vanillaDef);
+                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].keyAsset = newDef;
+
+                            idrs.GenerateRuntimeValues();
+                        }
+                    }
+                }
+            }
+        }
         public abstract void Init(ConfigFile config);
 
         public abstract ItemDisplayRuleDict CreateItemDisplayRules();

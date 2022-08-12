@@ -80,29 +80,7 @@ namespace RiskierRain.Equipment
         public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
-            EquipmentDef def = instance.EquipDef;
-
-            if (def != null)
-            {
-                foreach (GameObject bodyPrefab in BodyCatalog.bodyPrefabs)
-                {
-                    CharacterModel model = bodyPrefab.GetComponentInChildren<CharacterModel>();
-                    if (model)
-                    {
-                        ItemDisplayRuleSet idrs = model.itemDisplayRuleSet;
-                        if (idrs)
-                        {
-                            // clone the original item display rule
-
-                            Array.Resize(ref idrs.keyAssetRuleGroups, idrs.keyAssetRuleGroups.Length + 1);
-                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].displayRuleGroup = idrs.FindDisplayRuleGroup(RoR2Content.Items.ShockNearby);
-                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].keyAsset = def;
-
-                            idrs.GenerateRuntimeValues();
-                        }
-                    }
-                }
-            }
+            CloneVanillaDisplayRules(TeslaEquipment.instance.EquipDef, RoR2Content.Items.ShockNearby);
         }
 
         public override void Hooks()

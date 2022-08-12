@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using RoR2.ExpansionManagement;
+using RoR2.EntitlementManagement;
 
 namespace RiskierRain.Items
 {
@@ -48,6 +50,48 @@ namespace RiskierRain.Items
 
         public virtual bool AIBlacklisted { get; set; } = false;
         public virtual bool IsHidden { get; } = false;
+
+        internal static bool CheckDLC1Entitlement()
+        {
+            ExpansionDef dlc1 = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
+            return CheckDLCEntitlement(dlc1);
+        }
+
+        internal static bool CheckDLCEntitlement(ExpansionDef expansion)
+        {
+            LocalUserEntitlementTracker localEntitlement = EntitlementManager.localUserEntitlementTracker;
+            if (localEntitlement.AnyUserHasEntitlement(expansion.requiredEntitlement))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        internal static void CloneVanillaDisplayRules(UnityEngine.Object newDef, UnityEngine.Object vanillaDef)
+        {
+            return;
+            if (newDef != null)
+            {
+                foreach (GameObject bodyPrefab in BodyCatalog.bodyPrefabs)
+                {
+                    CharacterModel model = bodyPrefab.GetComponentInChildren<CharacterModel>();
+                    if (model)
+                    {
+                        ItemDisplayRuleSet idrs = model.itemDisplayRuleSet;
+                        if (idrs)
+                        {
+                            // clone the original item display rule
+
+                            Array.Resize(ref idrs.keyAssetRuleGroups, idrs.keyAssetRuleGroups.Length + 1);
+                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].displayRuleGroup = idrs.FindDisplayRuleGroup(vanillaDef);
+                            idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].keyAsset = newDef;
+
+                            idrs.GenerateRuntimeValues();
+                        }
+                    }
+                }
+            }
+        }
 
         public abstract void Init(ConfigFile config);
 

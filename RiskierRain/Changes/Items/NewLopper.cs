@@ -129,13 +129,13 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
     public class NewLopperBehavior : RoR2.CharacterBody.ItemBehavior
     {
+        BuffIndex dangerCrit = NewLopper.dangerCritBuff.buffIndex;
         bool isEnraged = false;
         void FixedUpdate()
         {
             if(stack > 0)
             {
                 float combinedHealthFraction = this.body.healthComponent.combinedHealthFraction;
-                BuffIndex dangerCrit = NewLopper.dangerCritBuff.buffIndex;
                 int buffCount = this.body.GetBuffCount(dangerCrit);
 
 
@@ -161,6 +161,11 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
                     }
                 }
             }
+        }
+        void OnDestroy()
+        {
+            if (isEnraged)
+                this.body.RemoveBuff(dangerCrit);
         }
     }
 }

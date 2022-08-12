@@ -72,33 +72,7 @@ namespace RiskierRain.Items
         public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
-            if (ItemBase.DefDictionary.ContainsKey("BorboAtgMk3"))
-            {
-                ItemDef def = instance.ItemsDef;
-                DefDictionary.TryGetValue("BorboAtgMk3", out def);
-
-                if(def != null)
-                {
-                    foreach (GameObject bodyPrefab in BodyCatalog.bodyPrefabs)
-                    {
-                        CharacterModel model = bodyPrefab.GetComponentInChildren<CharacterModel>();
-                        if (model)
-                        {
-                            ItemDisplayRuleSet idrs = model.itemDisplayRuleSet;
-                            if (idrs)
-                            {
-                                // clone the original item display rule
-
-                                Array.Resize(ref idrs.keyAssetRuleGroups, idrs.keyAssetRuleGroups.Length + 1);
-                                idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].displayRuleGroup = idrs.FindDisplayRuleGroup(RoR2Content.Items.Missile);
-                                idrs.keyAssetRuleGroups[idrs.keyAssetRuleGroups.Length - 1].keyAsset = def;
-
-                                idrs.GenerateRuntimeValues();
-                            }
-                        }
-                    }
-                }
-            }
+            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.Missile);
         }
 
         public override void Hooks()

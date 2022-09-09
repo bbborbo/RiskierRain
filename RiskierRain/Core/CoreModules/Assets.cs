@@ -78,6 +78,7 @@ namespace RiskierRain.CoreModules
             AddCooldownBuff();
             AddAspdPenaltyDebuff();
             AddHopooDamageBuff();
+            AddCombatTelescopeCritChance();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -273,6 +274,20 @@ namespace RiskierRain.CoreModules
             noRazorwire.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffEntangleIcon");
 
             buffDefs.Add(noRazorwire);
+        }
+
+        public static BuffDef combatTelescopeCritChance;
+        private void AddCombatTelescopeCritChance()
+        {
+            combatTelescopeCritChance = ScriptableObject.CreateInstance<BuffDef>();
+
+            combatTelescopeCritChance.buffColor = Color.red;
+            combatTelescopeCritChance.canStack = false;
+            combatTelescopeCritChance.isDebuff = false;
+            combatTelescopeCritChance.name = "CombatTelescopeCrit";
+            combatTelescopeCritChance.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
+
+            buffDefs.Add(combatTelescopeCritChance);
         }
 
         public static void RecalculateLuck(CharacterMaster master)

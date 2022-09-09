@@ -17,7 +17,7 @@ namespace RiskierRain
         void ReworkPlanula()
         {
             IL.RoR2.HealthComponent.TakeDamage += RevokePlanulaRights;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            On.RoR2.CharacterBody.OnInventoryChanged += AddPlanulaItemBehavior;
 			On.RoR2.GrandParentSunController.Start += SunTeamFilter;
 
 			LanguageAPI.Add("ITEM_PARENTEGG_PICKUP", "Burn all nearby enemies after standing still for 2 seconds.");
@@ -32,7 +32,7 @@ namespace RiskierRain
 			self.bullseyeSearch.teamMaskFilter.RemoveTeam(self.teamFilter.teamIndex);
         }
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        private void AddPlanulaItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
         {
             orig(self);
 

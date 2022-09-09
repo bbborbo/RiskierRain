@@ -370,6 +370,10 @@ namespace RiskierRain
                     this.NerfCritGlasses();
                     OcularHudBuff();
                 }
+                if (GetConfigBool(currentCategory, true, "Laser Scope Rework (Combat Telescope)"))
+                {
+                    ReworkLaserScope();
+                }
 
                 // death mark fix :)
                 if (GetConfigBool(currentCategory, true, "Death Mark Fix"))

@@ -33,7 +33,7 @@ namespace RiskierRain.Items
             $"Falling below <style=cIsHealth>{Tools.ConvertDecimal(maxHealthThreshold)} health</style> sends you into a rampage, increasing " +
             $"<style=cIsDamage>critical strike damage by {Tools.ConvertDecimal(bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(bonusCritDamageLowHealthStack)} per stack)</style>, and " +
-            $"<style=cIsDamage>critical strike chance by another {dangerCritChance - freeCritChance}%</style>.";
+            $"<style=cIsDamage>critical strike chance by {dangerCritChance - freeCritChance}%</style>.";
 
         public override string ItemLore =>
 @"Name: [REDACTED]

@@ -131,7 +131,17 @@ namespace RiskierRain.EntityState.Captain
 
 		protected virtual void AddDebuff(CharacterBody body)
 		{
-			DotController.InflictDot(body.gameObject, base.characterBody.gameObject, DotController.DotIndex.Burn, burnDuration, 1f);
+			InflictDotInfo inflictDotInfo = new InflictDotInfo
+			{
+				attackerObject = body.gameObject,
+				victimObject = base.characterBody.gameObject,
+				totalDamage = new float?(burnDuration),
+				damageMultiplier = 1f,
+				dotIndex = DotController.DotIndex.Burn
+			};
+			StrengthenBurnUtils.CheckDotForUpgrade(base.characterBody.inventory, ref inflictDotInfo);
+			DotController.InflictDot(ref inflictDotInfo);
+
 			SetStateOnHurt component = body.healthComponent.GetComponent<SetStateOnHurt>();
 			if (component == null)
 			{

@@ -16,7 +16,7 @@ namespace RiskierRain.Skills
 
         public override string SkillDescription => $"Fire a weak <style=cIsUtility>Sonic Boom</style> that <style=cIsDamage>damages</style> enemies " +
             $"for <style=cIsDamage>{Tools.ConvertDecimal(ThermalCannonFire.damageCoefficient)} damage.</style> " +
-            $"Ignites every target hit for <style=cIsUtility>{ThermalCannonFire.burnDuration}</style> seconds.";
+            $"Ignites every target hit for <style=cIsDamage>{Tools.ConvertDecimal(ThermalCannonFire.burnDuration)}</style> damage.";
 
         public override string SkillLangTokenName => "CAPTAINFLAMER";
 

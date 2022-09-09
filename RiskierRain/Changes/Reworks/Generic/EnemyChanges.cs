@@ -53,7 +53,6 @@ namespace RiskierRain
         }
         #endregion
         #region pest
-
         GameObject pestPrefab;
         GameObject pestSpit;
 
@@ -85,6 +84,37 @@ namespace RiskierRain
                 if (pestSpitController)
                 {
                     pestSpitController.desiredForwardSpeed = pestSpitVelocity;
+                }
+            }
+        }
+        #endregion
+        #region beetle queen
+        GameObject queenSpitPrefab;
+        GameObject queenAcidPrefab;
+
+        float spitDamageCoefficient = 0.4f; //1.3f
+        float acidSize = 2f; //1f
+        float acidDamageCoefficient = 2.5f; //1f
+        float acidDamageFrequency = 4f; //2f
+        void QueenChanges()
+        {
+            //queenSpitPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/BeetleQueenSpit.prefab").WaitForCompletion();
+            if (queenSpitPrefab)
+            {
+
+            }
+            Debug.LogError(EntityStates.BeetleQueenMonster.FireSpit.damageCoefficient);
+            EntityStates.BeetleQueenMonster.FireSpit.damageCoefficient = spikeDamageCoefficient;
+
+            queenAcidPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/BeetleQueenAcid.prefab").WaitForCompletion();
+            if (queenAcidPrefab)
+            {
+                queenAcidPrefab.transform.localScale = Vector3.one * acidSize;
+                ProjectileDotZone acidDotZone = queenAcidPrefab.GetComponent<ProjectileDotZone>();
+                if (acidDotZone)
+                {
+                    acidDotZone.damageCoefficient = acidDamageCoefficient;
+                    acidDotZone.resetFrequency = acidDamageFrequency;
                 }
             }
         }

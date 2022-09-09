@@ -564,10 +564,16 @@ namespace RiskierRain
                     VagrantChanges();
                 }
 
-                //blind best
+                //blind pest
                 if (GetConfigBool(currentCategory, true, "Enemy: Blind Pest"))
                 {
                     PestChanges();
+                }
+
+                //beetle queen
+                if (GetConfigBool(currentCategory, true, "Enemy: Beetle Queen"))
+                {
+                    QueenChanges();
                 }
                 #endregion
 

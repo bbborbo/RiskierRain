@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using BepInEx;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace RiskierRain
 {
-    partial class RiskierRainPlugin
+    partial class RiskierRainPlugin : BaseUnityPlugin
     {
         #region blaclist
         public static EquipmentDef[] scavBlacklistedEquips = new EquipmentDef[]

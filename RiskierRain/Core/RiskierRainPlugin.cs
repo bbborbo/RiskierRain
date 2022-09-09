@@ -283,7 +283,7 @@ namespace RiskierRain
                 // jellynuke
                 if (GetConfigBool(currentCategory, true, "Jellynuke"))
                 {
-                    this.FixVagrantNova();
+                    this.FixJellyNuke();
                 }
 
                 // planula
@@ -556,6 +556,18 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Economy: Blood Shrine"))
                 {
                     BloodShrineRewardRework();
+                }
+
+                //wandering vagrant
+                if (GetConfigBool(currentCategory, true, "Enemy: Wandering Vagrant"))
+                {
+                    VagrantChanges();
+                }
+
+                //blind best
+                if (GetConfigBool(currentCategory, true, "Enemy: Blind Pest"))
+                {
+                    PestChanges();
                 }
                 #endregion
 

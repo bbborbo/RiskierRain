@@ -77,7 +77,6 @@ namespace RiskierRain.Equipment
         {
             IL.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
             On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
         }
 
@@ -167,9 +166,12 @@ namespace RiskierRain.Equipment
 
         public override void Init(ConfigFile config)
         {
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
+            Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
+            return;
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             CreateEquipment();
-            //CreateLang();
+            CreateLang();
             Hooks();
         }
 

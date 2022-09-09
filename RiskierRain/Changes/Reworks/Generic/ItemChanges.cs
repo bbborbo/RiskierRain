@@ -379,5 +379,41 @@ namespace RiskierRain
             return itemCount;
         }
         #endregion
+
+        #region weeping fungus
+        public float wungusRegenBase = 1;
+        public float wungusRegenStack = 1;
+        public void ReworkWeepingFungus()
+        {
+            GetStatCoefficients += WungusRegen;
+            On.RoR2.MushroomVoidBehavior.FixedUpdate += FuckWungusHeal;
+
+            LanguageAPI.Add("ITEM_MUSHROOMVOID_PICKUP", "Regenerate health while sprinting. <style=cIsVoid>Corrupts all Bustling Fungi</style>.");
+            LanguageAPI.Add("ITEM_MUSHROOMVOID_DESC", 
+                $"Increases <style=cIsHealing>base health regeneration</style> " +
+                $"by <style=cIsHealing>+{wungusRegenBase} hp/s</style> " +
+                $"<style=cStack>(+{wungusRegenStack} hp/s per stack)</style> <style=cIsUtility>while sprinting</style>. " +
+                $"<style=cIsVoid>Corrupts all Bustling Fungi</style>.");
+        }
+
+        private void WungusRegen(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (sender.HasBuff(DLC1Content.Buffs.MushroomVoidActive))
+            {
+                if (sender.inventory)
+                {
+                    int wungusCount = sender.inventory.GetItemCount(DLC1Content.Items.MushroomVoid);
+                    args.baseRegenAdd += wungusRegenBase + wungusRegenStack * (wungusCount - 1);
+                }
+            }
+        }
+
+        private void FuckWungusHeal(On.RoR2.MushroomVoidBehavior.orig_FixedUpdate orig, MushroomVoidBehavior self)
+        {
+            self.healTimer = 0;
+            orig(self);
+            self.healTimer = 0;
+        }
+        #endregion
     }
 }

@@ -157,6 +157,7 @@ namespace RiskierRain
                 // healing
                 MedkitNerf();
                 MonsterToothNerf();
+                ReworkWeepingFungus();
 
                 // mobility
                 JumpReworks();

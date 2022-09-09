@@ -43,18 +43,21 @@ namespace RiskierRain
 
         private void ScopeCritChance(CharacterBody sender, StatHookEventArgs args)
         {
-            int scopeCount = sender.inventory.GetItemCount(DLC1Content.Items.CritDamage);
-            if(scopeCount > 0)
+            if (sender.inventory)
             {
-                int critAdd = scopeBaseCrit;// + scopeStackCrit * (scopeCount - 1);
-
-                int buffCount = sender.GetBuffCount(Assets.combatTelescopeCritChance);
-                if(buffCount > 0)
+                int scopeCount = sender.inventory.GetItemCount(DLC1Content.Items.CritDamage);
+                if (scopeCount > 0)
                 {
-                    critAdd += scopeBaseStationaryCrit;// + scopeStackStationaryCrit * (buffCount - 1);
-                }
+                    int critAdd = scopeBaseCrit;// + scopeStackCrit * (scopeCount - 1);
 
-                args.critAdd += critAdd;
+                    int buffCount = sender.GetBuffCount(Assets.combatTelescopeCritChance);
+                    if (buffCount > 0)
+                    {
+                        critAdd += scopeBaseStationaryCrit;// + scopeStackStationaryCrit * (buffCount - 1);
+                    }
+
+                    args.critAdd += critAdd;
+                }
             }
         }
 

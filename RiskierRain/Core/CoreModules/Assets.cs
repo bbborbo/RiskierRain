@@ -380,19 +380,32 @@ namespace RiskierRain.CoreModules
             {
                 if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                 {
+                    //bandit specials (finisher)
+                    bool hasBanditExecutionBuff = body.HasBuff(desperadoExecutionDebuff) || body.HasBuff(lightsoutExecutionDebuff);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);
+                    
+                    //rex harvest (finisher)
+                    bool hasRexHarvestBuff = body.HasBuff(RoR2Content.Buffs.Fruiting);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
+
+                    //guillotine
                     int executionBuffCount = body.GetBuffCount(executionDebuffIndex);
-                    if (executionBuffCount > 0)
-                    {
-                        float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-                        if(currentThreshold < threshold)
-                        {
-                            newThreshold = threshold;
-                        }
-                    }
+                    float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
+                    newThreshold = ModifyExecutionThreshold(newThreshold, threshold, executionBuffCount > 0);
                 }
             }
 
             return newThreshold;
+        }
+
+        public static float ModifyExecutionThreshold(float currentThreshold, float newThreshold, bool condition)
+        {
+            if (condition)
+            {
+                return Mathf.Max(currentThreshold, newThreshold);
+            }
+            //else...
+            return currentThreshold;
         }
 
         private HealthComponent.HealthBarValues DisplayExecutionThreshold(On.RoR2.HealthComponent.orig_GetHealthBarValues orig, HealthComponent self)

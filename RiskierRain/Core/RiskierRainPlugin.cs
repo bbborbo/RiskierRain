@@ -558,6 +558,12 @@ namespace RiskierRain
                     BloodShrineRewardRework();
                 }
 
+                //void cradle
+                if (GetConfigBool(currentCategory, true, "Economy: Void Cradle"))
+                {
+                    VoidCradleRework();
+                }
+
                 //wandering vagrant
                 if (GetConfigBool(currentCategory, true, "Enemy: Wandering Vagrant"))
                 {

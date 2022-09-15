@@ -79,6 +79,7 @@ namespace RiskierRain.CoreModules
             AddAspdPenaltyDebuff();
             AddHopooDamageBuff();
             AddCombatTelescopeCritChance();
+            AddVoidCradleCurse();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -98,6 +99,20 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static BuffDef voidCradleCurse;
+        private void AddVoidCradleCurse()
+        {
+            voidCradleCurse = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                voidCradleCurse.buffColor = Color.black;
+                voidCradleCurse.canStack = false;
+                voidCradleCurse.isDebuff = false;
+                voidCradleCurse.name = "VoidCradleCurse";
+                voidCradleCurse.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffVoidFog");
+            }
+            buffDefs.Add(voidCradleCurse);
         }
 
         public static BuffDef hopooDamageBuff;

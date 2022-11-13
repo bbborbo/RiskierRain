@@ -460,7 +460,7 @@ namespace RiskierRain
 
         #region shuriken
         GameObject shurikenProjectilePrefab;
-        public float shurikenBaseDamage = 2f; //3f + 1f/s
+        public float shurikenBaseDamage = 0.8f; //3f + 1f/s
         public float shurikenProcCoefficient = 1.5f;
         public void ReworkShuriken()
         {

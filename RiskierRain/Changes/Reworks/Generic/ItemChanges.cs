@@ -457,5 +457,47 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldc_R4, luteDamageCoefficient);
         }
         #endregion
+
+        #region shuriken
+        GameObject shurikenProjectilePrefab;
+        public float shurikenBaseDamage = 2f; //3f + 1f/s
+        public float shurikenProcCoefficient = 1.5f;
+        public void ReworkShuriken()
+        {
+            shurikenProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/ShurikenProjectile");
+            if(shurikenProjectilePrefab != null)
+            {
+                ProjectileDamage pd = shurikenProjectilePrefab.GetComponent<ProjectileDamage>();
+                if (pd)
+                {
+                    pd.damageType |= DamageType.BleedOnHit;
+                }
+            }
+
+            On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyShurikenAttack;
+
+            LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_PICKUP", 
+                "Activating your Primary skill also throws a shuriken that Bleeds enemies. Recharges over time.");
+            LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_DESC",
+                $"Activating your <style=cIsUtility>Primary skill</style> " +
+                $"also throws a <style=cIsDamage>shuriken</style> that " +
+                $"deals <style=cIsDamage>{Tools.ConvertDecimal(shurikenBaseDamage)}</style> base damage " +
+                $"and <style=cIsDamage>bleeds</style> enemies struck for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(shurikenProcCoefficient * 2.4f)}</style> base damage. " +
+                $"You can hold up to <style=cIsUtility>3</style> " +
+                $"<style=cStack>(+1 per stack)</style> " +
+                $"<style=cIsDamage>shurikens</style> which all reload over <style=cIsUtility>10</style> seconds.");
+        }
+
+        private void ModifyShurikenAttack(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)
+        {
+            Ray aimRay = self.GetAimRay();
+            ProjectileManager.instance.FireProjectile(
+                self.projectilePrefab, aimRay.origin, 
+                Util.QuaternionSafeLookRotation(aimRay.direction) * self.GetRandomRollPitch(),
+                self.gameObject, self.body.damage * (shurikenBaseDamage), 0f,
+                Util.CheckRoll(self.body.crit, self.body.master), DamageColorIndex.Item, null, -1f);
+        }
+        #endregion
     }
 }

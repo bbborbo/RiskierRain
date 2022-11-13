@@ -152,7 +152,7 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.HealingPotion)); //power elixir
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
 
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
+            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
 
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
@@ -468,10 +468,16 @@ namespace RiskierRain
                     discipleDevilorbProc = 0;
                 }
 
-                // warcry
+                // polylute
                 if (GetConfigBool(currentCategory, true, "Polylute Nerf"))
                 {
                     this.ReworkPolylute();
+                }
+
+                // shuriken
+                if (GetConfigBool(currentCategory, true, "Shuriken Rework"))
+                {
+                    this.ReworkShuriken();
                 }
                 #endregion
 

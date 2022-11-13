@@ -482,7 +482,7 @@ namespace RiskierRain
             On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyShurikenAttack;
 
             LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_PICKUP", 
-                "Activating your Primary skill also throws a shuriken that Bleeds enemies. Recharges over time.");
+                "Activating your Primary skill also throws a shuriken that bleeds enemies. Recharges over time.");
             LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_DESC",
                 $"Activating your <style=cIsUtility>Primary skill</style> " +
                 $"also throws a <style=cIsDamage>shuriken</style> that " +

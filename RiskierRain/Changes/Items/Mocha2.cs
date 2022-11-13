@@ -30,7 +30,7 @@ namespace RiskierRain.Items
         public static float mspdBoostStack = 0.25f;
         public override string ItemName => "Morning Mocha";
 
-        public override string ItemLangTokenName => "BORBOCOFFEE";
+        public override string ItemLangTokenName => "LEGALLYDISTINCTCOFFEE";
 
         public override string ItemPickupDesc => "Gain a temporary speed boost after beginning a stage.";
 

@@ -467,6 +467,11 @@ namespace RiskierRain
             shurikenProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/ShurikenProjectile");
             if(shurikenProjectilePrefab != null)
             {
+                ProjectileController pc = shurikenProjectilePrefab.GetComponent<ProjectileController>();
+                if (pc)
+                {
+                    pc.procCoefficient = shurikenProcCoefficient;
+                }
                 ProjectileDamage pd = shurikenProjectilePrefab.GetComponent<ProjectileDamage>();
                 if (pd)
                 {

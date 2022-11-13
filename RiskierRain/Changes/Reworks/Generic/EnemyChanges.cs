@@ -60,7 +60,7 @@ namespace RiskierRain
         float pestBaseDamage = 8f; // 15
         float pestBaseSpeed = 4f; //6
 
-        float pestSpitVelocity = 45; // 100
+        float pestSpitVelocity = 70; // 100
         void PestChanges()
         {
             pestPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/FlyingVermin/FlyingVerminBody.prefab").WaitForCompletion();

@@ -14,13 +14,13 @@ namespace RiskierRain.Items
     class Elixir2 : ItemBase<Elixir2>
     {
         public static BuffDef brewActiveBuff;
-        public float buffDurationBase = 8f;
-        public float buffDurationStack = 10f;
+        public float buffDurationBase = 7f;
+        public float buffDurationStack = 9f;
         public float damageBuff = 0.8f;
         public float msBuff = 0.45f;
         public int armorBuff = 60;
 
-        public float instantHeal = 0.25f; //0.75f
+        public float instantHeal = 0.20f; //0.75f
         public override string ItemName => "Berserker\u2019s Brew";
 
         public override string ItemLangTokenName => "LEGALLYDISTINCTELIXIR";

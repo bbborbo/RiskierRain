@@ -43,6 +43,7 @@ namespace RiskierRain
     [BepInDependency("Withor.AcridBiteLunge", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.johnedwa.RTAutoSprintEx", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("HIFU.UltimateCustomRun", BepInDependency.DependencyFlags.SoftDependency)]
 
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(guid, modName, version)]
@@ -68,6 +69,7 @@ namespace RiskierRain
         public static bool isScepterLoaded = Tools.isLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded = Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
         public static bool acridLungeLoaded = Tools.isLoaded("Withor.AcridBiteLunge");
+        public static bool ucrLoaded = Tools.isLoaded("HIFU.UltimateCustomRun");
 
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> EnableConfig { get; set; }
@@ -144,6 +146,18 @@ namespace RiskierRain
         private void InitializeEverything()
         {
             IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
+
+            #region rework pending / priority removal
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.HealingPotion)); //power elixir
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
+
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
+
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
+            #endregion
 
             BalanceCategory currentCategory = BalanceCategory.StateOfDefenseAndHealing;
             if (IsCategoryEnabled(currentCategory))
@@ -338,8 +352,6 @@ namespace RiskierRain
                 #endregion
 
 
-
-
                 //this.MakeMinionsInheritOnKillEffects();
 
                 //scav could have royal cap? cunning
@@ -455,12 +467,18 @@ namespace RiskierRain
                 {
                     discipleDevilorbProc = 0;
                 }
+
+                // warcry
+                if (GetConfigBool(currentCategory, true, "Polylute Nerf"))
+                {
+                    this.ReworkPolylute();
+                }
                 #endregion
 
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfDifficulty;
+            currentCategory = BalanceCategory.StateOfDifficulty; //difficultyplus lol
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
@@ -593,7 +611,7 @@ namespace RiskierRain
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfSurvivors;
+            currentCategory = BalanceCategory.StateOfSurvivors; //ducksurvivortweaks lol
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
@@ -608,7 +626,7 @@ namespace RiskierRain
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfCommencement;
+            currentCategory = BalanceCategory.StateOfCommencement; //commencementperfected lol
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...

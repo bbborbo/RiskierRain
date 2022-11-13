@@ -415,5 +415,47 @@ namespace RiskierRain
             self.healTimer = 0;
         }
         #endregion
+
+        #region polylute
+        public float luteDamageCoefficient = 0.4f; //0.6f; //ukulele 0.8f
+        public void ReworkPolylute()
+        {
+            if (ucrLoaded)
+                return;
+            IL.RoR2.GlobalEventManager.OnHitEnemy += PolyluteDamage;
+
+            LanguageAPI.Add("ITEM_CHAINLIGHTNINGVOID_DESC",
+                $"<style=cIsDamage>25%</style> chance " +
+                $"to fire <style=cIsDamage>lightning</style> " +
+                $"for <style=cIsDamage>{Tools.ConvertDecimal(luteDamageCoefficient)}</style> TOTAL damage " +
+                $"up to <style=cIsDamage>3</style> <style=cStack>(+3 per stack)</style> " +
+                $"times. <style=cIsVoid>Corrupts all Ukuleles</style>.");
+        }
+
+        private void PolyluteDamage(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int luteLoc = 14;
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "ChainLightningVoid"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchStloc(out luteLoc)
+                );
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdloc(out luteLoc),
+                x => x.MatchLdcI4(0),
+                x => x.MatchBle(out _)
+                );
+
+            int dmgLoc = 14;
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchStloc(out dmgLoc)
+                );
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, luteDamageCoefficient);
+        }
+        #endregion
     }
 }

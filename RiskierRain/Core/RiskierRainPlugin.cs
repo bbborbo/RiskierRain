@@ -23,6 +23,7 @@ using UnityEngine.AddressableAssets;
 using RiskierRain.SurvivorTweaks;
 using RiskierRain.Skills;
 using System.Runtime.CompilerServices;
+using HarmonyLib;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -277,6 +278,10 @@ namespace RiskierRain
 
                 #region ESSENTIAL
                 // misc
+                if(AtgMissileMk3.instance.ItemsDef != null)
+                {
+                    this.ReworkPlasmaShrimp();
+                }
                 #endregion
 
                 #region PACKETS
@@ -647,6 +652,80 @@ namespace RiskierRain
                 //this.DoSadistScavenger();
             }
         }
+
+        /*[HarmonyPrefix, HarmonyPatch(typeof(RoR2.Items.ContagiousItemManager), nameof(RoR2.Items.ContagiousItemManager.Init))]
+        private static void InitializeTransformations()
+        {
+            List<ItemDef.Pair> newTransformationTable = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].ToList();
+            instance.tooLate = true;
+            if (instance.entries.Count <= 0 && instance.modifications.Count <= 0)
+            {
+                instance.Logger.LogWarning("No void items in the entries and modifications list! Cancelling transformation.");
+                return;
+            }
+            foreach (CustomVoidEntry entry in instance.entries)
+            {
+                if (entry.VoidItem.requiredExpansion == null)
+                {
+                    entry.VoidItem.requiredExpansion = ExpansionCatalog.expansionDefs.FirstOrDefault(x => x.nameToken == "DLC1_NAME");
+                }
+            }
+            IEnumerable<CustomVoidEntry> defs = instance.entries.Split(x => x.transformType == CustomVoidEntry.TransformType.Def, out IEnumerable<CustomVoidEntry> names);
+
+            foreach (CustomVoidEntry entry in defs)
+            {
+                instance.newTransformationTable.Add(new ItemDef.Pair() { itemDef1 = entry.TransformedItem, itemDef2 = entry.VoidItem });
+                instance.Logger.LogMessage("Successfully created a transformation for " + entry.VoidItem.name + "!");
+            }
+            foreach (CustomVoidEntry entry in names)
+            {
+                ItemDef itemDef = ValidateItemString(entry.TransformedItemName);
+                if (!ValidateItem(itemDef))
+                {
+                    instance.Logger.LogError("Failed to create a transformation for " + entry.VoidItem.name + " on transformation name " + entry.TransformedItemName + ".");
+                    continue;
+                }
+                instance.newTransformationTable.Add(new ItemDef.Pair() { itemDef1 = itemDef, itemDef2 = entry.VoidItem });
+                instance.Logger.LogMessage("Successfully created a transformation for " + entry.VoidItem.name + "!");
+            }
+
+            IEnumerable<VoidItemModification> modDefs = instance.modifications.Split(x => x.transformType == CustomVoidEntry.TransformType.Def, out IEnumerable<VoidItemModification> modNames);
+            foreach (VoidItemModification mod in modDefs)
+            {
+                if (mod.modification == VoidItemModification.ModificationType.Modify)
+                {
+                    ChangeTransformation(mod);
+                }
+                else
+                {
+                    RemoveTransformation(mod);
+                }
+            }
+            foreach (VoidItemModification mod in modNames)
+            {
+                ItemDef VoidItem = ValidateItemString(mod.VoidItemName);
+                ItemDef CurrentTransformedItem = ValidateItemString(mod.CurrentTransformedItemName);
+                ItemDef NewTransformation = null;
+                if (mod.modification == VoidItemModification.ModificationType.Modify)
+                    NewTransformation = ValidateItemString(mod.NewTransformationName);
+
+                if (!ValidateItem(VoidItem) || !ValidateItem(CurrentTransformedItem))
+                {
+                    instance.Logger.LogError("Issue modifying transformation for " + mod.VoidItemName + ". Aborting this modification.");
+                    continue;
+                }
+                if (mod.modification == VoidItemModification.ModificationType.Modify)
+                {
+                    ChangeTransformation(new VoidItemModification(VoidItem, CurrentTransformedItem, NewTransformation, mod.modification));
+                }
+                else
+                {
+                    RemoveTransformation(new VoidItemModification(VoidItem, CurrentTransformedItem, NewTransformation, mod.modification));
+                }
+            }
+
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = newTransformationTable.ToArray();
+        }*/
 
         #region modify items and equips
         static public void RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)

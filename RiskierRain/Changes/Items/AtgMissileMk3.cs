@@ -3,9 +3,11 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using RoR2;
+using RoR2.Items;
 using RoR2.Projectile;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -83,6 +85,31 @@ namespace RiskierRain.Items
             On.RoR2.GlobalEventManager.OnHitEnemy += AtgReworkLogic;
             IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVanillaAtgLogic;
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            On.RoR2.Items.ContagiousItemManager.Init += ChangeVoidShrimpPairing;
+        }
+
+        private void ChangeVoidShrimpPairing(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        {
+            List<ItemDef.Pair> newTransformationTable = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].ToList();
+
+            ItemDef plasmaShrimp = DLC1Content.Items.MissileVoid;
+            ItemDef atgOld = RoR2Content.Items.Missile;
+            ItemDef atgNew = AtgMissileMk3.instance.ItemsDef;
+
+            if (IsInTable(plasmaShrimp, atgOld, ref newTransformationTable, out ItemDef.Pair pair))
+            {
+                newTransformationTable.Remove(pair);
+                newTransformationTable.Add(new ItemDef.Pair { itemDef1 = atgNew, itemDef2 = plasmaShrimp });
+
+                ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = newTransformationTable.ToArray();
+            }
+            orig();
+        }
+
+        private static bool IsInTable(ItemDef def, ItemDef transformation, ref List<ItemDef.Pair> newTransformationTable, out ItemDef.Pair pair)
+        {
+            pair = new ItemDef.Pair { itemDef1 = transformation, itemDef2 = def };
+            return newTransformationTable.Contains(pair);
         }
 
         public override void Init(ConfigFile config)

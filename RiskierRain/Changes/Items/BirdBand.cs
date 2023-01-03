@@ -28,7 +28,34 @@ namespace RiskierRain.Items
             $"for <style=cIsDamage>{regenDurationBase + regenDurationStack} seconds</style> <style=cStack>(+{regenDurationStack} seconds per stack)</style>, " +
             $"restoring <style=cIsHealing>10% of your maximum health</style> per second. Recharges every 5 seconds.";
 
-        public override string ItemLore => "Every content pack gotta have one, huh?";
+        public override string ItemLore => 
+@"“I’m telling you, they’re real.”
+
+“No way, dude. It’s ridiculous even for a ghost story.”
+
+“Yeah! ‘Even higher than the gods themselves’? Get real.”
+
+“I’ve seen proof, I’m telling you. Shit that defies explanation.”
+
+“Oh, do tell. I’m on the edge of my seat.”
+
+“You know those missile launchers? The ones that used to shoot one big fuckoff rocket? Why’d they start vomiting those little stingers all of a sudden?”
+
+“I dunno.”
+
+“It was them. They rewrote it. And- and that all that shit that just disappeared, like it was never there. And all our medical supplies that suddenly got way less effective. You notice that all the monsters don’t hit as hard as they used to?”
+
+“Dude…”
+
+“It’s real, I’m telling you! And all our suits got so much… clunkier. All at once. Even though nothing’s wrong with them.”
+
+“...”
+
+“And my wungus only heals one hp now.”
+
+“Dude. What the fuck are you talking about?”
+
+“He’s lost it.”";
 
         public override ItemTier Tier => ItemTier.Tier2;
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDefenseAndHealing;

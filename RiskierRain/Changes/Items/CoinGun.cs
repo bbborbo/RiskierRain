@@ -42,7 +42,36 @@ namespace RiskierRain.Items
             $"Also deal <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style></style> " +
             $"bonus damage <style=cIsDamage>per chest you can afford</style>, for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
 
-        public override string ItemLore => "";
+        public override string ItemLore =>
+@"Man, this thing is so cool. B-zap! Haha.
+
+Hey. Dude. Check this out.
+
+What the hell is that thing?
+
+No. Watch this.
+
+…Huh? That sucks.
+
+Listen, dude. TWO. MONEY. GUNS.
+
+You're an idiot. This one charges using gold. That one shoots gold. What happens if you shoot all our gold, Cooper? We can't charge our guns.
+
+It's fine, dude. The monsters on this planet are loaded. Look at all this!
+
+…Huh. What is that thing?
+
+It's this, like, hat thing I found? It attracts money or something. If we survive this we're gonna be rich.
+
+You've gotta stop picking up those things. They've all tried to kill us at some point.
+
+Not this one, dude. Look- oops. Ow.
+
+Uh.
+
+What?
+
+What happened to all of our gold?";
 
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility, ItemTag.Damage };

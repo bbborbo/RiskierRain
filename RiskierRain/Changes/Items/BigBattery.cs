@@ -13,7 +13,7 @@ namespace RiskierRain.Items
 {
     class BigBattery : ItemBase
     {
-        public static float shieldPercent = 0.04f;
+        public static float shieldPercent = 0.1f;
         public static float rechargeRateIncrease = 0.1f;
         public static float aspdIncrease = 0.1f;
 

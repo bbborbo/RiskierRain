@@ -28,7 +28,7 @@ namespace RiskierRain.Items
         public override string ItemFullDescription => $"Become <style=cIsUtility>immune to ALL knockback</style>, and <style=cIsHealing>increase armor</style> " +
             $"by <style=cIsHealing>{baseArmor}</style> <style=cStack>(+{baseArmor} per stack)</style>. " +
             $"While stationary, gain " +
-            $"<style=cIsHealing>{baseStationaryArmor}</style> <style=cStack>(+{stackStationaryArmor} per stack)</style> additional armor</style>.";
+            $"<style=cIsHealing>{baseStationaryArmor}</style> <style=cStack>(+{stackStationaryArmor} per stack)</style> additional armor.";
 
         public override string ItemLore => "<style=cIsHealth>I cannot let you enter until you free me of my curse.</style>";
 

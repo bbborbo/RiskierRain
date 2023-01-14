@@ -13,22 +13,29 @@ using RoR2.Projectile;
 
 namespace RiskierRain.Items
 {
-    class Slungus : ItemBase
+    public class Slungus : ItemBase
     {
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
         public static float slungusWaitTime = 1f;
 
-        public static float radiusBase = 10f;
-        public static float radiusStack = 2f;
+        public static float radiusBase = 18f;
+        public static float radiusStack = 4f;
+        public float projectileSlowCoefficient = 0.2f; //0.1f
 
         public override string ItemName => "Slumbering Spores";
 
         public override string ItemLangTokenName => "SLUNGUS";
 
-        public override string ItemPickupDesc => "Standing still generates a field that slows enemies and projectiles.";
+        public override string ItemPickupDesc => "Standing still slows nearby enemies and projectiles.";
 
-        public override string ItemFullDescription => "slungus lol";
+        public override string ItemFullDescription => $"While stationary, create a " +
+            $"<style=cIsUtility>stasis field</style> for {radiusBase}m " +
+            $"<style=cStack>(+{radiusStack}m per stack)</style> around you, " +
+            $"<style=cIsUtility>slowing</style> nearby " +
+            //$"enemies by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style> " +
+            //$"and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";
+            $"enemes and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";
 
         public override string ItemLore => "the monsters see ur so lazy and become lethargic";
 
@@ -65,9 +72,11 @@ namespace RiskierRain.Items
 
             //this specifically handles slowing down of projectiles, NOT of characters
             SlowDownProjectiles slowDownProjectiles = slungusSlowFieldPrefab.GetComponent<SlowDownProjectiles>();
+            slowDownProjectiles.slowDownCoefficient = projectileSlowCoefficient;
 
             //this adds the buff to characterbodies inside its radius for slowing down
             BuffWard buffWard = slungusSlowFieldPrefab.GetComponent<BuffWard>();
+            //buffWard.buffDef = RoR2Content.Buffs.Slow60;
             buffWard.expires = false; //true
             buffWard.expireDuration = 10; //10
         }
@@ -152,15 +161,17 @@ namespace RiskierRain.Items
         private void UpdateSlungusRadius()
         {
             Debug.Log(radius);
-            BuffWard buffWard = gameObject.GetComponent<BuffWard>();
+            BuffWard buffWard = slungusFieldInstance.GetComponent<BuffWard>();
             if (buffWard)
             {
                 buffWard.radius = radius;
+                Debug.Log(buffWard.radius);
             }
-            SphereCollider collider = gameObject.GetComponent<SphereCollider>();
+            SphereCollider collider = slungusFieldInstance.GetComponent<SphereCollider>();
             if (collider)
             {
                 collider.radius = radius;
+                Debug.Log(collider.radius);
             }
         }
 

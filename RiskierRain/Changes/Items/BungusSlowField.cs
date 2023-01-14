@@ -66,6 +66,8 @@ namespace RiskierRain.Items
 
             //this adds the buff to characterbodies inside its radius for slowing down
             BuffWard buffWard = slungusSlowFieldPrefab.GetComponent<BuffWard>();
+            buffWard.expires = false; //true
+            buffWard.expireDuration = 10; //10
         }
 
         void CreateBuff()
@@ -121,8 +123,36 @@ namespace RiskierRain.Items
             this.body.AddBuff(Slungus.slungusBuff);
             if (!slungusFieldInstance)
             {
-                slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab);
+                slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
+
+                TeamFilter teamFilter = body.GetComponent<TeamFilter>();
+                TeamIndex teamIndex = teamFilter.teamIndex;
+                gameObject.GetComponent<TeamFilter>().teamIndex = teamIndex;
+
+                ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
+                if (projectileController)
+                {
+                    projectileController.Networkowner = body.gameObject;
+                }
+
+                float radius = CalculateSlowFieldRadius();
+                BuffWard buffWard = gameObject.GetComponent<BuffWard>();
+                if (buffWard)
+                {
+                    buffWard.radius = radius;
+                }
+                SphereCollider collider = gameObject.GetComponent<SphereCollider>();
+                if (collider)
+                {
+                    collider.radius = radius;
+                }
+                NetworkServer.Spawn(slungusFieldInstance);
             }
+        }
+
+        private float CalculateSlowFieldRadius()
+        {
+            return 15;
         }
 
         private void DisableSlungus()

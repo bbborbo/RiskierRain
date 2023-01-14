@@ -19,8 +19,10 @@ namespace RiskierRain.Items
         public static BuffDef slungusBuff;
         public static float slungusWaitTime = 1f;
 
+        public static float radiusBase = 10f;
+        public static float radiusStack = 2f;
 
-        public override string ItemName => "Sleepy Fungus";
+        public override string ItemName => "Slumbering Spores";
 
         public override string ItemLangTokenName => "SLUNGUS";
 
@@ -97,6 +99,13 @@ namespace RiskierRain.Items
     public class SlungusItemBehavior : CharacterBody.ItemBehavior
     {
         public GameObject slungusFieldInstance;
+        public float radius
+        {
+            get
+            {
+                return Slungus.radiusBase + Slungus.radiusStack * (stack - 1);
+            }
+        } 
         private void FixedUpdate()
         {
             if (NetworkServer.active)
@@ -110,6 +119,7 @@ namespace RiskierRain.Items
                         EnableSlungus();
                         return;
                     }
+                    //UpdateSlungusRadius();
                 }
                 else if (body.HasBuff(Slungus.slungusBuff))
                 {
@@ -125,34 +135,33 @@ namespace RiskierRain.Items
             {
                 slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
 
-                TeamFilter teamFilter = body.GetComponent<TeamFilter>();
+                TeamComponent teamFilter = body.GetComponent<TeamComponent>();
                 TeamIndex teamIndex = teamFilter.teamIndex;
-                gameObject.GetComponent<TeamFilter>().teamIndex = teamIndex;
+                slungusFieldInstance.GetComponent<TeamFilter>().teamIndex = teamIndex;
 
                 ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
                 if (projectileController)
                 {
                     projectileController.Networkowner = body.gameObject;
                 }
-
-                float radius = CalculateSlowFieldRadius();
-                BuffWard buffWard = gameObject.GetComponent<BuffWard>();
-                if (buffWard)
-                {
-                    buffWard.radius = radius;
-                }
-                SphereCollider collider = gameObject.GetComponent<SphereCollider>();
-                if (collider)
-                {
-                    collider.radius = radius;
-                }
+                UpdateSlungusRadius();
                 NetworkServer.Spawn(slungusFieldInstance);
             }
         }
 
-        private float CalculateSlowFieldRadius()
+        private void UpdateSlungusRadius()
         {
-            return 15;
+            Debug.Log(radius);
+            BuffWard buffWard = gameObject.GetComponent<BuffWard>();
+            if (buffWard)
+            {
+                buffWard.radius = radius;
+            }
+            SphereCollider collider = gameObject.GetComponent<SphereCollider>();
+            if (collider)
+            {
+                collider.radius = radius;
+            }
         }
 
         private void DisableSlungus()

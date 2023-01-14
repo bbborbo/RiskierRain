@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 
@@ -101,6 +102,16 @@ namespace RiskierRain.SurvivorTweaks
             On.EntityStates.AimThrowableBase.ModifyProjectile += ModifyDiabloDuration;
             On.RoR2.Projectile.ProjectileManager.InitializeProjectile += ModifyDiabloFriendlyFire;
 
+            GameObject diabloProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainAirstrikeAltProjectile.prefab").WaitForCompletion();
+            if (diabloProjectile)
+            {
+                ProjectileController diabloController = diabloProjectile.GetComponent<ProjectileController>();
+                diabloController.cannotBeDeleted = true;
+
+                ProjectileImpactExplosion diabloExplosion = diabloProjectile.GetComponent<ProjectileImpactExplosion>();
+                diabloExplosion.blastAttackerFiltering = AttackerFiltering.AlwaysHit;
+            }
+
             ChangeVanillaUtilities(utility);
 
 
@@ -181,7 +192,7 @@ namespace RiskierRain.SurvivorTweaks
         private void ModifyDiabloFriendlyFire(On.RoR2.Projectile.ProjectileManager.orig_InitializeProjectile orig, ProjectileController projectileController, FireProjectileInfo fireProjectileInfo)
         {
             orig(projectileController, fireProjectileInfo);
-            return;
+            //return;
             GameObject proj = projectileController.gameObject;
             ProjectileImpactExplosion pie = proj.GetComponent<ProjectileImpactExplosion>();
             if(pie != null && pie.blastAttackerFiltering == AttackerFiltering.AlwaysHit)

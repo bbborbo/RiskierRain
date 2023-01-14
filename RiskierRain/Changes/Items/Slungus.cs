@@ -106,7 +106,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             slungusBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 slungusBuff.name = "slungusField";
-                slungusBuff.buffColor = new Color(0.8f, 0.4f, 0f);
+                slungusBuff.buffColor = new Color(0.9f, 0.9f, 0f);
                 slungusBuff.canStack = false;
                 slungusBuff.isDebuff = false;
                 slungusBuff.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");

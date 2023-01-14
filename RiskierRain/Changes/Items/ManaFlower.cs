@@ -22,7 +22,17 @@ namespace RiskierRain.Items
         public override string ItemFullDescription => $"Reduce <style=cIsUtility>Primary and Secondary skill cooldowns</style> " +
             $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmt)}</style> <style=cStack>(+{Tools.ConvertDecimal(cdrAmt)} per stack)</style>.";
 
-        public override string ItemLore => "";
+        public override string ItemLore => @"Order: Jupiter Rose
+Tracking Number: 58***********
+Estimated Delivery: 07/30/2056
+Shipping Method:  Standard
+Shipping Address:280 Oak Boulevard, Venus
+Shipping Details:
+
+Isn’t it pretty?
+Just looking at it fills me with energy.
+Nature is so magical :)
+";
 
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };

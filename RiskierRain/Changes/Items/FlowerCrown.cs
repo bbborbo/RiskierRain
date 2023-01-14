@@ -35,7 +35,15 @@ namespace RiskierRain.Items
             $"and <style=cIsHealing>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 
-        public override string ItemLore => "";
+        public override string ItemLore => @"Order: Flower Crown
+Tracking Number: 10***********
+Estimated Delivery: 11/02/2056
+Shipping Method:  Priority/Fragile
+Shipping Address: Floor 16, Spiral Gardens, Earth
+Shipping Details:
+
+Thank you for always sending us gifts. I made some of them into this flower crown for you. Wearing it makes me feel strong, like nothing can get me down. Hopefully it does the same for you! <3
+";
 
         public override ItemTier Tier => ItemTier.Tier2;
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfHealth;

@@ -33,7 +33,17 @@ namespace RiskierRain.Items
             $"by  <style=cIsUtility>${discountAmountBase}</style> <style=cStack>(+{discountAmountStack} per stack)</style>. " +
             $"Scales over time.";
 
-        public override string ItemLore => "";
+        public override string ItemLore => @"Order: Mapel Coupon Getter (Lite)
+Tracking Number: 06***********
+Estimated Delivery: 11/04/2056
+Shipping Method:  Priority
+Shipping Address: 308, Belfast Station, Earth
+Shipping Details:
+
+Alright, here you are. As promised, it (legally of course) views the code on electronic purchases to find promo codes and discounts and apply them to the purchase, no user input needed! It’s very legal.
+It may be a little scuffed in practice, since you need to have the full cost on hand and the coupon codes might not be the best ones offered. Legal reasons for that, naturally. Oh, and there’s a limit on how many purchases you can do- you gotta wait a bit for it to refresh if you wanna get those coupons.
+Of course, you can always buy the premium version for unlimited discounts~
+";
 
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };

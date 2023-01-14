@@ -18,7 +18,7 @@ namespace RiskierRain.Items
         public static int bonusMoney = 10;
         public static int discountedChests = 3;
         int discountAmountBase = 8;
-        int discountAmountStack = 2;
+        int discountAmountStack = 3;
 
         public override string ItemName => "Greedy Ring";
 

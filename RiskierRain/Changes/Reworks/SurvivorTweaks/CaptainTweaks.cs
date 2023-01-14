@@ -344,7 +344,6 @@ namespace RiskierRain.SurvivorTweaks
             if (pd != null)
             {
                 self.damageStat = pd.damage / 20;
-                Debug.Log(self.damageStat);
             }
 
             orig(self);

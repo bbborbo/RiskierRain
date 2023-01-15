@@ -15,7 +15,7 @@ namespace RiskierRain.Equipment
         float extraShields = 0.20f;
 
         float buffDuration = 10;
-        float healthFraction = 0.03f;
+        float healthFraction = 0.05f;
         float shieldFraction = 0.15f;
         float zapDamageCoefficient = 2f;
         float totalZaps = 4;

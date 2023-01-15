@@ -159,22 +159,25 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         private void EnableSlungus()
         {
-            this.body.AddBuff(Slungus.slungusBuff);
-            if (!slungusFieldInstance)
+            if (body.hasAuthority)
             {
-                slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
-
-                TeamComponent teamFilter = body.GetComponent<TeamComponent>();
-                TeamIndex teamIndex = teamFilter.teamIndex;
-                slungusFieldInstance.GetComponent<TeamFilter>().teamIndex = teamIndex;
-
-                ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
-                if (projectileController)
+                this.body.AddBuff(Slungus.slungusBuff);
+                if (!slungusFieldInstance)
                 {
-                    projectileController.Networkowner = body.gameObject;
+                    slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
+
+                    TeamComponent teamFilter = body.GetComponent<TeamComponent>();
+                    TeamIndex teamIndex = teamFilter.teamIndex;
+                    slungusFieldInstance.GetComponent<TeamFilter>().teamIndex = teamIndex;
+
+                    ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
+                    if (projectileController)
+                    {
+                        projectileController.Networkowner = body.gameObject;
+                    }
+                    UpdateSlungusRadius();
+                    NetworkServer.Spawn(slungusFieldInstance);
                 }
-                UpdateSlungusRadius();
-                NetworkServer.Spawn(slungusFieldInstance);
             }
         }
 

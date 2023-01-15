@@ -440,6 +440,12 @@ namespace RiskierRain
                     WillowispNerfs();
                 }
 
+                // voidsent flame
+                if (GetConfigBool(currentCategory, true, "Voidsent Flame"))
+                {
+                    VoidsentNerfs();
+                }
+
                 // gasoline
                 if (GetConfigBool(currentCategory, true, "Gasoline"))
                 {

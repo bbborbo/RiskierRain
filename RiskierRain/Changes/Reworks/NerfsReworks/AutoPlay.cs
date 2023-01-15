@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static RoR2.CharacterBody;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain
 {
@@ -23,6 +24,7 @@ namespace RiskierRain
 
 		private GameObject daggerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/DaggerProjectile");
 		private GameObject willowispPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/WilloWispDelay");
+		private GameObject voidsentPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/ExplodeOnDeathVoid/ExplodeOnDeathVoidExplosion.prefab").WaitForCompletion();
 		private GameObject spleenPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/BleedOnHitAndExplodeDelay");
 		private GameObject fireworkProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FireworkProjectile");
 		private GameObject resdiscProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/LaserTurbineBomb");
@@ -33,6 +35,13 @@ namespace RiskierRain
 		private static float willowispScaleFraction = 0.8f;
 		private static float willowispBaseRange = 16f;
 		private static float willowispStackRange = 0f;
+
+		private static float voidsentBaseDamage = 3.5f;
+		private static float voidsentScaleFraction = 0.8f;
+		private static float voidsentBaseRange = 30f;
+		private static float voidsentStackRange = 0f;
+		private static float voidsentBaseChance = 33f;
+		private static float voidsentStackChance = 0f;
 
 		private static float gasBaseBurnDamage = 0.5f;
 		private static float gasStackBurnDamage = 2f;
@@ -68,6 +77,21 @@ namespace RiskierRain
             LanguageAPI.Add("ITEM_EXPLODEONDEATH_DESC",
                 $"On killing an enemy, spawn a <style=cIsDamage>lava pillar</style> in a <style=cIsDamage>{willowispBaseRange}m</style> radius for " +
                 $"<style=cIsDamage>{Tools.ConvertDecimal(willowispBaseDamage)}</style> <style=cStack>(+{Tools.ConvertDecimal(willowispBaseDamage * willowispScaleFraction)} per stack)</style> base damage.");
+        }
+
+        private void VoidsentNerfs()
+        {
+            this.voidsentPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = 0f;
+            IL.RoR2.HealthComponent.TakeDamage += VoidsentFlameChanges;
+            LanguageAPI.Add("ITEM_EXPLODEONDEATHVOID_PICKUP",
+                $"Chance to detonate full health enemies on hit. <style=cIsVoid>Corrupts all Will-o'-the-wisps</style>.");
+            LanguageAPI.Add("ITEM_EXPLODEONDEATHVOID_DESC",
+                $"Upon hitting an enemy at or above <style=cIsDamage>100% health</style>, " +
+				$"has a {voidsentBaseChance}% chance to " +
+				$"<style=cIsDamage>detonate</style> them in a <style=cIsDamage>{voidsentBaseRange}m</style> radius " +
+				$"for <style=cIsDamage>{Tools.ConvertDecimal(voidsentBaseDamage)}</style> " +
+				$"<style=cStack>(+{Tools.ConvertDecimal(voidsentBaseDamage * voidsentScaleFraction)} per stack)</style> base damage. " +
+				$"<style=cIsVoid>Corrupts all Will-o'-the-wisps</style>.");
         }
 
         private void CeremonialDaggerNerfs()
@@ -353,6 +377,55 @@ namespace RiskierRain
 			c.EmitDelegate<Func<float, int, float>>((currentRadius, itemCount) =>
 			{
 				float newRadius = willowispBaseRange + willowispStackRange * itemCount;
+
+				return newRadius;
+			});
+		}
+
+		private void VoidsentFlameChanges(ILContext il)
+		{
+			ILCursor c = new ILCursor(il);
+
+			int countLoc = -1;
+			c.GotoNext(MoveType.Before,
+				x => x.MatchLdsfld("RoR2.DLC1Content/Items", "ExplodeOnDeathVoid"),
+				x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+				x => x.MatchStloc(out countLoc)
+				);
+			c.Index += 2;
+			c.EmitDelegate<Func<int, int>>((itemCountIn) =>
+			{
+				if(itemCountIn > 0)
+				{
+					if (Util.CheckRoll(voidsentBaseChance + voidsentStackChance * (itemCountIn - 1)))
+					{
+						return itemCountIn;
+					}
+				}
+				return 0;
+			});
+
+			//return;
+			c.GotoNext(MoveType.Before,
+				x => x.MatchCallOrCallvirt("RoR2.Util", nameof(RoR2.Util.OnKillProcDamage))
+				);
+
+			c.Emit(OpCodes.Ldloc, countLoc);
+			c.EmitDelegate<Func<float, int, float>>((currentDamage, itemCount) =>
+			{
+				float newDamage = voidsentBaseDamage * (1 + voidsentScaleFraction * (itemCount - 1));
+
+				return newDamage;
+			});
+
+			c.GotoNext(MoveType.Before,
+				x => x.MatchStfld<RoR2.DelayBlast>(nameof(RoR2.DelayBlast.radius))
+				);
+
+			c.Emit(OpCodes.Ldloc, countLoc);
+			c.EmitDelegate<Func<float, int, float>>((currentRadius, itemCount) =>
+			{
+				float newRadius = voidsentBaseRange + voidsentStackRange * itemCount;
 
 				return newRadius;
 			});

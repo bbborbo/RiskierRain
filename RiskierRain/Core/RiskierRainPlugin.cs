@@ -610,6 +610,12 @@ namespace RiskierRain
                 {
                     QueenChanges();
                 }
+
+                //gup
+                if (GetConfigBool(currentCategory, true, "Enemy: Gup"))
+                {
+                    GupChanges();
+                }
                 #endregion
 
                 LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");

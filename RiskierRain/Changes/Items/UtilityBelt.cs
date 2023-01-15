@@ -13,8 +13,8 @@ namespace RiskierRain.Items
     {
         public static BuffDef utilityBeltCooldown;
 
-        public static float castBarrierBase = 25;
-        public static float castBarrierStack = 25;
+        public static float castBarrierBase = 10;
+        public static float castBarrierStack = 10;
         public override string ItemName => "Utility Belt";
 
         public override string ItemLangTokenName => "BORBOBARRIERBELT";
@@ -79,8 +79,10 @@ namespace RiskierRain.Items
                         endCooldown = 0.5f;
                     }
 
-                    float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
-                    int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
+                    float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
+                    float adjustedBarrier = self.maxHealth / barrierFraction;
+                    // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
+                    // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
                     self.healthComponent.AddBarrier(adjustedBarrier);
 
                     self.AddTimedBuffAuthority(utilityBeltCooldown.buffIndex, endCooldown * (currentCooldownCount + 1));

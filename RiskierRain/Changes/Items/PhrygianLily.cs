@@ -31,9 +31,9 @@ namespace RiskierRain.Changes.Items
 
         public override string ItemLangTokenName => "PHRYGIANLILY";
 
-        public override string ItemPickupDesc => "Scream when tp for KILL";
+        public override string ItemPickupDesc => "Enter a rage for when activating the teleporter.";
 
-        public override string ItemFullDescription => $"screams and dies";
+        public override string ItemFullDescription => $"<style=cIsDamage>Enter a rage</style> for 30 seconds upon activating the teleporter. Rage gives +40% attack speed <style=cStack>(+20%)</style> and -40% <style=cStack> (-20% per stack)</style>cooldown reduction.";
 
         public override string ItemLore =>
 @"Order: Lay-Z Mushroom Travel Buddy

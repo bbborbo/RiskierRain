@@ -118,6 +118,82 @@ namespace RiskierRain
                 }
             }
         }
+        #region pest
+        CharacterSpawnCard gupSpawnCard;
+        int gupCreditCost = 200;//150
+
+        GameObject gupPrefab;
+        float gupBaseHealth = 800f; // 1000
+        float gupBaseDamage = 12f; // 12
+        float gupBaseSpeed = 14f; //12
+        float gupBaseRegen = 0f; //0.6f
+
+        GameObject geepPrefab;
+        float geepBaseHealth = 400f; // 500
+        float geepBaseDamage = 8f; // 6
+        float geepBaseSpeed = 10f; //8
+        float geepBaseRegen = 0f; //0.6f
+
+        GameObject gipPrefab;
+        float gipBaseHealth = 200f; // 250
+        float gipBaseDamage = 5f; // 3
+        float gipBaseSpeed = 6f; //5
+        float gipBaseRegen = 0f; //0.6f
+
+        void GupChanges()
+        {
+            gupSpawnCard = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/Gup/cscGupBody.asset").WaitForCompletion();
+            gupSpawnCard.directorCreditCost = gupCreditCost;
+
+            gupPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GupBody.prefab").WaitForCompletion();
+            if (gupPrefab)
+            {
+                CharacterBody body = gupPrefab.GetComponent<CharacterBody>();
+                if (body)
+                {
+                    body.baseMaxHealth = gupBaseHealth;
+                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseDamage = gupBaseDamage;
+                    body.levelDamage = body.baseDamage * 0.2f;
+                    body.baseMoveSpeed = gupBaseSpeed;
+                    body.baseRegen = gupBaseRegen;
+                    body.levelRegen = body.baseRegen * 0.2f;
+                }
+            }
+
+            geepPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GeepBody.prefab").WaitForCompletion();
+            if (geepPrefab)
+            {
+                CharacterBody body = geepPrefab.GetComponent<CharacterBody>();
+                if (body)
+                {
+                    body.baseMaxHealth = geepBaseHealth;
+                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseDamage = geepBaseDamage;
+                    body.levelDamage = body.baseDamage * 0.2f;
+                    body.baseMoveSpeed = geepBaseSpeed;
+                    body.baseRegen = geepBaseRegen;
+                    body.levelRegen = body.baseRegen * 0.2f;
+                }
+            }
+
+            gipPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GipBody.prefab").WaitForCompletion();
+            if (gipPrefab)
+            {
+                CharacterBody body = gipPrefab.GetComponent<CharacterBody>();
+                if (body)
+                {
+                    body.baseMaxHealth = gipBaseHealth;
+                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseDamage = gipBaseDamage;
+                    body.levelDamage = body.baseDamage * 0.2f;
+                    body.baseMoveSpeed = gipBaseSpeed;
+                    body.baseRegen = gipBaseRegen;
+                    body.levelRegen = body.baseRegen * 0.2f;
+                }
+            }
+        }
+        #endregion
         #endregion
     }
 }

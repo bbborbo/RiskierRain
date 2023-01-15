@@ -25,8 +25,8 @@ namespace RiskierRain.Items
         public override string ItemLore => @"Order: Jupiter Rose
 Tracking Number: 58***********
 Estimated Delivery: 07/30/2056
-Shipping Method:  Standard
-Shipping Address:280 Oak Boulevard, Venus
+Shipping Method: Standard
+Shipping Address: 280 Oak Boulevard, Venus
 Shipping Details:
 
 Isn’t it pretty?

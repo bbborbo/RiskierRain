@@ -31,9 +31,29 @@ namespace RiskierRain
         int goldChestTypeCost = 10;
         int bigDroneTypeCost = 8;
 
+        PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction smallCategoryChestDamage = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestDamage.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction smallCategoryChestHealing = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestHealing.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction smallCategoryChestUtility = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestUtility.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction bigChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+
+
+        MultiShopController smallShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShop/TripleShop.prefab").WaitForCompletion().GetComponent<MultiShopController>();
+        MultiShopController bigShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopLarge/TripleShopLarge.prefab").WaitForCompletion().GetComponent<MultiShopController>();
+        MultiShopController equipmentShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopEquipment/TripleShopEquipment.prefab").WaitForCompletion().GetComponent<MultiShopController>();
+
+
+        int smallChestTypeCost = 20; //25
+        int smallShopTypeCost = 30; //25
+        int smallCategoryChestTypeCost = 25; //30
+        int bigChestTypeCost = 45; //50
+        int bigShopTypeCost = 55; //50
+
         void FixMoneyScaling()
         {
+            Debug.Log("BORBOmoney");
             ChestCostScaling();
+            ChestRebalance();
             TeleporterEnemyRewards();
         }
 
@@ -183,6 +203,40 @@ namespace RiskierRain
                 }
             }
         }
+
+        private void ChestRebalance()
+        {
+            if(smallChest != null)
+            {
+                smallChest.cost = smallChestTypeCost;
+            }
+            if (smallShop != null)
+            {
+                smallShop.baseCost = smallShopTypeCost;
+            }
+            if (smallCategoryChestDamage != null)
+            {
+                smallCategoryChestDamage.cost = smallCategoryChestTypeCost;
+            }
+            if (smallCategoryChestHealing != null)
+            {
+                smallCategoryChestHealing.cost = smallCategoryChestTypeCost;
+            }
+            if (smallCategoryChestUtility != null)
+            {
+                smallCategoryChestUtility.cost = smallCategoryChestTypeCost;
+            }
+            if (bigChest != null)
+            {
+                bigChest.cost = bigChestTypeCost;
+            }
+            if (bigShop != null)
+            {
+                bigShop.baseCost = bigShopTypeCost;
+            }
+
+        }
+
         #endregion
         #region State of Difficulty
         void FixMoneyAndExpRewards()

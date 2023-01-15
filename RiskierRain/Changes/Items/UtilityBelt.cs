@@ -12,9 +12,10 @@ namespace RiskierRain.Items
     class UtilityBelt : ItemBase<UtilityBelt>
     {
         public static BuffDef utilityBeltCooldown;
+        public static float idealBaseCooldown = 6f;
 
-        public static float castBarrierBase = 10;
-        public static float castBarrierStack = 10;
+        public static float castBarrierBase = 0.15f;
+        public static float castBarrierStack = 0.05f;
         public override string ItemName => "Utility Belt";
 
         public override string ItemLangTokenName => "BORBOBARRIERBELT";
@@ -22,8 +23,8 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Casting your Utility skill grants a temporary barrier.";
 
         public override string ItemFullDescription => $"Casting your Utility skill grants you <style=cIsHealing>a temporary barrier</style> " +
-            $"for <style=cIsHealing>{castBarrierBase}% health</style> " +
-            $"<style=cStack>(+{castBarrierStack}% per stack)</style>. " +
+            $"for <style=cIsHealing>{Tools.ConvertDecimal(castBarrierBase)} health</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(castBarrierStack)} per stack)</style>. " +
             $"<style=cIsUtility>Affected by Utility cooldown length</style>.";
 
         public override string ItemLore => "";
@@ -73,14 +74,10 @@ namespace RiskierRain.Items
                 if (itemCount > 0f && currentCooldownCount < skill.maxStock)
                 {
                     float baseCooldown = skill.baseRechargeInterval;
-                    float endCooldown = baseCooldown * skill.cooldownScale - skill.flatCooldownReduction;
-                    if (endCooldown < 0.5f)
-                    {
-                        endCooldown = 0.5f;
-                    }
+                    float endCooldown = Mathf.Max(baseCooldown * skill.cooldownScale - skill.flatCooldownReduction, 0.5f);
 
                     float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
-                    float adjustedBarrier = self.maxHealth / barrierFraction;
+                    float adjustedBarrier = (self.healthComponent.fullCombinedHealth * barrierFraction) * Mathf.Min(baseCooldown / idealBaseCooldown, 3);
                     // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
                     // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
                     self.healthComponent.AddBarrier(adjustedBarrier);

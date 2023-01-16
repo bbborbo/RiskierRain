@@ -642,6 +642,12 @@ namespace RiskierRain
                     QueenChanges();
                 }
 
+                //void reaver
+                if (GetConfigBool(currentCategory, true, "Enemy: Void Reaver"))
+                {
+                    VoidReaverChanges();
+                }
+
                 //gup
                 if (GetConfigBool(currentCategory, true, "Enemy: Gup"))
                 {

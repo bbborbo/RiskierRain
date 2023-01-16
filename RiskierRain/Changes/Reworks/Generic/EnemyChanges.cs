@@ -195,5 +195,19 @@ namespace RiskierRain
         }
         #endregion
         #endregion
+        #region void reaver
+        GameObject portalBombPrefab; //also used by simu elites
+
+        float bombSize = 3f; //1f
+
+        void VoidReaverChanges()
+        {
+            portalBombPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Nullifier/NullifierBombProjectile.prefab").WaitForCompletion();
+            if (portalBombPrefab)
+            {
+                portalBombPrefab.transform.localScale = Vector3.one * bombSize;
+            }
+        }
+        #endregion
     }
 }

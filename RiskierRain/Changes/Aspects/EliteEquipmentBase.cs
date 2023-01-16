@@ -56,6 +56,8 @@ namespace RiskierRain.Equipment
             return etd.ToArray();
         }
 
+
+
         public abstract string EliteEquipmentName { get; }
         public abstract string EliteAffixToken { get; }
         public abstract string EliteEquipmentPickupDesc { get; }

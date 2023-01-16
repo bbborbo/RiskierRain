@@ -14,6 +14,7 @@ using static RiskierRain.CoreModules.EliteModule;
 using static EntityStates.TeleporterHealNovaController.TeleporterHealNovaPulse;
 using static RoR2.CombatDirector;
 using RiskierRain.States.LeechingHealNovaController;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.Equipment
 {
@@ -41,7 +42,7 @@ namespace RiskierRain.Equipment
         public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
 
-        public override Sprite EliteBuffIcon => RoR2Content.Equipment.AffixHaunted.passiveBuffDef.iconSprite;
+        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteHaunted/texBuffAffixHaunted.png").WaitForCompletion();
         public override Color EliteBuffColor => Color.magenta;
 
         //public override Material EliteOverlayMaterial { get; set; } = LegacyResourcesAPI.Load<Material>("materials/matElitePoisonOverlay");

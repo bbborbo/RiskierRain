@@ -11,6 +11,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.EliteModule;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.Equipment
 {
@@ -40,7 +41,7 @@ namespace RiskierRain.Equipment
 
         public override float Cooldown { get; } = 0f;
 
-        public override Sprite EliteBuffIcon => RoR2Content.Equipment.AffixWhite.passiveBuffDef.iconSprite;
+        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteIce/texBuffAffixWhite.png").WaitForCompletion();
         public override Color EliteBuffColor => new Color(1.0f, 0.6f, 0.0f, 1.0f);
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
@@ -218,9 +219,9 @@ namespace RiskierRain.Equipment
             pc.ghost = pgc;
 
             Material material1 = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
-            Material material2 = new Material(Shader.Find("Standard"));
+            //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
             Tools.GetMaterial(projectileGhost, "Mesh", Color.red, ref material1);
-            Tools.GetMaterial(projectileGhost, "GameObject (1)", Color.green, ref material2);
+            Tools.GetMaterial(projectileGhost, "GameObject (1)", Color.green, ref material1);// material2);
             Tools.GetParticle(projectileGhost, "Fire", Color.blue);
             //Tools.DebugMaterial(projectileGhost);
             //Tools.DebugParticleSystem(projectileGhost);
@@ -230,6 +231,7 @@ namespace RiskierRain.Equipment
 
             ProjectileSimple scrapPs = projectilePrefab.GetComponent<ProjectileSimple>();
             scrapPs.desiredForwardSpeed = 30;
+            scrapPs.rigidbody.freezeRotation = false;
 
             Rigidbody scrapRb = projectilePrefab.GetComponent<Rigidbody>();
             scrapRb.useGravity = true;

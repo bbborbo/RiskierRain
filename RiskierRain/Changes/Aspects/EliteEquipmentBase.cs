@@ -87,7 +87,7 @@ namespace RiskierRain.Equipment
         /// </summary>
         public BuffDef EliteBuffDef;
 
-        public abstract Sprite EliteBuffIcon { get; }
+        public abstract Texture2D EliteBuffIcon { get; }
 
         public virtual Color EliteBuffColor { get; set; } = new Color32(255, 255, 255, byte.MaxValue);
 
@@ -148,7 +148,11 @@ namespace RiskierRain.Equipment
             EliteBuffDef.name = EliteAffixToken;
             EliteBuffDef.buffColor = EliteBuffColor;
             EliteBuffDef.canStack = false;
-            EliteBuffDef.iconSprite = EliteBuffIcon;
+            if(EliteBuffIcon != null)
+            {
+                Sprite iconSprite = Sprite.Create(EliteBuffIcon, new Rect(0.0f, 0.0f, EliteBuffIcon.width, EliteBuffIcon.height), new Vector2(0.5f, 0.5f));
+                EliteBuffDef.iconSprite = iconSprite;
+            }
 
             EliteDef = ScriptableObject.CreateInstance<EliteDef>();
             EliteDef.name = "BORBO_ELITE_" + EliteAffixToken;
@@ -182,6 +186,7 @@ namespace RiskierRain.Equipment
             Assets.eliteDefs.Add(EliteDef);
             Assets.buffDefs.Add(EliteBuffDef);
 
+
             #region BorboEliteDef
             CustomEliteDef BED = ScriptableObject.CreateInstance<CustomEliteDef>();
             BED.eliteDef = EliteDef;
@@ -190,6 +195,9 @@ namespace RiskierRain.Equipment
             BED.overlayMaterial = EliteOverlayMaterial;
             BED.spawnEffect = null;
             EliteModule.Elites.Add(BED);
+
+            //CustomElite customElite = new CustomElite(EliteModifier, EliteEquipmentDef, EliteBuffColor, EliteAffixToken, EliteAPI.GetCombatDirectorEliteTiers());
+            //R2API.EliteAPI.Add(customElite);
             #endregion
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;

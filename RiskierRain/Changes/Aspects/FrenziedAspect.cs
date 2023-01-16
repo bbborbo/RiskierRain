@@ -8,6 +8,7 @@ using UnityEngine;
 using static RoR2.CombatDirector;
 using static R2API.RecalculateStatsAPI;
 using static RiskierRain.CoreModules.EliteModule;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.Equipment
 {
@@ -38,7 +39,7 @@ namespace RiskierRain.Equipment
 
         public override float Cooldown { get; } = 0f;
 
-        public override Sprite EliteBuffIcon => RoR2Content.Equipment.AffixBlue.passiveBuffDef.iconSprite;
+        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.png").WaitForCompletion();
         public override Color EliteBuffColor => new Color(1.0f, 0.7f, 0.0f, 1.0f);
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
@@ -82,8 +83,8 @@ namespace RiskierRain.Equipment
         {
             if (IsElite(sender, EliteBuffDef))
             {
-                args.moveSpeedMultAdd += 0.5f;
-                args.baseAttackSpeedAdd += 0.8f;
+                args.moveSpeedMultAdd += 0.8f;
+                args.baseAttackSpeedAdd += 1.2f;
             }
         }
 

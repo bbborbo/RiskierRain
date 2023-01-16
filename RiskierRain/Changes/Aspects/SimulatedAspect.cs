@@ -63,8 +63,9 @@ namespace RiskierRain.Equipment
         {
             if (IsElite(sender, EliteBuffDef))
             {
+                SetTeamToVoid(sender);
                 args.moveSpeedMultAdd += 0.25f;
-                //args.baseAttackSpeedAdd += 1f;
+                args.baseAttackSpeedAdd += 1f;
             }
         }
 
@@ -74,7 +75,7 @@ namespace RiskierRain.Equipment
 
             if (IsElite(self, EliteBuffDef))
             {
-                float scale = 0.8f;
+                float scale = 0.85f;
                 if (self.skillLocator.primary)
                 {
                     self.skillLocator.primary.cooldownScale *= scale;
@@ -102,6 +103,11 @@ namespace RiskierRain.Equipment
             CreateLang();
             CreateElite();
             Hooks();
+        }
+
+        public void SetTeamToVoid(CharacterBody body)
+        {
+            body.teamComponent.teamIndex = TeamIndex.Void;
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)

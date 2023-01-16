@@ -54,7 +54,7 @@ namespace RiskierRain.Equipment
             On.RoR2.GlobalEventManager.OnHitAll += VolatileOnHit;
             //On.RoR2.CharacterBody.FixedUpdate += VolatileMortar;
             On.RoR2.CharacterBody.AddBuff_BuffIndex += VolatileBuffCheck;
-            //On.RoR2.GlobalEventManager.OnCharacterDeath += SpiteOnDeath;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += SpiteOnDeath;
         }
 
         private void SpiteOnDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
@@ -165,7 +165,7 @@ namespace RiskierRain.Equipment
                         if (!damageInfo.procChainMask.HasProc(ProcType.Behemoth) && damageInfo.procCoefficient != 0f)
                         {
                             float radius = 4 * damageInfo.procCoefficient;
-                            float damageCoefficient = 0.4f;
+                            float damageCoefficient = 0.1f;
                             float baseDamage = Util.OnHitProcDamage(damageInfo.damage, aBody.damage, damageCoefficient);
                             EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/OmniEffect/OmniExplosionVFXQuick"), new EffectData
                             {

@@ -39,7 +39,7 @@ namespace RiskierRain.Equipment
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
 
 
-        public override float Cooldown { get; } = 5f;
+        public override float Cooldown { get; } = 10f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

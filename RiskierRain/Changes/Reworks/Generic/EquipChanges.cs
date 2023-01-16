@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace RiskierRain
 {
@@ -65,6 +66,39 @@ namespace RiskierRain
             }
             orig(self, damageInfo);
         }
+        #endregion
+
+        #region enemy use equip
+
+        public void MakeEnemiesuseEquipment()
+        {
+            On.RoR2.EquipmentSlot.FixedUpdate += TryUseEquip;
+        }
+
+        private void TryUseEquip(On.RoR2.EquipmentSlot.orig_FixedUpdate orig, EquipmentSlot self)
+        {
+            orig(self);
+            if (self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
+            {
+                    if (!self.characterBody.outOfDanger)
+                    {
+                        //self.ExecuteIfReady(EquipmentCatalog.GetEquipmentDef(self.equipmentIndex));
+                        bool isEquipmentActivationAllowed = self.characterBody.isEquipmentActivationAllowed;
+                        if (isEquipmentActivationAllowed /**&& self.hasEffectiveAuthority*/)
+                        {
+                            if (NetworkServer.active)
+                            {
+                                self.ExecuteIfReady();
+                                return;
+                            }
+                            self.CallCmdExecuteIfReady();
+                        }
+                    }
+             
+            }
+        }
+
+
         #endregion
     }
 }

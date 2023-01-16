@@ -510,6 +510,9 @@ namespace RiskierRain
                 // EQUIPMENT: old guillotine
                 // ENEMIES: Chipchip the Wicked (debuff)
 
+                //enemies use equipment
+                MakeEnemiesuseEquipment();
+
                 #region difficulty dependent difficulty
                 //ambient level
                 if (GetConfigBool(currentCategory, true, "Difficulty: Difficulty Dependent Ambient Difficulty Boost"))

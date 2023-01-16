@@ -251,10 +251,10 @@ namespace RiskierRain
             orig(self);
             float boost = GetAmbientLevelBoost();
             float ambientLevel = Run.instance.ambientLevel;
-            float forgiveness = 0.85f;
+            float ambientLevelBoostCorrection = 1f;
 
             float actualLevelStat = 1 + (0.3f * ambientLevel);
-            float intendedLevelStat = 1 + (0.3f * ((ambientLevel - boost) / monsterCreditsMultiplier) * forgiveness);
+            float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost * ambientLevelBoostCorrection));
             float rewardMult = intendedLevelStat / actualLevelStat;
 
             self.goldReward = (uint)((float)self.expReward * rewardMult);

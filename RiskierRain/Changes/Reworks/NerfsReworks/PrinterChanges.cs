@@ -18,21 +18,43 @@ namespace RiskierRain
         public static GameObject redPrinter = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/chest/DuplicatorMilitary");
         public static GameObject scrapper = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/chest/Scrapper");
 
+        //code belonds to r2api
         public static void ChangeInteractableWeightForPool(string interactableNameLowered, int newWeight, DccsPool pool)
         {
-            Helpers.ForEachPoolEntryInDccsPool(pool, (poolEntry) =>
+            //Debug.Log($"Changing {interactableNameLowered} card weight!");
+            if (pool)
             {
-                for (int i = 0; i < poolEntry.dccs.categories.Length; i++)
+                    Helpers.ForEachPoolEntryInDccsPool(pool, (poolEntry) =>
                 {
-                    var cards = poolEntry.dccs.categories[i].cards.ToList();
-                    foreach(DirectorCard card in cards)
+                    for (int i = 0; i < poolEntry.dccs.categories.Length; i++)
                     {
-                        if (card.spawnCard.name.ToLowerInvariant() == interactableNameLowered)
-                            card.selectionWeight = newWeight;
+                        var cards = poolEntry.dccs.categories[i].cards.ToList();
+                        foreach (DirectorCard card in cards)
+                        {
+                            if (card.spawnCard.name.ToLowerInvariant() == interactableNameLowered)
+                                card.selectionWeight = newWeight;
+                        }
+                        poolEntry.dccs.categories[i].cards = cards.ToArray();
                     }
-                    poolEntry.dccs.categories[i].cards = cards.ToArray();
-                }
-            });
+                });
+            }
+        }
+
+        //code belonds to r2api
+        private static void RemoveExistingInteractable(DccsPool pool, string interactableNameLowered)
+        {
+            if (pool)
+            {
+                Helpers.ForEachPoolEntryInDccsPool(pool, (poolEntry) =>
+                {
+                    for (int i = 0; i < poolEntry.dccs.categories.Length; i++)
+                    {
+                        var cards = poolEntry.dccs.categories[i].cards.ToList();
+                        cards.RemoveAll((card) => card.spawnCard.name.ToLowerInvariant() == interactableNameLowered);
+                        poolEntry.dccs.categories[i].cards = cards.ToArray();
+                    }
+                });
+            }
         }
 
         private void EquipBarrelOccurrenceHook(DccsPool pool, StageInfo currentStage)
@@ -57,35 +79,50 @@ namespace RiskierRain
                 ChangeInteractableWeightForPool(shopName, 2 /*2*/, pool);
             }
         }
+
+        public int scrapperWeight = 25;//12
         private void ScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
-            string scrapperName = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLower();
-            if (OnScrapperStage(currentStage.stage))
+            string scrapperName = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();//.ToLower();
+
+            bool isPrinterStage = OnScrapperStage(currentStage.stage);
+            //Debug.Log(currentStage.stage.ToString() + " Is Scrapper Stage: " + isPrinterStage);
+
+            if (isPrinterStage)
             {
-                ChangeInteractableWeightForPool(scrapperName, 25 /*12*/, pool);
+                ChangeInteractableWeightForPool(scrapperName, scrapperWeight, pool);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                DirectorAPI.Helpers.RemoveExistingInteractable(scrapperName);
+                RemoveExistingInteractable(pool, scrapperName);
             }
         }
+
+        public int printerGreenWeight = 10;//6
+        public int printerRedWeight = 3;//1
+        public int printerRedWeightMeadows = 15;//1
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
-            string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLower();
-            string printerGreen = DirectorAPI.Helpers.InteractableNames.Printer3DLarge.ToLower();
-            string printerRed = DirectorAPI.Helpers.InteractableNames.PrinterMiliTech.ToLower();
+            string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();
+            string printerGreen = DirectorAPI.Helpers.InteractableNames.Printer3DLarge.ToLowerInvariant();//.ToLower();
+            string printerRed = DirectorAPI.Helpers.InteractableNames.PrinterMiliTech.ToLowerInvariant();//.ToLower();
 
-            if (OnPrinterStage(currentStage.stage))
+            bool isPrinterStage = OnPrinterStage(currentStage.stage);
+            //Debug.Log(currentStage.stage.ToString() + " Is Printer Stage: " + isPrinterStage);
+
+            if (isPrinterStage)
             {
                 //ChangeInteractableWeightForPool(printerWhite, 12 /*idk what it is in vanilla*/, pool);
-                ChangeInteractableWeightForPool(printerGreen, 10 /*6*/, pool);
-                ChangeInteractableWeightForPool(printerRed, (currentStage.stage == DirectorAPI.Stage.SkyMeadow) ? 12 : 3 /*1*/, pool);
+                ChangeInteractableWeightForPool(printerGreen, printerGreenWeight, pool);
+                ChangeInteractableWeightForPool(printerRed, 
+                    (currentStage.stage == DirectorAPI.Stage.SkyMeadow) 
+                    ? printerRedWeightMeadows : printerRedWeight, pool);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                DirectorAPI.Helpers.RemoveExistingInteractable(printerWhite);
-                DirectorAPI.Helpers.RemoveExistingInteractable(printerGreen);
-                DirectorAPI.Helpers.RemoveExistingInteractable(printerRed);
+                RemoveExistingInteractable(pool, printerWhite);
+                RemoveExistingInteractable(pool, printerGreen);
+                RemoveExistingInteractable(pool, printerRed);
             }
         }
 

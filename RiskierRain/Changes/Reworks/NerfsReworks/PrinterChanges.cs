@@ -24,7 +24,7 @@ namespace RiskierRain
             //Debug.Log($"Changing {interactableNameLowered} card weight!");
             if (pool)
             {
-                    Helpers.ForEachPoolEntryInDccsPool(pool, (poolEntry) =>
+                Helpers.ForEachPoolEntryInDccsPool(pool, (poolEntry) =>
                 {
                     for (int i = 0; i < poolEntry.dccs.categories.Length; i++)
                     {
@@ -104,7 +104,7 @@ namespace RiskierRain
 
         public int printerGreenWeight = 10;//6
         public int printerRedWeight = 3;//1
-        public int printerRedWeightS5 = 15;//1
+        public int printerRedWeightS5 = 12;//1
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();

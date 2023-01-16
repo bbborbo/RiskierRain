@@ -158,6 +158,7 @@ namespace RiskierRain
 
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
             #endregion
 
             BalanceCategory currentCategory = BalanceCategory.StateOfDefenseAndHealing;
@@ -573,6 +574,18 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Economy: Elite Gold Rewards"))
                 {
                     EliteGoldReward();
+                }
+
+                //stage interactable credits
+                if (GetConfigBool(currentCategory, true, "Economy: Stage Interactable Credits"))
+                {
+                    DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits;
+                }
+
+                //stage monster credits
+                if (GetConfigBool(currentCategory, true, "Economy: Stage Monster Credits"))
+                {
+                    DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
                 }
 
                 //printer

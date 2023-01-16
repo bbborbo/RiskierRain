@@ -13,6 +13,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static RoR2.GivePickupsOnStart;
 using static R2API.RecalculateStatsAPI;
+using R2API;
 
 namespace RiskierRain
 {
@@ -239,6 +240,7 @@ namespace RiskierRain
         }
 
         #endregion
+
         #region State of Difficulty
         void FixMoneyAndExpRewards()
         {
@@ -300,6 +302,19 @@ namespace RiskierRain
                 }
             }
             return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
+        }
+        #endregion
+
+        #region Stage Credits
+        public float interactableCreditsMultiplier = 2;
+        public void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
+        {
+            settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits * interactableCreditsMultiplier);
+        }
+        public float monsterCreditsMultiplier = 2;
+        public void IncreaseStageMonsterCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
+        {
+            settings.SceneDirectorMonsterCredits = (int)(settings.SceneDirectorMonsterCredits * monsterCreditsMultiplier);
         }
         #endregion
     }

@@ -16,9 +16,9 @@ namespace RiskierRain.Items
 {
     class LunarIncreaseCD : ItemBase
     {
-        GameObject lunarShardProjectile => ;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
-        GameObject lunarShardMuzzleFlash => LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
-        float lunarShardDamageCoefficient = 3.5f;
+        GameObject lunarShardProjectile => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
+        GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
+        float lunarShardDamageCoefficient = 0.1f;
         float lunarShardProcCoefficient = 0.5f;
 
         float cdIncreaseBase = 2;
@@ -119,16 +119,17 @@ namespace RiskierRain.Items
                 }
                 Ray aimRay = new Ray(self.inputBank.aimOrigin, self.inputBank.aimDirection);
 
-                int shardCount = (int)(shardsPerSecond * skillCD);
+                int shardCount = (int)Mathf.RoundToInt(shardsPerSecond * skillCD);
                 Debug.Log(shardCount);
                 if (lunarShardProjectile != null)
                 {
                     for (int i = 0; i < shardCount; i++)
                     {
-                        float bonusYaw = 0;
-                        float projectileSpeed = 30;//FireLunarShards.projectileSpeed * 0.3f * (i + 1);
+                        float bonusYaw = UnityEngine.Random.Range(-3f, 3f);
+                        float bonusPitch = UnityEngine.Random.Range(-2f, 3f);
+                        float projectileSpeed = 200 * 0.3f * (i + 1);
 
-                        Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw, 0);
+                        Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw * shardCount, bonusPitch * i);
                         ProjectileManager.instance.FireProjectile(lunarShardProjectile, aimRay.origin,
                             Util.QuaternionSafeLookRotation(forward), self.gameObject,
                             self.damage * lunarShardDamageCoefficient, 0f,

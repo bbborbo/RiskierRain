@@ -57,26 +57,30 @@ namespace RiskierRain
             }
         }
 
+        public int equipBarrelWeightS1 = 6;//2
+        public int equipBarrelWeight = 2;//2
+        public int equipShopWeightS3 = 10;//2
+        public int equipShopWeight = 2;//2
         private void EquipBarrelOccurrenceHook(DccsPool pool, StageInfo currentStage)
         {
             string barrelName = DirectorAPI.Helpers.InteractableNames.EquipmentBarrel.ToLower();
             if (IsStageOne(currentStage.stage))
             {
-                ChangeInteractableWeightForPool(barrelName, 6 /*2*/, pool);
+                ChangeInteractableWeightForPool(barrelName, equipBarrelWeightS1 /*2*/, pool);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                ChangeInteractableWeightForPool(barrelName, 2 /*2*/, pool);
+                ChangeInteractableWeightForPool(barrelName, equipBarrelWeight /*2*/, pool);
             }
 
             string shopName = DirectorAPI.Helpers.InteractableNames.TripleShopEquipment.ToLower();
             if (IsStageThree(currentStage.stage))
             {
-                ChangeInteractableWeightForPool(shopName, 10 /*2*/, pool);
+                ChangeInteractableWeightForPool(shopName, equipShopWeightS3 /*2*/, pool);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                ChangeInteractableWeightForPool(shopName, 2 /*2*/, pool);
+                ChangeInteractableWeightForPool(shopName, equipShopWeight /*2*/, pool);
             }
         }
 
@@ -100,7 +104,7 @@ namespace RiskierRain
 
         public int printerGreenWeight = 10;//6
         public int printerRedWeight = 3;//1
-        public int printerRedWeightMeadows = 15;//1
+        public int printerRedWeightS5 = 15;//1
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();
@@ -116,7 +120,7 @@ namespace RiskierRain
                 ChangeInteractableWeightForPool(printerGreen, printerGreenWeight, pool);
                 ChangeInteractableWeightForPool(printerRed, 
                     (currentStage.stage == DirectorAPI.Stage.SkyMeadow) 
-                    ? printerRedWeightMeadows : printerRedWeight, pool);
+                    ? printerRedWeightS5 : printerRedWeight, pool);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {

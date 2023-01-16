@@ -231,11 +231,10 @@ namespace RiskierRain.Equipment
 
             ProjectileSimple scrapPs = projectilePrefab.GetComponent<ProjectileSimple>();
             scrapPs.desiredForwardSpeed = 30;
-            scrapPs.rigidbody.freezeRotation = false;
 
             Rigidbody scrapRb = projectilePrefab.GetComponent<Rigidbody>();
             scrapRb.useGravity = true;
-
+            scrapRb.freezeRotation = false;
 
             AntiGravityForce scrapAntiGravity = projectilePrefab.GetComponent<AntiGravityForce>();
             if(scrapAntiGravity == null)

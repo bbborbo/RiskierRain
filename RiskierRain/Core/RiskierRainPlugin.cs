@@ -554,6 +554,12 @@ namespace RiskierRain
                     OverloadingEliteChanges();
                 }
 
+                //voidtouched elite
+                if (GetConfigBool(currentCategory, true, "Elite: Voidtouched Elite Rework"))
+                {
+                    VoidtouchedEliteChanges();
+                }
+
                 //blazing elite
                 //BlazingEliteChanges();
 

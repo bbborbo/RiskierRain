@@ -86,26 +86,10 @@ namespace RiskierRain
             }
         }
 
+        #region blazing
         void BlazingEliteChanges()
         {
             On.RoR2.CharacterBody.UpdateFireTrail += BlazingFireTrailChanges;
-        }
-
-        private void OverloadingEliteChanges()
-        {
-            //Debug.Log("Modifying Overloading Elite bombs!");
-            GameObject overloadingBomb = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/LightningStake");
-
-            ProjectileStickOnImpact bombStick = overloadingBomb.GetComponent<ProjectileStickOnImpact>();
-            bombStick.ignoreCharacters = true;
-            bombStick.ignoreWorld = false;
-
-            ProjectileImpactExplosion bombPie = overloadingBomb.GetComponent<ProjectileImpactExplosion>();
-            bombPie.blastRadius = 9;
-            bombPie.lifetime = 1.2f;
-
-            On.RoR2.HealthComponent.TakeDamage += OverloadingKnockbackFix;
-            IL.RoR2.GlobalEventManager.OnHitAll += OverloadingBombDamage;
         }
 
         public static float fireTrailDPS = 0.5f; //1.5f
@@ -122,6 +106,25 @@ namespace RiskierRain
                 self.fireTrail.damagePerSecond = self.damage * fireTrailDPS;
                 //self.fireTrail.pointLifetime = fireTrailLifetime;
             }
+        }
+        #endregion
+
+        #region overloading
+        private void OverloadingEliteChanges()
+        {
+            //Debug.Log("Modifying Overloading Elite bombs!");
+            GameObject overloadingBomb = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/LightningStake");
+
+            ProjectileStickOnImpact bombStick = overloadingBomb.GetComponent<ProjectileStickOnImpact>();
+            bombStick.ignoreCharacters = true;
+            bombStick.ignoreWorld = false;
+
+            ProjectileImpactExplosion bombPie = overloadingBomb.GetComponent<ProjectileImpactExplosion>();
+            bombPie.blastRadius = 9;
+            bombPie.lifetime = 1.2f;
+
+            On.RoR2.HealthComponent.TakeDamage += OverloadingKnockbackFix;
+            IL.RoR2.GlobalEventManager.OnHitAll += OverloadingBombDamage;
         }
 
         private void OverloadingBombDamage(ILContext il)
@@ -155,5 +158,46 @@ namespace RiskierRain
             }
             orig(self, damageInfo);
         }
+        #endregion
+
+        #region voidtouched
+        public float voidtouchedNullifyBaseDuration = 20;
+        void VoidtouchedEliteChanges()
+        {
+            IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVoidtouchedCollapse;
+            On.RoR2.GlobalEventManager.OnHitEnemy += AddVoidtouchedNullify;
+        }
+
+        private void AddVoidtouchedNullify(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        {
+            CharacterBody attackerBody = damageInfo.attacker?.GetComponent<CharacterBody>();
+            CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+            if (attackerBody && victimBody && damageInfo.procCoefficient > 0)
+            {
+                if (attackerBody.HasBuff(DLC1Content.Buffs.EliteVoid))
+                {
+                    victimBody.AddTimedBuffAuthority(RoR2Content.Buffs.NullifyStack.buffIndex, voidtouchedNullifyBaseDuration * damageInfo.procCoefficient);
+                }
+            }
+            orig(self, damageInfo, victim);
+        }
+
+        private void RemoveVoidtouchedCollapse(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Buffs", "EliteVoid")
+                );
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchStloc(out _)
+                );
+            c.EmitDelegate<Func<int, int>>((guh) =>
+            {
+                return 0;
+            });
+        }
+        #endregion
     }
 }

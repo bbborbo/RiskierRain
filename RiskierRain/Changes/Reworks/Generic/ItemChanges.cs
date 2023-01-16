@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using EntityStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using On.RoR2.Items;
@@ -578,6 +579,26 @@ namespace RiskierRain
             c.Remove();
             c.Emit(OpCodes.Ldc_I4, 1);
         }
+        #endregion
+
+        #region lepton daisy
+        public float daisyRadiusMultiplier = 1.1f; //increase by 10%
+        public void BuffDaisy()
+        {
+            On.RoR2.HoldoutZoneController.OnEnable += DaisyRadiusIncrease;
+        }
+
+        private void DaisyRadiusIncrease(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.TPHealingNova.itemIndex, false);
+            if (itemCount > 0)
+            {
+                self.baseRadius *= daisyRadiusMultiplier;
+            }
+        }
+
+
         #endregion
     }
 }

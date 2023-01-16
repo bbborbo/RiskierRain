@@ -229,6 +229,12 @@ namespace RiskierRain
                     MonsterToothDurationBuff();
                 }
 
+                //lepton daisy ADD CONFIG
+                if (GetConfigBool(currentCategory, true, "Lepton Daisy"))
+                {
+                    BuffDaisy();
+                }
+
 
                 string armorChangesTitle = " Armor Packet";
                 string armorChangesDesc = "Set how much additional armor this item gives. Vanilla 0.";

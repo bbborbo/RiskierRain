@@ -53,7 +53,6 @@ namespace RiskierRain
 
         void FixMoneyScaling()
         {
-            Debug.Log("BORBOmoney");
             ChestCostScaling();
             ChestRebalance();
             TeleporterEnemyRewards();
@@ -255,7 +254,7 @@ namespace RiskierRain
             float forgiveness = 0.85f;
 
             float actualLevelStat = 1 + (0.3f * ambientLevel);
-            float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost * forgiveness));
+            float intendedLevelStat = 1 + (0.3f * ((ambientLevel - boost) / monsterCreditsMultiplier) * forgiveness);
             float rewardMult = intendedLevelStat / actualLevelStat;
 
             self.goldReward = (uint)((float)self.expReward * rewardMult);
@@ -306,12 +305,12 @@ namespace RiskierRain
         #endregion
 
         #region Stage Credits
-        public float interactableCreditsMultiplier = 2;
+        public float interactableCreditsMultiplier = 1.5f;
         public void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
             settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits * interactableCreditsMultiplier);
         }
-        public float monsterCreditsMultiplier = 2;
+        public float monsterCreditsMultiplier = 1.5f;
         public void IncreaseStageMonsterCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
             settings.SceneDirectorMonsterCredits = (int)(settings.SceneDirectorMonsterCredits * monsterCreditsMultiplier);

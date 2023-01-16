@@ -198,7 +198,7 @@ namespace RiskierRain
         #region void reaver
         GameObject portalBombPrefab; //also used by simu elites
 
-        float bombSize = 3f; //1f
+        float bombSize = 10f; //1f, DOESNT WORK
 
         void VoidReaverChanges()
         {

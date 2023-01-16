@@ -80,7 +80,7 @@ namespace RiskierRain
             orig(self);
             if (self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
             {
-                    if (!self.characterBody.outOfDanger)
+                    if (!self.characterBody.outOfCombat)
                     {
                         //self.ExecuteIfReady(EquipmentCatalog.GetEquipmentDef(self.equipmentIndex));
                         bool isEquipmentActivationAllowed = self.characterBody.isEquipmentActivationAllowed;

@@ -120,10 +120,16 @@ namespace RiskierRain.Equipment
         public bool isAiming;
         public bool isFiring;
         public float attackStopWatch;
+        public int sizeMod;
+        public float randomRadius;
+
         public void AffixSimulatedAttack()
         {
 
-            portalBombCount = (int)Mathf.Ceil(body.radius) * 4; //projectile count scales with size
+            sizeMod = (int)Mathf.Ceil(body.radius); //projectile count scales with size
+            portalBombCount = sizeMod * sizeMod * 2;
+            randomRadius = baseRandomRadius * sizeMod / 2;
+
             isAiming = true;
             attackStopWatch = 0;
             //stolen code from nullifier entity states, god help us
@@ -195,8 +201,8 @@ namespace RiskierRain.Equipment
                             Ray aimRay = GetAimRay();
                             Quaternion rotation = Quaternion.Slerp(this.startRotation.Value, this.endRotation.Value, t);
                             aimRay.direction = rotation * Vector3.forward;
-                            float bonusPitch = UnityEngine.Random.Range(0, randomRadius) / 2f;
-                            float bonusYaw = UnityEngine.Random.Range(-randomRadius, randomRadius) / 2f;
+                            float bonusPitch = UnityEngine.Random.Range(-randomRadius, randomRadius / 4f) / 2F;
+                            float bonusYaw = UnityEngine.Random.Range(-randomRadius, randomRadius);
                             this.FireBomb(aimRay, bonusPitch, bonusYaw);
                             EffectManager.SimpleMuzzleFlash(muzzleflashEffectPrefab, gameObject, muzzleString, true);
                         }
@@ -209,16 +215,6 @@ namespace RiskierRain.Equipment
                 }
             }
         }
-
-            private Vector3? RaycastToFloor(Vector3 position)
-            {
-                RaycastHit raycastHit;
-                if (Physics.Raycast(new Ray(position, Vector3.down), out raycastHit, 10f, LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
-                {
-                    return new Vector3?(raycastHit.point);
-                }
-                return null;
-            }
         
         private void FirePortalBomb()
         {
@@ -313,7 +309,7 @@ namespace RiskierRain.Equipment
         public static float maxDistance = EntityStates.NullifierMonster.FirePortalBomb.maxDistance;
         public static float damageCoefficient = EntityStates.NullifierMonster.FirePortalBomb.damageCoefficient;
         public static float procCoefficient = EntityStates.NullifierMonster.FirePortalBomb.procCoefficient;
-        public static float randomRadius = 15;//EntityStates.NullifierMonster.FirePortalBomb.randomRadius;
+        public static float baseRandomRadius = 5;//EntityStates.NullifierMonster.FirePortalBomb.randomRadius;
         public static float force = EntityStates.NullifierMonster.FirePortalBomb.force;
         public static float minimumDistanceBetweenBombs = 5;//EntityStates.NullifierMonster.FirePortalBomb.minimumDistanceBetweenBombs;
         public Quaternion? startRotation;

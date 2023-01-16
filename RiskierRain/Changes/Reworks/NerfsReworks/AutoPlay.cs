@@ -38,7 +38,7 @@ namespace RiskierRain
 
 		private static float voidsentBaseDamage = 3.5f;
 		private static float voidsentScaleFraction = 0.8f;
-		private static float voidsentBaseRange = 30f;
+		private static float voidsentBaseRange = 24f;
 		private static float voidsentStackRange = 0f;
 		private static float voidsentBaseChance = 33f;
 		private static float voidsentStackChance = 0f;

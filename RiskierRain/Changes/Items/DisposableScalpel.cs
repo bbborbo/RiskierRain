@@ -30,6 +30,10 @@ namespace RiskierRain.Items
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.OnKillEffect, ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
+
+        public override BalanceCategory Category => BalanceCategory.StateOfDifficulty;
+
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

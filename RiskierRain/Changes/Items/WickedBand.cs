@@ -30,8 +30,8 @@ namespace RiskierRain.Items
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.Tier3;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
-		public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfInteraction;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
+		public override BalanceCategory Category => BalanceCategory.StateOfDamage;
 
         public override GameObject ItemModel => LoadDropPrefab("WickedBand");
 

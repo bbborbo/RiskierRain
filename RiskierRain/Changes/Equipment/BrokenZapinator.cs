@@ -56,6 +56,8 @@ namespace RiskierRain.Equipment
 
         public override float Cooldown { get; } = 20f;
 
+        public override BalanceCategory Category => BalanceCategory.StateOfDamage;
+
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

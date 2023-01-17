@@ -40,11 +40,13 @@ namespace RiskierRain.Items
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.Lunar;
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfInteraction;
+        public override BalanceCategory Category => BalanceCategory.StateOfInteraction;
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Gateway/PickupVase.prefab").WaitForCompletion();
 
         public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Gateway/texVaseIcon.png").WaitForCompletion();
+
+        public override ItemTag[] ItemTags => new ItemTag[] { };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -190,7 +192,6 @@ namespace RiskierRain.Items
             CreateLang();
             CreateBuff();
             Hooks();
-            RiskierRainPlugin.RemoveEquipment(nameof(RoR2Content.Equipment.Gateway));
         }
 
         private void CreateProjectile()

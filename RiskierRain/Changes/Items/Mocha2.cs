@@ -52,11 +52,13 @@ namespace RiskierRain.Items
             "See you soon... Coo.";
 
         public override ItemTier Tier => ItemTier.Tier1;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility, ItemTag.OnStageBeginEffect };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.OnStageBeginEffect };
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel"); //Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/PickupCoffee.prefab").WaitForCompletion();// 
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/AttackSpeedAndMoveSpeed/texCoffeeIcon.png").WaitForCompletion(); //
+
+        public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

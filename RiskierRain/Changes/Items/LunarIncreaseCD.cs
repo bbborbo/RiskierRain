@@ -38,6 +38,9 @@ namespace RiskierRain.Items
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.Lunar;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable };
+
+        public override BalanceCategory Category => BalanceCategory.StateOfDamage;
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 

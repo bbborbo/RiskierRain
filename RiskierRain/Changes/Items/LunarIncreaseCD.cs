@@ -74,30 +74,10 @@ namespace RiskierRain.Items
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)
                 {
-                    if (skillLocator.primary.skillDef.baseRechargeInterval < 0)
-                    {
-                        skillLocator.primary.skillDef.baseRechargeInterval = 0;
-                    }
                     skillLocator.primary.flatCooldownReduction -= cdIncreaseAmount;
                     skillLocator.secondary.flatCooldownReduction -= cdIncreaseAmount;
                     skillLocator.utility.flatCooldownReduction -= cdIncreaseAmount;
                     skillLocator.special.flatCooldownReduction -= cdIncreaseAmount;
-                    if (skillLocator.primary.skillDef.stockToConsume < 1)
-                    {
-                        skillLocator.primary.skillDef.stockToConsume = 1;
-                    }
-                    if (skillLocator.primary.skillDef.requiredStock < 1)
-                    {
-                        skillLocator.primary.skillDef.requiredStock = 1;
-                    }
-                    if (skillLocator.primary.maxStock < 1)
-                    {
-                        skillLocator.primary.maxStock = 1;
-                    }
-                    if (skillLocator.primary.stock < 1)
-                    {
-                        skillLocator.primary.stock = 1;
-                    }
 
                 }
             }

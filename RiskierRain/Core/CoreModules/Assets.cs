@@ -80,6 +80,7 @@ namespace RiskierRain.CoreModules
             AddHopooDamageBuff();
             AddCombatTelescopeCritChance();
             AddVoidCradleCurse();
+            AddShockDebuff();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -150,6 +151,26 @@ namespace RiskierRain.CoreModules
                 banditShredDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
             }
             buffDefs.Add(banditShredDebuff);
+        }
+
+
+        public static BuffDef shockMarker;
+        //public static float shockMarkerDuration = 6;
+        void AddShockDebuff()
+        {
+
+            shockMarker = ScriptableObject.CreateInstance<BuffDef>();
+            {
+
+                shockMarker.name = "Shock";
+                shockMarker.buffColor = new Color(0f, 0f, 0.6f);
+                shockMarker.canStack = false;
+                shockMarker.isDebuff = true;
+                shockMarker.isHidden = true;
+                shockMarker.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+            };
+            Assets.buffDefs.Add(shockMarker);
+
         }
 
         private void RecalcStats_Stats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

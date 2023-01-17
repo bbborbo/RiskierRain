@@ -271,6 +271,12 @@ namespace RiskierRain
                 {
                     this.FuckingFixInfusion();
                 }
+                //shock restores shield
+                if (GetConfigBool(currentCategory, true, "shock"))
+                {
+                    ShockBuff();
+                }
+
                 #endregion
                 //nerf engi turret max health?
             }

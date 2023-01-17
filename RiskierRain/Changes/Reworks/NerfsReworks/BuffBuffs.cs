@@ -9,6 +9,8 @@ using System.Text;
 using UnityEngine;
 using static RiskierRain.CoreModules.StatHooks;
 using static R2API.RecalculateStatsAPI;
+using EntityStates;
+using RiskierRain.CoreModules;
 
 namespace RiskierRain
 {
@@ -63,6 +65,60 @@ namespace RiskierRain
                 args.baseRegenAdd += 2 * (1 + 0.2f * (sender.level - 1)) * (meatBuffCount - 1);
             }
         }
+
+        
+        private void ShockBuff()
+        {
+            
+            On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
+            On.EntityStates.ShockState.OnExit += ShockBuffExit;
+            On.RoR2.HealthComponent.TakeDamage += ShockHit;
+        }
+
+        private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        {
+            if (damageInfo.damageType.HasFlag(DamageType.Shock5s))
+            {
+                Debug.Log("shock hit!");
+                //GameObject attacker = damageInfo.attacker;
+                self.body.AddBuff(Assets.shockMarker);//add authority
+            }
+            orig(self, damageInfo);
+        }
+
+        
+        private void ShockBuffEnter(On.EntityStates.ShockState.orig_OnEnter orig, EntityStates.ShockState self)
+        {
+            orig(self);
+        }
+
+        private void ShockBuffExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)
+        {
+            //if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
+            if (self.characterBody.HasBuff(Assets.shockMarker))
+            {
+                Debug.Log("shock broken!");
+                CharacterBody attacker = self.healthComponent?.lastHitAttacker?.GetComponent<CharacterBody>();
+                if (attacker != null)
+                {
+                    if (attacker.maxShield > 0 && attacker.healthComponent.shield != attacker.maxShield) 
+                    {
+                        attacker.healthComponent.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
+                    }
+                    else
+                    {
+                        Debug.Log("no shield!");
+                    }
+                }
+            }
+            else
+            {
+                    Debug.Log("shock expired");
+            }
+            self.characterBody.RemoveBuff(Assets.shockMarker);
+            orig(self);
+        }
+
         #endregion
 
         #region slows

@@ -78,7 +78,7 @@ namespace RiskierRain
         private void TryUseEquip(On.RoR2.EquipmentSlot.orig_FixedUpdate orig, EquipmentSlot self)
         {
             orig(self);
-            if (self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
+            if (!self.characterBody.isPlayerControlled)
             {
                     if (!self.characterBody.outOfCombat)
                     {

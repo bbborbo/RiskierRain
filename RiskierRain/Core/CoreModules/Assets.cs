@@ -80,6 +80,7 @@ namespace RiskierRain.CoreModules
             AddHopooDamageBuff();
             AddCombatTelescopeCritChance();
             AddVoidCradleCurse();
+            AddJetpackSpeedBoost();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -99,6 +100,20 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static BuffDef jetpackSpeedBoost;
+        private void AddJetpackSpeedBoost()
+        {
+            jetpackSpeedBoost = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                jetpackSpeedBoost.buffColor = new Color(220, 100, 100);
+                jetpackSpeedBoost.canStack = false;
+                jetpackSpeedBoost.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                jetpackSpeedBoost.isDebuff = false;
+                jetpackSpeedBoost.name = "MageJetpackSpeedBoost";
+            }
+            Assets.buffDefs.Add(jetpackSpeedBoost);
         }
 
         public static BuffDef voidCradleCurse;

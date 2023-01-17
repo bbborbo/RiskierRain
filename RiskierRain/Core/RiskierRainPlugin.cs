@@ -150,7 +150,6 @@ namespace RiskierRain
 
             #region rework pending / priority removal
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.HealingPotion)); //power elixir
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken

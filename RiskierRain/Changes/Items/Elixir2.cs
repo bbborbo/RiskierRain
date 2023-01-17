@@ -121,6 +121,7 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
         {
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.HealingPotion));
             CreateItem();
             CreateLang();
             CreateBuff();

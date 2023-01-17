@@ -52,7 +52,7 @@ namespace RiskierRain.Items
             "See you soon... Coo.";
 
         public override ItemTier Tier => ItemTier.Tier1;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility, ItemTag.OnStageBeginEffect };
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel"); //Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/PickupCoffee.prefab").WaitForCompletion();// 
 

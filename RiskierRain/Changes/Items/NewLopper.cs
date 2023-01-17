@@ -53,7 +53,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 ";
 
         public override ItemTier Tier => ItemTier.Tier3;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Damage };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Damage, ItemTag.LowHealth };
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDamage;
         public override HookType Type { get; set; } = HookType.CritDamage;
 

@@ -34,7 +34,7 @@ namespace RiskierRain.Items
         public override string ItemLore => "There's nothing inside.";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Healing };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Healing, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
 
         public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.dropPrefabsPath + "Item/Beans.prefab");
 

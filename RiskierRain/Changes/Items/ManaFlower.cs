@@ -35,7 +35,7 @@ Nature is so magical :)
 ";
 
         public override ItemTier Tier => ItemTier.Tier1;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Damage };
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 

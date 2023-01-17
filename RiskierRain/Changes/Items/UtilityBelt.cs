@@ -103,6 +103,7 @@ namespace RiskierRain.Items
                 utilityBeltCooldown.buffColor = Color.black;
                 utilityBeltCooldown.canStack = true;
                 utilityBeltCooldown.isDebuff = false;
+                utilityBeltCooldown.isHidden = true;
                 utilityBeltCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
             };
 

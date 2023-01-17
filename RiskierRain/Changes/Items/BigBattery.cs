@@ -95,7 +95,7 @@ The new standard power supply
 You know?";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility , ItemTag.Damage };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 

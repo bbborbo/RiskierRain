@@ -55,7 +55,8 @@ namespace RiskierRain.Items
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel"); 
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon"); 
+        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Healing, ItemTag.LowHealth };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

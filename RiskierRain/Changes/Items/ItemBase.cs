@@ -38,7 +38,7 @@ namespace RiskierRain.Items
         public abstract string ItemLore { get; }
 
         public abstract ItemTier Tier { get; }
-        public virtual ItemTag[] ItemTags { get; set; } = new ItemTag[] { };
+        public abstract ItemTag[] ItemTags { get; set; }
         public virtual BalanceCategory Category { get; set; } = BalanceCategory.None;
         public virtual HookType Type { get; set; } = HookType.None;
 

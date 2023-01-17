@@ -31,7 +31,7 @@ namespace RiskierRain.Items
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfInteraction;
 
         public override GameObject ItemModel => LoadDropPrefab("Quiver");

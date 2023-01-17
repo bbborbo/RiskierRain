@@ -61,6 +61,7 @@ I WILL BE THERE SOON. YOU WILL NOT HAVE TO DESPAIR FOR LONG.
 THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
 
         public override ItemTier Tier => ItemTier.Lunar;
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Cleansable, ItemTag.Damage };
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 

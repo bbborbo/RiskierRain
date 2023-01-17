@@ -46,7 +46,8 @@ Of course, you can always buy the premium version for unlimited discounts~
 ";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] 
+        { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.InteractableRelated };
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

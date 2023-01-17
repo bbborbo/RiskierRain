@@ -74,7 +74,7 @@ What?
 What happened to all of our gold?";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility, ItemTag.Damage };
+        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Damage, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab("CoinGun");
 

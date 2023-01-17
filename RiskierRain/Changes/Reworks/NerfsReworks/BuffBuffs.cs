@@ -81,7 +81,7 @@ namespace RiskierRain
             {
                 Debug.Log("shock hit!");
                 //GameObject attacker = damageInfo.attacker;
-                self.body.AddBuff(Assets.shockMarker);//add authority
+                self.body.AddTimedBuff(Assets.shockMarker, Assets.shockMarkerDuration);//add authority
             }
             orig(self, damageInfo);
         }
@@ -103,7 +103,7 @@ namespace RiskierRain
                 {
                     if (attacker.maxShield > 0 && attacker.healthComponent.shield != attacker.maxShield) 
                     {
-                        attacker.healthComponent.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
+                        ShockHeal(attacker.healthComponent);
                     }
                     else
                     {
@@ -115,10 +115,28 @@ namespace RiskierRain
             {
                     Debug.Log("shock expired");
             }
-            self.characterBody.RemoveBuff(Assets.shockMarker);
+            //self.characterBody.RemoveBuff(Assets.shockMarker);
             orig(self);
         }
-
+        private void ShockHeal(HealthComponent attacker)
+        {
+            if (!attacker.body.HasBuff(Assets.shockHealCooldown))
+            {
+                float  missingShieldPercent = (attacker.body.maxShield - attacker.shield) / attacker.body.maxShield;
+                float maxShieldPercent = attacker.body.maxShield / attacker.fullCombinedHealth;
+                int cooldownToApply = (int)((maxShieldPercent * missingShieldPercent) * 20);
+                Debug.Log(cooldownToApply);
+                for(int i = 0; i < cooldownToApply; i++)
+                {
+                    attacker.body.AddTimedBuff(Assets.shockHealCooldown, i + 1);
+                }
+                attacker.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
+            }
+            else
+            {
+                Debug.Log("ShockHeal on coolown");
+            }
+        }
         #endregion
 
         #region slows

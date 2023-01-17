@@ -81,6 +81,7 @@ namespace RiskierRain.CoreModules
             AddCombatTelescopeCritChance();
             AddVoidCradleCurse();
             AddShockDebuff();
+            AddShockCooldown();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -155,7 +156,7 @@ namespace RiskierRain.CoreModules
 
 
         public static BuffDef shockMarker;
-        //public static float shockMarkerDuration = 6;
+        public static int shockMarkerDuration = 4;
         void AddShockDebuff()
         {
 
@@ -166,10 +167,28 @@ namespace RiskierRain.CoreModules
                 shockMarker.buffColor = new Color(0f, 0f, 0.6f);
                 shockMarker.canStack = false;
                 shockMarker.isDebuff = true;
-                shockMarker.isHidden = true;
+                shockMarker.isHidden = false;
                 shockMarker.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockMarker);
+
+        }
+        //shockheal coolodwn
+        public static BuffDef shockHealCooldown;
+        void AddShockCooldown()
+        {
+
+            shockHealCooldown = ScriptableObject.CreateInstance<BuffDef>();
+            {
+
+                shockHealCooldown.name = "Shock";
+                shockHealCooldown.buffColor = new Color(0f, 0f, 0.6f);
+                shockHealCooldown.canStack = true;
+                shockHealCooldown.isDebuff = false;
+                shockHealCooldown.isCooldown = true;
+                shockHealCooldown.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+            };
+            Assets.buffDefs.Add(shockHealCooldown);
 
         }
 

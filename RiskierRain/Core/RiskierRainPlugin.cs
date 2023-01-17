@@ -282,6 +282,12 @@ namespace RiskierRain
 
 
                 AdjustVanillaDefense();
+
+                //shock restores shield
+                if (GetConfigBool(currentCategory, true, "Shock Buff"))
+                {
+                    ShockBuff();
+                }
                 #endregion
                 //nerf engi turret max health?
             }

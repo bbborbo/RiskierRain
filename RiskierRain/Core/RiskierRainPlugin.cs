@@ -163,7 +163,7 @@ namespace RiskierRain
 
             ///summary
             ///- nerfs healing
-            ///- nerfs mobility
+            ///- nerfs mobility (jump rework)
             ///- nerfs non-EHP defense
             BalanceCategory currentCategory = BalanceCategory.StateOfDefenseAndHealing;
             if (IsCategoryEnabled(currentCategory))
@@ -261,8 +261,11 @@ namespace RiskierRain
                     JadeElephantChanges();
                 }
 
-                string armorChangesTitle = " Armor Packet";
-                string armorChangesDesc = "Set how much additional armor this item gives. Vanilla 0.";
+                AdjustVanillaDefense();
+
+                knurlFreeArmor = FreeArmorConfig("Knurl", knurlFreeArmor);
+                bucklerFreeArmor = FreeArmorConfig("Rose Buckler", bucklerFreeArmor);
+                rapFreeArmor = FreeArmorConfig("Repulsion Armor Plating", rapFreeArmor);
                 int FreeArmorConfig(string name, int defaultValue)
                 {
                     return CustomConfigFile.Bind<int>(
@@ -273,15 +276,6 @@ namespace RiskierRain
                         ).Value;
                 }
 
-                // knurl
-                knurlFreeArmor = FreeArmorConfig("Knurl", knurlFreeArmor); //CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Knurl" + armorChangesTitle, knurlFreeArmor, armorChangesDesc).Value;
-                // buckler
-                bucklerFreeArmor = FreeArmorConfig("Rose Buckler", bucklerFreeArmor); //CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Rose Buckler" + armorChangesTitle, bucklerFreeArmor, armorChangesDesc).Value;
-                // rap
-                rapFreeArmor = FreeArmorConfig("Repulsion Armor Plating", rapFreeArmor);
-
-
-                AdjustVanillaDefense();
 
                 //shock restores shield
                 if (GetConfigBool(currentCategory, true, "Shock Buff"))
@@ -293,7 +287,11 @@ namespace RiskierRain
             }
 
             ///summary
-            ///- i honestly dont know whats going on with this category
+            ///- status effects (attack speed slow)
+            ///- planula
+            ///- enemy item blacklists
+            ///- enigma blacklists
+            ///most general "gameplay" category
             currentCategory = BalanceCategory.StateOfInteraction;
             if (IsCategoryEnabled(currentCategory))
             {
@@ -365,28 +363,28 @@ namespace RiskierRain
                     LoadEquipDef(nameof(RoR2Content.Equipment.DroneBackup)).cooldown = 60;
                 }
 
-                string slowChangesTitle = " Slow Attack Speed Packet";
-                string slowChangesDesc = "Set how much this debuff slows attack speed, expressed as a decimal. Vanilla 0.";
                 this.BuffSlows();
 
-                // tar slow
-                tarSlowAspdReduction = CustomConfigFile.Bind<float>(currentCategory.ToString() + " Packet", "Tar" + slowChangesTitle, tarSlowAspdReduction, slowChangesDesc).Value;
-
-                // kit slow
-                kitSlowAspdReduction = CustomConfigFile.Bind<float>(currentCategory.ToString() + " Packet", "Kit" + slowChangesTitle, kitSlowAspdReduction, slowChangesDesc).Value;
-
-                // chronobauble
-                chronoSlowAspdReduction = CustomConfigFile.Bind<float>(currentCategory.ToString() + " Packet", "Chronobauble" + slowChangesTitle, chronoSlowAspdReduction, slowChangesDesc).Value;
+                tarSlowAspdReduction = SlowAspdConfig("Tar", tarSlowAspdReduction); 
+                kitSlowAspdReduction = SlowAspdConfig("Kit", kitSlowAspdReduction); 
+                chronoSlowAspdReduction = SlowAspdConfig("Chronobauble", chronoSlowAspdReduction);
+                chillSlowAspdReduction = SlowAspdConfig("Chill", chillSlowAspdReduction);
+                float SlowAspdConfig(string name, float defaultValue)
+                {
+                    return CustomConfigFile.Bind<float>(
+                        currentCategory.ToString() + " Packet",
+                        name + " Slow Attack Speed Packet",
+                        defaultValue,
+                        "Set how much this debuff slows attack speed, expressed as a decimal. Vanilla 0."
+                        ).Value;
+                }
 
                 //lepton daisy ADD CONFIG
                 if (GetConfigBool(currentCategory, true, "Lepton Daisy"))
                 {
                     BuffDaisy();
                 }
-
                 #endregion
-
-
                 //this.MakeMinionsInheritOnKillEffects();
 
                 //scav could have royal cap? cunning

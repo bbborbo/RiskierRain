@@ -26,6 +26,10 @@ namespace RiskierRain.Items
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
+        public override ItemTag[] ItemTags => new ItemTag[] { };
+
+        public override BalanceCategory Category => BalanceCategory.None;
+
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

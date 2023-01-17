@@ -55,7 +55,7 @@ namespace RiskierRain.Equipment
         public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/pickupmodels/PickupGuillotine");
 
         public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/itemicons/texGuillotineIcon");
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfInteraction;
+        public override BalanceCategory Category => BalanceCategory.StateOfInteraction;
 
         public override bool CanDrop { get; } = true;
 

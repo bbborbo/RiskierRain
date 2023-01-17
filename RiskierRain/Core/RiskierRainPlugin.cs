@@ -161,11 +161,15 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
             #endregion
 
+            ///summary
+            ///- nerfs healing
+            ///- nerfs mobility
+            ///- nerfs non-EHP defense
             BalanceCategory currentCategory = BalanceCategory.StateOfDefenseAndHealing;
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS:
+                // ITEMS: beans, battery, berserker brew, morning mocha, star veil
                 // EQUIPMENT: ninja gear
                 // ENEMIES: Baba the Enlightened (speed scav)
 
@@ -182,7 +186,6 @@ namespace RiskierRain
                 EnergyDrinkNerf();
 
                 // defense
-                TeddyChanges();
                 #endregion
 
                 #region PACKETS
@@ -196,12 +199,6 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Dynamic Jump"))
                 {
                     IL.RoR2.CharacterMotor.PreMove += DynamicJump;
-                }
-
-                // jade elephant
-                if (GetConfigBool(currentCategory, true, "Jade Elephant"))
-                {
-                    JadeElephantChanges();
                 }
 
                 // steak
@@ -230,39 +227,25 @@ namespace RiskierRain
                     MonsterToothDurationBuff();
                 }
 
-                //lepton daisy ADD CONFIG
-                if (GetConfigBool(currentCategory, true, "Lepton Daisy"))
-                {
-                    BuffDaisy();
-                }
 
-
-                string armorChangesTitle = " Armor Packet";
-                string armorChangesDesc = "Set how much additional armor this item gives. Vanilla 0.";
-                AdjustVanillaDefense();
-
-                // knurl
-                knurlFreeArmor = CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Knurl" + armorChangesTitle, knurlFreeArmor, armorChangesDesc).Value;
-
-                // buckler
-                bucklerFreeArmor = CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Rose Buckler" + armorChangesTitle, bucklerFreeArmor, armorChangesDesc).Value;
-
-                // rap
-                rapFreeArmor = CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Repulsion Armor Plating" + armorChangesTitle, rapFreeArmor, armorChangesDesc).Value;
+                
                 #endregion
             }
 
+            ///region
+            ///- ehp
             currentCategory = BalanceCategory.StateOfHealth;
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: borbos band, frozen turtle shell, flower crown, utility belt
+                // ITEMS: borbos band, cobalt shield, frozen turtle shell, flower crown, utility belt
                 // EQUIPMENT: tesla coil
                 // ENEMIES: Bobo the Unbreakable (defense scav)
 
                 #region ESSENTIAL
                 //barrier
                 this.BuffBarrier();
+                TeddyChanges();
                 #endregion
 
                 #region PACKETS
@@ -271,30 +254,57 @@ namespace RiskierRain
                 {
                     this.FuckingFixInfusion();
                 }
+
+                // jade elephant
+                if (GetConfigBool(currentCategory, true, "Jade Elephant"))
+                {
+                    JadeElephantChanges();
+                }
+
+                string armorChangesTitle = " Armor Packet";
+                string armorChangesDesc = "Set how much additional armor this item gives. Vanilla 0.";
+                int FreeArmorConfig(string name, int defaultValue)
+                {
+                    return CustomConfigFile.Bind<int>(
+                        currentCategory.ToString() + " Packet", 
+                        name + " Armor Packet", 
+                        defaultValue, 
+                        "Set how much additional armor this item gives. Vanilla 0."
+                        ).Value;
+                }
+
+                // knurl
+                knurlFreeArmor = FreeArmorConfig("Knurl", knurlFreeArmor); //CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Knurl" + armorChangesTitle, knurlFreeArmor, armorChangesDesc).Value;
+                // buckler
+                bucklerFreeArmor = FreeArmorConfig("Rose Buckler", bucklerFreeArmor); //CustomConfigFile.Bind<int>(currentCategory.ToString() + " Packet", "Rose Buckler" + armorChangesTitle, bucklerFreeArmor, armorChangesDesc).Value;
+                // rap
+                rapFreeArmor = FreeArmorConfig("Repulsion Armor Plating", rapFreeArmor);
+
+
+                AdjustVanillaDefense();
+
                 //shock restores shield
-                if (GetConfigBool(currentCategory, true, "shock"))
+                if (GetConfigBool(currentCategory, true, "Shock Buff"))
                 {
                     ShockBuff();
                 }
-
                 #endregion
                 //nerf engi turret max health?
             }
 
+            ///summary
+            ///- i honestly dont know whats going on with this category
             currentCategory = BalanceCategory.StateOfInteraction;
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: atg mk3, magic quiver, wicked band, permafrost
-                // EQUIPMENT:
+                // ITEMS: magic quiver, slungus, wicked band, permafrost, fuse
+                // EQUIPMENT: old guillotine
                 // ENEMIES: 
 
                 #region ESSENTIAL
                 // misc
-                if(AtgMissileMk3.instance.ItemsDef != null)
-                {
-                    this.ReworkPlasmaShrimp();
-                }
+                RiskierRainPlugin.RemoveEquipment(nameof(RoR2Content.Equipment.Gateway));
                 #endregion
 
                 #region PACKETS
@@ -367,6 +377,13 @@ namespace RiskierRain
 
                 // chronobauble
                 chronoSlowAspdReduction = CustomConfigFile.Bind<float>(currentCategory.ToString() + " Packet", "Chronobauble" + slowChangesTitle, chronoSlowAspdReduction, slowChangesDesc).Value;
+
+                //lepton daisy ADD CONFIG
+                if (GetConfigBool(currentCategory, true, "Lepton Daisy"))
+                {
+                    BuffDaisy();
+                }
+
                 #endregion
 
 
@@ -375,13 +392,17 @@ namespace RiskierRain
                 //scav could have royal cap? cunning
             }
 
+            ///summary
+            ///- autoplay
+            ///- procs and crits
+            ///- burn rework
             currentCategory = BalanceCategory.StateOfDamage;
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: chefs stache, malware stick, new lopper, whetstone
-                // EQUIPMENT: old guillotine
-                // ENEMIES: Chipchip the Wicked (debuff)
+                // ITEMS: atg mk3, chefs stache, new lopper, natures gift, Shard Vomitter
+                // EQUIPMENT: Broken Zapinator 
+                // ENEMIES: 
 
                 #region ESSENTIAL
                 // razorwire
@@ -392,6 +413,11 @@ namespace RiskierRain
                 this.NerfBands();
                 this.StickyRework();
                 BurnReworks();
+
+                if (AtgMissileMk3.instance.ItemsDef != null)
+                {
+                    this.ReworkPlasmaShrimp();
+                }
                 #endregion
 
                 #region PACKETS
@@ -508,13 +534,20 @@ namespace RiskierRain
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfDifficulty; //difficultyplus lol
+            ///summary
+            ///- economy changes
+            ///- enemy changes
+            ///- boss item drops
+            ///- difficulty changes
+            ///- elites
+            ///this is essentially DifficultyPlus
+            currentCategory = BalanceCategory.StateOfDifficulty; 
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: chefs stache, malware stick, new lopper, whetstone
-                // EQUIPMENT: old guillotine
-                // ENEMIES: Chipchip the Wicked (debuff)
+                // ITEMS: scalpel, coin gun, greedy ring
+                // EQUIPMENT: gold bomb? lol
+                // ENEMIES: 
 
                 //enemies use equipment
                 MakeEnemiesuseEquipment();
@@ -580,6 +613,7 @@ namespace RiskierRain
 
                 On.RoR2.Run.BeginStage += GetChestCostForStage;
 
+                //gold gain and chest scaling
                 if (GetConfigBool(currentCategory, true, "Economy: Gold Gain and Chest Scaling"))
                 {
                     FixMoneyScaling();
@@ -674,28 +708,36 @@ namespace RiskierRain
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfSurvivors; //ducksurvivortweaks lol
+            ///summary
+            ///DuckSurvivorTweaks
+            currentCategory = BalanceCategory.StateOfSurvivors; 
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: chefs stache, malware stick, new lopper, whetstone
-                // EQUIPMENT: old guillotine
-                // ENEMIES: Chipchip the Wicked (debuff)
+                // ITEMS: 
+                // EQUIPMENT: 
+                // ENEMIES: 
 
                 #region dead
+                RiskierRainPlugin.RemoveEquipment(nameof(RoR2Content.Equipment.Gateway));
                 InitializeSurvivorTweaks();
                 #endregion
 
                 //this.DoSadistScavenger();
             }
 
-            currentCategory = BalanceCategory.StateOfCommencement; //commencementperfected lol
+            ///summary 
+            ///- commencement changes
+            ///- pillar items
+            ///- mithrix changes
+            ///essentially CommencementPerfected
+            currentCategory = BalanceCategory.StateOfCommencement; 
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: chefs stache, malware stick, new lopper, whetstone
-                // EQUIPMENT: old guillotine
-                // ENEMIES: Chipchip the Wicked (debuff)
+                // ITEMS: 
+                // EQUIPMENT: 
+                // ENEMIES: 
 
                 #region dead
                 MakePillarsFun();

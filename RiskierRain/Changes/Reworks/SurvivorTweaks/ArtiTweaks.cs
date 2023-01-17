@@ -20,7 +20,6 @@ namespace RiskierRain.SurvivorTweaks
         public override string bodyName => "MageBody";
 
         public static string flamethrowerDesc;
-        public static BuffDef jetpackSpeedBoost;
         public override void Init()
         {
             GetBodyObject();
@@ -35,16 +34,6 @@ namespace RiskierRain.SurvivorTweaks
             }
 
             #region Hover
-            jetpackSpeedBoost = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                jetpackSpeedBoost.buffColor = new Color(220, 100, 100);
-                jetpackSpeedBoost.canStack = false;
-                jetpackSpeedBoost.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
-                jetpackSpeedBoost.isDebuff = false;
-                jetpackSpeedBoost.name = "MageJetpackSpeedBoost";
-            }
-            Assets.buffDefs.Add(jetpackSpeedBoost);
-
             GetStatCoefficients += JetpackSpeedBoost;
 
             On.EntityStates.Mage.JetpackOn.OnEnter += (orig, self) =>
@@ -52,7 +41,7 @@ namespace RiskierRain.SurvivorTweaks
                 JetpackOn.hoverVelocity = -2f;
                 if (self.isAuthority)
                 {
-                    self.characterBody.AddBuff(jetpackSpeedBoost);
+                    self.characterBody.AddBuff(Assets.jetpackSpeedBoost);
                 }
                 orig(self);
             };
@@ -60,7 +49,7 @@ namespace RiskierRain.SurvivorTweaks
             {
                 if (self.isAuthority)
                 {
-                    self.characterBody.RemoveBuff(jetpackSpeedBoost);
+                    self.characterBody.RemoveBuff(Assets.jetpackSpeedBoost);
                 }
                 orig(self);
             };
@@ -92,7 +81,7 @@ namespace RiskierRain.SurvivorTweaks
             Collider collider = iceWallPillarPrefab.GetComponentInChildren<Collider>();
             if (collider)
             {
-                Debug.Log("shit");
+                //Debug.Log("shit");
                 collider.transform.localScale = Vector3.one * 2.5f;
                 ProjectileImpactExplosion pie = iceWallPillarPrefab.GetComponentInChildren<ProjectileImpactExplosion>();
                 pie.blastRadius = 4f;
@@ -113,41 +102,44 @@ namespace RiskierRain.SurvivorTweaks
             #endregion
 
             #region Flamethrower
-            On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
+            if (false)
             {
-                Flamethrower.baseFlamethrowerDuration = 3;
-                Flamethrower.tickFrequency = 7;
-                Flamethrower.totalDamageCoefficient = 16.23f;
-                Flamethrower.procCoefficientPerTick = 0.8f;
-
-                orig(self);
-                float aspd = self.attackSpeedStat;
-                float aspdSqrt = Mathf.Sqrt(aspd);
-
-                if (aspd != 0)
+                On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
                 {
-                    float damageCoeff = Flamethrower.totalDamageCoefficient * aspdSqrt;
-                    float endDuration = Flamethrower.baseFlamethrowerDuration / aspdSqrt;
+                    Flamethrower.baseFlamethrowerDuration = 3;
+                    Flamethrower.tickFrequency = 7;
+                    Flamethrower.totalDamageCoefficient = 16.23f;
+                    Flamethrower.procCoefficientPerTick = 0.8f;
 
-                    //total ticks increases by aspdSqrt, end duration
-                    float totalTicks = Flamethrower.baseFlamethrowerDuration * Flamethrower.tickFrequency * aspdSqrt;
+                    orig(self);
+                    float aspd = self.attackSpeedStat;
+                    float aspdSqrt = Mathf.Sqrt(aspd);
 
-                    //self.flamethrowerDuration = endDuration;
-                    //self.tickDamageCoefficient = (damageCoeff / totalTicks);
-                    Flamethrower.tickFrequency *= aspdSqrt;
-                }
-            };
-            flamethrowerDesc = "Burn all enemies in front of you for <style=cIsDamage>1700% damage</style>. " +
-                "Each hit has a <style=cIsDamage>50% chance to ignite</style>.";
-            LanguageAPI.Add("MAGE_SPECIAL_FIRE_DESCRIPTION",
-                flamethrowerDesc);
+                    if (aspd != 0)
+                    {
+                        float damageCoeff = Flamethrower.totalDamageCoefficient * aspdSqrt;
+                        float endDuration = Flamethrower.baseFlamethrowerDuration / aspdSqrt;
+
+                        //total ticks increases by aspdSqrt, end duration
+                        float totalTicks = Flamethrower.baseFlamethrowerDuration * Flamethrower.tickFrequency * aspdSqrt;
+
+                        //self.flamethrowerDuration = endDuration;
+                        //self.tickDamageCoefficient = (damageCoeff / totalTicks);
+                        Flamethrower.tickFrequency *= aspdSqrt;
+                    }
+                };
+                flamethrowerDesc = "Burn all enemies in front of you for <style=cIsDamage>1700% damage</style>. " +
+                    "Each hit has a <style=cIsDamage>50% chance to ignite</style>.";
+                LanguageAPI.Add("MAGE_SPECIAL_FIRE_DESCRIPTION",
+                    flamethrowerDesc);
+            }
             #endregion
         }
 
         private void JetpackSpeedBoost(CharacterBody sender, StatHookEventArgs args)
         {
 
-            if (sender.HasBuff(jetpackSpeedBoost))
+            if (sender.HasBuff(Assets.jetpackSpeedBoost))
             {
                 args.moveSpeedMultAdd += 0.15f;
             }

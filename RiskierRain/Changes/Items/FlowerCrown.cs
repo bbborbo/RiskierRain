@@ -46,8 +46,8 @@ Thank you for always sending us gifts. I made some of them into this flower crow
 ";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfHealth;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override BalanceCategory Category  => BalanceCategory.StateOfHealth;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

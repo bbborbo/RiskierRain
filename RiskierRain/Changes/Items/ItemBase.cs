@@ -38,17 +38,14 @@ namespace RiskierRain.Items
         public abstract string ItemLore { get; }
 
         public abstract ItemTier Tier { get; }
-        public virtual ItemTag[] ItemTags { get; set; } = new ItemTag[] { };
-        public virtual BalanceCategory Category { get; set; } = BalanceCategory.None;
-        public virtual HookType Type { get; set; } = HookType.None;
+        public abstract ItemTag[] ItemTags { get; }
+        public abstract BalanceCategory Category { get; }
 
         public abstract GameObject ItemModel { get; }
         public abstract Sprite ItemIcon { get; }
         public ItemDef ItemsDef;
 
         public virtual bool CanRemove { get; } = false;
-
-        public virtual bool AIBlacklisted { get; set; } = false;
         public virtual bool IsHidden { get; } = false;
 
         internal static bool CheckDLC1Entitlement()
@@ -107,11 +104,6 @@ namespace RiskierRain.Items
 
         protected void CreateItem()
         {
-            if (AIBlacklisted)
-            {
-                ItemTags = new List<ItemTag>(ItemTags) { ItemTag.AIBlacklist }.ToArray();
-            }
-
             string tierNameString = Tier.ToString();
             if (!tierNameString.Contains("Tier"))
                 tierNameString += "Tier";

@@ -40,8 +40,7 @@ namespace RiskierRain.Equipment
         public virtual bool AppearsInSinglePlayer { get; } = true;
 
         public virtual bool AppearsInMultiPlayer { get; } = true;
-        public virtual BalanceCategory Category { get; set; } = BalanceCategory.None;
-        public virtual HookType Type { get; set; } = HookType.None;
+        public abstract BalanceCategory Category { get; }
 
         public virtual bool CanDrop { get; } = true;
 

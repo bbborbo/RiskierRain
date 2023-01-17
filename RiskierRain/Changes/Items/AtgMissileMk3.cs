@@ -59,8 +59,8 @@ namespace RiskierRain.Items
         "\nWe kept most of the features of the Mk. 2 system, but it should be far more stable for field use. Consider it the best of both worlds.";*/
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Damage };
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfInteraction;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
+        public override BalanceCategory Category => BalanceCategory.StateOfDamage;
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/pickupmodels/PickupMissileLauncher");
 

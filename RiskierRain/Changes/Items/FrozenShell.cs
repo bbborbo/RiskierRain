@@ -33,8 +33,8 @@ namespace RiskierRain.Items
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDefenseAndHealing;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override BalanceCategory Category => BalanceCategory.StateOfHealth;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

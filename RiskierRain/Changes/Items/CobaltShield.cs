@@ -33,11 +33,13 @@ namespace RiskierRain.Items
         public override string ItemLore => "<style=cIsHealth>I cannot let you enter until you free me of my curse.</style>";
 
         public override ItemTier Tier => ItemTier.Tier3;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags { get; } = new ItemTag[] { ItemTag.Utility };
 
         public override GameObject ItemModel => RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>(RiskierRainPlugin.dropPrefabsPath + "Item/CobaltShield.prefab");
 
         public override Sprite ItemIcon => RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Item/texIconCobaltShield.png");
+
+        public override BalanceCategory Category => BalanceCategory.StateOfHealth;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

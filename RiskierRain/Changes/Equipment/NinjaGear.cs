@@ -37,7 +37,7 @@ namespace RiskierRain.Equipment
         public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDefenseAndHealing;
+        public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
         public override bool CanDrop { get; } = true;
 

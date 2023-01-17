@@ -34,8 +34,8 @@ namespace RiskierRain.Items
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfHealth;
-        public override ItemTag[] ItemTags { get; set; } = new ItemTag[] { ItemTag.Healing , ItemTag.Utility };
+        public override BalanceCategory Category => BalanceCategory.StateOfHealth;
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing , ItemTag.Utility };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -103,6 +103,7 @@ namespace RiskierRain.Items
                 utilityBeltCooldown.buffColor = Color.black;
                 utilityBeltCooldown.canStack = true;
                 utilityBeltCooldown.isDebuff = false;
+                utilityBeltCooldown.isHidden = true;
                 utilityBeltCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
             };
 

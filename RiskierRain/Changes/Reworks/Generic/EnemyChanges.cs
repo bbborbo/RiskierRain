@@ -118,24 +118,28 @@ namespace RiskierRain
                 }
             }
         }
-        #region pest
+        #endregion
+        #region gup
         CharacterSpawnCard gupSpawnCard;
         int gupCreditCost = 200;//150
 
         GameObject gupPrefab;
         float gupBaseHealth = 800f; // 1000
+        float gupBaseArmor = 25f; // 0
         float gupBaseDamage = 12f; // 12
         float gupBaseSpeed = 14f; //12
         float gupBaseRegen = 0f; //0.6f
 
         GameObject geepPrefab;
         float geepBaseHealth = 400f; // 500
+        float geepBaseArmor = 25f; // 0
         float geepBaseDamage = 8f; // 6
         float geepBaseSpeed = 10f; //8
         float geepBaseRegen = 0f; //0.6f
 
         GameObject gipPrefab;
         float gipBaseHealth = 200f; // 250
+        float gipBaseArmor = 25f; // 0
         float gipBaseDamage = 5f; // 3
         float gipBaseSpeed = 6f; //5
         float gipBaseRegen = 0f; //0.6f
@@ -153,6 +157,7 @@ namespace RiskierRain
                 {
                     body.baseMaxHealth = gupBaseHealth;
                     body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseArmor = gupBaseArmor;
                     body.baseDamage = gupBaseDamage;
                     body.levelDamage = body.baseDamage * 0.2f;
                     body.baseMoveSpeed = gupBaseSpeed;
@@ -169,6 +174,7 @@ namespace RiskierRain
                 {
                     body.baseMaxHealth = geepBaseHealth;
                     body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseArmor = geepBaseArmor;
                     body.baseDamage = geepBaseDamage;
                     body.levelDamage = body.baseDamage * 0.2f;
                     body.baseMoveSpeed = geepBaseSpeed;
@@ -185,6 +191,7 @@ namespace RiskierRain
                 {
                     body.baseMaxHealth = gipBaseHealth;
                     body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                    body.baseArmor = gipBaseArmor;
                     body.baseDamage = gipBaseDamage;
                     body.levelDamage = body.baseDamage * 0.2f;
                     body.baseMoveSpeed = gipBaseSpeed;
@@ -193,7 +200,6 @@ namespace RiskierRain
                 }
             }
         }
-        #endregion
         #endregion
         #region void reaver
         GameObject portalBombPrefab; //also used by simu elites

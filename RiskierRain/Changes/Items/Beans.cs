@@ -60,7 +60,6 @@ namespace RiskierRain.Items
             CharacterBody attackerBody = damageReport.attackerBody;
             if (enemyBody.healthComponent.alive)
             {
-                Debug.Log("Hello, Aetherium User");
                 return;
             }
 

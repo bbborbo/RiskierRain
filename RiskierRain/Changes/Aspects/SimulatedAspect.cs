@@ -51,6 +51,18 @@ namespace RiskierRain.Equipment
             On.RoR2.CharacterBody.OnInventoryChanged += AddSimulatedBehavior;
             GetStatCoefficients += SimulatedStatBuff;
             On.RoR2.CharacterBody.RecalculateStats += SimulatedCooldownBuff;
+            On.RoR2.HealthComponent.TakeDamage += SimulatedSpawn;
+        }
+
+        private void SimulatedSpawn(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            if (damageInfo.damageType == DamageType.VoidDeath)
+            {
+                if (!self.body.isPlayerControlled)
+                {
+                    Debug.Log("spawn a simu!!!");
+                }
+            }
         }
 
         private void AddSimulatedBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)

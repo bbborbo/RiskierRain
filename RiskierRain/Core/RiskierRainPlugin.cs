@@ -14,6 +14,7 @@ using System.Linq;
 using RiskierRain.CoreModules;
 using RiskierRain.Equipment;
 using RiskierRain.Items;
+using RiskierRain.Interactables;
 using RiskierRain.Scavengers;
 using static R2API.RecalculateStatsAPI;
 using RoR2.Projectile;
@@ -117,6 +118,7 @@ namespace RiskierRain
             InitializeSkills();
             InitializeEquipment();
             InitializeEliteEquipment();
+            InitializeInteractables();
             //InitializeScavengers();
             //InitializeEverything();
             RoR2Application.onLoad += InitializeEverything;
@@ -1181,26 +1183,83 @@ namespace RiskierRain
         }
         #endregion
 
-        void InitializeSurvivorTweaks()
+        #region interactables
+
+        public List<InteractableBase> Interactables = new List<InteractableBase>();
+        public static Dictionary<InteractableBase, bool> InteractableStatusDictionary = new Dictionary<InteractableBase, bool>();
+
+        void InitializeInteractables()
         {
-            var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
-
-            foreach (var tweakType in TweakTypes)
+            var interactableTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(InteractableBase)));
+           
+            foreach (var interactableType in interactableTypes)
             {
-                SurvivorTweakModule module = (SurvivorTweakModule)Activator.CreateInstance(tweakType);
-
-                string name = module.survivorName == "" ? module.bodyName : module.survivorName;
-                bool isEnabled = CustomConfigFile.Bind<bool>("Survivor Tweaks",
-                    $"Enable Tweaks For: {module.survivorName}", true,
-                    $"Should DuckSurvivorTweaks change {module.survivorName}?").Value;
-                if (isEnabled)
+                InteractableBase interactable = (InteractableBase)System.Activator.CreateInstance(interactableType);
+                //if (!interactable.IsHidden)
                 {
-                    module.Init();
+                    //if (ValidateInteractable(interactable, Interactables))
+                    {
+                        interactable.Init(CustomConfigFile);
+                    }
+                    //else
+                    //{
+                    //    Debug.Log("Interactable: " + interactable.interactableName + " Did not initialize!");
+                    //}
                 }
-                //TweakStatusDictionary.Add(module.ToString(), isEnabled);
             }
         }
 
+        //bool ValidateInteractable(InteractableBase interactable, List<InteractableBase> itemList)
+        //{
+        //    BalanceCategory category = interactable.Category;
+        //
+        //    var itemEnabled = interactable.Tier == ItemTier.NoTier;
+        //
+        //    if (!itemEnabled)
+        //    {
+        //        string name = interactable.InteractableName.Replace("'", "");
+        //        if (category != BalanceCategory.None && category != BalanceCategory.Count && !itemEnabled)
+        //        {
+        //            itemEnabled = IsCategoryEnabled(category) &&
+        //            CustomConfigFile.Bind<bool>(category.ToString() + " Content", $"Enable Item: {name}", true, "Should this item appear in runs?").Value;
+        //        }
+        //        else
+        //        {
+        //            itemEnabled = IsCategoryEnabled(category) &&
+        //            CustomConfigFile.Bind<bool>("Uncategorized Content", $"Enable Item: {name}", true, "Should this item appear in runs?").Value;
+        //            Debug.Log($"{name} item initializing into Balance Category: {category}!!");
+        //        }
+        //    }
+        //
+        //    ItemStatusDictionary.Add(item, itemEnabled);
+        //
+        //    if (itemEnabled)
+        //    {
+        //        itemList.Add(interactable);
+        //    }
+        //    return true;
+        //}
+            #endregion
+
+        void InitializeSurvivorTweaks()
+            {
+                var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
+
+                foreach (var tweakType in TweakTypes)
+                {
+                    SurvivorTweakModule module = (SurvivorTweakModule)Activator.CreateInstance(tweakType);
+
+                    string name = module.survivorName == "" ? module.bodyName : module.survivorName;
+                    bool isEnabled = CustomConfigFile.Bind<bool>("Survivor Tweaks",
+                        $"Enable Tweaks For: {module.survivorName}", true,
+                        $"Should DuckSurvivorTweaks change {module.survivorName}?").Value;
+                    if (isEnabled)
+                    {
+                        module.Init();
+                    }
+                    //TweakStatusDictionary.Add(module.ToString(), isEnabled);
+                }
+            }
 
         #region skills
         public static List<Type> entityStates = new List<Type>();
@@ -1266,5 +1325,7 @@ namespace RiskierRain
             return forceUnlock;
         }
         #endregion
+
+
     }
 }

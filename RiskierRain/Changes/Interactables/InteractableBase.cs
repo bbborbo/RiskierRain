@@ -34,6 +34,8 @@ namespace RiskierRain.Interactables
 		public abstract string interactableContext { get; }
 		public abstract string interactableLangToken { get; }
 		public abstract GameObject interactableModel { get; }
+		public abstract bool modelIsCloned { get; }
+		public GameObject model;
 		public abstract void Init(ConfigFile config);
 		protected void CreateLang()
 		{
@@ -49,7 +51,15 @@ namespace RiskierRain.Interactables
 			}
 			else
 			{
-				interactableBodyModelPrefab = this.interactableModel;
+				if (!modelIsCloned)
+                {
+					model = interactableModel;
+                }
+                else
+                {
+					model = interactableModel.InstantiateClone("model", true); 
+                }
+				interactableBodyModelPrefab = this.model;
 				interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
 				PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
 
@@ -64,61 +74,86 @@ namespace RiskierRain.Interactables
 				purchaseInteraction.isGoldShrine = false;
 
 				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
-				//pingInfoProvider.pingIconOverride = vanillaVoidPlugin.MainAssets.LoadAsset<Sprite>("texShrineIconOutlined");
+				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion();
 				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
 				genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
-				MeshCollider childMeshCollider = interactableBodyModelPrefab.GetComponentInChildren<MeshCollider>();
-				if (childMeshCollider == null)
+				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
+
+				if (childCollider == null)
                 {
 					Debug.Log("child null");
                 }
                 else
 				{
-					GameObject childGameObject = childMeshCollider.gameObject;
+					GameObject childGameObject = childCollider.gameObject;
 					if (childGameObject == null)
                     {
 						Debug.Log("childobject null");
                     }
                     else
                     {
-						EntityLocator entityLocator = childGameObject.AddComponent<EntityLocator>();
+						EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
 						if (entityLocator == null)
 						{
-							Debug.Log("entitylocator null");
+							Debug.Log("entitylocator null, adding component");
+							entityLocator = childGameObject.AddComponent<EntityLocator>();
 						}
-						else
+						if (entityLocator != null)
 						{
 							entityLocator.entity = interactableBodyModelPrefab;
-							ModelLocator modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
-							modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find("mdlVoidShrine");
-							modelLocator.modelBaseTransform = modelLocator.modelTransform;
-							modelLocator.dontDetatchFromParent = true;
-							modelLocator.autoUpdateModelTransform = true;
-							Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
-							component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-														where x.gameObject.name.Contains("VoidShrine")
-														select x).First<MeshRenderer>();
-							component.strength = 1f;
-							component.highlightColor = Highlight.HighlightColor.interactive;
-							HologramProjector hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
-							hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot");
-							hologramProjector.displayDistance = 10f;
-							hologramProjector.disableHologramRotation = true;
-							ChildLocator childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
-							childLocator.transformPairs = new ChildLocator.NameTransformPair[]
-							{
-								new ChildLocator.NameTransformPair
-								{
-									name = "FireworkOrigin",
-									transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
+							ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
+							if (modelLocator == null)
+                            {
+								Debug.Log("modellocator null, adding component");
+								modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
+                            }
+							if (modelLocator != null)
+                            {
+								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find("mdlShrineChance");//make this generic later
+								modelLocator.modelBaseTransform = modelLocator.modelTransform;
+								modelLocator.dontDetatchFromParent = true;
+								modelLocator.autoUpdateModelTransform = true;
+								Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
+								component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+															where x.gameObject.name.Contains("ShrineChance")//make this generic later
+															select x).First<MeshRenderer>();
+								component.strength = 1f;
+								component.highlightColor = Highlight.HighlightColor.interactive;
+								HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
+								if (hologramProjector == null)
+                                {
+									Debug.Log("hologramProjector null, adding component");
+									hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
+                                }
+								if (hologramProjector != null)
+                                {
+									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot");
+									hologramProjector.displayDistance = 10f;
+									hologramProjector.disableHologramRotation = true;
+									ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
+									if (childLocator == null)
+                                    {
+										Debug.Log("childLocator null, adding component");
+										childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
+									}
+									if (childLocator != null)
+                                    {
+										childLocator.transformPairs = new ChildLocator.NameTransformPair[]
+										{
+											new ChildLocator.NameTransformPair
+											{
+												name = "FireworkOrigin",
+												transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
+											}
+										};
+										PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+										Debug.Log("interactable registered");
+									}
 								}
-							};
-							PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+							}							
 						}
 					}
-
-				}
-				
+				}				
 			}
 		}
 		public void CreateInteractableSpawnCard()
@@ -138,12 +173,11 @@ namespace RiskierRain.Interactables
 				spawnCard = interactableSpawnCard,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			//DirectorAPI.Helpers.AddNewInteractableToStage()
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("shrines"),DirectorAPI.Stage.TitanicPlains, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("shrines"), DirectorAPI.Stage.DistantRoost, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("shrines"), DirectorAPI.Stage.SiphonedForest, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.TitanicPlains, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.DistantRoost, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SiphonedForest, "");
 
-
+			Debug.Log("Created spawncard for" + interactableName);
 		}
 
 

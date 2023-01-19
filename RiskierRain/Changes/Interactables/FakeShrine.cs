@@ -18,13 +18,7 @@ namespace RiskierRain.Changes.Interactables
 		public override float voidSeedWeight => 1;
 		public override int normalWeight => 50;
 		public override int spawnCost => 20;
-		//public static GameObject interactableBodyModelPrefab;
-		//public static InteractableSpawnCard interactableSpawnCard;
-		//public static CostTypeDef costTypeDef;
-		//public static int costTypeIndex;
 		public override int costAmount => 1;
-		//public static DirectorCard interactableDirectorCard;
-		//public override CostTypeDef costTypeDef => ;CostTypeCatalog
 		public override int costTypeIndex => 9; //lunaritemorequipment
 		public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment);
 
@@ -45,9 +39,11 @@ namespace RiskierRain.Changes.Interactables
 
         public override string interactableLangToken => "FAKE_SHRINE";
 
-        public override GameObject interactableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion(); //RoR2/Base/ShrineChance/ShrineChance.prefab
+        public override GameObject interactableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion();
 
-		public override void Init(ConfigFile config)
+        public override bool modelIsCloned => true;
+
+        public override void Init(ConfigFile config)
         {
 			hasAddedInteractable = false;
 			On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
@@ -56,11 +52,13 @@ namespace RiskierRain.Changes.Interactables
 			CreateLang();
 			CreateInteractable();
 			CreateInteractableSpawnCard();
+			Debug.Log("fakeshrine initialized!");
         }
 
 		public void Start()
 		{
-			if (NetworkServer.active)
+			Debug.Log("fakeshrine baybee");
+			//if (NetworkServer.active)
 			{
 				this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
 				CreateDropTable();

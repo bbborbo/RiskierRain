@@ -282,7 +282,7 @@ namespace RiskierRain
                 voidCradlePrefab.AddComponent<InteractableCurseController>();
             }
             On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
-            //GetStatCoefficients += VoidCradleCurse;
+            GetStatCoefficients += VoidCradleCurse;
         }
 
         private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)
@@ -301,11 +301,6 @@ namespace RiskierRain
             if(purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "VOID_CHEST_NAME")
             {
                 cost = 0;
-                /*CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
-                if (activatorBody)
-                {
-                    //activatorBody.AddBuff(Assets.voidCradleCurse);
-                }*/
             }
             return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
         }

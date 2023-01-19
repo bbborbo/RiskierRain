@@ -9,8 +9,6 @@ namespace RiskierRain.Components
 {
     internal class InteractableBuffController : MonoBehaviour
     {
-        public BuffDef buffDef;
-        public float duration = -1;
         private PurchaseInteraction _purchaseInteraction;
         public PurchaseInteraction purchaseInteraction
         {
@@ -23,6 +21,9 @@ namespace RiskierRain.Components
                 return _purchaseInteraction;
             }
         }
+
+        public BuffDef buffDef;
+        public float duration = -1;
 
         internal virtual void Start()
         {

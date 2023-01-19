@@ -31,6 +31,8 @@ namespace RiskierRain
         #region blacklist
         void HealingItemBlacklist()
         {
+            AIBlacklistSingleItem(nameof(RoR2Content.Items.BarrierOnKill));
+            AIBlacklistSingleItem(nameof(RoR2Content.Items.BarrierOnOverHeal));
             AIBlacklistSingleItem(nameof(RoR2Content.Items.NovaOnHeal));
             AIBlacklistSingleItem(nameof(RoR2Content.Items.Mushroom));
             AIBlacklistSingleItem(nameof(RoR2Content.Items.Medkit));

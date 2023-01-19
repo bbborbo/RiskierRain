@@ -59,7 +59,7 @@ namespace RiskierRain
             AddItemInfo(ref itemInfos, FrozenShell.instance.ItemsDef.name, 1);
             AddItemInfo(ref itemInfos, FlowerCrown.instance.ItemsDef.name, 1);
             AddItemInfo(ref itemInfos, BirdBand.instance.ItemsDef.name, 0);
-            AddItemInfo(ref itemInfos, UtilityBelt.instance.ItemsDef.name, 10);
+            AddItemInfo(ref itemInfos, UtilityBelt.instance.ItemsDef.name, 1);
             AddItemInfo(ref itemInfos, ChefReference.instance.ItemsDef.name, 1);
 
             //red

@@ -196,5 +196,25 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region mending
+
+        //void MendingEliteChanges()
+        //{
+        //    IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
+        //}
+        //
+        //private void ReplaceHealingWithBarrier(ILContext il)
+        //{
+        //    ILCursor c = new ILCursor(il);
+        //
+        //    c.GotoNext(
+        //
+        //        );
+        //}
+
+        
+
+        #endregion
     }
 }

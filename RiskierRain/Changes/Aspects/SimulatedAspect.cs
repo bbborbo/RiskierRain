@@ -107,7 +107,10 @@ namespace RiskierRain.Equipment
 
         public void SetTeamToVoid(CharacterBody body)
         {
-            body.teamComponent.teamIndex = TeamIndex.Void;
+            if (!body.isPlayerControlled)
+            {
+                body.teamComponent.teamIndex = TeamIndex.Void;
+            }
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
@@ -117,7 +120,7 @@ namespace RiskierRain.Equipment
             {
                 simulatedBehavior.AffixSimulatedAttack();
             }
-            return true;
+            return true; 
         }
     }
 

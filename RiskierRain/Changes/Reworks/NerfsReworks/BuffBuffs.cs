@@ -94,26 +94,44 @@ namespace RiskierRain
 
         private void ShockBuffExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)
         {
-            //if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
-            if (self.characterBody.HasBuff(Assets.shockMarker))
+            if (self == null)
             {
-                Debug.Log("shock broken!");
-                CharacterBody attacker = self.healthComponent?.lastHitAttacker?.GetComponent<CharacterBody>();
-                if (attacker != null)
-                {
-                    if (attacker.maxShield > 0 && attacker.healthComponent.shield != attacker.maxShield) 
-                    {
-                        ShockHeal(attacker.healthComponent);
-                    }
-                    else
-                    {
-                        Debug.Log("no shield!");
-                    }
-                }
+                Debug.Log("shockstate null");
             }
             else
             {
-                    Debug.Log("shock expired");
+                if (self.characterBody == null)
+                {
+                    Debug.Log("body null");
+                }
+                else
+                {
+                    //if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
+                    if (self.characterBody.HasBuff(Assets.shockMarker))
+                    {
+                        Debug.Log("shock broken!");
+                        CharacterBody attacker = self.healthComponent?.lastHitAttacker?.GetComponent<CharacterBody>();
+                        if (attacker != null)
+                        {
+                            if (attacker.maxShield > 0 && attacker.healthComponent.shield != attacker.maxShield)
+                            {
+                                ShockHeal(attacker.healthComponent);
+                            }
+                            else
+                            {
+                                Debug.Log("no shield!");
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("no attacker!");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("shock expired");
+                    }
+                }
             }
             //self.characterBody.RemoveBuff(Assets.shockMarker);
             orig(self);

@@ -182,7 +182,7 @@ namespace RiskierRain.CoreModules
                 shockMarker.buffColor = new Color(0f, 0f, 0.6f);
                 shockMarker.canStack = false;
                 shockMarker.isDebuff = true;
-                shockMarker.isHidden = false;
+                shockMarker.isHidden = true;
                 shockMarker.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockMarker);

@@ -297,7 +297,6 @@ namespace RiskierRain
         private CostTypeDef.PayCostResults VoidCradlePayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, 
             CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
         {
-
             if(purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "VOID_CHEST_NAME")
             {
                 cost = 0;

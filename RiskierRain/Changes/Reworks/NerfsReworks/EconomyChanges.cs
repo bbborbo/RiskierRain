@@ -14,6 +14,7 @@ using UnityEngine.Networking;
 using static RoR2.GivePickupsOnStart;
 using static R2API.RecalculateStatsAPI;
 using R2API;
+using RiskierRain.Components;
 
 namespace RiskierRain
 {
@@ -264,27 +265,33 @@ namespace RiskierRain
 
         #region void 
         GameObject voidCradlePrefab;
-        int cradleHealthCost = 20; //50
+        public static float cradleHealthCost = 0.2f; //50
+        static float _cradleHealthCost;
         void VoidCradleRework()
         {
+            _cradleHealthCost = (1 / (1 - cradleHealthCost)) - 1;
             voidCradlePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidChest/VoidChest.prefab").WaitForCompletion();
             if (voidCradlePrefab)
             {
                 PurchaseInteraction cradleInteraction = voidCradlePrefab.GetComponent<PurchaseInteraction>();
                 if (cradleInteraction)
                 {
-                    cradleInteraction.cost = cradleHealthCost;
+                    cradleInteraction.cost = (int)(cradleHealthCost * 100);
                     cradleInteraction.setUnavailableOnTeleporterActivated = true;
                 }
+                voidCradlePrefab.AddComponent<InteractableCurseController>();
             }
             On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
-            GetStatCoefficients += VoidCradleCurse;
+            //GetStatCoefficients += VoidCradleCurse;
         }
 
         private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)
         {
             int buffCount = sender.GetBuffCount(Assets.voidCradleCurse);
-            args.baseCurseAdd += 0.25f * buffCount;
+            if(buffCount > 0)
+            {
+                args.baseCurseAdd += _cradleHealthCost * buffCount;
+            }
         }
 
         private CostTypeDef.PayCostResults VoidCradlePayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, 
@@ -293,12 +300,12 @@ namespace RiskierRain
 
             if(purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "VOID_CHEST_NAME")
             {
-                CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
+                cost = 0;
+                /*CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
                 if (activatorBody)
                 {
-                    activatorBody.AddBuff(Assets.voidCradleCurse);
-                    cost = 0;
-                }
+                    //activatorBody.AddBuff(Assets.voidCradleCurse);
+                }*/
             }
             return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
         }

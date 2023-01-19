@@ -13,7 +13,7 @@ using RoR2.Projectile;
 
 namespace RiskierRain.Items
 {
-    public class Slungus : ItemBase
+    public class Slungus : ItemBase<Slungus>
     {
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
@@ -60,7 +60,7 @@ The affected area experienced lowered temperature; you may want to wear warm clo
 FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanent change in time perception, spacial warping, mania or lethargy, hallucination, paranoia, acute panic attack, or otherwise dissatisfactory results. All purchases are final.";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility }; //, ItemTag.Damage
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist }; //, ItemTag.Damage
 
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

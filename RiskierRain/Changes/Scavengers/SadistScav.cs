@@ -9,48 +9,52 @@ namespace RiskierRain.Scavengers
 {
     class SadistScav : TwistedScavengerBase<SadistScav>
     {
-        public override string ScavName => "Chipchip";
+        public override string ScavName => "Mimi";
 
         public override string ScavTitle => "Wicked";
 
         public override string ScavLangTokenName => "Sadist";
 
-        public override string ScavEquipDefName => RoR2Content.Equipment.CrippleWard.name; //effigy debuff
+        public override string ScavEquipName => nameof(RoR2Content.Equipment.CrippleWard); //effigy debuff
         public override BalanceCategory Category { get; set; } = BalanceCategory.StateOfDamage;
 
         public override void Init(ConfigFile config)
         {
             GenerateTwistedScavenger();
-            ScavBody.baseDamage *= 0.3f;
+            ScavBody.baseDamage *= 0.1f;
+            ScavBody.levelDamage = ScavBody.baseDamage * 0.2f;
             ScavBody.levelDamage = ScavBody.baseDamage * 0.2f;
         }
 
         public override void PopulateItemInfos(ConfigFile config)
         {
             //white
-            AddItemInfo(RoR2Content.Items.CritGlasses.name, 0); //3
-            AddItemInfo(RoR2Content.Items.BleedOnHit.name, 4); //debuff
-            AddItemInfo(RoR2Content.Items.BoostAttackSpeed.name, 0); //3
-            AddItemInfo(RoR2Content.Items.IgniteOnKill.name, 1); //1
+            AddItemInfo(nameof(RoR2Content.Items.CritGlasses), 0); //3
+            AddItemInfo(nameof(RoR2Content.Items.BleedOnHit), 2); //4, debuff
+            AddItemInfo(nameof(RoR2Content.Items.BoostAttackSpeed), 0); //3
+            AddItemInfo(nameof(RoR2Content.Items.IgniteOnKill), 0); //1, debuff
 
             //green
-            AddItemInfo(RoR2Content.Items.DeathMark.name, 3);
-            AddItemInfo(RoR2Content.Items.SlowOnHit.name, 2); //debuff
-            AddItemInfo(RoR2Content.Items.WarCryOnMultiKill.name, 2);
+            AddItemInfo(nameof(RoR2Content.Items.DeathMark), 1);
+            AddItemInfo(nameof(RoR2Content.Items.SlowOnHit), 2); //debuff
+            AddItemInfo(nameof(RoR2Content.Items.WarCryOnMultiKill), 1);
+            AddItemInfo(nameof(DLC1Content.Items.PrimarySkillShuriken), 5); //debuff
 
-            AddItemInfo(ChefReference.instance.ItemsDef.name, 2); //debuff
+            AddItemDefInfo(ChefReference.instance.ItemsDef, 1); //debuff
+            AddItemInfo(nameof(DLC1Content.Items.StrengthenBurn), 1); //debuff
 
             //red
-            AddItemInfo(RoR2Content.Items.ArmorReductionOnHit.name, 2); //debuff
-            AddItemInfo(RoR2Content.Items.Talisman.name, 0);
-            AddItemInfo(RoR2Content.Items.Icicle.name, 2); //debuff
+            AddItemInfo(nameof(RoR2Content.Items.ArmorReductionOnHit), 2); //debuff
+            AddItemInfo(nameof(RoR2Content.Items.Talisman), 0);
+            AddItemInfo(nameof(RoR2Content.Items.Icicle), 0); //debuff
 
             //yellow
-            AddItemInfo(RoR2Content.Items.BleedOnHitAndExplode.name, 0); //1, debuff
+            AddItemInfo(nameof(RoR2Content.Items.BleedOnHitAndExplode), 0); //1, debuff
 
             //lunar
-            AddItemInfo(RoR2Content.Items.RandomDamageZone.name, 0);
-            AddItemInfo( RoR2Content.Items.AutoCastEquipment.name, 1);
+            AddItemInfo(nameof(RoR2Content.Items.RandomDamageZone), 0); //buff
+            AddItemInfo(nameof(RoR2Content.Items.AutoCastEquipment), 3);
+            AddItemInfo(nameof(DLC1Content.Items.HalfAttackSpeedHalfCooldowns), 1);
         }
     }
 }

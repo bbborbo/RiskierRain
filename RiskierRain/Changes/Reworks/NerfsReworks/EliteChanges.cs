@@ -167,13 +167,16 @@ namespace RiskierRain
 
         private void AddVoidtouchedNullify(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
-            CharacterBody attackerBody = damageInfo.attacker?.GetComponent<CharacterBody>();
-            CharacterBody victimBody = victim?.GetComponent<CharacterBody>();
-            if (attackerBody && victimBody && damageInfo.procCoefficient > 0)
+            if(damageInfo.attacker != null && victim != null && damageInfo.procCoefficient > 0)
             {
-                if (attackerBody.HasBuff(DLC1Content.Buffs.EliteVoid))
+                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+                if (attackerBody && victimBody)
                 {
-                    victimBody.AddTimedBuffAuthority(RoR2Content.Buffs.NullifyStack.buffIndex, voidtouchedNullifyBaseDuration * damageInfo.procCoefficient);
+                    if (attackerBody.HasBuff(DLC1Content.Buffs.EliteVoid))
+                    {
+                        victimBody.AddTimedBuffAuthority(RoR2Content.Buffs.NullifyStack.buffIndex, voidtouchedNullifyBaseDuration * damageInfo.procCoefficient);
+                    }
                 }
             }
             orig(self, damageInfo, victim);

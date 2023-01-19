@@ -50,14 +50,19 @@ namespace RiskierRain.Items
 
         internal static bool CheckDLC1Entitlement()
         {
-            ExpansionDef dlc1 = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
+            EntitlementDef dlc1 = Addressables.LoadAssetAsync<EntitlementDef>("RoR2/DLC1/Common/entitlementDLC1.asset").WaitForCompletion();
             return CheckDLCEntitlement(dlc1);
         }
 
-        internal static bool CheckDLCEntitlement(ExpansionDef expansion)
+        internal static bool CheckDLCEntitlement(EntitlementDef expansion)
         {
-            LocalUserEntitlementTracker localEntitlement = EntitlementManager.localUserEntitlementTracker;
-            if (localEntitlement.AnyUserHasEntitlement(expansion.requiredEntitlement))
+            //LocalUser thisUser = PlayerCharacterMasterController.instances[0].networkUser.localUser;
+            //LocalUserEntitlementTracker localEntitlement = EntitlementManager.localUserEntitlementTracker;
+            //if (localEntitlement.UserHasEntitlement(thisUser, expansion))
+            //{
+            //    return true;
+            //}
+            if (EntitlementAbstractions.VerifyLocalSteamUser(expansion))
             {
                 return true;
             }

@@ -10,7 +10,7 @@ using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain.Items
 {
-    class Fuse : ItemBase
+    class Fuse : ItemBase<Fuse>
     {
         public static GameObject fuseNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");
         public static BuffDef fuseRecharge;

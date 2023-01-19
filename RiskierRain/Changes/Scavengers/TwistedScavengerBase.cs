@@ -29,7 +29,8 @@ namespace RiskierRain.Scavengers
         public abstract string ScavName { get; }
         public abstract string ScavTitle { get; }
         public abstract string ScavLangTokenName { get; }
-        public abstract string ScavEquipDefName { get; } //Can be "" if no equipment is desired
+        public abstract string ScavEquipName { get; } //Can be "" if no equipment is desired
+        public virtual List<ItemDefInfo> ItemDefInfos { get; set; } = new List<ItemDefInfo>() { };
         public virtual List<ItemInfo> ItemInfos { get; set; } = new List<ItemInfo>() { };
         public virtual BalanceCategory Category { get; set; } = BalanceCategory.None;
         public virtual string ScavFullNameOverride { get; set; } = ""; //Only use if you do not wish to use the "ScavName the ScavTitle" format
@@ -39,6 +40,18 @@ namespace RiskierRain.Scavengers
 
         public abstract void PopulateItemInfos(ConfigFile config);
         public abstract void Init(ConfigFile config);
+
+        internal void AddItemDefInfo(ItemDef itemDef, int count)
+        {
+            if (count <= 0)
+                return;
+            ItemDefInfo itemInfo = new ItemDefInfo();
+
+            itemInfo.itemDef = itemDef;
+            itemInfo.count = count;
+
+            ItemDefInfos.Add(itemInfo);
+        }
 
         internal void AddItemInfo(string name, int count)
         {
@@ -67,9 +80,11 @@ namespace RiskierRain.Scavengers
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseNameToken = nameToken;
 
+
             int count = twistedScavengerSpawnCard.masterPrefabs.Length;
-            Array.Resize<GameObject>(ref twistedScavengerSpawnCard.masterPrefabs, count + 1);
-            twistedScavengerSpawnCard.masterPrefabs[count] = masterObject;
+            HG.ArrayUtils.ArrayAppend<GameObject>(ref twistedScavengerSpawnCard.masterPrefabs, ref count, in masterObject);
+            //Array.Resize<GameObject>(ref twistedScavengerSpawnCard.masterPrefabs, count + 1);
+            //twistedScavengerSpawnCard.masterPrefabs[count] = masterObject;
 
 
             foreach (GivePickupsOnStart gpos in masterObject.GetComponents<GivePickupsOnStart>())
@@ -78,10 +93,11 @@ namespace RiskierRain.Scavengers
             }
 
             GivePickupsOnStart pickupComp = masterObject.AddComponent<GivePickupsOnStart>();
+            pickupComp.itemDefInfos = ItemDefInfos.ToArray();
             pickupComp.itemInfos = ItemInfos.ToArray();
-            if (ScavEquipDefName != "")
+            if (ScavEquipName != "")
             {
-                pickupComp.equipmentString = ScavEquipDefName;;
+                pickupComp.equipmentString = ScavEquipName;
             }
 
             Assets.bodyPrefabs.Add(bodyObject);

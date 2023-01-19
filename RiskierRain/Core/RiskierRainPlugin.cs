@@ -117,7 +117,7 @@ namespace RiskierRain
             InitializeSkills();
             InitializeEquipment();
             InitializeEliteEquipment();
-            //InitializeScavengers();
+            InitializeScavengers();
             //InitializeEverything();
             RoR2Application.onLoad += InitializeEverything;
 

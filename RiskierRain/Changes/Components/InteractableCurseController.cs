@@ -24,11 +24,14 @@ namespace RiskierRain.Components
         private void VoidExplode(TeleporterInteraction interaction)
         {
             TeleporterInteraction.onTeleporterBeginChargingGlobal -= VoidExplode;
-            EffectManager.SpawnEffect(voidExecuteEffect, new EffectData
+            if(voidExecuteEffect != null)
             {
-                origin = base.transform.position,
-                scale = 3f
-            }, true);
+                EffectManager.SpawnEffect(voidExecuteEffect, new EffectData
+                {
+                    origin = base.transform.position,
+                    scale = 3f
+                }, true);
+            }
             GameObject.Destroy(base.gameObject);
         }
     }

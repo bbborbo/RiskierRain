@@ -11,7 +11,7 @@ using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain.Items
 {
-    class BigBattery : ItemBase
+    class BigBattery : ItemBase<BigBattery>
     {
         public static float shieldPercent = 0.1f;
         public static float rechargeRateIncrease = 0.1f;

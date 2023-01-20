@@ -11,7 +11,7 @@ namespace RiskierRain.Items
     class DisposableScalpel : ItemBase<DisposableScalpel>
     {
         public static int bonusDropChance = 50;
-        public override string ItemName => "Medic\u2019s Scalpel";
+        public override string ItemName => "Obsidian Scalpel";
 
         public override string ItemLangTokenName => "BOSSITEMCONSUMABLE";
 

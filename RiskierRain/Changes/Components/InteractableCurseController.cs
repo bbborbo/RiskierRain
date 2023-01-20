@@ -28,11 +28,11 @@ namespace RiskierRain.Components
             {
                 EffectManager.SpawnEffect(voidExecuteEffect, new EffectData
                 {
-                    origin = base.transform.position,
+                    origin = transform.position,
                     scale = 3f
                 }, true);
             }
-            GameObject.Destroy(base.gameObject);
+            Destroy(gameObject);
         }
     }
 }

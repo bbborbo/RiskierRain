@@ -56,29 +56,52 @@ namespace RiskierRain.Items
             On.RoR2.GenericSkill.CalculateFinalRechargeInterval += EnableCooldownAddition; //move this
             On.RoR2.CharacterBody.OnSkillActivated += FireShards;
             On.RoR2.CharacterBody.RecalculateStats += IncreaseCDs;
+            RecalculateStatsAPI.GetStatCoefficients += IncreaseCooldowns;
+        }
+
+        private void IncreaseCooldowns(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = GetCount(sender);
+            if (itemCount > 0)
+            {
+                float cdIncreaseAmount = cdIncreaseBase + (cdIncreaseStack * itemCount - 1);
+
+                args.cooldownReductionAdd -= cdIncreaseAmount;
+
+                //SkillLocator skillLocator = sender.skillLocator;
+                //if (skillLocator != null)
+                //{
+                //    skillLocator.primary.flatCooldownReduction -= cdIncreaseAmount;
+                //    skillLocator.secondary.flatCooldownReduction -= cdIncreaseAmount;
+                //    skillLocator.utility.flatCooldownReduction -= cdIncreaseAmount;
+                //    skillLocator.special.flatCooldownReduction -= cdIncreaseAmount;
+                //}
+            }
         }
 
         private float EnableCooldownAddition(On.RoR2.GenericSkill.orig_CalculateFinalRechargeInterval orig, GenericSkill self)
         {
-            return self.baseRechargeInterval > 0 ? Mathf.Max(0.5f, self.baseRechargeInterval * self.cooldownScale - self.flatCooldownReduction) : 0;
+            //return self.baseRechargeInterval > 0 ? Mathf.Max(0.5f, self.baseRechargeInterval * self.cooldownScale - self.flatCooldownReduction) : 0
+
+            float calculatedRechargeInterval = self.baseRechargeInterval * self.cooldownScale - self.flatCooldownReduction;
+
+            if (self.baseRechargeInterval <= 0 && calculatedRechargeInterval <= self.baseRechargeInterval)
+                return 0;
+
+            return Mathf.Max(0.5f, calculatedRechargeInterval);
         }
 
         private void IncreaseCDs(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
-            int itemCount = GetCount(self);
-            float cdIncreaseAmount;
-            if (itemCount > 0)
+            SkillLocator skillLocator = self.skillLocator;
+            if(skillLocator != null)
             {
-                cdIncreaseAmount = cdIncreaseBase + (cdIncreaseStack * itemCount - 1);
-                SkillLocator skillLocator = self.skillLocator;
-                if (skillLocator != null)
+                GenericSkill primary = skillLocator.primary;
+                if(primary != null)
                 {
-                    skillLocator.primary.flatCooldownReduction -= cdIncreaseAmount;
-                    skillLocator.secondary.flatCooldownReduction -= cdIncreaseAmount;
-                    skillLocator.utility.flatCooldownReduction -= cdIncreaseAmount;
-                    skillLocator.special.flatCooldownReduction -= cdIncreaseAmount;
-
+                    //float calculatedCooldown = primary.recha
+                    //if(primary.cooldownRemaining)
                 }
             }
         }
@@ -91,6 +114,7 @@ namespace RiskierRain.Items
             {
                 float shardsPerSecond = shardsPerSecondBase + (shardsPerSecondStack * itemCount);
                 float skillCD = skill.finalRechargeInterval;
+                float skillStock = skill.rechargeStock;
                 //Util.PlaySound(FireVoidspikes.attackSoundString, self.gameObject);
                 if (lunarShardMuzzleFlash != null)
                 {
@@ -102,8 +126,7 @@ namespace RiskierRain.Items
                 }
                 Ray aimRay = new Ray(self.inputBank.aimOrigin, self.inputBank.aimDirection);
 
-                int shardCount = (int)Mathf.RoundToInt(shardsPerSecond * skillCD);
-                Debug.Log(shardCount);
+                int shardCount = (int)Mathf.CeilToInt(shardsPerSecond * skillCD / skillStock);
                 if (lunarShardProjectile != null)
                 {
                     for (int i = 0; i < shardCount; i++)

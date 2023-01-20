@@ -22,7 +22,7 @@ namespace RiskierRain.Scavengers
         {
             GenerateTwistedScavenger();
             ScavBody.baseMaxHealth *= 0.5f;
-            ScavBody.levelDamage = ScavBody.baseDamage * 0.3f;
+            ScavBody.levelMaxHealth = ScavBody.baseMaxHealth * 0.3f;
             ScavBody.baseDamage *= 0.5f;
             ScavBody.levelDamage = ScavBody.baseDamage * 0.2f;
             ScavBody.baseAttackSpeed = 0.4f;

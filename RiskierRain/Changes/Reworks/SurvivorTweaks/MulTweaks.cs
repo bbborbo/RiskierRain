@@ -45,6 +45,7 @@ namespace RiskierRain.SurvivorTweaks
             On.EntityStates.Toolbot.NailgunSpinDown.FixedUpdate += RemoveNailgunBurst;
             ToolbotWeaponSkillDef nailGun = (ToolbotWeaponSkillDef)primary.variants[0].skillDef;
             AnimationCurve curve = nailGun.crosshairSpreadCurve;
+            nailGun.beginSkillCooldownOnSkillEnd = true;
 
             ToolbotWeaponSkillDef rebar = (ToolbotWeaponSkillDef)primary.variants[1].skillDef;
             rebar.crosshairSpreadCurve = curve;
@@ -59,6 +60,7 @@ namespace RiskierRain.SurvivorTweaks
             saw.crosshairSpreadCurve = curve;
             saw.crosshairPrefab.GetComponent<CrosshairController>().maxSpreadAngle *= 4;
             saw.canceledFromSprinting = true;
+            saw.beginSkillCooldownOnSkillEnd = true;
 
             if (useScrapGravity)
             {

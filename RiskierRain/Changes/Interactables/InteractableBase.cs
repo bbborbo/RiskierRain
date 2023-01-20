@@ -176,8 +176,18 @@ namespace RiskierRain.Interactables
 			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.TitanicPlains, "");
 			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.DistantRoost, "");
 			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SiphonedForest, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AbandonedAqueduct, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.WetlandAspect, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AphelianSanctuary, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SulfurPools, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.ScorchedAcres, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.RallypointDelta, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AbyssalDepths, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SirensCall, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SunderedGrove, "");
+			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SkyMeadow, "");
 
-			Debug.Log("Created spawncard for" + interactableName);
+			Debug.Log("Created spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 		}
 
 

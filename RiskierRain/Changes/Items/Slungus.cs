@@ -206,7 +206,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             body.RemoveBuff(Slungus.slungusBuff);
             if (slungusFieldInstance)
             {
-                Destroy(slungusFieldInstance);
+                Destroy(slungusFieldInstance, 0.5f);
             }
         }
 

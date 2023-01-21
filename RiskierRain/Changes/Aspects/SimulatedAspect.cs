@@ -12,6 +12,7 @@ using UnityEngine.AddressableAssets;
 using System.Linq;
 using RoR2.Projectile;
 using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 namespace RiskierRain.Equipment
 {
@@ -37,7 +38,7 @@ namespace RiskierRain.Equipment
 
         public override Color EliteBuffColor => new Color(0.4f, 0.0f, 0.4f, 1.0f);
 
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.Other;
 
 
         public override float Cooldown { get; } = 10f;
@@ -59,7 +60,28 @@ namespace RiskierRain.Equipment
         private void SimulatedHurtbox(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-              //il hook by borbo thanks bestie  
+            //il hook by borbo thanks bestie  
+            // <3 - borbo
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchStloc(0));
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<CharacterBody, bool>>((body) => 
+            {
+                if (body.HasBuff(RoR2Content.Buffs.Intangible))
+                    return true;
+
+                if (body.HasBuff(EliteBuffDef))
+                    return false;
+
+                Inventory inv = body.inventory;
+                if (inv && inv.GetItemCount(RoR2Content.Items.Ghost) > 0)
+                    return true;
+
+                return false;
+            });
+            c.Emit(OpCodes.Stloc_0);
         }
 
        
@@ -69,37 +91,31 @@ namespace RiskierRain.Equipment
             orig(self, damageReport);
             CharacterBody victimBody = damageReport.victimBody;
             CharacterBody attackerBody = damageReport.attackerBody;
-            if (damageReport == null)
+
+            if (damageReport.damageInfo.damageType.HasFlag(DamageType.VoidDeath))
             {
-                Debug.Log("damagereport null");
-            }
-            else
-            {
-                if (damageReport.damageInfo.damageType.HasFlag(DamageType.VoidDeath))
+                if (!victimBody.isPlayerControlled)
                 {
-                    if (!victimBody.isPlayerControlled)
+                    if (attackerBody)
                     {
-                        if (attackerBody)
+                        Debug.Log("spawn simu");
+                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, 10);
+                        CharacterMaster ghostMaster = ghost.master;
+                        if (ghostMaster != null)
                         {
-                            Debug.Log("spawn simu");
-                            CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, 10);
-                            CharacterMaster ghostMaster = ghost.master;
-                            if (ghostMaster != null)
+                            if (ghostMaster.inventory == null)
                             {
-                                if (ghostMaster.inventory == null)
-                                {
-                                    Debug.Log("ghost inv null");
+                                Debug.Log("ghost inv null");
                                     
-                                }
-                                else
-                                {
-                                    ghost.inventory.GiveEquipmentString("AFFIX_SIMULATED");
-                                }
                             }
                             else
                             {
-                                Debug.Log("ghostMaster null");
+                                ghost.inventory.GiveEquipmentString("AFFIX_SIMULATED");
                             }
+                        }
+                        else
+                        {
+                            Debug.Log("ghostMaster null");
                         }
                     }
                 }
@@ -119,20 +135,22 @@ namespace RiskierRain.Equipment
                 SetTeamToVoid(sender);
                 args.moveSpeedMultAdd += 0.25f;
                 args.baseAttackSpeedAdd += 1f;
-                //sender.bodyFlags += CharacterBody.BodyFlags.ImmuneToVoidDeath;
+                sender.bodyFlags |= CharacterBody.BodyFlags.ImmuneToVoidDeath;
                 // sender.healthComponent.HealthBarValues) = true;
-                sender.inventory.GiveItem(ItemCatalog.FindItemIndex("ghost"), -1);//CharacterBody.BodyFlags.Void;
-                sender.inventory.GiveItem(ItemCatalog.FindItemIndex("boostdamage"), -1);
+                Inventory inv = sender.inventory;
+                if (inv)
+                {
+                    RemoveAllOfItem(inv, RoR2Content.Items.BoostDamage);
+                    //RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
+                }
             }
         }
-        //private HealthComponent.HealthBarValues DisplayExecutionThreshold(On.RoR2.HealthComponent.orig_GetHealthBarValues orig, HealthComponent self)
-        
-           // HealthComponent.HealthBarValues values = orig(self) + self.HealthBarValues.isVoid;
 
-            //values.cullFraction = Mathf.Clamp01(GetExecutionThreshold(values.cullFraction, self));
-
-            //return values;
-        
+        private static void RemoveAllOfItem(Inventory inv, ItemDef itemDef)
+        {
+            int damageBoostCount = inv.GetItemCount(itemDef);
+            inv.RemoveItem(itemDef, damageBoostCount);
+        }
 
         private void SimulatedCooldownBuff(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
@@ -162,7 +180,7 @@ namespace RiskierRain.Equipment
 
         public override void Init(ConfigFile config)
         {
-            CanAppearInEliteTiers = VanillaTier1();
+            //CanAppearInEliteTiers = VanillaTier1();
 
             CreateEliteEquipment();
             CreateLang();
@@ -174,7 +192,9 @@ namespace RiskierRain.Equipment
         {
             if (!body.isPlayerControlled)
             {
-                body.teamComponent.teamIndex = TeamIndex.Void;
+                TeamComponent teamComponent = body.teamComponent;
+                if (teamComponent.teamIndex != TeamIndex.Player)
+                    teamComponent.teamIndex = TeamIndex.Void;
             }
         }
 

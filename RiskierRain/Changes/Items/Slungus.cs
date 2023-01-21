@@ -18,9 +18,11 @@ namespace RiskierRain.Items
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
         public static float slungusWaitTime = 1f;
+        public float damageIncreaseBase = 0.2f;
+        public float damageIncreaseStack = 0.3f;
 
-        public static float radiusBase = 18f;
-        public static float radiusStack = 4f;
+        public static float radiusBase = 24f;
+        public static float radiusStack = 0f;
         public float projectileSlowCoefficient = 0.2f; //0.1f
 
         public override string ItemName => "Slumbering Spores";
@@ -30,12 +32,13 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Standing still slows nearby enemies and projectiles.";
 
         public override string ItemFullDescription => $"While stationary, create a " +
-            $"<style=cIsUtility>stasis field</style> for {radiusBase}m " +
-            $"<style=cStack>(+{radiusStack}m per stack)</style> around you, " +
+            $"<style=cIsUtility>stasis field</style> for {radiusBase}m around you, " +
             $"<style=cIsUtility>slowing</style> nearby " +
             //$"enemies by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style> " +
             //$"and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";
-            $"enemes and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";
+            $"enemes and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>. " +
+            $"Deal {Tools.ConvertDecimal(damageIncreaseBase)} more damage " +
+            $"<style=cStack>({Tools.ConvertDecimal(damageIncreaseStack)} per stack) until the next time you get hit.";
 
         public override string ItemLore =>
 @"Order: Lay-Z Mushroom Travel Buddy
@@ -76,6 +79,31 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            R2API.RecalculateStatsAPI.GetStatCoefficients += SlungusDamage;
+            On.RoR2.HealthComponent.TakeDamage += RemoveSlungusBuff;
+        }
+
+        private void RemoveSlungusBuff(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            if (!damageInfo.rejected)
+            {
+                CharacterBody body = self.body;
+                if (body.HasBuff(slungusBuff) && body.hasAuthority)
+                {
+                    body.RemoveBuff(slungusBuff);
+                }
+            }
+            orig(self, damageInfo);
+        }
+
+        private void SlungusDamage(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+        {
+            Inventory inv = sender.inventory;
+            if (inv && sender.HasBuff(slungusBuff))
+            {
+                int slungusCount = GetCount(sender);
+                args.damageMultAdd += damageIncreaseBase + damageIncreaseStack * (slungusCount - 1);
+            }
         }
 
         public override void Init(ConfigFile config)
@@ -146,14 +174,10 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
                 if (stack > 0 && notMovingStopwatch >= Slungus.slungusWaitTime)
                 {
-                    if (!body.HasBuff(Slungus.slungusBuff))
-                    {
-                        EnableSlungus();
-                        return;
-                    }
-                    //UpdateSlungusRadius();
+                    EnableSlungus();
+                    return;
                 }
-                else if (body.HasBuff(Slungus.slungusBuff))
+                else
                 {
                     DisableSlungus();
                 }
@@ -162,25 +186,25 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         private void EnableSlungus()
         {
-            if (body.hasAuthority)
+            if (!slungusFieldInstance)
             {
-                this.body.AddBuff(Slungus.slungusBuff);
-                if (!slungusFieldInstance)
+                if (body.hasAuthority)
                 {
-                    slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
-
-                    TeamComponent teamFilter = body.GetComponent<TeamComponent>();
-                    TeamIndex teamIndex = teamFilter.teamIndex;
-                    slungusFieldInstance.GetComponent<TeamFilter>().teamIndex = teamIndex;
-
-                    ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
-                    if (projectileController)
-                    {
-                        projectileController.Networkowner = body.gameObject;
-                    }
-                    UpdateSlungusRadius();
-                    NetworkServer.Spawn(slungusFieldInstance);
+                    body.AddBuff(Slungus.slungusBuff);
                 }
+                slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
+
+                TeamComponent teamFilter = body.GetComponent<TeamComponent>();
+                TeamIndex teamIndex = teamFilter.teamIndex;
+                slungusFieldInstance.GetComponent<TeamFilter>().teamIndex = teamIndex;
+
+                ProjectileController projectileController = slungusFieldInstance.GetComponent<ProjectileController>();
+                if (projectileController)
+                {
+                    projectileController.Networkowner = body.gameObject;
+                }
+                UpdateSlungusRadius();
+                NetworkServer.Spawn(slungusFieldInstance);
             }
         }
 
@@ -203,7 +227,6 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         private void DisableSlungus()
         {
-            body.RemoveBuff(Slungus.slungusBuff);
             if (slungusFieldInstance)
             {
                 Destroy(slungusFieldInstance, 0.5f);

@@ -21,19 +21,25 @@ namespace RiskierRain.Changes.Items
     {
         public ExpansionDef SOTVExpansionDef;//move this to a better place
         public static BuffDef lilyRageBuff;
-        public static int duration = 30;
+        public static int duration = 20;
 
-        public static float aspdBoostBase = 0.40f;
-        public static float aspdBoostStack = 0.20f;
+        public static float aspdBoostBase = 0.30f;
+        public static float aspdBoostStack = 0.15f;
+        float cdrBase = 1 - aspdBoostBase;
+        float cdrStack = 1 - aspdBoostStack;
         //public static float mspdBoostBase = 0.25f;
         //public static float mspdBoostStack = 0.25f;
         public override string ItemName => "Phrygian Lily";
 
         public override string ItemLangTokenName => "PHRYGIANLILY";
 
-        public override string ItemPickupDesc => "Enter a rage for when activating the teleporter.";
+        public override string ItemPickupDesc => "Enter a rage after activating the teleporter.";
 
-        public override string ItemFullDescription => $"<style=cIsDamage>Enter a rage</style> for 30 seconds upon activating the teleporter. Rage gives +40% attack speed <style=cStack>(+20%)</style> and -40% <style=cStack> (-20% per stack)</style>cooldown reduction.";
+        public override string ItemFullDescription => $"<style=cIsDamage>Enter a rage</style> for {duration} seconds upon activating the teleporter. " +
+            $"While enraged, increases attack speed by +{Tools.ConvertDecimal(aspdBoostBase)} " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(aspdBoostStack)} per stack)</style> " +
+            $"and reduces skill cooldowns by {Tools.ConvertDecimal(aspdBoostBase)} " +
+            $"<style=cStack>({Tools.ConvertDecimal(aspdBoostStack)} per stack)</style>";
 
         public override string ItemLore =>
 @"Order: Lay-Z Mushroom Travel Buddy
@@ -84,10 +90,12 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             orig(self);
 
             CharacterBody body = PlayerCharacterMasterController.instances[0].body;
-
-            int lilyCount = GetCount(body);
-            if (lilyCount > 0)
-                body.AddTimedBuffAuthority(lilyRageBuff.buffIndex, duration);
+            if(body != null)
+            {
+                int lilyCount = GetCount(body);
+                if (lilyCount > 0)
+                    body.AddTimedBuffAuthority(lilyRageBuff.buffIndex, duration);
+            }
         }
 
         public override void Init(ConfigFile config)
@@ -118,14 +126,10 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             int lilyCount = GetCount(self);
             if (lilyCount > 0 && self.HasBuff(lilyRageBuff))
             {
-                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
-                float cdrBoost = 1 - aspdBoostBase;
-                if (lilyCount > 1)
-                    cdrBoost *= Mathf.Pow(1 - aspdBoostStack, lilyCount - 1);
-
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)
                 {
+                    float cdrBoost = (cdrBase) * Mathf.Pow(cdrStack, lilyCount - 1);
                     ApplyCooldownScale(skillLocator.primary, cdrBoost);
                     ApplyCooldownScale(skillLocator.secondary, cdrBoost);
                     ApplyCooldownScale(skillLocator.utility, cdrBoost);

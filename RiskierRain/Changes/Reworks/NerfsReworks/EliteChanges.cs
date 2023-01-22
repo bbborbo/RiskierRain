@@ -202,19 +202,36 @@ namespace RiskierRain
 
         #region mending
 
-        //void MendingEliteChanges()
-        //{
-        //    IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
-        //}
-        //
-        //private void ReplaceHealingWithBarrier(ILContext il)
-        //{
-        //    ILCursor c = new ILCursor(il);
-        //
-        //    c.GotoNext(
-        //
-        //        );
-        //}
+        void MendingEliteChanges()
+        {
+            //IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
+        }
+        
+        private void ReplaceHealingWithBarrier(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+        
+            c.GotoNext(MoveType.Before,
+                    x => x.MatchCallOrCallvirt<RoR2.HealthComponent>(nameof(HealthComponent.Heal))
+                );
+            c.Remove();
+            //c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Action<HealthComponent, float, RoR2.ProcChainMask/*, HealNearbyController*/>>((targetHealthComponent, healAmount, procChainMask/*, self*/) =>
+            {
+                //CharacterBody body = self.networkedBodyAttachment.attachedBody;
+                //if (body.HasBuff(DLC1Content.Buffs.EliteEarth))
+                //{
+                //    float barrierAmt = 0;
+                //    targetHealthComponent.AddBarrier(barrierAmt);
+                //}
+                //else
+                //{
+                //    targetHealthComponent.Heal(healAmount, procChainMask, isRegen);
+                //}
+            });
+
+            //c.Remove();
+        }
 
         
 

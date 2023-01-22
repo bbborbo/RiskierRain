@@ -141,7 +141,7 @@ namespace RiskierRain.Equipment
                 if (inv)
                 {
                     RemoveAllOfItem(inv, RoR2Content.Items.BoostDamage);
-                    //RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
+                    RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
                 }
             }
         }

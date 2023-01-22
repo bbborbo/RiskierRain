@@ -595,6 +595,12 @@ namespace RiskierRain
                     OverloadingEliteChanges();
                 }
 
+                //Mending elite
+                if (GetConfigBool(currentCategory, true, "Elite: Mending Elite Rework"))
+                {
+                    MendingEliteChanges();
+                }
+
                 //voidtouched elite
                 if (GetConfigBool(currentCategory, true, "Elite: Voidtouched Elite Rework"))
                 {

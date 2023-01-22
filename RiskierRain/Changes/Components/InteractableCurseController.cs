@@ -17,7 +17,7 @@ namespace RiskierRain.Components
             buffDef = Assets.voidCradleCurse;
             if (TeleporterInteraction.instance)
             {
-                TeleporterInteraction.onTeleporterBeginChargingGlobal += VoidExplode;
+                //TeleporterInteraction.onTeleporterBeginChargingGlobal += VoidExplode;
             }
         }
 

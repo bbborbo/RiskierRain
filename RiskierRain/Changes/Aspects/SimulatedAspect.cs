@@ -55,6 +55,28 @@ namespace RiskierRain.Equipment
             On.RoR2.CharacterBody.RecalculateStats += SimulatedCooldownBuff;
             On.RoR2.GlobalEventManager.OnCharacterDeath += SimulatedSpawn;
             IL.RoR2.CharacterBody.UpdateHurtBoxesEnabled += SimulatedHurtbox;
+            IL.RoR2.CharacterModel.UpdateOverlays += SimulatedOverlay;
+        }
+
+        private void SimulatedOverlay(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterModel>("set_isGhost")
+                );
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<bool, CharacterModel, bool>>((isGhost, self) =>
+            {
+                if (isGhost)
+                    return true;
+
+                CharacterBody body = self.body;
+                if (self.body && body.HasBuff(EliteBuffDef))
+                    return true;
+
+                return false;
+            });
         }
 
         private void SimulatedHurtbox(ILContext il)
@@ -137,16 +159,10 @@ namespace RiskierRain.Equipment
                 args.baseAttackSpeedAdd += 1f;
                 sender.bodyFlags |= CharacterBody.BodyFlags.ImmuneToVoidDeath;
                 // sender.healthComponent.HealthBarValues) = true;
-                Inventory inv = sender.inventory;
-                if (inv)
-                {
-                    RemoveAllOfItem(inv, RoR2Content.Items.BoostDamage);
-                    RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
-                }
             }
         }
 
-        private static void RemoveAllOfItem(Inventory inv, ItemDef itemDef)
+        internal static void RemoveAllOfItem(Inventory inv, ItemDef itemDef)
         {
             int damageBoostCount = inv.GetItemCount(itemDef);
             inv.RemoveItem(itemDef, damageBoostCount);
@@ -217,9 +233,24 @@ namespace RiskierRain.Equipment
         public int sizeMod;
         public float randomRadius;
 
+        public void Start()
+        {
+            Inventory inv = body.inventory;
+            if (inv)
+            {
+                SimulatedAspect.RemoveAllOfItem(inv, RoR2Content.Items.BoostDamage);
+                //SimulatedAspect.RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
+            }
+
+            CharacterModel[] models = body.GetComponentsInChildren<CharacterModel>();
+            foreach(CharacterModel model in models)
+            {
+                model.UpdateOverlays();
+            }
+            body.UpdateHurtBoxesEnabled();
+        }
         public void AffixSimulatedAttack()
         {
-
             sizeMod = (int)Mathf.Ceil(body.radius); //projectile count scales with size
             portalBombCount = sizeMod * sizeMod * 2;
             randomRadius = baseRandomRadius * sizeMod / 2;

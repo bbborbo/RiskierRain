@@ -123,20 +123,6 @@ namespace RiskierRain
             //InitializeEverything();
             RoR2Application.onLoad += InitializeEverything;
 
-            if (isAELoaded)
-            {
-                if (IsCategoryEnabled(BalanceCategory.StateOfInteraction))
-                {
-                    LanguageAPI.Add("ARTIFICEREXTENDED_KEYWORD_CHILL", "<style=cKeywordName>Chilling</style>" +
-                        $"<style=cSub>Has a chance to temporarily reduce <style=cIsUtility>movement speed and attack speed</style> by <style=cIsDamage>80%.</style></style>");
-                }
-                else
-                {
-                    LanguageAPI.Add("ARTIFICEREXTENDED_KEYWORD_CHILL", "<style=cKeywordName>Chilling</style>" +
-                        $"<style=cSub>Has a chance to temporarily reduce <style=cIsUtility>movement speed</style> by <style=cIsDamage>80%.</style></style>");
-                }
-            }
-
             //lol
             LanguageAPI.Add("ITEM_SHOCKNEARBY_PICKUP", "lol");
             LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", "lol");
@@ -156,6 +142,7 @@ namespace RiskierRain
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
 
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
@@ -170,7 +157,7 @@ namespace RiskierRain
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: beans, battery, berserker brew, morning mocha, star veil
+                // ITEMS: beans, battery, berserker brew, morning mocha, star veil, cloud/fart in a bottle
                 // EQUIPMENT: ninja gear
                 // ENEMIES: Baba the Enlightened (speed scav)
 

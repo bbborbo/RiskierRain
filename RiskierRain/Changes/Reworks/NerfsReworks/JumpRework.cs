@@ -308,13 +308,13 @@ namespace RiskierRain
 
     public class JumpStatHook
     {
-        public delegate void StatHookEventHandler(CharacterBody sender, int jumpCount);
+        public delegate void StatHookEventHandler(CharacterBody sender, ref int jumpCount);
         public static event StatHookEventHandler JumpStatCoefficient;
 
         public static int InvokeStatHook(CharacterBody self)
         {
             int jumpCount = 0;
-            JumpStatCoefficient?.Invoke(self, jumpCount);
+            JumpStatCoefficient?.Invoke(self, ref jumpCount);
             return jumpCount;
         }
     }

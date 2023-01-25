@@ -41,30 +41,10 @@ namespace RiskierRain.Changes.Items
             $"and reduces skill cooldowns by {Tools.ConvertDecimal(aspdBoostBase)} " +
             $"<style=cStack>({Tools.ConvertDecimal(aspdBoostStack)} per stack)</style>";
 
-        public override string ItemLore =>
-@"Order: Lay-Z Mushroom Travel Buddy
-Tracking Number: 58***********
-Estimated Delivery: 09/23/2056
-Shipping Method:  Priority/Biological
-Shipping Address:444 Slate Drive, Mars
-Shipping Details:
-
-Thank you for your purchase!
-
-Directions:
-Turn nozzle to ‘open’. Spores will disperse into the air, causing time to warp and pass slower, thus shortening your wait as the rest of reality will be experiencing time faster. It may take some time for the warping effects to occur; leave the spore bottle in one area to maximize spore count. If traveling in a small enclosed space, the spores may eventually fill the entire area. Ventilate regularly to prevent oversaturation.
-To end time warp effect, close nozzle and leave or ventilate the affected area. Always close nozzle before leaving affected area; partial bodily exposure to time warpage may have unwanted effects.
-Note- you may experience time normally for several seconds or minutes after the warping begins; this is normal. Simply wait for time to slow for you too (the slow-moving objects will resume their normal speed and unaffected objects will appear to speed up) and then happy waiting!
-
-Warnings:
-Objects appear to move slower, but carry the same force as they would normally. Do not interact with normally fast moving or forceful objects in an unsafe manner.
-The affected area experienced lowered temperature; you may want to wear warm clothes or turn your heater up. Thermometers do not accurately measure temperature in affected area; assume practical temperatures to be up to 50 degrees lower than measured.
-(bold text)Do not open bottle. Handle with extreme care. Ventilate regularly.(/bold)
-
-FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanent change in time perception, spacial warping, mania or lethargy, hallucination, paranoia, acute panic attack, or otherwise dissatisfactory results. All purchases are final.";
+        public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.VoidTier2;
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.HoldoutZoneRelated, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.HoldoutZoneRelated, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
         public ExpansionDef requiredExpansion => SOTVExpansionDef;//ExpansionCatalog._expansionDefs.DLC1; //what the fuck
         public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

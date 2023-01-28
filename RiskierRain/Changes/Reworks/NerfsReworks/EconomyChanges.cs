@@ -59,16 +59,6 @@ namespace RiskierRain
             TeleporterEnemyRewards();
         }
 
-        private void BloodShrineRewardRework()
-        {
-            On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
-        }
-
-        private void TeleporterEnemyRewards()
-        {
-            On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
-        }
-
         private void ChestCostScaling()
         {
             On.RoR2.Run.GetDifficultyScaledCost_int_float += ChangeScaledCost;
@@ -97,15 +87,15 @@ namespace RiskierRain
             }
         }
 
-        private void EliteGoldReward()
-        {
-            On.RoR2.DeathRewards.Awake += FixEliteGoldReward;
-        }
-
         #region Blood Shrines
         private static int teamMaxHealth;
         private const float totalHealthFraction = 2.18f; // health bars
-        private static float chestAmount = 2; // chests per health bar
+        private static float chestsPerHealthBar = 2; // number of chest costs awarded per health bar
+
+        private void BloodShrineRewardRework()
+        {
+            On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
+        }
         private void ShrineBloodBehavior_Start(On.RoR2.ShrineBloodBehavior.orig_Start orig, ShrineBloodBehavior self)
         {
             orig(self);
@@ -130,23 +120,27 @@ namespace RiskierRain
                 }
 
                 float baseCost = lastChestBaseCost; //cost of a small chest
-                float moneyTotal = baseCost * chestAmount; //target money granted by the shrine
+                float moneyTotal = baseCost * chestsPerHealthBar; //target money granted by the shrine
                 float maxMulti = moneyTotal / teamMaxHealth; //express target money as a fraction of the max health of the team
 
                 if (maxMulti > 0)//0.5f)
                     instance.goldToPaidHpRatio = maxMulti;
             }
         }
-        public static int lastChestBaseCost = 25;
+        public static int lastChestBaseCost = 20;
         private void GetChestCostForStage(On.RoR2.Run.orig_BeginStage orig, Run self)
         {
-            lastChestBaseCost = Run.instance.GetDifficultyScaledCost(25);
+            lastChestBaseCost = Run.instance.GetDifficultyScaledCost(smallChestTypeCost);
             orig(self);
         }
         #endregion
 
         #region Economy
-        private float teleporterEnemyRewardCoefficient = 0.5f;
+        private float teleporterEnemyRewardCoefficient = 0.3f;
+        private void TeleporterEnemyRewards()
+        {
+            On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
+        }
         private void ReduceTeleDirectorReward(On.RoR2.TeleporterInteraction.orig_Awake orig, TeleporterInteraction self)
         {
             orig(self);
@@ -182,6 +176,11 @@ namespace RiskierRain
             return (int)((float)baseCost * endMultiplier);
         }
 
+
+        private void EliteGoldReward()
+        {
+            On.RoR2.DeathRewards.Awake += FixEliteGoldReward;
+        }
         private void FixEliteGoldReward(On.RoR2.DeathRewards.orig_Awake orig, RoR2.DeathRewards self)
         {
             orig(self);
@@ -258,7 +257,7 @@ namespace RiskierRain
             float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost * ambientLevelBoostCorrection));
             float rewardMult = intendedLevelStat / actualLevelStat;
 
-            self.goldReward = (uint)((float)self.expReward * rewardMult);
+            self.goldReward = (uint)((float)self.goldReward * rewardMult);
             self.expReward = (uint)((float)self.expReward * rewardMult);
         }
         #endregion
@@ -307,11 +306,11 @@ namespace RiskierRain
 
         #region Stage Credits
         public float interactableCreditsMultiplier = 1.5f;
+        public float monsterCreditsMultiplier = 1.5f;
         public void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
             settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits * interactableCreditsMultiplier);
         }
-        public float monsterCreditsMultiplier = 1.5f;
         public void IncreaseStageMonsterCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
             settings.SceneDirectorMonsterCredits = (int)(settings.SceneDirectorMonsterCredits * monsterCreditsMultiplier);

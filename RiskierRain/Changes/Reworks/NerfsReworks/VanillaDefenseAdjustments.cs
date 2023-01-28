@@ -44,9 +44,9 @@ namespace RiskierRain
         {
             float freeArmor = 0;
 
-            if (sender.inventory != null)
+            Inventory inv = sender.inventory;
+            if (inv != null)
             {
-                Inventory inv = sender.inventory;
                 freeArmor += inv.GetItemCount(RoR2Content.Items.ArmorPlate) * rapFreeArmor;
                 freeArmor += inv.GetItemCount(RoR2Content.Items.SprintArmor) * bucklerFreeArmor;
                 freeArmor += inv.GetItemCount(RoR2Content.Items.Knurl) * knurlFreeArmor;

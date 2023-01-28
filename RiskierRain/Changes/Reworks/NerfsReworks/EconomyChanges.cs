@@ -135,7 +135,7 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        private float teleporterEnemyRewardCoefficient = 0.3f;
+        private float teleporterEnemyRewardCoefficient = 0.2f;
         private void TeleporterEnemyRewards()
         {
             On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
@@ -236,11 +236,10 @@ namespace RiskierRain
             }
 
         }
-
         #endregion
 
         #region State of Difficulty
-        public static float goldGainMultiplier = 0.4f;
+        public static float goldGainMultiplier = 0.25f;
         void FixMoneyAndExpRewards()
         {
             On.RoR2.DeathRewards.Awake += FixMoneyAndExpRewards;

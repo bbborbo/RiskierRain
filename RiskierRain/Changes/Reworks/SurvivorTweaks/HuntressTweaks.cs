@@ -29,15 +29,15 @@ namespace RiskierRain.SurvivorTweaks
         static float glaiveBounceDamage = 1.2f;
 
 
-        static int arrowRainCooldown = 22;
-        static float arrowRainRadius = 12;
-        static float arrowRainProcCoeff = 0.3f; //0.2f
+        static int arrowRainCooldown = 22; //12
+        static float arrowRainRadius = 12; // 7.5f
+        static float arrowRainProcCoeff = 0.4f; //0.2f
         static float arrowRainDamageCoeff = 0.5f; //0.5f
         static float arrowRainHitFrequency = 4f; //3f
         static float arrowRainLifetime = 8f; //6f
 
-        static int ballistaCooldown = 22;
-        static float ballistaDamageCoefficient = 12f;
+        static int ballistaCooldown = 22; //12
+        static float ballistaDamageCoefficient = 14f; //9
 
         public override void Init()
         {

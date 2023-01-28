@@ -19,7 +19,7 @@ namespace RiskierRain
         public static GameObject scrapper = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/chest/Scrapper");
 
         //code belonds to r2api
-        public static void ChangeInteractableWeightForPool(string interactableNameLowered, int newWeight, DccsPool pool)
+        public static void ChangeInteractableWeightForPool(DccsPool pool, string interactableNameLowered, int newWeight, int maxPerStage = -1)
         {
             //Debug.Log($"Changing {interactableNameLowered} card weight!");
             if (pool)
@@ -32,7 +32,15 @@ namespace RiskierRain
                         foreach (DirectorCard card in cards)
                         {
                             if (card.spawnCard.name.ToLowerInvariant() == interactableNameLowered)
-                                card.selectionWeight = newWeight;
+                                card.selectionWeight = newWeight;   
+                            if(maxPerStage >= 0)
+                            {
+                                SpawnCard isc = card.spawnCard;
+                                if(isc is InteractableSpawnCard)
+                                {
+                                    ((InteractableSpawnCard)isc).maxSpawnsPerStage = maxPerStage;
+                                }
+                            }
                         }
                         poolEntry.dccs.categories[i].cards = cards.ToArray();
                     }
@@ -57,34 +65,39 @@ namespace RiskierRain
             }
         }
 
-        public int equipBarrelWeightS1 = 6;//2
-        public int equipBarrelWeight = 2;//2
-        public int equipShopWeightS3 = 10;//2
-        public int equipShopWeight = 2;//2
+        public int equipBarrelWeightS1 = 20;//2
+        public int equipBarrelLimitS1 = 2;//-1
+        public int equipBarrelWeight = 6;//2
+        public int equipBarrelLimit = -1;//-1
+        public int equipShopWeightS3 = 20;//2
+        public int equipShopLimitS3 = 5;//-1
+        public int equipShopWeight = 4;//2
+        public int equipShopLimit = -1;//-1
         private void EquipBarrelOccurrenceHook(DccsPool pool, StageInfo currentStage)
         {
             string barrelName = DirectorAPI.Helpers.InteractableNames.EquipmentBarrel.ToLower();
             if (IsStageOne(currentStage.stage))
             {
-                ChangeInteractableWeightForPool(barrelName, equipBarrelWeightS1 /*2*/, pool);
+                ChangeInteractableWeightForPool(pool, barrelName, equipBarrelWeightS1, equipBarrelLimitS1);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                ChangeInteractableWeightForPool(barrelName, equipBarrelWeight /*2*/, pool);
+                ChangeInteractableWeightForPool(pool, barrelName, equipBarrelWeight, equipBarrelLimit);
             }
 
             string shopName = DirectorAPI.Helpers.InteractableNames.TripleShopEquipment.ToLower();
             if (IsStageThree(currentStage.stage))
             {
-                ChangeInteractableWeightForPool(shopName, equipShopWeightS3 /*2*/, pool);
+                ChangeInteractableWeightForPool(pool, shopName, equipShopWeightS3, equipShopLimitS3);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                ChangeInteractableWeightForPool(shopName, equipShopWeight /*2*/, pool);
+                ChangeInteractableWeightForPool(pool, shopName, equipShopWeight, equipShopLimit);
             }
         }
 
-        public int scrapperWeight = 25;//12
+        public int scrapperWeight = 100;//12
+        public int scrapperLimit = 3;//-1
         private void ScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string scrapperName = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();//.ToLower();
@@ -94,7 +107,7 @@ namespace RiskierRain
 
             if (isPrinterStage)
             {
-                ChangeInteractableWeightForPool(scrapperName, scrapperWeight, pool);
+                ChangeInteractableWeightForPool(pool, scrapperName, scrapperWeight, scrapperLimit);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
@@ -102,9 +115,12 @@ namespace RiskierRain
             }
         }
 
-        public int printerGreenWeight = 10;//6
-        public int printerRedWeight = 3;//1
-        public int printerRedWeightS5 = 12;//1
+        public int printerGreenWeight = 15;//6
+        public int printerGreenLimit = 4;//-1
+        public int printerRedWeight = 4;//1
+        public int printerRedLimit = 1;//-1
+        public int printerRedWeightS5 = 100;//1
+        public int printerRedLimitS5 = 2;//-1
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();
@@ -117,10 +133,11 @@ namespace RiskierRain
             if (isPrinterStage)
             {
                 //ChangeInteractableWeightForPool(printerWhite, 12 /*idk what it is in vanilla*/, pool);
-                ChangeInteractableWeightForPool(printerGreen, printerGreenWeight, pool);
-                ChangeInteractableWeightForPool(printerRed, 
-                    (currentStage.stage == DirectorAPI.Stage.SkyMeadow) 
-                    ? printerRedWeightS5 : printerRedWeight, pool);
+                ChangeInteractableWeightForPool(pool, printerGreen, printerGreenWeight, printerGreenLimit);
+                if(currentStage.stage == DirectorAPI.Stage.SkyMeadow)
+                    ChangeInteractableWeightForPool(pool, printerRed, printerRedWeightS5, printerRedLimitS5);
+                else
+                    ChangeInteractableWeightForPool(pool, printerRed, printerRedWeight, printerRedLimit);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {

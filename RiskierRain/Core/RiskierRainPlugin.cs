@@ -1318,7 +1318,5 @@ namespace RiskierRain
             return forceUnlock;
         }
         #endregion
-
-
     }
 }

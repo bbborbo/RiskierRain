@@ -26,12 +26,8 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 1.6f;
-        float costConstant = 0.5f;
+        float costExponent = 2f;
 
-        float bonusGold = 1.2f;
-        int goldChestTypeCost = 10;
-        int bigDroneTypeCost = 8;
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction smallCategoryChestDamage = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestDamage.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -49,8 +45,11 @@ namespace RiskierRain
         int smallChestTypeCost = 20; //25
         int smallShopTypeCost = 40; //25
         int smallCategoryChestTypeCost = 25; //30
-        int bigChestTypeCost = 45; //50
-        int bigShopTypeCost = 90; //50
+        int bigChestTypeCost = 40; //50
+        int bigShopTypeCost = 80; //50
+        int bigCategoryChestTypeCost = 50; //60
+        int goldChestTypeCost = 200; //400
+        int bigDroneTypeCost = 160; //250
 
         void FixMoneyScaling()
         {
@@ -156,15 +155,15 @@ namespace RiskierRain
             switch (costMultiplier)
             {
                 case 16:
-                    baseCost = 25 * goldChestTypeCost; //10, originally 16
+                    baseCost = goldChestTypeCost; //10, originally 16
                     break;
                 case 14:
-                    baseCost = 25 * bigDroneTypeCost; //8, originally 14
+                    baseCost = bigDroneTypeCost; //8, originally 14
                     break;
             }
 
             float costMultiplierExponential = Mathf.Pow(difficultyCoefficient, costExponent);
-            float costMultiplierLinear = (difficultyCoefficient * 2.5f - 1.5f);
+            float costMultiplierLinear = (difficultyCoefficient * 2.5f - 1.5f); //arbitrary, unused
 
             float endMultiplier = costMultiplierExponential;
             if (costMultiplierLinear < costMultiplierExponential)
@@ -241,6 +240,7 @@ namespace RiskierRain
         #endregion
 
         #region State of Difficulty
+        public static float goldGainMultiplier = 0.4f;
         void FixMoneyAndExpRewards()
         {
             On.RoR2.DeathRewards.Awake += FixMoneyAndExpRewards;
@@ -251,13 +251,15 @@ namespace RiskierRain
             orig(self);
             float boost = GetAmbientLevelBoost();
             float ambientLevel = Run.instance.ambientLevel;
+            // less than 1 allows for enemies to drop slightly more gold due to ALB
+            // greater than 1 is kinda pointless but it overcorrects for ALB
             float ambientLevelBoostCorrection = 1f;
 
             float actualLevelStat = 1 + (0.3f * ambientLevel);
             float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost * ambientLevelBoostCorrection));
             float rewardMult = intendedLevelStat / actualLevelStat;
 
-            self.goldReward = (uint)((float)self.goldReward * rewardMult);
+            self.goldReward = (uint)((float)self.goldReward * rewardMult * goldGainMultiplier);
             self.expReward = (uint)((float)self.expReward * rewardMult);
         }
         #endregion

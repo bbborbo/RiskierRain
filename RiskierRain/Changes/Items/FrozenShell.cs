@@ -93,9 +93,9 @@ namespace RiskierRain.Items
             frozenShellArmorBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 frozenShellArmorBuff.name = "IceBarrier";
-				frozenShellArmorBuff.buffColor = Color.cyan;
-				frozenShellArmorBuff.canStack = false;
-				frozenShellArmorBuff.isDebuff = false;
+	            frozenShellArmorBuff.buffColor = Color.cyan;
+	            frozenShellArmorBuff.canStack = false;
+	            frozenShellArmorBuff.isDebuff = false;
                 frozenShellArmorBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
             };
             Assets.buffDefs.Add(frozenShellArmorBuff);

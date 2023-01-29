@@ -239,7 +239,7 @@ namespace RiskierRain
         #endregion
 
         #region State of Difficulty
-        public static float goldGainMultiplier = 0.1f;
+        public static float goldGainMultiplier = 0.08f;
         void FixMoneyAndExpRewards()
         {
             On.RoR2.DeathRewards.Awake += FixMoneyAndExpRewards;

@@ -3,6 +3,7 @@ using EntityStates.GrandParent;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
+using RiskierRain.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,32 @@ namespace RiskierRain
             IL.RoR2.HealthComponent.TakeDamage += RevokePlanulaRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddPlanulaItemBehavior;
 			On.RoR2.GrandParentSunController.Start += SunTeamFilter;
+			On.RoR2.GlobalEventManager.OnCharacterDeath += AddPlanulaCharge;
 
-			LanguageAPI.Add("ITEM_PARENTEGG_PICKUP", "Burn all nearby enemies after standing still for 2 seconds.");
-			LanguageAPI.Add("ITEM_PARENTEGG_DESC", $"After standing still for 2 seconds, begin to " +
+			LanguageAPI.Add("ITEM_PARENTEGG_PICKUP", "Standing still creates a sun that burns enemies. Kill to charge the sun.");
+			LanguageAPI.Add("ITEM_PARENTEGG_DESC", $"Killing enemies grants 1 charge. After standing still for 2 seconds with 3 or more charges, begin to " +
 				$"burn all nearby enemies for {Tools.ConvertDecimal(PlanulaSunBehavior.burnDuration + 1 / PlanulaSunBehavior.burnInterval)} " +
 				$"(+{Tools.ConvertDecimal(1 / PlanulaSunBehavior.burnInterval)} per stack) damage " +
-				$"within {PlanulaSunBehavior.burnDistanceBase}m.");
+				$"within {PlanulaSunBehavior.burnDistanceBase}m. Consumes 1 charge every 2 seconds.");
 		}
+
+        private void AddPlanulaCharge(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+			CharacterBody attackerBody = damageReport.attackerBody;
+			if(attackerBody != null)
+            {
+				Inventory inv = attackerBody.inventory;
+				if(inv != null)
+                {
+					int itemCount = inv.GetItemCount(RoR2Content.Items.ParentEgg);
+					if(itemCount > 0)
+					{
+						attackerBody.AddBuff(Assets.planulaChargeBuff);
+					}
+                }
+            }
+			orig(self, damageReport);
+        }
 
         private void SunTeamFilter(On.RoR2.GrandParentSunController.orig_Start orig, GrandParentSunController self)
         {
@@ -53,6 +73,7 @@ namespace RiskierRain
     }
     public class PlanulaSunBehavior : RoR2.CharacterBody.ItemBehavior
 	{
+		float buffCostStopwatch = 0;
 		public static float burnDistanceBase = 100;
 		public static float burnDistanceStack = 0;
 		public static float burnInterval = 1f;
@@ -80,11 +101,22 @@ namespace RiskierRain
 				return;
 			}
 			int stack = this.stack;
+			int buffCount = body.GetBuffCount(Assets.planulaChargeBuff);
 			bool flag = stack > 0 && this.body.notMovingStopwatch >= 2f;
 			float radius = burnDistanceBase + (burnDistanceStack * (stack));
-			if (this.sunInstance != flag)
-			{
-				if (flag)
+
+            if (flag && buffCount > 0)
+            {
+                if (sunInstance)
+                {
+					buffCostStopwatch += Time.fixedDeltaTime;
+					while(buffCostStopwatch > burnInterval)
+                    {
+						body.RemoveBuff(Assets.planulaChargeBuff);
+						buffCostStopwatch -= burnInterval;
+                    }
+                }
+                else if (buffCount > 2)
 				{
 					this.sunSpawnPosition = FindSunSpawnPosition(body.corePosition);
 
@@ -104,24 +136,41 @@ namespace RiskierRain
 					component2.cycleInterval = burnInterval;
 
 					sunInstance.transform.Find("AreaIndicator").localScale = Vector3.one * radius / 5;
+					buffCostStopwatch = 0;
+				}
+            }
+            else
+            {
+				DestroySun();
+			}
+
+			if (this.sunInstance != flag)
+			{
+				if (flag)
+				{
 				}
 				else
 				{
-					UnityEngine.Object.Destroy(this.sunInstance);
-					this.sunInstance = null;
+					DestroySun();
 				}
 			}
 		}
 
 		private void OnDisable()
-		{
-			if (this.sunInstance)
-			{
-				UnityEngine.Object.Destroy(this.sunInstance);
-			}
-		}
+        {
+            DestroySun();
+        }
 
-		private GameObject CreateSun(Vector3 sunSpawnPosition)
+        private void DestroySun()
+        {
+            if (this.sunInstance)
+            {
+                UnityEngine.Object.Destroy(this.sunInstance);
+				this.sunInstance = null;
+			}
+        }
+
+        private GameObject CreateSun(Vector3 sunSpawnPosition)
 		{
 			GameObject sun = UnityEngine.Object.Instantiate<GameObject>(ChannelSun.sunPrefab, sunSpawnPosition, Quaternion.identity);
 			sun.GetComponent<GenericOwnership>().ownerObject = base.gameObject;

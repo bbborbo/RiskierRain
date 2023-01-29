@@ -38,7 +38,7 @@ namespace RiskierRain
         {
             orig(self);
 
-            self.AddItemBehavior<PlanulaSunBehavior>(self.inventory.GetItemCount(DLC1Content.Items.CritDamage));
+            self.AddItemBehavior<CombatTelescopeBehavior>(self.inventory.GetItemCount(DLC1Content.Items.CritDamage));
         }
 
         private void ScopeCritChance(CharacterBody sender, StatHookEventArgs args)

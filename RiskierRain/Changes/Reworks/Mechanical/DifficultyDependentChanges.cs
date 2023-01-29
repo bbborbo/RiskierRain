@@ -19,7 +19,7 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 6;
 
-        public static float timeDifficultyScaling = 1.45f; //1f
+        public static float timeDifficultyScaling = 1.8f; //1f
         public static float stageDifficultyScaling = 1.0f; //1.15f
 
         public static float easyTeleParticleRadius = 1f;
@@ -168,7 +168,7 @@ namespace RiskierRain
                 lemurian.levelAttackSpeed = 0.06f;
             
                 StatBuffer lwisp = LesserWispBody?.gameObject.AddComponent<StatBuffer>();
-                lwisp.levelArmor = 1f;
+                lwisp.levelArmor = 3f;
 
                 StatBuffer chimeraexploder = LunarExploderBody?.gameObject.AddComponent<StatBuffer>();
                 chimeraexploder.levelMoveSpeed = 0.1f;

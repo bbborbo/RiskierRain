@@ -1,0 +1,151 @@
+﻿using BepInEx.Configuration;
+using R2API;
+using RiskierRain.CoreModules;
+using RiskierRain.Items;
+using RoR2;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+using static RiskierRain.BurnStatHook;
+using static RiskierRain.Tools;
+
+namespace RiskierRain.Changes.Items
+{
+    class LunarBrand : ItemBase<LunarBrand>
+    {
+        public static BuffDef CauterizeBuff;
+        public static int duration = 5;
+        public static int durationStack = 5;
+        public static int cauterizeArmor = 20;
+
+        public static float cauterizeDamageCoef = 4f;
+        public static float cauterizeDamageStack = 4f;
+        public static float cauterizeProcCoef = 0f;
+        public static int burnThreshold = 5;
+
+        public override string ItemName => "Starfire Brand";
+
+        public override string ItemLangTokenName => "LUNARBRAND";
+
+        public override string ItemPickupDesc => "Chance to burn enemies. Inflicting X stacks of burn Cauterizes enemies, dealing damage BUT giving them armor and immunity to bleeding effects. Cauterize ignores armor.";
+
+        public override string ItemFullDescription => "see above";
+
+        public override string ItemLore => "";
+
+        public override ItemTier Tier => ItemTier.Lunar;
+
+        public override ItemTag[] ItemTags => new ItemTag [] { ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
+
+        public override BalanceCategory Category => BalanceCategory.StateOfDamage;
+
+        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+
+        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+
+        public override ItemDisplayRuleDict CreateItemDisplayRules()
+        {
+            return null;
+        }
+
+        public override void Hooks()
+        {
+            BurnStatCoefficient += AddBurnChance;
+            On.RoR2.GlobalEventManager.OnHitEnemy += BrandOnHit;
+            On.RoR2.CharacterBody.RecalculateStats += CauterizeBuffBehavior;
+        }
+
+        private void CauterizeBuffBehavior(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            self.armor += cauterizeArmor * self.GetBuffCount(CauterizeBuff);
+        }
+
+        private void BrandOnHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        {
+            orig(self, damageInfo, victim);
+            CharacterBody victimBody = victim ? victim.GetComponent<CharacterBody>() : null;
+            CharacterBody attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
+            int burnCount = victimBody.GetBuffCount(RoR2Content.Buffs.OnFire);
+            int strongBurnCount = victimBody.GetBuffCount(DLC1Content.Buffs.StrongerBurn);
+            int cauterizeCount = victimBody.GetBuffCount(CauterizeBuff);
+            int threshold = burnThreshold;
+            //if 1
+            while (burnCount + strongBurnCount >= threshold * (cauterizeCount + 1))//cauterize when burn > 5, remove 5 burn too
+            {
+                Debug.Log("cauterize!!");
+                int i = 0;
+                while (burnCount > 0 && i < threshold)//remove weak fire first
+                {
+                    victimBody.healthComponent.body.RemoveOldestTimedBuff(RoR2Content.Buffs.OnFire);
+                    burnCount--;
+                    i++;
+                    Debug.Log("burn = " + burnCount);
+                }
+                while (strongBurnCount > 0 && i < threshold)//remove strong fire second
+                {
+                    victimBody.healthComponent.body.RemoveOldestTimedBuff(DLC1Content.Buffs.StrongerBurn);
+                    burnCount--;
+                    i++;
+                    Debug.Log("superburn" + strongBurnCount);
+                }
+                Cauterize(attackerBody, damageInfo, victimBody);//do the thing
+                threshold += burnThreshold;
+                Debug.Log("threshold = " + threshold);
+
+            }
+        }
+
+        private void Cauterize(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victim)
+        {
+            DamageInfo cauterizeHit = new DamageInfo()
+            {
+                attacker = attackerBody.gameObject,
+                crit = damageInfo.crit,
+                damage = (cauterizeDamageCoef + cauterizeDamageStack) * attackerBody.damage,
+                damageType = DamageType.BypassArmor | DamageType.BypassBlock,
+                damageColorIndex = DamageColorIndex.Item,
+                force = Vector3.zero,
+                position = victim.transform.position,
+                procChainMask = damageInfo.procChainMask,
+                procCoefficient = cauterizeProcCoef
+            };
+            victim.healthComponent.TakeDamage(cauterizeHit); //deal damage
+            DotController bleedDot = DotController.FindDotController(victim.gameObject);
+            Tools.ClearDotStacksForType(bleedDot, DotController.DotIndex.Bleed);
+            victim.AddTimedBuffAuthority(CauterizeBuff.buffIndex, duration + durationStack); //apply buff
+        }
+
+        private void AddBurnChance(CharacterBody sender, BurnEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.burnChance += RiskierRainPlugin.brandBurnChance;
+            }
+        }
+
+        public override void Init(ConfigFile config)
+        {
+            CreateItem();
+            CreateLang();
+            CreateBuff();
+            Hooks();
+        }
+
+        private void CreateBuff()
+        {
+            CauterizeBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                CauterizeBuff.name = "cauterize";
+                CauterizeBuff.buffColor = new Color(0f, 0f, 0f);
+                CauterizeBuff.canStack = true;
+                CauterizeBuff.isDebuff = false;
+                CauterizeBuff.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+            };
+            Assets.buffDefs.Add(CauterizeBuff);
+        }
+
+        
+    }
+}

@@ -51,7 +51,6 @@ namespace RiskierRain.Items
         {
             if(GetCount(sender) > 0)
             {
-                Debug.Log("g");
                 args.burnChance += RiskierRainPlugin.stacheBurnChance;
             }
         }

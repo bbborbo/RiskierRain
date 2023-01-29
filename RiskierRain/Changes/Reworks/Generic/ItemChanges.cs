@@ -266,7 +266,7 @@ namespace RiskierRain
         #endregion
 
         #region infusion
-        public static float newInfusionBaseHealth = 30;
+        public static float newInfusionBaseHealth = 40;
 
         void FuckingFixInfusion()
         {

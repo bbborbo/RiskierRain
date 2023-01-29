@@ -83,6 +83,7 @@ namespace RiskierRain.CoreModules
             AddJetpackSpeedBoost();
             AddShockDebuff();
             AddShockCooldown();
+            AddPlanulaChargeBuff();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -104,12 +105,26 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
         }
 
+        public static BuffDef planulaChargeBuff;
+        private void AddPlanulaChargeBuff()
+        {
+            planulaChargeBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                planulaChargeBuff.buffColor = new Color(0.8f, 0.6f, 0.1f);
+                planulaChargeBuff.canStack = true;
+                planulaChargeBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                planulaChargeBuff.isDebuff = false;
+                planulaChargeBuff.name = "PlanulaChargeBuff";
+            }
+            Assets.buffDefs.Add(planulaChargeBuff);
+        }
+
         public static BuffDef jetpackSpeedBoost;
         private void AddJetpackSpeedBoost()
         {
             jetpackSpeedBoost = ScriptableObject.CreateInstance<BuffDef>();
             {
-                jetpackSpeedBoost.buffColor = new Color(220, 100, 100);
+                jetpackSpeedBoost.buffColor = new Color(0.9f, 0.2f, 0.2f);
                 jetpackSpeedBoost.canStack = false;
                 jetpackSpeedBoost.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
                 jetpackSpeedBoost.isDebuff = false;

@@ -29,7 +29,7 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "SLUNGUS";
 
-        public override string ItemPickupDesc => "Standing still slows nearby enemies and projectiles.";
+        public override string ItemPickupDesc => "Standing still increases you damage while slowing nearby enemies and projectiles.";
 
         public override string ItemFullDescription => $"While stationary, create a " +
             $"<style=cIsUtility>stasis field</style> for {radiusBase}m around you, " +

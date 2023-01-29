@@ -31,14 +31,14 @@ namespace RiskierRain
                         var cards = poolEntry.dccs.categories[i].cards.ToList();
                         foreach (DirectorCard card in cards)
                         {
-                            if (card.spawnCard.name.ToLowerInvariant() == interactableNameLowered)
-                                card.selectionWeight = newWeight;   
-                            if(maxPerStage >= 0)
+                            SpawnCard spawnCard = card.spawnCard;
+                            if (spawnCard.name.ToLowerInvariant() == interactableNameLowered)
                             {
-                                SpawnCard isc = card.spawnCard;
-                                if(isc is InteractableSpawnCard)
+                                card.selectionWeight = newWeight;
+
+                                if (maxPerStage >= 0 && spawnCard is InteractableSpawnCard)
                                 {
-                                    ((InteractableSpawnCard)isc).maxSpawnsPerStage = maxPerStage;
+                                    ((InteractableSpawnCard)spawnCard).maxSpawnsPerStage = maxPerStage;
                                 }
                             }
                         }
@@ -66,13 +66,13 @@ namespace RiskierRain
         }
 
         public int equipBarrelWeightS1 = 20;//2
-        public int equipBarrelLimitS1 = 2;//-1
+        public int equipBarrelLimitS1 = 4;//-1
         public int equipBarrelWeight = 6;//2
-        public int equipBarrelLimit = -1;//-1
+        public int equipBarrelLimit = 2;//-1
         public int equipShopWeightS3 = 20;//2
-        public int equipShopLimitS3 = 5;//-1
+        public int equipShopLimitS3 = 4;//-1
         public int equipShopWeight = 4;//2
-        public int equipShopLimit = -1;//-1
+        public int equipShopLimit = 2;//-1
         private void EquipBarrelOccurrenceHook(DccsPool pool, StageInfo currentStage)
         {
             string barrelName = DirectorAPI.Helpers.InteractableNames.EquipmentBarrel.ToLower();
@@ -96,7 +96,7 @@ namespace RiskierRain
             }
         }
 
-        public int scrapperWeight = 100;//12
+        public int scrapperWeight = 1000;//12
         public int scrapperLimit = 3;//-1
         private void ScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
@@ -115,11 +115,11 @@ namespace RiskierRain
             }
         }
 
-        public int printerGreenWeight = 15;//6
+        public int printerGreenWeight = 20;//6
         public int printerGreenLimit = 4;//-1
         public int printerRedWeight = 4;//1
         public int printerRedLimit = 1;//-1
-        public int printerRedWeightS5 = 100;//1
+        public int printerRedWeightS5 = 1000;//1
         public int printerRedLimitS5 = 2;//-1
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {

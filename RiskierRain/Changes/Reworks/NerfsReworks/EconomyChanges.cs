@@ -26,7 +26,7 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 2f;
+        float costExponent = 1.8f;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -135,7 +135,7 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        private float teleporterEnemyRewardCoefficient = 0.2f;
+        private float teleporterEnemyRewardCoefficient = 0.4f;
         private void TeleporterEnemyRewards()
         {
             On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
@@ -239,7 +239,7 @@ namespace RiskierRain
         #endregion
 
         #region State of Difficulty
-        public static float goldGainMultiplier = 0.25f;
+        public static float goldGainMultiplier = 0.1f;
         void FixMoneyAndExpRewards()
         {
             On.RoR2.DeathRewards.Awake += FixMoneyAndExpRewards;

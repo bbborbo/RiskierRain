@@ -7,6 +7,8 @@ using System.Text;
 using UnityEngine;
 using static RiskierRain.RiskierRainPlugin;
 using static RiskierRain.JumpStatHook;
+using On.RoR2.Items;
+using HarmonyLib;
 
 namespace RiskierRain.Items
 {
@@ -41,6 +43,20 @@ namespace RiskierRain.Items
         {
             JumpStatCoefficient += FartJump;
             OnJumpEvent += FartOnJump;
+            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
+        }
+
+
+
+        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        {
+            ItemDef.Pair transformation = new ItemDef.Pair()
+            {
+                itemDef1 = BottleCloud.instance.ItemsDef, //consumes cloud in a bottle
+                itemDef2 = BottleFart.instance.ItemsDef
+            };
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
+            orig();
         }
 
         private void FartJump(CharacterBody sender, ref int jumpCount)

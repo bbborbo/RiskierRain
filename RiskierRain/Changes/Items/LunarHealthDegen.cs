@@ -19,8 +19,10 @@ namespace RiskierRain.Changes.Items
         public static float luckBase = 1;
         public static float luckstack = 0; //maybe 1?
 
-        public static float healthRegenBase = -5;
-        public static float healthRegenStack = -5;
+        public static float healthRegenBase = -3;
+        public static float healthRegenStack = -3;
+        public static float healthRegenLevelBase = -0.3f;
+        public static float healthRegenLevelStack = -0.3f;
 
         public static float damageBase = 4;
         public static float damageLevel = 0.6f;

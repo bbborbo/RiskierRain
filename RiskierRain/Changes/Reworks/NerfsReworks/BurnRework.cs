@@ -107,10 +107,9 @@ namespace RiskierRain
                     int burnProcChance = BurnStatHook.GetBurnChance().burnChance;
                     if (burnProcChance > 0)
                     {
-                        Debug.Log(burnProcChance);
+                        //Debug.Log("Burn proc chance: " + burnProcChance);
                         if (Util.CheckRoll(burnProcChance, attackerBody.master))
                         {
-                            Debug.Log("true");
                             InflictDotInfo inflictDotInfo = new InflictDotInfo
                             {
                                 attackerObject = damageInfo.attacker,

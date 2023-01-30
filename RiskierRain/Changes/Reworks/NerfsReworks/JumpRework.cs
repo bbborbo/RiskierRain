@@ -233,7 +233,6 @@ namespace RiskierRain
                     float totalYaw = urnBallYawSpread * 2 / (urnBallCountBase + 1);
                     float totalSpread = (urnBallCountBase - 1) * urnBallYawSpread;
                     float halfSpread = totalSpread / 2;
-                    Debug.Log(totalYaw);
 
                     for (int i = 0; i < urnBallCountBase; i++)
                     {
@@ -241,7 +240,6 @@ namespace RiskierRain
                         //float currentSpread = Mathf.Lerp(0, totalSpread, i / (urnBallCountBase - 1)) - halfSpread;
                         float currentSpread = (i / (urnBallCountBase - 1)) * totalSpread - halfSpread;
                         float bonusYaw = (urnBallYawSpread * i) - (totalYaw * 2f);
-                        Debug.Log(bonusYaw);
 
                         Vector3 forward = Util.ApplySpread(aimRay.direction, 0, 0, 1, 0, bonusYaw, 0); 
                         //Vector3 fwd = Vector3.ProjectOnPlane(forward, Vector3.up);

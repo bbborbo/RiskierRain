@@ -138,7 +138,7 @@ namespace RiskierRain.SurvivorTweaks
 
             if (lastStageDesperadoTokens.Capacity == 0)
             {
-                Debug.Log("sdgfjhbsdjhgbajrhesbgajehrk");
+                Debug.Log("Desperado Token Thing Fail!");
             }
 
             for (int i = 0; i < lastStageDesperadoTokens.Capacity; i++) 
@@ -150,7 +150,7 @@ namespace RiskierRain.SurvivorTweaks
                 newPair.id = body.playerControllerId;
                 newPair.tokens = body.GetBuffCount(RoR2Content.Buffs.BanditSkull);
 
-                Debug.Log(i);
+                //Debug.Log(i);
                 lastStageDesperadoTokens.Add(newPair);
             }
             /*foreach (PlayerCharacterMasterController instance in PlayerCharacterMasterController.instances)

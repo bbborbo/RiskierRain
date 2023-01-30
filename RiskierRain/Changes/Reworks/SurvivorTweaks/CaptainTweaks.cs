@@ -181,7 +181,7 @@ namespace RiskierRain.SurvivorTweaks
             ObjectScaleCurve[] diabloIndicators = diabloPrefab.GetComponentsInChildren<ObjectScaleCurve>();
             foreach (ObjectScaleCurve osc in diabloIndicators)
             {
-                Debug.Log(osc.name);
+                //Debug.Log(osc.name);
                 if (osc.name == "IndicatorRing")
                 {
                     osc.timeMax = diabloMaxDuration;
@@ -344,7 +344,7 @@ namespace RiskierRain.SurvivorTweaks
             if (pd != null)
             {
                 self.damageStat = pd.damage / 20;
-                Debug.Log(self.damageStat);
+                //Debug.Log(self.damageStat);
             }
 
             orig(self);

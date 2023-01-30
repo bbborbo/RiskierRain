@@ -120,7 +120,7 @@ namespace RiskierRain
                 Transform transform = component.transform.Find("TeleporterBaseMesh/BuiltInEffects/PassiveParticle, Sphere");
                 if (transform)
                 {
-                    Debug.Log(transform.localScale);
+                    //Debug.Log(transform.localScale);
                     transform.localScale = Vector3.one * defaultTeleParticleRadius * particleScale;
                 }
             }

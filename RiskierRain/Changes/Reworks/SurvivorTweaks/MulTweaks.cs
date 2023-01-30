@@ -165,7 +165,7 @@ namespace RiskierRain.SurvivorTweaks
         private void ScrapBuff(On.EntityStates.Toolbot.FireGrenadeLauncher.orig_OnEnter orig, FireGrenadeLauncher self)
         {
             self.damageCoefficient = scrapDamage;
-            Debug.Log(self.baseDuration);
+            //Debug.Log(self.baseDuration);
             self.baseDuration = scrapDuration;
             orig(self);
         }

@@ -188,10 +188,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         {
             if (!slungusFieldInstance)
             {
-                if (body.hasAuthority)
-                {
-                    body.AddBuff(Slungus.slungusBuff);
-                }
+                GrantSlungusBuff();
                 slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
 
                 TeamComponent teamFilter = body.GetComponent<TeamComponent>();
@@ -208,20 +205,25 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             }
         }
 
+        private void GrantSlungusBuff()
+        {
+            if (body.hasAuthority)
+            {
+                body.AddBuff(Slungus.slungusBuff);
+            }
+        }
+
         private void UpdateSlungusRadius()
         {
-            Debug.Log(radius);
             BuffWard buffWard = slungusFieldInstance.GetComponent<BuffWard>();
             if (buffWard)
             {
                 buffWard.radius = radius;
-                Debug.Log(buffWard.radius);
             }
             SphereCollider collider = slungusFieldInstance.GetComponent<SphereCollider>();
             if (collider)
             {
                 collider.radius = radius;
-                Debug.Log(collider.radius);
             }
         }
 

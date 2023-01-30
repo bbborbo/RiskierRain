@@ -158,6 +158,8 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
     public class SlungusItemBehavior : CharacterBody.ItemBehavior
     {
+        public static float slungusBuffReapplicationTime = 3;
+        float buffTimer = 0;
         public GameObject slungusFieldInstance;
         public float radius
         {
@@ -186,9 +188,17 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         private void EnableSlungus()
         {
+            if (!body.HasBuff(Slungus.slungusBuff))
+            {
+                buffTimer -= Time.fixedDeltaTime;
+                if(buffTimer <= 0)
+                {
+                    buffTimer = slungusBuffReapplicationTime;
+                    GrantSlungusBuff();
+                }
+            }
             if (!slungusFieldInstance)
             {
-                GrantSlungusBuff();
                 slungusFieldInstance = Instantiate(Slungus.slungusSlowFieldPrefab, body.transform);
 
                 TeamComponent teamFilter = body.GetComponent<TeamComponent>();

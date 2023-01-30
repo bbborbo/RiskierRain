@@ -67,33 +67,36 @@ namespace RiskierRain.Changes.Items
             orig(self, damageInfo, victim);
             CharacterBody victimBody = victim ? victim.GetComponent<CharacterBody>() : null;
             CharacterBody attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
-            int burnCount = victimBody.GetBuffCount(RoR2Content.Buffs.OnFire);
-            int strongBurnCount = victimBody.GetBuffCount(DLC1Content.Buffs.StrongerBurn);
-            int cauterizeCount = victimBody.GetBuffCount(CauterizeBuff);
-            int threshold = burnThreshold;
-            //if 1
-            while (burnCount + strongBurnCount >= threshold * (cauterizeCount + 1))//cauterize when burn > 5, remove 5 burn too
+            int itemCount = GetCount(attackerBody);
+            if (itemCount > 0)
             {
-                Debug.Log("cauterize!!");
-                int i = 0;
-                while (burnCount > 0 && i < threshold)//remove weak fire first
+                int burnCount = victimBody.GetBuffCount(RoR2Content.Buffs.OnFire);
+                int strongBurnCount = victimBody.GetBuffCount(DLC1Content.Buffs.StrongerBurn);
+                int cauterizeCount = victimBody.GetBuffCount(CauterizeBuff);
+                int threshold = burnThreshold;
+                //if 1
+                while (burnCount + strongBurnCount >= threshold * (cauterizeCount + 1))//cauterize when burn > 5, remove 5 burn too
                 {
-                    victimBody.healthComponent.body.RemoveOldestTimedBuff(RoR2Content.Buffs.OnFire);
-                    burnCount--;
-                    i++;
-                    Debug.Log("burn = " + burnCount);
+                    Debug.Log("cauterize!!");
+                    int i = 0;
+                    while (burnCount > 0 && i < threshold)//remove weak fire first
+                    {
+                        victimBody.healthComponent.body.RemoveOldestTimedBuff(RoR2Content.Buffs.OnFire);
+                        burnCount--;
+                        i++;
+                        Debug.Log("burn = " + burnCount);
+                    }
+                    while (strongBurnCount > 0 && i < threshold)//remove strong fire second
+                    {
+                        victimBody.healthComponent.body.RemoveOldestTimedBuff(DLC1Content.Buffs.StrongerBurn);
+                        burnCount--;
+                        i++;
+                        Debug.Log("superburn" + strongBurnCount);
+                    }
+                    Cauterize(attackerBody, damageInfo, victimBody);//do the thing
+                    threshold += burnThreshold;
+                    Debug.Log("threshold = " + threshold);
                 }
-                while (strongBurnCount > 0 && i < threshold)//remove strong fire second
-                {
-                    victimBody.healthComponent.body.RemoveOldestTimedBuff(DLC1Content.Buffs.StrongerBurn);
-                    burnCount--;
-                    i++;
-                    Debug.Log("superburn" + strongBurnCount);
-                }
-                Cauterize(attackerBody, damageInfo, victimBody);//do the thing
-                threshold += burnThreshold;
-                Debug.Log("threshold = " + threshold);
-
             }
         }
 

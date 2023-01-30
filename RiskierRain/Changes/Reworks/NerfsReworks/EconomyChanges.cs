@@ -42,11 +42,11 @@ namespace RiskierRain
         MultiShopController equipmentShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopEquipment/TripleShopEquipment.prefab").WaitForCompletion().GetComponent<MultiShopController>();
 
 
-        int smallChestTypeCost = 25; //25
+        int smallChestTypeCost = 20; //25
         int smallShopTypeCost = 40; //25
         int smallCategoryChestTypeCost = 25; //30
-        int bigChestTypeCost = 40; //50
-        int bigShopTypeCost = 80; //50
+        int bigChestTypeCost = 45; //50
+        int bigShopTypeCost = 90; //50
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250

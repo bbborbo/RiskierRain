@@ -66,10 +66,10 @@ namespace RiskierRain.Changes.Items
                 self.regen += healthRegenBase + (healthRegenStack * itemCount - 1);//health degen
 
                 int buffCount = self.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
-                if (buffCount > 0)
+                if (buffCount >= 4)
                 {
                     self.damage += (damageBase + damageLevel * (self.level - 1));
-                    if (buffCount > 1)
+                    if (buffCount >= 7)
                     {
                         self.damage += (damageBase + damageLevel * (self.level - 1));//remove once luck works
                                                                                      //ADD LUCK
@@ -126,7 +126,7 @@ namespace RiskierRain.Changes.Items
         HealthComponent healthComponent;
         BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarLuckBuff.buffIndex;
         BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarLuckBarrierCooldown.buffIndex;
-        public static int maxBuffCount = 2;
+        public static int maxBuffCount = 10;//2
         int buffCount = 0;
 
         public static float barrierFraction = 0.5f;
@@ -146,7 +146,7 @@ namespace RiskierRain.Changes.Items
             {
                 this.body.AddBuff(luckUpBuffIndex);
                 buffCount++;
-                if (buffCount >= 2 &! body.HasBuff(barrierCooldownBuffIndex))
+                if (buffCount >= 7 &! body.HasBuff(barrierCooldownBuffIndex))
                 {
                     healthComponent.AddBarrier(healthComponent.fullCombinedHealth * barrierFraction);
                     body.AddTimedBuff(barrierCooldownBuffIndex, barrierCoolDown);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RoR2;
 
 namespace RiskierRain
 {
@@ -155,6 +156,21 @@ namespace RiskierRain
                 Debug.Log("Light: " + l.name.ToString());
             }
         }
+        #endregion
+
+        #region Buffs?
+        public static void ClearDotStacksForType(this DotController dotController, DotController.DotIndex dotIndex)
+        {
+            for (int i = dotController.dotStackList.Count - 1; i >= 0; i--)
+            {
+                if (dotController.dotStackList[i].dotIndex == dotIndex)
+                {
+                    dotController.RemoveDotStackAtServer(i);
+                }
+            }
+        }
+
+
         #endregion
     }
 }

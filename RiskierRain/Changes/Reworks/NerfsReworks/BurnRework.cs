@@ -26,6 +26,8 @@ namespace RiskierRain
         bool shouldIgnitionDamageAndDurationCompound = false;
 
         public static int stacheBurnChance = 25;
+
+        public static int brandBurnChance = 30;
         void BurnReworks()
         {
             On.RoR2.GlobalEventManager.OnHitEnemy += BurnChanceHook;

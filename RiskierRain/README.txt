@@ -5,5 +5,5 @@ riskier rain is a very cool mod that makes the game way cooler and you should pl
 
 known issues!!
 -shocked enemies leave their stunned corpses behind when getting void bubbled and throw a million NREs :c
--shard vomitter doesnt affect skills that dont have cooldowns
+-simu elites are not immune to lost seers which leads to lol interactions
 -networking issues

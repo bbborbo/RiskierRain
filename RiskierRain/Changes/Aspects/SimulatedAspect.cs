@@ -120,8 +120,8 @@ namespace RiskierRain.Equipment
                 {
                     if (attackerBody)
                     {
-                        Debug.Log("spawn simu");
-                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, 10);
+                        int duration = (int) ((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth)* 50);
+                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, duration);
                         CharacterMaster ghostMaster = ghost.master;
                         if (ghostMaster != null)
                         {
@@ -132,7 +132,7 @@ namespace RiskierRain.Equipment
                             }
                             else
                             {
-                                ghost.inventory.GiveEquipmentString("AFFIX_SIMULATED");
+                                ghost.inventory.SetEquipmentIndex(EliteEquipmentDef.equipmentIndex);
                             }
                         }
                         else
@@ -158,6 +158,7 @@ namespace RiskierRain.Equipment
                 args.moveSpeedMultAdd += 0.25f;
                 args.baseAttackSpeedAdd += 1f;
                 sender.bodyFlags |= CharacterBody.BodyFlags.ImmuneToVoidDeath;
+                Debug.Log(sender.bodyFlags);
                 // sender.healthComponent.HealthBarValues) = true;
             }
         }
@@ -209,7 +210,7 @@ namespace RiskierRain.Equipment
             if (!body.isPlayerControlled)
             {
                 TeamComponent teamComponent = body.teamComponent;
-                if (teamComponent.teamIndex != TeamIndex.Player)
+                //if (teamComponent.teamIndex != TeamIndex.Player)
                     teamComponent.teamIndex = TeamIndex.Void;
             }
         }

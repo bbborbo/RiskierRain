@@ -1184,7 +1184,10 @@ namespace RiskierRain
         void InitializeInteractables()
         {
             var interactableTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(InteractableBase)));
-           
+
+            //test!!!
+            //DirectorAPI.Helpers.AddNewInteractableToStage(DirectorAPI.Helpers.InteractableNames.TripleShopEquipment., DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.TitanicPlains);
+
             foreach (var interactableType in interactableTypes)
             {
                 InteractableBase interactable = (InteractableBase)System.Activator.CreateInstance(interactableType);

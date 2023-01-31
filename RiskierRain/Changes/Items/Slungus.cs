@@ -158,7 +158,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
     public class SlungusItemBehavior : CharacterBody.ItemBehavior
     {
-        public static float slungusBuffReapplicationTime = 3;
+        public static float slungusBuffReapplicationTime = 1;
         float buffTimer = 0;
         public GameObject slungusFieldInstance;
         public float radius
@@ -212,6 +212,11 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
                 }
                 UpdateSlungusRadius();
                 NetworkServer.Spawn(slungusFieldInstance);
+                if (!body.HasBuff(Slungus.slungusBuff))
+                {
+                    buffTimer = slungusBuffReapplicationTime;
+                    GrantSlungusBuff();
+                }
             }
         }
 

@@ -25,6 +25,7 @@ using RiskierRain.SurvivorTweaks;
 using RiskierRain.Skills;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
+//using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -537,6 +538,8 @@ namespace RiskierRain
 
                 //enemies use equipment
                 MakeEnemiesuseEquipment();
+                //spawnlists
+                ChangeSpawnlists();
 
                 #region difficulty dependent difficulty
                 //ambient level

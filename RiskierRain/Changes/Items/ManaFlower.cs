@@ -7,20 +7,26 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static RiskierRain.CoreModules.StatHooks;
+using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain.Items
 {
     class ManaFlower : ItemBase
     {
-        public static float cdrAmt = 0.08f;
+        public static float cdrAmtBase = 0.08f;
+        public static float cdrAmtStack = 0.06f;
         public override string ItemName => "Nature\u2019s Gift";
 
         public override string ItemLangTokenName => "BORBOMANAFLOWER";
 
-        public override string ItemPickupDesc => "Reduces cooldowns for your primary and secondary skills.";
+        public override string ItemPickupDesc => "It's pretty, oh so pretty...";
 
-        public override string ItemFullDescription => $"Reduce <style=cIsUtility>Primary and Secondary skill cooldowns</style> " +
-            $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmt)}</style> <style=cStack>(+{Tools.ConvertDecimal(cdrAmt)} per stack)</style>.";
+        public override string ItemFullDescription => $"Increases <style=cIsDamage>attack speed</style> " +
+            $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmtBase)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(cdrAmtStack)} per stack)</style>, " +
+            $"and reduces <style=cIsUtility>Primary and Secondary skill cooldowns</style> " +
+            $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmtBase)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(cdrAmtStack)} per stack)</style>.";
 
         public override string ItemLore => @"Order: Jupiter Rose
 Tracking Number: 58***********
@@ -31,8 +37,7 @@ Shipping Details:
 
 Isn’t it pretty?
 Just looking at it fills me with energy.
-Nature is so magical :)
-";
+Nature is so magical :)";
 
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
@@ -51,6 +56,18 @@ Nature is so magical :)
         public override void Hooks()
         {
             On.RoR2.CharacterBody.RecalculateStats += ManaFlowerCdr;
+            GetStatCoefficients += ManaFlowerAspd;
+        }
+
+        private void ManaFlowerAspd(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = GetCount(sender);
+            if(itemCount > 0)
+            {
+                float aspdBoost = cdrAmtBase + cdrAmtStack * (itemCount - 1);
+
+                args.attackSpeedMultAdd += aspdBoost;
+            }
         }
 
         private void ManaFlowerCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -60,7 +77,7 @@ Nature is so magical :)
             if (itemCount > 0)
             {
                 //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
-                float cdrBoost = Mathf.Pow(1 - cdrAmt, itemCount);
+                float cdrBoost = (1 - cdrAmtBase) * Mathf.Pow(1 - cdrAmtStack, itemCount - 1);
 
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)

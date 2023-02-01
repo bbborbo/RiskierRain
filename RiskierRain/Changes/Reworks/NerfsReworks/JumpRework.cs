@@ -245,7 +245,7 @@ namespace RiskierRain
                         //Vector3 fwd = Vector3.ProjectOnPlane(forward, Vector3.up);
 
                         ProjectileManager.instance.FireProjectile(
-                            FireTarball.projectilePrefab, aimRay.origin, Util.QuaternionSafeLookRotation(forward),
+                            Assets.miredUrnTarball, aimRay.origin, Util.QuaternionSafeLookRotation(forward),
                             body.gameObject, body.damage * urnBallDamageCoefficient, 0f,
                             Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
                     }

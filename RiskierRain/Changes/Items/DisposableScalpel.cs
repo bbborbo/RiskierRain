@@ -22,7 +22,14 @@ namespace RiskierRain.Items
             $"to drop a <style=cIsDamage>trophy</style>. " +
             $"Consumes <style=cIsUtility>1</style> stack when a Trophy drops.";
 
-        public override string ItemLore => "";
+        public override string ItemLore =>
+@"(mail blurb)
+
+Notes:
+Custom made according to your specifications. Very sharp. Blade thickness is measured in planck lengths. This will definitely cut whatever you need it for.
+Can’t speak for the durability, though. Try to get it right the first time–
+And one more thing – when it breaks, it won’t wait ‘till your operation is finished. Don’t use it on anything you care about not damaging. Or killing.
+You already knew all that, though. Can’t help but wonder what you keep ordering these things for.";
 
         public override ItemTier Tier => ItemTier.Tier2;
 

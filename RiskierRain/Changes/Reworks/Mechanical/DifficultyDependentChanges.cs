@@ -86,9 +86,6 @@ namespace RiskierRain
         {
             monsoonDesc += $"\n>Enemies gain <style=cIsHealth>unique scaling</style></style>";
 
-            //GiveMonstersMonsoonStatBuffers();
-            //GiveBossesMonsoonStatBuffers();
-            //GetStatCoefficients += this.MonsoonPlusStatBuffs;
             GetStatCoefficients += this.MonsoonPlusStatBuffs2;
         }
 
@@ -100,7 +97,7 @@ namespace RiskierRain
                 float compensatedLevel = sender.level - ambientLevelBoost;
                 if (sender.isBoss)
                 {
-                    args.baseShieldAdd += 50 * compensatedLevel;
+                    args.baseShieldAdd += 80 * compensatedLevel;
                 }
                 
                 if (sender.isChampion)
@@ -109,8 +106,8 @@ namespace RiskierRain
                 }
                 else
                 {
-                    args.attackSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
-                    args.moveSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
+                    args.attackSpeedMultAdd += Mathf.Min(0.03f * compensatedLevel, 2.4f);
+                    args.moveSpeedMultAdd += Mathf.Min(0.03f * compensatedLevel, 2.4f);
                 }
             }
         }
@@ -152,132 +149,6 @@ namespace RiskierRain
                 }
             }
         }
-
-        #region monsoon stats
-        #region monsoon stat buffers
-        private void GiveMonstersMonsoonStatBuffers()
-            {
-                StatBuffer vulture = VultureBody?.gameObject.AddComponent<StatBuffer>();
-                vulture.levelShield = 10f;
-            
-                StatBuffer beetle = BeetleBody?.gameObject.AddComponent<StatBuffer>();
-                beetle.levelMoveSpeed = 0.1f;
-                beetle.levelOffset = (int)-monsoonDifficultyBoost;
-
-                StatBuffer beetleguard = BeetleGuardBody?.gameObject.AddComponent<StatBuffer>();
-                beetleguard.levelAttackSpeed = 0.03f;
-            
-                StatBuffer bison = BisonBody?.gameObject.AddComponent<StatBuffer>();
-                bison.levelMoveSpeed = 0.05f;
-            
-                StatBuffer brass = BellBody?.gameObject.AddComponent<StatBuffer>();
-                brass.levelAttackSpeed = 0.03f;
-            
-                StatBuffer templar = ClayTemplarBody?.gameObject.AddComponent<StatBuffer>();
-                templar.levelAttackSpeed = 0.03f;
-            
-                StatBuffer elderlemurian = ElderLemurianBody?.gameObject.AddComponent<StatBuffer>();
-                elderlemurian.levelAttackSpeed = 0.05f;
-            
-                StatBuffer gwisp = GreaterWispBody?.gameObject.AddComponent<StatBuffer>();
-                gwisp.levelAttackSpeed = 0.05f;
-            
-                StatBuffer crab = HermitCrabBody?.gameObject.AddComponent<StatBuffer>();
-                crab.levelMoveSpeed = 0.12f;
-            
-                StatBuffer imp = ImpBody?.gameObject.AddComponent<StatBuffer>();
-                imp.levelMoveSpeed = 0.05f;
-            
-                StatBuffer jellyfish = JellyfishBody?.gameObject.AddComponent<StatBuffer>();
-                jellyfish.levelMoveSpeed = 0.08f;
-            
-                StatBuffer lemurian = LemurianBody?.gameObject.AddComponent<StatBuffer>();
-                lemurian.levelAttackSpeed = 0.06f;
-            
-                StatBuffer lwisp = LesserWispBody?.gameObject.AddComponent<StatBuffer>();
-                lwisp.levelArmor = 3f;
-
-                StatBuffer chimeraexploder = LunarExploderBody?.gameObject.AddComponent<StatBuffer>();
-                chimeraexploder.levelMoveSpeed = 0.1f;
-
-                StatBuffer chimeragolem = LunarGolemBody?.gameObject.AddComponent<StatBuffer>();
-                chimeragolem.levelShield = 300f;
-            
-                StatBuffer chimerawisp = LunarWispBody?.gameObject.AddComponent<StatBuffer>();
-                chimerawisp.levelAttackSpeed = 0.03f;
-            
-                StatBuffer mushrum = MiniMushroomBody?.gameObject.AddComponent<StatBuffer>();
-                mushrum.levelArmor = 1f;
-            
-                StatBuffer parent = ParentBody?.gameObject.AddComponent<StatBuffer>();
-                parent.levelAttackSpeed = 0.03f;
-            
-                StatBuffer probe = SolusProbeBody?.gameObject.AddComponent<StatBuffer>();
-                probe.levelArmor = 1f;
-            
-                StatBuffer golem = StoneGolemBody?.gameObject.AddComponent<StatBuffer>();
-                golem.levelArmor = 2f;
-            
-                StatBuffer reaver = VoidReaverBody?.gameObject.AddComponent<StatBuffer>();
-                reaver.levelShield = 500f;
-                reaver.levelOffset = (int)-monsoonDifficultyBoost;
-            }
-
-            private void GiveBossesMonsoonStatBuffers()
-            {
-                StatBuffer queen = BeetleQueenBody?.gameObject.AddComponent<StatBuffer>();
-                queen.levelArmor = 2f;
-
-                StatBuffer dunestrider = ClayBossBody?.gameObject.AddComponent<StatBuffer>();
-                dunestrider.levelArmor = 2f;
-
-                StatBuffer grandpa = GrandParentBody?.gameObject.AddComponent<StatBuffer>();
-                grandpa.levelAttackSpeed = 0.04f;
-                grandpa.levelOffset = -3;
-
-                StatBuffer grovetender = GrovetenderBody?.gameObject.AddComponent<StatBuffer>();
-                grovetender.levelMoveSpeed = 0.06f;
-                grovetender.levelOffset = -3;
-
-                StatBuffer overlord = ImpBossBody?.gameObject.AddComponent<StatBuffer>();
-                overlord.levelArmor = 2f;
-                overlord.levelOffset = -3;
-
-                StatBuffer worm = MagmaWormBody?.gameObject.AddComponent<StatBuffer>();
-                worm.levelMoveSpeed = 0.06f;
-                worm.levelOffset = -3;
-
-                StatBuffer scav = ScavBody?.gameObject.AddComponent<StatBuffer>();
-                scav.levelShield = 800f;
-                scav.levelOffset = -6;
-
-                StatBuffer solus = SolusControlUnitBody?.gameObject.AddComponent<StatBuffer>();
-                solus.levelShield = 600f;
-                solus.levelOffset = -3;
-
-                StatBuffer titan = StoneTitanBody?.gameObject.AddComponent<StatBuffer>();
-                titan.levelArmor = 2f;
-
-                StatBuffer vagrant = VagrantBody?.gameObject.AddComponent<StatBuffer>();
-                vagrant.levelMoveSpeed = 0.06f;
-            }
-            #endregion
-
-            private void MonsoonPlusStatBuffs(CharacterBody sender, StatHookEventArgs args)
-            {
-                if(Run.instance.selectedDifficulty >= DifficultyIndex.Hard && sender.teamComponent.teamIndex != TeamIndex.Player)
-                {
-                    StatBuffer sb = sender.gameObject.GetComponent<StatBuffer>();
-                    if(sb != null)
-                    {
-                        args.baseAttackSpeedAdd += Mathf.Max(sb.levelAttackSpeed * (sender.level + sb.levelOffset - monsoonDifficultyBoost), 0);
-                        args.baseMoveSpeedAdd += Mathf.Max(sb.levelMoveSpeed * (sender.level + sb.levelOffset - monsoonDifficultyBoost), 0);
-                        args.baseShieldAdd += Mathf.Max(sb.levelShield * (sender.level + sb.levelOffset - monsoonDifficultyBoost), 0);
-                        args.armorAdd += Mathf.Max((int)(sb.levelArmor * (sender.level + sb.levelOffset - monsoonDifficultyBoost)), 0);
-                    }
-                }
-            }
-        #endregion
 
         #region ambient level
         internal float GetAmbientLevelBoost()

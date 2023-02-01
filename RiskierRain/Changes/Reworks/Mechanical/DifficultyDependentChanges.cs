@@ -100,7 +100,7 @@ namespace RiskierRain
                 float compensatedLevel = sender.level - ambientLevelBoost;
                 if (sender.isBoss)
                 {
-                    args.baseShieldAdd += 50 * compensatedLevel;
+                    args.baseShieldAdd += 80 * compensatedLevel;
                 }
                 
                 if (sender.isChampion)
@@ -109,8 +109,8 @@ namespace RiskierRain
                 }
                 else
                 {
-                    args.attackSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
-                    args.moveSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
+                    args.attackSpeedMultAdd += 0.03f * Mathf.Min(compensatedLevel, 40);
+                    args.moveSpeedMultAdd += 0.03f * Mathf.Min(compensatedLevel, 40);
                 }
             }
         }

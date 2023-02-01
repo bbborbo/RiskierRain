@@ -351,8 +351,8 @@ namespace RiskierRain
             float playerScaleFactor = 0.0506f * difficultyDef.scalingValue * Mathf.Pow((float)self.participatingPlayerCount, 0.2f);
 
             float stageFactor = Mathf.Pow(stageDifficultyScaling, (float)self.stageClearCount); //1^loops
-            float totalLoops = Mathf.Floor(self.stageClearCount / 5);
-            float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops + 1); //1.5^loops
+            int totalLoops = Mathf.FloorToInt(self.stageClearCount / 5);
+            float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops); //1.5^loops
             float difficultyCoefficient = (playerBaseFactor + playerScaleFactor * minutesFactor) * stageFactor * loopFactor;
 
             self.compensatedDifficultyCoefficient = difficultyCoefficient;

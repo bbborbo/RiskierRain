@@ -18,8 +18,8 @@ namespace RiskierRain.Changes.Interactables
 {
 	class FakeShrine : InteractableBase
 	{
-		public override float voidSeedWeight => 0.4f;
-		public override int normalWeight => 10;
+		public override float voidSeedWeight => 0.2f;
+		public override int normalWeight => 20;
 		public override int spawnCost => 20;
 		public override int costAmount => 1;
 		public override int costTypeIndex => 9; //lunaritemorequipment
@@ -65,7 +65,8 @@ namespace RiskierRain.Changes.Interactables
 			"artifactworld",
 			"rootjungle",
 			"ancientloft",
-			"sulfurpools",//modded stages vv
+			"sulfurpools",
+			//modded stages
 			"slumberingsatellite",
 			"forgottenhaven",
 			"drybasin",

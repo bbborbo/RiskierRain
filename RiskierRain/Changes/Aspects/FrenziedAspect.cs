@@ -12,7 +12,7 @@ using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.Equipment
 {
-    class FrenziedAspect : EliteEquipmentBase
+    class FrenziedAspect : EliteEquipmentBase<FrenziedAspect>
     {
         public override string EliteEquipmentName => "Chir\u2019s Tempo"; //momentum, tempo, alacrity, velocity
 

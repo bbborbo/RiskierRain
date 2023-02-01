@@ -564,7 +564,7 @@ namespace RiskierRain
                 //monsoon stat boost
                 if (GetConfigBool(currentCategory, true, "Difficulty: Monsoon Stat Booster"))
                 {
-                    //MonsoonStatBoost();
+                    MonsoonStatBoost();
                 }
                 #endregion
 

@@ -97,7 +97,7 @@ namespace RiskierRain.Changes.Interactables
             orig(self);
 			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
             {
-				self.interactableCategories.AddCard(2, customInteractable.directorCard);
+				self.interactableCategories.AddCard(4, customInteractable.directorCard);
             }
         }
 

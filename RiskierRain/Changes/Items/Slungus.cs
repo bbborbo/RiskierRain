@@ -45,7 +45,7 @@ namespace RiskierRain.Items
 Tracking Number: 58***********
 Estimated Delivery: 09/23/2056
 Shipping Method:  Priority/Biological
-Shipping Address:444 Slate Drive, Mars
+Shipping Address: 444 Slate Drive, Mars
 Shipping Details:
 
 Thank you for your purchase!
@@ -57,8 +57,8 @@ Note- you may experience time normally for several seconds or minutes after the 
 
 Warnings:
 Objects appear to move slower, but carry the same force as they would normally. Do not interact with normally fast moving or forceful objects in an unsafe manner.
-The affected area experienced lowered temperature; you may want to wear warm clothes or turn your heater up. Thermometers do not accurately measure temperature in affected area; assume practical temperatures to be up to 50 degrees lower than measured.
-(bold text)Do not open bottle. Handle with extreme care. Ventilate regularly.(/bold)
+The affected area experiences lowered temperature; you may want to wear warm clothes or turn your heater up. Thermometers do not accurately measure temperature in affected area; assume practical temperatures to be up to 50 degrees lower than measured.
+<style=cIsHealth>Do not open bottle. Handle with extreme care. Ventilate regularly.</style>
 
 FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanent change in time perception, spacial warping, mania or lethargy, hallucination, paranoia, acute panic attack, or otherwise dissatisfactory results. All purchases are final.";
 

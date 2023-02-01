@@ -19,8 +19,9 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 6;
 
-        public static float timeDifficultyScaling = 1.8f; //1f
-        public static float stageDifficultyScaling = 1.0f; //1.15f
+        public static float timeDifficultyScaling = 1.8f; //1f, linear
+        public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
+        public static float loopDifficultyScaling = 1.6f; //1.0f, exponential
 
         public static float easyTeleParticleRadius = 1f;
         public static float normalTeleParticleRadius = 0.8f;
@@ -67,7 +68,9 @@ namespace RiskierRain
 
         void AmbientLevelDifficulty()
         {
-            IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
+            Run.ambientLevelCap = 999;
+            //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
+            On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
         }
 
         private void DifficultyDependentTeleParticles()
@@ -293,6 +296,7 @@ namespace RiskierRain
                 x => x.MatchMul(),
                 x => x.MatchCallOrCallvirt<Mathf>("Floor")
                 );
+            c.Index--;
             c.Emit(OpCodes.Ldc_R4, timeDifficultyScaling);
             c.Emit(OpCodes.Mul);
 
@@ -331,41 +335,36 @@ namespace RiskierRain
             {
                 float difficultyBoost = GetAmbientLevelBoost();
 
-                Run.instance.compensatedDifficultyCoefficient += difficultyBoost * 0.05f; //stage 3 spawnrates at stage 0 monsoon, stage 2 spawnrates at stage 0 rainstorm
+                //Run.instance.compensatedDifficultyCoefficient += difficultyBoost * 0.05f; //stage 3 spawnrates at stage 0 monsoon, stage 2 spawnrates at stage 0 rainstorm
                 //Run.instance.difficultyCoefficient += difficultyBoost / 2;
                 float levelOut = levelIn + difficultyBoost;
                 return levelOut;
             });
         }
 
-        private void DifficultyCoefficientChanges(On.RoR2.Run.orig_RecalculateDifficultyCoefficentInternal orig, RoR2.Run self)
+        private void DifficultyCoefficientChanges(On.RoR2.Run.orig_RecalculateDifficultyCoefficentInternal orig, Run self)
         {
-            orig(self);
-            float difficultyBoost = 0f;
+            float runTimer = self.GetRunStopwatch();
+            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty);
+            float minutesFactor = Mathf.Floor(runTimer * 0.0166666675f * timeDifficultyScaling); //seconds to minutes
+            float playerBaseFactor = 0.7f + (float)self.participatingPlayerCount * 0.3f;
+            float playerScaleFactor = 0.0506f * difficultyDef.scalingValue * Mathf.Pow((float)self.participatingPlayerCount, 0.2f);
 
-            switch (self.selectedDifficulty)
+            float stageFactor = Mathf.Pow(stageDifficultyScaling, (float)self.stageClearCount); //1^loops
+            float totalLoops = Mathf.Floor(self.stageClearCount / 5);
+            float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops + 1); //1.5^loops
+            float difficultyCoefficient = (playerBaseFactor + playerScaleFactor * minutesFactor) * stageFactor * loopFactor;
+
+            self.compensatedDifficultyCoefficient = difficultyCoefficient;
+            self.difficultyCoefficient = difficultyCoefficient;
+            self.ambientLevel = Mathf.Min((difficultyCoefficient - playerBaseFactor) / 0.33f + 1f + GetAmbientLevelBoost(), (float)Run.ambientLevelCap);
+
+            int ambientLevelFloor = self.ambientLevelFloor;
+            self.ambientLevelFloor = Mathf.FloorToInt(self.ambientLevel);
+            if (ambientLevelFloor != self.ambientLevelFloor && ambientLevelFloor != 0 && self.ambientLevelFloor > ambientLevelFloor)
             {
-                default:
-                    difficultyBoost = eclipseDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Hard:
-                    difficultyBoost = monsoonDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Normal:
-                    difficultyBoost = rainstormDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Easy:
-                    difficultyBoost = drizzleDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Count:
-                    break;
-                case RoR2.DifficultyIndex.Invalid:
-                    break;
+                self.OnAmbientLevelUp();
             }
-
-            self.ambientLevel = Mathf.Min(self.ambientLevel + difficultyBoost, Run.ambientLevelCap);
-            //self.compensatedDifficultyCoefficient += difficultyBoost;
-            //self.difficultyCoefficient += difficultyBoost;
         }
         #endregion
     }

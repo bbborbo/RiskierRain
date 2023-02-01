@@ -1,4 +1,5 @@
-﻿using Mono.Cecil.Cil;
+﻿using EntityStates.ClayBoss;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using RoR2;
@@ -72,6 +73,7 @@ namespace RiskierRain.CoreModules
         public override void Init()
         {
             CreateVoidtouchedSingularity();
+            CreateMiredUrnTarball();
 
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
@@ -106,6 +108,23 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static GameObject miredUrnTarball;
+        private void CreateMiredUrnTarball()
+        {
+            miredUrnTarball = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarSeeker.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
+
+            ProjectileImpactExplosion pie = miredUrnTarball.GetComponent<ProjectileImpactExplosion>();
+            if (pie)
+            {
+                pie.lifetime = 2;
+            }
+            else
+            {
+                Debug.LogError("MIRED URN");
+            }
+            R2API.ContentAddition.AddProjectile(miredUrnTarball);
         }
 
         public static GameObject voidtouchedSingularityDelay;

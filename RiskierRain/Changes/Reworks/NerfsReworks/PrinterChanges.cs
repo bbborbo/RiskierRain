@@ -109,7 +109,7 @@ namespace RiskierRain
             {
                 ChangeInteractableWeightForPool(pool, scrapperName, scrapperWeight, scrapperLimit);
             }
-            else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
+            else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "") || IsModdedPrinterStage(currentStage.stage))
             {
                 RemoveExistingInteractable(pool, scrapperName);
             }
@@ -139,7 +139,7 @@ namespace RiskierRain
                 else
                     ChangeInteractableWeightForPool(pool, printerRed, printerRedWeight, printerRedLimit);
             }
-            else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
+            else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "")  || IsModdedScrapperStage(currentStage.stage))
             {
                 RemoveExistingInteractable(pool, printerWhite);
                 RemoveExistingInteractable(pool, printerGreen);
@@ -150,12 +150,14 @@ namespace RiskierRain
         #region bools
         private bool OnPrinterStage(DirectorAPI.Stage stage)
         {
-            return !OnScrapperStage(stage);
+            return !OnScrapperStage(stage)
+                || IsModdedPrinterStage(stage);//modded stages?
         }
         private bool OnScrapperStage(DirectorAPI.Stage stage)
         {
             return IsStageOne(stage)
-                || IsStageThree(stage);
+                || IsStageThree(stage)
+                || IsModdedScrapperStage(stage);//modded stages?
         }
 
         private bool IsStageOne(DirectorAPI.Stage stage)
@@ -170,6 +172,16 @@ namespace RiskierRain
             return stage == DirectorAPI.Stage.RallypointDelta
                 || stage == DirectorAPI.Stage.ScorchedAcres
                 || stage == DirectorAPI.Stage.SulfurPools;
+        }
+        private bool IsModdedPrinterStage(DirectorAPI.Stage stage)//this shit dont work im goin to bed
+        {
+            return stage == ParseInternalStageName("drybasin")
+                || stage == ParseInternalStageName("slumberingsatellite");
+
+        }
+        private bool IsModdedScrapperStage(DirectorAPI.Stage stage)
+        {
+            return stage == ParseInternalStageName("FBLScene");
         }
         #endregion
     }

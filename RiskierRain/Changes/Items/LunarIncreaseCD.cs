@@ -149,7 +149,6 @@ namespace RiskierRain.Items
                 }
                 
             }
-            //Debug.Log("skillCD = " + skillCD);
         }
 
 

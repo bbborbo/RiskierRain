@@ -34,6 +34,10 @@ namespace RiskierRain.Interactables
 		public abstract string interactableContext { get; }
 		public abstract string interactableLangToken { get; }
 		public abstract GameObject interactableModel { get; }
+
+		//janky solutions inbound!!! dorry :(
+		public abstract string modelName { get; }
+		public abstract string prefabName { get; }//???? fuck
 		public abstract bool modelIsCloned { get; }
 		public GameObject model;
 
@@ -70,8 +74,8 @@ namespace RiskierRain.Interactables
                 }
 				PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
 
-				purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
-				purchaseInteraction.contextToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT";
+				purchaseInteraction.displayNameToken = this.interactableLangToken;
+				purchaseInteraction.contextToken = this.interactableLangToken;
 				purchaseInteraction.costType = (CostTypeIndex)costTypeIndex;
 				purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
 				purchaseInteraction.cost = costAmount;
@@ -83,7 +87,7 @@ namespace RiskierRain.Interactables
 				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
 				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion();
 				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
-				genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+				genericDisplayNameProvider.displayToken = this.interactableLangToken;
 				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
 
 				if (childCollider == null)
@@ -116,13 +120,13 @@ namespace RiskierRain.Interactables
                             }
 							if (modelLocator != null)
                             {
-								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find("mdlShrineChance");//make this generic later
+								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//make this generic later
 								modelLocator.modelBaseTransform = modelLocator.modelTransform;
 								modelLocator.dontDetatchFromParent = true;
 								modelLocator.autoUpdateModelTransform = true;
 								Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
 								component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-															where x.gameObject.name.Contains("ShrineChance")//make this generic later
+															where x.gameObject.name.Contains(prefabName)//make this generic later
 															select x).First<MeshRenderer>();
 								component.strength = 1f;
 								component.highlightColor = Highlight.HighlightColor.interactive;
@@ -136,7 +140,7 @@ namespace RiskierRain.Interactables
                                 {
 									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot");
 									hologramProjector.displayDistance = 10f;
-									hologramProjector.disableHologramRotation = true;
+									hologramProjector.disableHologramRotation = false;
 									ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
 									if (childLocator == null)
                                     {
@@ -221,7 +225,7 @@ namespace RiskierRain.Interactables
 
 		public string InteractableName(On.RoR2.PurchaseInteraction.orig_GetDisplayName orig, PurchaseInteraction self)
 		{
-			bool flag = self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			bool flag = self.displayNameToken == this.interactableLangToken;
 			string result;
 			if (flag)
 			{

@@ -10,19 +10,22 @@ using RiskierRain.Interactables;
 using BepInEx.Configuration;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
+using System.Linq;
+using UnityEngine.SceneManagement;
+using static RoR2.PickupDropTable;
 
 namespace RiskierRain.Changes.Interactables
 {
 	class FakeShrine : InteractableBase
 	{
-		public override float voidSeedWeight => 1;
-		public override int normalWeight => 50;
+		public override float voidSeedWeight => 0.4f;
+		public override int normalWeight => 10;
 		public override int spawnCost => 20;
 		public override int costAmount => 1;
 		public override int costTypeIndex => 9; //lunaritemorequipment
 		public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment);
 
-        public override int interactableMinimumStageCompletions => 0;
+        public override int interactableMinimumStageCompletions => 1;
 		public override bool automaticallyScaleCostWithDifficulty => false;
 		public override bool setUnavailableOnTeleporterActivated => true;
 		public override bool isShrine => true;
@@ -31,7 +34,7 @@ namespace RiskierRain.Changes.Interactables
 		public override bool orientToFloor => true;
 		public override bool skipSpawnWhenSacrificeArtifactEnabled => false;
 		public override float weightScalarWhenSacrificeArtifactEnabled => 1;
-		public override int maxSpawnsPerStage => 5;
+		public override int maxSpawnsPerStage => 2;
 
         public override string interactableName => "Shrine Mimic";
 
@@ -40,82 +43,75 @@ namespace RiskierRain.Changes.Interactables
         public override string interactableLangToken => "FAKE_SHRINE";
 
         public override GameObject interactableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion();
+		public BasicPickupDropTable dropTable;
+		//public GameObject voidChest;
 
-        public override bool modelIsCloned => true;
+        public override bool modelIsCloned => true; 
 
+		public string[] validScenes = {
+			"golemplains",
+			"golemplains2",
+			"blackbeach",
+			"blackbeach2",
+			"snowyforest",
+			"foggyswamp",
+			"goolake",
+			"frozenwall",
+			"wispgraveyard",
+			"dampcavesimple",
+			"shipgraveyard",
+			"arena",
+			"skymeadow",
+			"artifactworld",
+			"rootjungle",
+			"ancientloft",
+			"sulfurpools",
+		};
         public override void Init(ConfigFile config)
         {
 			hasAddedInteractable = false;
 			On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
 			On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
 			On.RoR2.PurchaseInteraction.OnInteractionBegin += FakeShrineBehavior;
+			On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
 			CreateLang();
 			CreateInteractable();
-			CreateInteractableSpawnCard();
-			Debug.Log("fakeshrine initialized!");
+			var cards = CreateInteractableSpawnCard();
+			customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+			dropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/Common/dtVoidChest.asset").WaitForCompletion();
         }
-
-		public void Start()
-		{
-			Debug.Log("fakeshrine baybee");
-			//if (NetworkServer.active)
-			{
-				this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-				CreateDropTable();
-			}
-		}
+        private void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self)
+        {
+			foreach (string sceneName in customInteractable.validScenes.ToList())
+            {
+            }
+            orig(self);
+			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
+            {
+				self.interactableCategories.AddCard(2, customInteractable.directorCard);
+            }
+        }
 
 		private void FakeShrineBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-			if (self.displayNameToken == "VV_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
-				PickupIndex pickupIndex = PickupIndex.none;
-                if (dropTable)
+				//if ()
                 {
-					pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, weightedSelection);
-					dropletOrigin = self.gameObject.transform;
-					PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position, dropletOrigin.forward * 20f);
+					PickupIndex pickupIndex = PickupIndex.none;
+					this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
 
-				}
-                else
-                {
-					Debug.Log("droptable null");
-                }
-				//interactableModel.GetComponent<ShopTerminalBehavior>().DropPickup()
+					pickupIndex = dropTable.GenerateDrop(rng);
+					dropletOrigin = self.gameObject.transform;
+					PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
+					self.SetAvailable(false);
+				}				
 			}
         }
-
-        public void CreateDropTable()
-		{ 
-			if (DLC1Content.Items.CloverVoid == null)
-            {
-				Debug.Log("benthic null?");
-            }
-            else
-            {
-				if (DLC1Content.Items.CloverVoid.itemIndex == null)
-                {
-					Debug.Log("itemindex null?");
-                }
-                else
-                {
-					if (weightedSelection == null)
-                    {
-						Debug.Log("what the fuck dude");
-                    }
-                    else
-                    {
-						weightedSelection.AddChoice(PickupCatalog.itemIndexToPickupIndex[(int)DLC1Content.Items.CloverVoid.itemIndex], 1);
-
-					}
-				}
-            }
-        }
-		public PickupDropTable dropTable;
-		public WeightedSelection<PickupIndex> weightedSelection = new WeightedSelection<PickupIndex>();
 		private Xoroshiro128Plus rng;
 		public Transform dropletOrigin;
+		public int maxUses = 2;
 
 	}
 }

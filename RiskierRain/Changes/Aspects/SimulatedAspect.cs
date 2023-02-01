@@ -133,6 +133,7 @@ namespace RiskierRain.Equipment
                             else
                             {
                                 ghost.inventory.SetEquipmentIndex(EliteEquipmentDef.equipmentIndex);
+                                ghost.inventory.GiveItem(RoR2Content.Items.UseAmbientLevel);
                             }
                         }
                         else
@@ -258,7 +259,6 @@ namespace RiskierRain.Equipment
 
             isAiming = true;
             attackStopWatch = 0;
-            //stolen code from nullifier entity states, god help us
             //if (body.hasAuthority)
             {
                 BullseyeSearch bullseyeSearch = new BullseyeSearch();
@@ -272,7 +272,6 @@ namespace RiskierRain.Equipment
                 this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
                 if (this.target)
                 {
-                    //this.pointA = this.RaycastToFloor(this.target.transform.position);
                     this.pointA = this.target.transform.position;
                 }
             }
@@ -305,11 +304,6 @@ namespace RiskierRain.Equipment
                             startRotation = new Quaternion?(value);
                             endRotation = new Quaternion?(value2);
                             FirePortalBomb();
-                            //entityState = new FirePortalBomb
-                            //{
-                            //    startRotation = new Quaternion?(value),
-                            //    endRotation = new Quaternion?(value2)
-                            //};
                         }
                     }
                 }
@@ -357,11 +351,9 @@ namespace RiskierRain.Equipment
 
         private void FireBomb(Ray fireRay, float pitch, float yaw)
         {
-            //RaycastHit raycastHit;
-            //if (Physics.Raycast(fireRay, out raycastHit, maxDistance, LayerIndex.world.mask))
             {
 
-                Vector3 vector = Util.ApplySpread((Vector3)pointA, 0f, 0f, 1f, 1f, yaw, pitch);//raycastHit.point;
+                Vector3 vector = Util.ApplySpread((Vector3)pointA, 0f, 0f, 1f, 1f, yaw, pitch);
                 Vector3 vector2 = vector - this.lastBombPosition;
                 if (this.bombsFired > 0 && vector2.sqrMagnitude < minimumDistanceBetweenBombs * minimumDistanceBetweenBombs)
                 {

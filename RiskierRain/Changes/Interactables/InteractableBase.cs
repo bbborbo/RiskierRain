@@ -36,6 +36,8 @@ namespace RiskierRain.Interactables
 		public abstract GameObject interactableModel { get; }
 		public abstract bool modelIsCloned { get; }
 		public GameObject model;
+
+		public CustomInteractable customInteractable = new CustomInteractable();
 		public abstract void Init(ConfigFile config);
 		protected void CreateLang()
 		{
@@ -61,6 +63,11 @@ namespace RiskierRain.Interactables
                 }
 				interactableBodyModelPrefab = this.model;
 				interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
+				PurchaseInteraction oldPurchaseInteraction = interactableBodyModelPrefab.GetComponent<PurchaseInteraction>();
+				if (oldPurchaseInteraction != null)
+                {
+					GameObject.Destroy(oldPurchaseInteraction);
+                }
 				PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
 
 				purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
@@ -156,38 +163,32 @@ namespace RiskierRain.Interactables
 				}				
 			}
 		}
-		public void CreateInteractableSpawnCard()
+		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard()
         {
 			interactableSpawnCard = ScriptableObject.CreateInstance<InteractableSpawnCard>();
 
 			interactableSpawnCard.directorCreditCost = spawnCost;
+			interactableSpawnCard.eliteRules = SpawnCard.EliteRules.Default;
+			interactableSpawnCard.sendOverNetwork = true;
 			interactableSpawnCard.occupyPosition = true;
 			interactableSpawnCard.orientToFloor = orientToFloor;
 			interactableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled = skipSpawnWhenSacrificeArtifactEnabled;
 			interactableSpawnCard.weightScalarWhenSacrificeArtifactEnabled = weightScalarWhenSacrificeArtifactEnabled;
 			interactableSpawnCard.maxSpawnsPerStage = maxSpawnsPerStage;
+			interactableSpawnCard.hullSize = HullClassification.Human;
+			interactableSpawnCard.prefab = model;
+			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
+			interactableSpawnCard.name = interactableName;
 
 			interactableDirectorCard = new DirectorCard
 			{
 				selectionWeight = normalWeight,
 				spawnCard = interactableSpawnCard,
+				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.TitanicPlains, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.DistantRoost, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SiphonedForest, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AbandonedAqueduct, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.WetlandAspect, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AphelianSanctuary, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SulfurPools, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.ScorchedAcres, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.RallypointDelta, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.AbyssalDepths, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SirensCall, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SunderedGrove, "");
-			DirectorAPI.Helpers.AddNewInteractableToStage(interactableDirectorCard, DirectorAPI.Helpers.GetInteractableCategory("Shrines"), DirectorAPI.Stage.SkyMeadow, "");
-
 			Debug.Log("Created spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			return (interactableDirectorCard, interactableSpawnCard);
 		}
 
 
@@ -218,11 +219,9 @@ namespace RiskierRain.Interactables
 
 		//stages to spawn on (help me)
 
-
-
 		public string InteractableName(On.RoR2.PurchaseInteraction.orig_GetDisplayName orig, PurchaseInteraction self)
 		{
-			bool flag = self.displayNameToken == "VV_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			bool flag = self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
 			string result;
 			if (flag)
 			{
@@ -259,4 +258,18 @@ namespace RiskierRain.Interactables
 			return orig.Invoke(self, deck, maxCost);
 		}
 	}
+	public class CustomInteractable
+    {
+		public InteractableSpawnCard spawnCard;
+		public DirectorCard directorCard;
+		public string[] validScenes;
+
+		public CustomInteractable CreateCustomInteractable(InteractableSpawnCard spawnCard, DirectorCard directorCard, string[] validScenes)
+        {
+			this.spawnCard = spawnCard;
+			this.directorCard = directorCard;
+			this.validScenes = validScenes;
+			return this;
+        }
+    }
 }

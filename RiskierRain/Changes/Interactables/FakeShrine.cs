@@ -65,7 +65,11 @@ namespace RiskierRain.Changes.Interactables
 			"artifactworld",
 			"rootjungle",
 			"ancientloft",
-			"sulfurpools",
+			"sulfurpools",//modded stages vv
+			"slumberingsatellite",
+			"forgottenhaven",
+			"drybasin",
+			"FBLScene"
 		};
         public override void Init(ConfigFile config)
         {

@@ -19,7 +19,7 @@ namespace RiskierRain.Changes.Interactables
 	class FakeShrine : InteractableBase
 	{
 		public override float voidSeedWeight => 0.2f;
-		public override int normalWeight => 20;
+		public override int normalWeight => 15;
 		public override int spawnCost => 20;
 		public override int costAmount => 1;
 		public override int costTypeIndex => 9; //lunaritemorequipment
@@ -34,11 +34,11 @@ namespace RiskierRain.Changes.Interactables
 		public override bool orientToFloor => true;
 		public override bool skipSpawnWhenSacrificeArtifactEnabled => false;
 		public override float weightScalarWhenSacrificeArtifactEnabled => 1;
-		public override int maxSpawnsPerStage => 2;
+		public override int maxSpawnsPerStage => 1;
 
         public override string interactableName => "Shrine Mimic";
 
-        public override string interactableContext => "Trade";
+        public override string interactableContext => "Trade with shrine mimic";//make this good later
 
         public override string interactableLangToken => "FAKE_SHRINE";
 
@@ -46,9 +46,13 @@ namespace RiskierRain.Changes.Interactables
 		public BasicPickupDropTable dropTable;
 		//public GameObject voidChest;
 
-        public override bool modelIsCloned => true; 
+        public override bool modelIsCloned => true;
 
-		public string[] validScenes = {
+        public override string modelName => "mdlShrineChance";
+
+        public override string prefabName => "ShrineChance";
+
+        public string[] validScenes = {
 			"golemplains",
 			"golemplains2",
 			"blackbeach",
@@ -100,7 +104,7 @@ namespace RiskierRain.Changes.Interactables
 		private void FakeShrineBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+			if (self.displayNameToken == this.interactableLangToken)
             {
 				//if ()
                 {

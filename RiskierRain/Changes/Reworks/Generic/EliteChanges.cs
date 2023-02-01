@@ -2,6 +2,7 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
+using RiskierRain.CoreModules;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -163,6 +164,36 @@ namespace RiskierRain
         {
             IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVoidtouchedCollapse;
             On.RoR2.GlobalEventManager.OnHitEnemy += AddVoidtouchedNullify;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += VoidtouchedSingularity;
+        }
+
+        private void VoidtouchedSingularity(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            CharacterBody victimBody = damageReport.victimBody;
+            if (victimBody != null)
+            {
+                if (victimBody.HasBuff(DLC1Content.Buffs.EliteVoid))
+                {
+                    ProcChainMask procChainMask6 = damageReport.damageInfo.procChainMask;
+                    procChainMask6.AddProc(ProcType.Rings);
+                    float damageCoefficient10 = 0;
+                    GameObject projectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/ElementalRingVoidBlackHole");
+                    ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                    {
+                        damage = damageCoefficient10,
+                        crit = false,
+                        damageColorIndex = DamageColorIndex.Void,
+                        position = victimBody.previousPosition,
+                        procChainMask = procChainMask6,
+                        force = 6000f,
+                        owner = victimBody.gameObject,
+                        projectilePrefab = Assets.voidtouchedSingularity,
+                        rotation = Quaternion.identity,
+                        target = null,
+                    });
+                }
+            }
+            orig(self, damageReport);
         }
 
         private void AddVoidtouchedNullify(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)

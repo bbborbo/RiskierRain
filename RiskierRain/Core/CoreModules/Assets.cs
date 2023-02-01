@@ -2,6 +2,7 @@
 using MonoMod.Cil;
 using R2API;
 using RoR2;
+using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
@@ -70,6 +71,8 @@ namespace RiskierRain.CoreModules
 
         public override void Init()
         {
+            CreateVoidtouchedSingularity();
+
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
             AddTrophyHunterDebuffs();
@@ -103,6 +106,39 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static GameObject voidtouchedSingularityDelay;
+        public static GameObject voidtouchedSingularity;
+        private void CreateVoidtouchedSingularity()
+        {
+            float singularityRadius = 8;
+            GameObject singularity = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/ElementalRingVoid/ElementalRingVoidBlackHole.prefab").WaitForCompletion();
+            voidtouchedSingularity = singularity.InstantiateClone("VoidtouchedSingularity", true);
+
+            ProjectileFuse singularityPf = voidtouchedSingularity.GetComponent<ProjectileFuse>();
+            if (singularityPf)
+            {
+                singularityPf.fuse = 3;
+            }
+            RadialForce singularityRF = voidtouchedSingularity.GetComponent<RadialForce>();
+            if (singularityRF)
+            {
+                singularityRF.radius = singularityRadius;
+                voidtouchedSingularity.transform.localScale *= (singularityRadius / 15);
+            }
+            R2API.ContentAddition.AddProjectile(voidtouchedSingularity);
+
+            GameObject willowispDelay = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ExplodeOnDeath/WilloWispDelay.prefab").WaitForCompletion();
+            voidtouchedSingularityDelay = willowispDelay.InstantiateClone("VoidtouchedDelayBlast", true);
+
+            DelayBlast singularityDelayDB = voidtouchedSingularityDelay.GetComponent<DelayBlast>();
+            if (singularityDelayDB)
+            {
+                singularityDelayDB.explosionEffect = voidtouchedSingularity;
+            }
+
+            R2API.ContentAddition.AddNetworkedObject(voidtouchedSingularityDelay);
         }
 
         public static BuffDef planulaChargeBuff;

@@ -662,6 +662,12 @@ namespace RiskierRain
                     VoidCradleRework();
                 }
 
+                //void cradle
+                if (GetConfigBool(currentCategory, true, "Economy: Crowdfunder Funny Money"))
+                {
+                    CrowdfunderFunny();
+                }
+
                 //wandering vagrant
                 if (GetConfigBool(currentCategory, true, "Enemy: Wandering Vagrant"))
                 {

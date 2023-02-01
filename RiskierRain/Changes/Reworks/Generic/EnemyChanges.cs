@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using R2API;
 using R2API.Utils;
+using RiskierRain.Equipment;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -43,12 +44,16 @@ namespace RiskierRain
             On.EntityStates.VagrantMonster.ChargeMegaNova.OnEnter += (orig, self) =>
             {
                 orig(self);
-                self./*private*/duration = EntityStates.VagrantMonster.ChargeMegaNova.baseDuration;
+                self.duration = EntityStates.VagrantMonster.ChargeMegaNova.baseDuration;
+                if (self.characterBody.HasBuff(FrenziedAspect.instance.EliteBuffDef))
+                {
+                    self.duration = 2;
+                }
             };
             On.EntityStates.VagrantNovaItem.ChargeState.OnEnter += (orig, self) =>
             {
                 orig(self);
-                self./*private*/duration = 3;
+                self.duration = 3;
             };
         }
         #endregion

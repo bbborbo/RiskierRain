@@ -19,7 +19,7 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 6;
 
-        public static float timeDifficultyScaling = 1.8f; //1f, linear
+        public static float timeDifficultyScaling = 1.7f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
         public static float loopDifficultyScaling = 1.6f; //1.0f, exponential
 
@@ -84,11 +84,35 @@ namespace RiskierRain
 
         private void MonsoonStatBoost()
         {
-            monsoonDesc += $"\n>Most Enemies have <style=cIsHealth>unique scaling</style></style>";
+            monsoonDesc += $"\n>Enemies gain <style=cIsHealth>unique scaling</style></style>";
 
-            GiveMonstersMonsoonStatBuffers();
-            GiveBossesMonsoonStatBuffers();
-            GetStatCoefficients += this.MonsoonPlusStatBuffs;
+            //GiveMonstersMonsoonStatBuffers();
+            //GiveBossesMonsoonStatBuffers();
+            //GetStatCoefficients += this.MonsoonPlusStatBuffs;
+            GetStatCoefficients += this.MonsoonPlusStatBuffs2;
+        }
+
+        private void MonsoonPlusStatBuffs2(CharacterBody sender, StatHookEventArgs args)
+        {
+            float ambientLevelBoost = GetAmbientLevelBoost();
+            if(sender.teamComponent.teamIndex != TeamIndex.Player)
+            {
+                float compensatedLevel = sender.level - ambientLevelBoost;
+                if (sender.isBoss)
+                {
+                    args.baseShieldAdd += 50 * compensatedLevel;
+                }
+                
+                if (sender.isChampion)
+                {
+                    args.armorAdd += 2 * compensatedLevel;
+                }
+                else
+                {
+                    args.attackSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
+                    args.moveSpeedMultAdd += 0.05f * Mathf.Min(compensatedLevel, 40);
+                }
+            }
         }
 
         private void TeleporterParticleScale(On.RoR2.TeleporterInteraction.BaseTeleporterState.orig_OnEnter orig, BaseState self)

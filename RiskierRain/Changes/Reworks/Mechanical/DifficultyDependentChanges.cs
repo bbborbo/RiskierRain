@@ -29,43 +29,6 @@ namespace RiskierRain
         public static float eclipseTeleParticleRadius = 0f;
         public static float defaultTeleParticleRadius = 0.8f;
 
-        #region all enemies
-        //enemies
-        CharacterBody VultureBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/VultureBody");
-        CharacterBody BeetleBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/BeetleBody");
-        CharacterBody BeetleGuardBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/BeetleGuardBody");
-        CharacterBody BisonBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/BisonBody");
-        CharacterBody BellBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/BellBody");
-        CharacterBody ClayTemplarBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ClayBruiserBody");
-        CharacterBody ElderLemurianBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/LemurianBruiserBody");
-        CharacterBody GreaterWispBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/GreaterWispBody");
-        CharacterBody HermitCrabBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/HermitCrabBody");
-        CharacterBody ImpBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ImpBody");
-        CharacterBody JellyfishBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/JellyfishBody");
-        CharacterBody LemurianBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/LemurianBody");
-        CharacterBody LesserWispBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/WispBody");
-        CharacterBody LunarExploderBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/LunarExploderBody");
-        CharacterBody LunarGolemBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/LunarGolemBody");
-        CharacterBody LunarWispBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/LunarWispBody");
-        CharacterBody MiniMushroomBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/MiniMushroomBody");
-        CharacterBody ParentBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ParentBody");
-        CharacterBody SolusProbeBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/RoboBallMiniBody");
-        CharacterBody StoneGolemBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/GolemBody");
-        CharacterBody VoidReaverBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/NullifierBody");
-
-        //bosses
-        CharacterBody BeetleQueenBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/BeetleQueen2Body");
-        CharacterBody ClayBossBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ClayBossBody");
-        CharacterBody GrandParentBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/GrandParentBody");
-        CharacterBody GrovetenderBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/GravekeeperBody");
-        CharacterBody ImpBossBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ImpBossBody");
-        CharacterBody MagmaWormBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/MagmaWormBody");
-        CharacterBody ScavBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/ScavBody");
-        CharacterBody SolusControlUnitBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/RoboBallBossBody");
-        CharacterBody StoneTitanBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/TitanBody");
-        CharacterBody VagrantBody = LegacyResourcesAPI.Load<CharacterBody>("prefabs/characterbodies/VagrantBody");
-        #endregion
-
         void AmbientLevelDifficulty()
         {
             Run.ambientLevelCap = 999;
@@ -76,7 +39,7 @@ namespace RiskierRain
         private void DifficultyDependentTeleParticles()
         {
             drizzleDesc += $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
-            rainstormDesc += $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
+            rainstormDesc += $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
             monsoonDesc += $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
 
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
@@ -97,7 +60,7 @@ namespace RiskierRain
                 float compensatedLevel = sender.level - ambientLevelBoost;
                 if (sender.isBoss)
                 {
-                    args.baseShieldAdd += 80 * compensatedLevel;
+                    args.baseShieldAdd += sender.baseMaxHealth * 0.04f * compensatedLevel;
                 }
                 
                 if (sender.isChampion)
@@ -106,8 +69,9 @@ namespace RiskierRain
                 }
                 else
                 {
-                    args.attackSpeedMultAdd += Mathf.Min(0.03f * compensatedLevel, 2.4f);
-                    args.moveSpeedMultAdd += Mathf.Min(0.03f * compensatedLevel, 2.4f);
+                    args.attackSpeedMultAdd += Mathf.Min(0.05f * compensatedLevel, 2f);
+                    args.cooldownMultAdd *= Mathf.Max(0.5f, Mathf.Pow(0.95f, compensatedLevel));
+                    //args.moveSpeedMultAdd += Mathf.Min(0.03f * compensatedLevel, 2.4f);
                 }
             }
         }

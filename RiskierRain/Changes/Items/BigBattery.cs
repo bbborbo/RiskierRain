@@ -31,8 +31,15 @@ namespace RiskierRain.Items
             $"While shields are active, increase <style=cIsDamage>attack speed</style> " +
             $"by <style=cIsDamage>{Tools.ConvertDecimal(rechargeRateIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(rechargeRateIncrease)} per stack)</style>.";
-        public override string ItemLore => 
-@"Okay, how’s this one?
+        public override string ItemLore =>
+@"Order: Prototype Battey
+Tracking Number: 11***********
+Estimated Delivery: 5/6/2056
+Shipping Method:  Priority
+Shipping Address: Palia Research Station, Sun
+Shipping Details:
+
+Okay, how’s this one?
 
 We’ve uh,
 

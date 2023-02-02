@@ -23,11 +23,15 @@ namespace RiskierRain.Items
             $"Consumes <style=cIsUtility>1</style> stack when a Trophy drops.";
 
         public override string ItemLore =>
-@"(mail blurb)
+@"Order: Medical Scalpel (Obsidian)
+Tracking Number: 91***********
+Estimated Delivery: 09/30/2056
+Shipping Method:  Priority/Fragile
+Shipping Address: Mt Goliath, Mars
+Shipping Details:
 
-Notes:
 Custom made according to your specifications. Very sharp. Blade thickness is measured in planck lengths. This will definitely cut whatever you need it for.
-Can’t speak for the durability, though. Try to get it right the first time–
+Can’t speak for the durability, though. Try to get it right the first time.
 And one more thing – when it breaks, it won’t wait ‘till your operation is finished. Don’t use it on anything you care about not damaging. Or killing.
 You already knew all that, though. Can’t help but wonder what you keep ordering these things for.";
 

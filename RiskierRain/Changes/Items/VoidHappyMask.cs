@@ -87,6 +87,7 @@ namespace RiskierRain.Items
         }
         public override void Init(ConfigFile config)
         {
+            Debug.LogWarning("Void Happy Mask should require SOTV but it doesnt! dont forget to fix!");
             CreateItem();
             CreateLang();
             Hooks();

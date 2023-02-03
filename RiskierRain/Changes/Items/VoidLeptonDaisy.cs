@@ -17,7 +17,7 @@ using HarmonyLib;
 
 namespace RiskierRain.Changes.Items
 {
-    class PhrygianLily : ItemBase<PhrygianLily>
+    class VoidLeptonDaisy : ItemBase<VoidLeptonDaisy>
     {
         public ExpansionDef SOTVExpansionDef;//move this to a better place
         public static BuffDef lilyRageBuff;
@@ -33,7 +33,7 @@ namespace RiskierRain.Changes.Items
 
         public override string ItemLangTokenName => "PHRYGIANLILY";
 
-        public override string ItemPickupDesc => "Enter a rage after activating the teleporter.";
+        public override string ItemPickupDesc => "Enter a rage after activating the teleporter. <style=cIsVoid>Corrupts all Lepton Daisies.</style>";
 
         public override string ItemFullDescription => $"<style=cIsDamage>Enter a rage</style> for {duration} seconds upon activating the teleporter. " +
             $"While enraged, increases attack speed by +{Tools.ConvertDecimal(aspdBoostBase)} " +
@@ -134,7 +134,7 @@ namespace RiskierRain.Changes.Items
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.TPHealingNova, //consumes lepton daisy
-                itemDef2 = PhrygianLily.instance.ItemsDef
+                itemDef2 = VoidLeptonDaisy.instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
             orig();

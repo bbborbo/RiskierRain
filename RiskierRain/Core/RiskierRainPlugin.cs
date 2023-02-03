@@ -285,7 +285,7 @@ namespace RiskierRain
             if (IsCategoryEnabled(currentCategory))
             {
                 // CONTENT...
-                // ITEMS: magic quiver, slungus, wicked band, permafrost, fuse
+                // ITEMS: magic quiver, slungus, wicked band, permafrost, fuse, void happiest mask/tragic facade
                 // EQUIPMENT: old guillotine
                 // ENEMIES: 
 

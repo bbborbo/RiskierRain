@@ -23,7 +23,7 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Chance on killing an enemy to summon void infestors. <style=cIsVoid>Corrupts all Happiest Masks.</style>";
 
         public override string ItemFullDescription => 
-            $"Killing enemies has a " +
+            $"Killing mosnters has a " +
             $"<style=cIsDamage>{procChance}%</style> chance " +
             $"to spawn {baseInfestors} <style=cStack>(+{stackInfestors} per stack)</style> " +
             $"<style=cIsDamage>void infestors</style> in their place. " +
@@ -87,7 +87,7 @@ namespace RiskierRain.Items
         }
         public override void Init(ConfigFile config)
         {
-            Debug.LogWarning("Void Happy Mask should require SOTV but it doesnt! dont forget to fix!");
+            Debug.LogError("Void Happy Mask should require SOTV but it doesnt! dont forget to fix!");
             CreateItem();
             CreateLang();
             Hooks();

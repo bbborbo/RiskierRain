@@ -1,30 +1,26 @@
-﻿using System;
-using System.Security;
-using System.Security.Permissions;
-using RoR2;
-using RoR2.Skills;
-using UnityEngine;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
 using RiskierRain.CoreModules;
 using RiskierRain.Equipment;
-using RiskierRain.Items;
 using RiskierRain.Interactables;
+using RiskierRain.Items;
 using RiskierRain.Scavengers;
-using static R2API.RecalculateStatsAPI;
-using RoR2.Projectile;
-using ThreeEyedGames;
-using On.RoR2.ContentManagement;
-using UnityEngine.AddressableAssets;
-using RiskierRain.SurvivorTweaks;
 using RiskierRain.Skills;
+using RiskierRain.SurvivorTweaks;
+using RoR2;
+using RoR2.Projectile;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using HarmonyLib;
+using System.Security;
+using System.Security.Permissions;
+using ThreeEyedGames;
+using UnityEngine;
+using static R2API.RecalculateStatsAPI;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -565,6 +561,12 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Difficulty: Monsoon Stat Booster"))
                 {
                     MonsoonStatBoost();
+                }
+
+                //eclipse changes
+                if (GetConfigBool(currentCategory, true, "Difficulty: Eclipse Changes"))
+                {
+                    EclipseChanges();
                 }
                 #endregion
 

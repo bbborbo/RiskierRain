@@ -7,6 +7,7 @@ using System.Text;
 using UnityEngine;
 using RiskierRain.Components;
 using static R2API.RecalculateStatsAPI;
+using static RiskierRain.CoreModules.StatHooks;
 using EntityStates;
 using BepInEx;
 using R2API;
@@ -287,6 +288,7 @@ namespace RiskierRain
 
             //new stuff
             GetStatCoefficients += this.EclipseStatBuffs;
+            On.RoR2.CharacterBody.RecalculateStats += this.EclipseCdr;
             On.RoR2.RunArtifactManager.SetArtifactEnabled += EclipseSpiteArtifact;
             IL.RoR2.HoldoutZoneController.FixedUpdate += EclipseHoldoutScale;
             On.RoR2.HoldoutZoneController.Start += EclipseHoldoutDischarge;
@@ -307,6 +309,28 @@ namespace RiskierRain
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEnd);
             LanguageAPI.Add("ECLIPSE_8_DESCRIPTION", eclipse8Prefix + eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc 
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
+        }
+
+        private void EclipseCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
+            if (self.teamComponent.teamIndex != TeamIndex.Player)
+            {
+                //enemy cooldowns
+                if (selectedDifficulty >= eclipseLevelEnemyCdr)
+                {
+                    float cdrBoost = 1 - eclipseEnemyCdr;
+
+                    SkillLocator skillLocator = self.skillLocator;
+                    if (skillLocator != null)
+                    {
+                        ApplyCooldownScale(skillLocator.primary, cdrBoost);
+                        ApplyCooldownScale(skillLocator.secondary, cdrBoost);
+                        ApplyCooldownScale(skillLocator.utility, cdrBoost);
+                        ApplyCooldownScale(skillLocator.special, cdrBoost);
+                    }
+                }
+            }
         }
 
         private void RemoveEclipseStats(ILContext il)
@@ -394,7 +418,7 @@ namespace RiskierRain
                 //enemy cooldowns
                 if (selectedDifficulty >= eclipseLevelEnemyCdr)
                 {
-                    args.cooldownMultAdd *= 1 - eclipseEnemyCdr;
+                    //args.cooldownMultAdd *= 1 - eclipseEnemyCdr;
                 }
                 else return;
 

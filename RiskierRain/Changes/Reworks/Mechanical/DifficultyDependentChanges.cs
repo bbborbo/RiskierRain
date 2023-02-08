@@ -363,7 +363,11 @@ namespace RiskierRain
 
         private void EclipseHoldoutDischarge(On.RoR2.HoldoutZoneController.orig_Start orig, HoldoutZoneController self)
         {
-            self.dischargeRate = Mathf.Max(self.dischargeRate, eclipseHoldoutLossRate);
+
+            if (Run.instance.selectedDifficulty >= eclipseLevelHoldoutLoss)
+            {
+                self.dischargeRate = Mathf.Max(self.dischargeRate, eclipseHoldoutLossRate);
+            }
             orig(self);
         }
 

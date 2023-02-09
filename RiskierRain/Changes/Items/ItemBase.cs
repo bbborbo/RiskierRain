@@ -159,6 +159,11 @@ namespace RiskierRain.Items
             return body.inventory.GetItemCount(itemIndex);
         }
 
+        public static float GetStackValue(float baseValue, float stackValue, int itemCount)
+        {
+            return baseValue + stackValue * (itemCount - 1);
+        }
+
         public static GameObject LoadDropPrefab(string prefabName)
         {
             GameObject prefab = RiskierRainPlugin.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");

@@ -313,6 +313,7 @@ namespace RiskierRain
 
         private void EclipseCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
+            orig(self);
             DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
             if (self.teamComponent.teamIndex != TeamIndex.Player)
             {

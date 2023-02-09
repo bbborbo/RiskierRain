@@ -120,10 +120,7 @@ namespace RiskierRain.CoreModules
             {
                 pie.lifetime = 2;
             }
-            else
-            {
-                Debug.LogError("MIRED URN");
-            }
+
             R2API.ContentAddition.AddProjectile(miredUrnTarball);
         }
 
@@ -131,7 +128,7 @@ namespace RiskierRain.CoreModules
         public static GameObject voidtouchedSingularity;
         private void CreateVoidtouchedSingularity()
         {
-            float singularityRadius = 8;
+            float singularityRadius = 8; //15
             GameObject singularity = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/ElementalRingVoid/ElementalRingVoidBlackHole.prefab").WaitForCompletion();
             voidtouchedSingularity = singularity.InstantiateClone("VoidtouchedSingularity", true);
 

@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 
 namespace RiskierRain.Items
 {
-    class StarVeil : ItemBase
+    class StarVeil : ItemBase<StarVeil>
     {
         static float iframeDurationBase = 0.34f;
         static float iframeDurationStack = 0.33f;

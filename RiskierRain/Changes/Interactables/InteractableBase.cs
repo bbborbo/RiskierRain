@@ -13,6 +13,7 @@ using RoR2.Navigation;
 using UnityEngine.Networking;
 using System.Linq;
 using RoR2.Hologram;
+using UnityEngine.SceneManagement;
 
 namespace RiskierRain.Interactables
 {
@@ -85,7 +86,7 @@ namespace RiskierRain.Interactables
 				purchaseInteraction.isGoldShrine = false;
 
 				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
-				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion();
+				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
 				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
 				genericDisplayNameProvider.displayToken = this.interactableLangToken;
 				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
@@ -120,13 +121,13 @@ namespace RiskierRain.Interactables
                             }
 							if (modelLocator != null)
                             {
-								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//make this generic later
+								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);
 								modelLocator.modelBaseTransform = modelLocator.modelTransform;
 								modelLocator.dontDetatchFromParent = true;
 								modelLocator.autoUpdateModelTransform = true;
 								Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
 								component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-															where x.gameObject.name.Contains(prefabName)//make this generic later
+															where x.gameObject.name.Contains(prefabName)
 															select x).First<MeshRenderer>();
 								component.strength = 1f;
 								component.highlightColor = Highlight.HighlightColor.interactive;
@@ -138,7 +139,7 @@ namespace RiskierRain.Interactables
                                 }
 								if (hologramProjector != null)
                                 {
-									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot");
+									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
 									hologramProjector.displayDistance = 10f;
 									hologramProjector.disableHologramRotation = false;
 									ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
@@ -194,6 +195,33 @@ namespace RiskierRain.Interactables
 			Debug.Log("Created spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
+		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard) CreateInteractableSpawnCard(bool isFavored)
+		{
+			interactableSpawnCard = ScriptableObject.CreateInstance<InteractableSpawnCard>();
+
+			interactableSpawnCard.directorCreditCost = spawnCost;
+			interactableSpawnCard.eliteRules = SpawnCard.EliteRules.Default;
+			interactableSpawnCard.sendOverNetwork = true;
+			interactableSpawnCard.occupyPosition = true;
+			interactableSpawnCard.orientToFloor = orientToFloor;
+			interactableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled = skipSpawnWhenSacrificeArtifactEnabled;
+			interactableSpawnCard.weightScalarWhenSacrificeArtifactEnabled = weightScalarWhenSacrificeArtifactEnabled;
+			interactableSpawnCard.maxSpawnsPerStage = maxSpawnsPerStage;
+			interactableSpawnCard.hullSize = HullClassification.Human;
+			interactableSpawnCard.prefab = model;
+			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
+			interactableSpawnCard.name = interactableName;
+
+			interactableDirectorCard = new DirectorCard
+			{
+				selectionWeight = favoredWeight,
+				spawnCard = interactableSpawnCard,
+				preventOverhead = false,
+				minimumStageCompletions = interactableMinimumStageCompletions
+			};
+			Debug.Log("Created favored spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			return (interactableDirectorCard, interactableSpawnCard);
+		}
 
 
 		public CharacterBody LastActivator;
@@ -201,6 +229,8 @@ namespace RiskierRain.Interactables
 
 		public abstract float voidSeedWeight { get; }
 		public abstract int normalWeight { get; }
+		public abstract int favoredWeight { get; }
+		public abstract int category { get; }
 		public abstract int spawnCost { get; }
 		public static GameObject interactableBodyModelPrefab;
 		public static InteractableSpawnCard interactableSpawnCard;
@@ -261,12 +291,32 @@ namespace RiskierRain.Interactables
 			}
 			return orig.Invoke(self, deck, maxCost);
 		}
+
+		public void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self)
+		{
+			orig(self);
+			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
+			{
+				self.interactableCategories.AddCard(category, customInteractable.directorCard);
+			}
+			if (customInteractable.HasFavoredStages())
+            {
+				if (customInteractable.favoredScenes.ToList().Contains(SceneManager.GetActiveScene().name))
+				{
+					self.interactableCategories.AddCard(category, customInteractable.directorCardFavored);
+				}
+			}
+		}
 	}
 	public class CustomInteractable
-    {
+    {//foe the favored stage stuff this might suck dick idk
 		public InteractableSpawnCard spawnCard;
 		public DirectorCard directorCard;
+		public InteractableSpawnCard spawnCardFavored;
+		public DirectorCard directorCardFavored;
 		public string[] validScenes;
+		public string[] favoredScenes;
+		public bool hasFavoredStages = false;
 
 		public CustomInteractable CreateCustomInteractable(InteractableSpawnCard spawnCard, DirectorCard directorCard, string[] validScenes)
         {
@@ -275,5 +325,20 @@ namespace RiskierRain.Interactables
 			this.validScenes = validScenes;
 			return this;
         }
-    }
+		public CustomInteractable CreateCustomInteractable(InteractableSpawnCard spawnCard, DirectorCard directorCard, string[] validScenes, InteractableSpawnCard spawnCardF, DirectorCard directorCardF, string[] favoredScenes)
+		{
+			this.spawnCard = spawnCard;
+			this.directorCard = directorCard;
+			this.validScenes = validScenes;
+			this.spawnCardFavored = spawnCardF;
+			this.directorCardFavored = directorCardF;
+			this.favoredScenes = favoredScenes;
+			hasFavoredStages = true;
+			return this;
+		}
+		public bool HasFavoredStages()
+        {
+			return hasFavoredStages;
+        }
+	}
 }

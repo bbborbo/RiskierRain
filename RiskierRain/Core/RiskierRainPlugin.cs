@@ -119,7 +119,6 @@ namespace RiskierRain
             InitializeSkills();
             InitializeEquipment();
             InitializeEliteEquipment();
-            InitializeInteractables();
             InitializeScavengers();
             //InitializeEverything();
             RoR2Application.onLoad += InitializeEverything;
@@ -746,6 +745,9 @@ namespace RiskierRain
 
                 //this.DoSadistScavenger();
             }
+
+            //interactables bc they need to load after items:
+            InitializeInteractables();
         }
 
         /*[HarmonyPrefix, HarmonyPatch(typeof(RoR2.Items.ContagiousItemManager), nameof(RoR2.Items.ContagiousItemManager.Init))]

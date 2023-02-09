@@ -11,7 +11,7 @@ using BepInEx.Configuration;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using System.Linq;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 using static RoR2.PickupDropTable;
 
 namespace RiskierRain.Changes.Interactables
@@ -52,6 +52,10 @@ namespace RiskierRain.Changes.Interactables
 
         public override string prefabName => "ShrineChance";
 
+        public override int category => 4;
+
+        public override int favoredWeight => 0;
+
         public string[] validScenes = {
 			"golemplains",
 			"golemplains2",
@@ -89,24 +93,12 @@ namespace RiskierRain.Changes.Interactables
 			customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
 			dropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/Common/dtVoidChest.asset").WaitForCompletion();
         }
-        private void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self)
-        {
-			foreach (string sceneName in customInteractable.validScenes.ToList())
-            {
-            }
-            orig(self);
-			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
-            {
-				self.interactableCategories.AddCard(4, customInteractable.directorCard);
-            }
-        }
 
 		private void FakeShrineBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
 			if (self.displayNameToken == this.interactableLangToken)
             {
-				//if ()
                 {
 					PickupIndex pickupIndex = PickupIndex.none;
 					this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
@@ -120,7 +112,5 @@ namespace RiskierRain.Changes.Interactables
         }
 		private Xoroshiro128Plus rng;
 		public Transform dropletOrigin;
-		public int maxUses = 2;
-
 	}
 }

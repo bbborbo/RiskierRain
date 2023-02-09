@@ -14,7 +14,7 @@ using static RiskierRain.CoreModules.StatHooks;
 
 namespace RiskierRain.Items
 {
-    class LunarIncreaseCD : ItemBase
+    class LunarIncreaseCD : ItemBase<LunarIncreaseCD>
     {
         GameObject lunarShardProjectile => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");

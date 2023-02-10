@@ -118,6 +118,22 @@ namespace RiskierRain
             InitializeInteractables();
             InitializeScavengers();
             //InitializeEverything();
+
+            #region rework pending / priority removal
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
+
+            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
+
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
+            #endregion
+
+            RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
+
             RoR2Application.onLoad += InitializeEverything;
 
             //lol
@@ -132,19 +148,6 @@ namespace RiskierRain
         private void InitializeEverything()
         {
             IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
-
-            #region rework pending / priority removal
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
-
-            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
-
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
-            #endregion
 
             ///summary
             ///- nerfs healing
@@ -581,6 +584,12 @@ namespace RiskierRain
                     DirectorAPI.InteractableActions += DeleteYellowPrinters;
                 }
 
+                // horde of many wake of vultures trophy
+                if (GetConfigBool(currentCategory, true, "Boss: Wake Of Vultures Horde Of Many Trophy"))
+                {
+                    HordeOfManyDropsWakeOfVultures();
+                }
+
                 //overloading elite
                 if (GetConfigBool(currentCategory, true, "Elite: Overloading Elite Rework"))
                 {
@@ -825,7 +834,7 @@ namespace RiskierRain
         }*/
 
         #region modify items and equips
-        static public void RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
+        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
         {
             ItemDef def = LoadItemDef(itemName);
             if (def != null)
@@ -833,6 +842,7 @@ namespace RiskierRain
                 def.tier = tier;
                 def.deprecatedTier = tier;
             }
+            return def;
         }
         public static void RemoveEquipment(string equipName)
         {

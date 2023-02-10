@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RiskierRain.CoreModules;
 
 namespace RiskierRain.Skills
 {
@@ -39,6 +40,7 @@ namespace RiskierRain.Skills
         public abstract SimpleSkillData SkillData { get; }
         public string[] KeywordTokens;
         public virtual bool useSteppedDef { get; set; } = false;
+        public SkillDef SkillDef;
 
         string GetElementString(MageElement type)
         {
@@ -73,6 +75,51 @@ namespace RiskierRain.Skills
 
         protected void CreateSkill()
         {
+            string s = $"SurvivorTweaks: {SkillName} initializing!";// to unlock {UnlockDef.cachedName}!";
+
+            SkillDef = ScriptableObject.CreateInstance<SkillDef>();
+            if (useSteppedDef)
+            {
+                SkillDef = ScriptableObject.CreateInstance<SteppedSkillDef>();
+            }
+
+            RegisterEntityState(ActivationState);
+            SkillDef.activationState = new SerializableEntityStateType(ActivationState);
+
+            SkillDef.skillNameToken = Token + SkillLangTokenName;
+            SkillDef.skillName = SkillName;
+            SkillDef.skillDescriptionToken = Token + SkillLangTokenName + "_DESCRIPTION";
+            SkillDef.activationStateMachineName = "Weapon";
+
+            SkillDef.keywordTokens = KeywordTokens;
+            SkillDef.icon = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Skill/" + IconName + ".png");
+
+            #region SkillData
+            SkillDef.baseMaxStock = SkillData.baseMaxStock;
+            SkillDef.baseRechargeInterval = SkillData.baseRechargeInterval;
+            SkillDef.beginSkillCooldownOnSkillEnd = SkillData.beginSkillCooldownOnSkillEnd;
+            SkillDef.canceledFromSprinting = RiskierRainPlugin.autosprintLoaded ? false : SkillData.canceledFromSprinting;
+            SkillDef.cancelSprintingOnActivation = SkillData.cancelSprintingOnActivation;
+            SkillDef.dontAllowPastMaxStocks = SkillData.dontAllowPastMaxStocks;
+            SkillDef.fullRestockOnAssign = SkillData.fullRestockOnAssign;
+            SkillDef.interruptPriority = SkillData.interruptPriority;
+            SkillDef.isCombatSkill = SkillData.isCombatSkill;
+            SkillDef.mustKeyPress = SkillData.mustKeyPress;
+            SkillDef.rechargeStock = SkillData.rechargeStock;
+            SkillDef.requiredStock = SkillData.requiredStock;
+            SkillDef.resetCooldownTimerOnUse = SkillData.resetCooldownTimerOnUse;
+            SkillDef.stockToConsume = SkillData.stockToConsume;
+            #endregion
+
+            Assets.skillDefs.Add(SkillDef);
+            AddSkillDefToCharacter();
+        }
+
+        private void AddSkillDefToCharacter()
+        {
+            if (CharacterName == "")
+                return;
+
             SkillLocator skillLocator;
             if (characterSkillLocators.ContainsKey(CharacterName))
             {
@@ -89,7 +136,7 @@ namespace RiskierRain.Skills
                 }
             }
 
-            if(skillLocator != null)
+            if (skillLocator != null)
             {
                 SkillFamily skillFamily = null;
 
@@ -114,51 +161,14 @@ namespace RiskierRain.Skills
 
                 if (skillFamily != null)
                 {
-                    string s = $"SurvivorTweaks: {SkillName} initializing!";// to unlock {UnlockDef.cachedName}!";
                     //Debug.Log(s);
 
-                    var skillDef = ScriptableObject.CreateInstance<SkillDef>();
-                    if (useSteppedDef)
-                    {
-                        skillDef = ScriptableObject.CreateInstance<SteppedSkillDef>();
-                    }
-
-                    RegisterEntityState(ActivationState);
-                    skillDef.activationState = new SerializableEntityStateType(ActivationState);
-
-                    skillDef.skillNameToken = Token + SkillLangTokenName;
-                    skillDef.skillName = SkillName;
-                    skillDef.skillDescriptionToken = Token + SkillLangTokenName + "_DESCRIPTION";
-                    skillDef.activationStateMachineName = "Weapon";
-
-                    skillDef.keywordTokens = KeywordTokens;
-                    skillDef.icon = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>(RiskierRainPlugin.iconsPath + "Skill/" + IconName + ".png");
-
-                    #region SkillData
-                    skillDef.baseMaxStock = SkillData.baseMaxStock;
-                    skillDef.baseRechargeInterval = SkillData.baseRechargeInterval;
-                    skillDef.beginSkillCooldownOnSkillEnd = SkillData.beginSkillCooldownOnSkillEnd;
-                    skillDef.canceledFromSprinting = RiskierRainPlugin.autosprintLoaded ? false : SkillData.canceledFromSprinting;
-                    skillDef.cancelSprintingOnActivation = SkillData.cancelSprintingOnActivation;
-                    skillDef.dontAllowPastMaxStocks = SkillData.dontAllowPastMaxStocks;
-                    skillDef.fullRestockOnAssign = SkillData.fullRestockOnAssign;
-                    skillDef.interruptPriority = SkillData.interruptPriority;
-                    skillDef.isCombatSkill = SkillData.isCombatSkill;
-                    skillDef.mustKeyPress = SkillData.mustKeyPress;
-                    skillDef.rechargeStock = SkillData.rechargeStock;
-                    skillDef.requiredStock = SkillData.requiredStock;
-                    skillDef.resetCooldownTimerOnUse = SkillData.resetCooldownTimerOnUse;
-                    skillDef.stockToConsume = SkillData.stockToConsume;
-                    #endregion
-
-
-                    CoreModules.Assets.skillDefs.Add(skillDef);
                     Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
                     skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
                     {
-                        skillDef = skillDef,
+                        skillDef = SkillDef,
                         unlockableDef = UnlockDef,
-                        viewableNode = new ViewablesCatalog.Node(skillDef.skillNameToken, false, null)
+                        viewableNode = new ViewablesCatalog.Node(SkillDef.skillNameToken, false, null)
                     };
                 }
                 else

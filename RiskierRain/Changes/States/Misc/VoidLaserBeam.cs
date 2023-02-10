@@ -105,7 +105,7 @@ namespace RiskierRain.States
                     muzzleName = this.muzzleString,
                     hitEffectPrefab = FireLaserbolt.impactEffectPrefab,
                     isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
-                    radius = 3f,
+                    radius = 5f,
                     falloffModel = BulletAttack.FalloffModel.None,
                     maxDistance = maxRange,
                     smartCollision = false

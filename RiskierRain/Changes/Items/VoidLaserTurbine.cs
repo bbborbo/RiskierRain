@@ -19,7 +19,7 @@ namespace RiskierRain.Items
         public static BuffDef turbineChargeBuff;
         public static BuffDef turbineReadyBuff;
         public static float secondsOfChargeRequired = 60;
-        public override string ItemName => "Super Solonoid Engine"; //Super Solonoid Organ
+        public override string ItemName => "Super Solenoid Engine"; //Super Solonoid Organ
 
         public override string ItemLangTokenName => "VOIDLASERTURBINE";
 

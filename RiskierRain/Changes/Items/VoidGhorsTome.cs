@@ -132,7 +132,8 @@ namespace RiskierRain.Items
                         {
                             if (shouldVoid)
                             {
-                                pickupIndex2 = voidBossDropTable.GenerateDrop(self.rng);
+                                if (voidBossDropTable.selector.Count > 0)
+                                    pickupIndex2 = voidBossDropTable.GenerateDrop(self.rng);
                             }
                             else
                             {
@@ -159,7 +160,8 @@ namespace RiskierRain.Items
                             }
                             else
                             {
-                                pickupIndex2 = voidT2DropTable.GenerateDrop(self.rng);
+                                if (voidT2DropTable.selector.Count > 0)
+                                    pickupIndex2 = voidT2DropTable.GenerateDrop(self.rng);
                             }
                         }
 

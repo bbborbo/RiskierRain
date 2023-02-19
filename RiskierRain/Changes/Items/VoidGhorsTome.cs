@@ -154,7 +154,8 @@ namespace RiskierRain.Items
                         {
                             if (self.forceTier3Reward)
                             {
-                                pickupIndex2 = voidT3DropTable.GenerateDrop(self.rng);
+                                if(voidT3DropTable.selector.Count > 0)
+                                    pickupIndex2 = voidT3DropTable.GenerateDrop(self.rng);
                             }
                             else
                             {

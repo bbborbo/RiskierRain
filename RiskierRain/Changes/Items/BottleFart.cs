@@ -131,7 +131,7 @@ namespace RiskierRain.Items
             fireProjectileInfo.crit = Util.CheckRoll(self.crit, self.master);
             fireProjectileInfo.position = self.transform.position - (Vector3.down * self.radius);
             fireProjectileInfo.projectilePrefab = fartZone;
-            fireProjectileInfo.damage = GetStackValue(fartBaseDamageCoefficient, fartStackDamageCoefficient, stack);
+            fireProjectileInfo.damage = self.damage * GetStackValue(fartBaseDamageCoefficient, fartStackDamageCoefficient, stack);
 
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
         }

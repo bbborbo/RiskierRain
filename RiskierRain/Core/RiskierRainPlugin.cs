@@ -372,6 +372,12 @@ namespace RiskierRain
                 {
                     BuffDaisy();
                 }
+
+                //fuel array
+                if (GetConfigBool(currentCategory, true, "Fuel Array Activates Equipment Effects"))
+                {
+                    FuelArrayFunnyBuff();
+                }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();
 

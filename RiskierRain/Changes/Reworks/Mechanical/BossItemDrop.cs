@@ -160,12 +160,22 @@ namespace RiskierRain
                         DisposableScalpel.ConsumeScalpel(attackerBody);
                     }
 
+                    PickupIndex drop = deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+
+                    int quantumCodexCount = VoidGhorsTome.instance.GetCount(attackerBody);
+                    if(quantumCodexCount > 0)
+                    {
+                        if (Util.CheckRoll(VoidGhorsTome.GetCurrentVoidChance(quantumCodexCount) * 100))
+                        {
+                            drop = VoidGhorsTome.voidBossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+                        }
+                    }
+
                     Vector3 vector = enemyBody ? enemyBody.corePosition : Vector3.zero;
                     Vector3 normalized = (vector - attackerBody.corePosition).normalized;
 
                     PickupDropletController.CreatePickupDroplet(
-                        deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng), 
-                        vector, normalized * 15f);
+                        drop, vector, normalized * 15f);
                 }
             }
         }

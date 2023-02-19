@@ -25,8 +25,8 @@ namespace RiskierRain.SurvivorTweaks
 
         public override string bodyName => "HuntressBody";
 
-        static float glaiveBaseDamage = 3.3f;
-        static float glaiveBounceDamage = 1.2f;
+        static float glaiveBaseDamage = 3.3f; //2.5f
+        static float glaiveBounceDamage = 1.2f; //1.1f
 
 
         static int arrowRainCooldown = 22; //12
@@ -36,8 +36,8 @@ namespace RiskierRain.SurvivorTweaks
         static float arrowRainHitFrequency = 4f; //3f
         static float arrowRainLifetime = 8f; //6f
 
-        static int ballistaCooldown = 22; //12
-        static float ballistaDamageCoefficient = 14f; //9
+        static int ballistaCooldown = 16; //12
+        static float ballistaDamageCoefficient = 11f; //9
 
         public override void Init()
         {

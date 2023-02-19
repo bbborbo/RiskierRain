@@ -15,13 +15,15 @@ namespace RiskierRain.Items
 		public static float codexTriggerChanceBase = 0.24f;
 		public static float codexTriggerChanceStack = 0.12f;
 
-		public static BasicPickupDropTable voidT2T3DropTable;
+		public static BasicPickupDropTable voidT2DropTable;
+		public static BasicPickupDropTable voidT3DropTable;
 		public static BasicPickupDropTable voidBossDropTable;
         public override string ItemName => "Quantum Codex";
 
         public override string ItemLangTokenName => "VOIDGHORS";
 
-        public override string ItemPickupDesc => "Chance to <style=cIsVoid>evolve</style> your boss rewards into a rare void item. <style=cIsVoid>Corrupts all Ghor\'s Tomes.</style>";
+        public override string ItemPickupDesc => "Chance to <style=cIsVoid>evolve</style> your boss rewards into a rare void item. " +
+            "<style=cIsVoid>Corrupts all Ghor\'s Tomes.</style>";
 
         public override string ItemFullDescription => $"<style=cIsUtility>{Tools.ConvertDecimal(codexTriggerChanceBase)}</style> " +
 			$"<style=cStack>(+{Tools.ConvertDecimal(codexTriggerChanceStack)} per stack)</style> chance to " +
@@ -148,11 +150,15 @@ namespace RiskierRain.Items
                                 }
                             }
                         }
-                        else
+                        else if(shouldVoid)
                         {
-                            if (shouldVoid)
+                            if (self.forceTier3Reward)
                             {
-                                pickupIndex2 = voidT2T3DropTable.GenerateDrop(self.rng);
+                                pickupIndex2 = voidT3DropTable.GenerateDrop(self.rng);
+                            }
+                            else
+                            {
+                                pickupIndex2 = voidT2DropTable.GenerateDrop(self.rng);
                             }
                         }
 
@@ -173,13 +179,20 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
 		{
-			voidT2T3DropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
-			voidT2T3DropTable.tier1Weight = 0;
-			voidT2T3DropTable.tier2Weight = 0;
-			voidT2T3DropTable.voidTier1Weight = 0;
-			voidT2T3DropTable.voidTier2Weight = 4;
-			voidT2T3DropTable.voidTier3Weight = 1;
-			voidT2T3DropTable.voidBossWeight = 0;
+			voidT2DropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
+            voidT2DropTable.tier1Weight = 0;
+            voidT2DropTable.tier2Weight = 0;
+            voidT2DropTable.voidTier1Weight = 0;
+            voidT2DropTable.voidTier2Weight = 4;
+            voidT2DropTable.voidTier3Weight = 1;
+            voidT2DropTable.voidBossWeight = 0;
+			voidT3DropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
+            voidT3DropTable.tier1Weight = 0;
+            voidT3DropTable.tier2Weight = 0;
+            voidT3DropTable.voidTier1Weight = 0;
+            voidT3DropTable.voidTier2Weight = 0;
+            voidT3DropTable.voidTier3Weight = 1;
+            voidT3DropTable.voidBossWeight = 0;
 			voidBossDropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
 			voidBossDropTable.tier1Weight = 0;
 			voidBossDropTable.tier2Weight = 0;

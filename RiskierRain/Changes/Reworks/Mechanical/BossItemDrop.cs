@@ -167,7 +167,8 @@ namespace RiskierRain
                     {
                         if (Util.CheckRoll(VoidGhorsTome.GetCurrentVoidChance(quantumCodexCount) * 100))
                         {
-                            drop = VoidGhorsTome.voidBossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+                            if (VoidGhorsTome.voidBossDropTable.selector.Count > 0)
+                                drop = VoidGhorsTome.voidBossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
                         }
                     }
 

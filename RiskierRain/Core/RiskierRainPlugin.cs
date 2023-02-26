@@ -378,6 +378,12 @@ namespace RiskierRain
                 {
                     FuelArrayFunnyBuff();
                 }
+
+                //fuel array
+                if (GetConfigBool(currentCategory, true, "Spawn Slot Minions (i.e. Xi Construct) Inherit Elite Affix"))
+                {
+                    MakeSpawnSlotSpawnsInheritEliteAffix();
+                }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();
 

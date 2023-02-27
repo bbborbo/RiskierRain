@@ -41,7 +41,7 @@ namespace RiskierRain.Equipment
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Other;
 
 
-        public override float Cooldown { get; } = 10f;
+        public override float Cooldown { get; } = 6f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -159,8 +159,8 @@ namespace RiskierRain.Equipment
                 args.moveSpeedMultAdd += 0.25f;
                 args.baseAttackSpeedAdd += 1f;
                 sender.bodyFlags |= CharacterBody.BodyFlags.ImmuneToVoidDeath;
+                sender.bodyFlags |= CharacterBody.BodyFlags.Void;
                 Debug.Log(sender.bodyFlags);
-                // sender.healthComponent.HealthBarValues) = true;
             }
         }
 
@@ -232,8 +232,11 @@ namespace RiskierRain.Equipment
         public bool isAiming;
         public bool isFiring;
         public float attackStopWatch;
+        public float volleyDelay = 1;
+        public float volleyStopWatch;
         public int sizeMod;
         public float randomRadius;
+        public int chargeCount = 0;
 
         public void Start()
         {
@@ -241,7 +244,6 @@ namespace RiskierRain.Equipment
             if (inv)
             {
                 SimulatedAspect.RemoveAllOfItem(inv, RoR2Content.Items.BoostDamage);
-                //SimulatedAspect.RemoveAllOfItem(inv, RoR2Content.Items.Ghost);//CharacterBody.BodyFlags.Void;
             }
 
             CharacterModel[] models = body.GetComponentsInChildren<CharacterModel>();
@@ -254,31 +256,43 @@ namespace RiskierRain.Equipment
         public void AffixSimulatedAttack()
         {
             sizeMod = (int)Mathf.Ceil(body.radius); //projectile count scales with size
-            portalBombCount = sizeMod * sizeMod * 2;
-            randomRadius = baseRandomRadius * sizeMod / 2;
-
-            isAiming = true;
-            attackStopWatch = 0;
+            chargeCount = Mathf.Clamp(sizeMod, 5, 30);
             //if (body.hasAuthority)
             {
-                BullseyeSearch bullseyeSearch = new BullseyeSearch();
-                bullseyeSearch.viewer = body;
-                bullseyeSearch.searchOrigin = body.corePosition;
-                bullseyeSearch.searchDirection = body.corePosition;
-                bullseyeSearch.maxDistanceFilter = maxDistance;
-                bullseyeSearch.teamMaskFilter = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
-                bullseyeSearch.sortMode = BullseyeSearch.SortMode.DistanceAndAngle;
-                bullseyeSearch.RefreshCandidates();
-                this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
-                if (this.target)
-                {
-                    this.pointA = this.target.transform.position;
-                }
+                PortalBombVolley();
             }
         }
+        public void PortalBombVolley()
+        {
+            
+            portalBombCount = sizeMod;
+            randomRadius = baseRandomRadius + sizeMod;
+            attackStopWatch = 0;
+            isAiming = true;
+            bombsFired = 0;
 
+            BullseyeSearch bullseyeSearch = new BullseyeSearch();
+            bullseyeSearch.viewer = body;
+            bullseyeSearch.searchOrigin = body.corePosition;
+            bullseyeSearch.searchDirection = body.corePosition;
+            bullseyeSearch.maxDistanceFilter = maxDistance;
+            bullseyeSearch.teamMaskFilter = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
+            bullseyeSearch.sortMode = BullseyeSearch.SortMode.DistanceAndAngle;
+            bullseyeSearch.RefreshCandidates();
+            this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
+            if (this.target)
+            {
+                this.pointA = this.target.transform.position;
+            }
+            chargeCount--;
+            volleyStopWatch = 0;
+        }
         public void FixedUpdate()
         {
+            if (barrierBool)
+            {
+                OneTimeBarrierGain();
+            }
             //if (body.hasAuthority)
             {
                 if (isAiming)
@@ -287,8 +301,8 @@ namespace RiskierRain.Equipment
                     if (this.target)
                     {
 
-                        //this.pointB = this.RaycastToFloor(this.target.transform.position);
-                        this.pointB = this.target.transform.position;
+                        this.pointB = this.RaycastToFloor(this.target.transform.position);
+                        this.pointB = this.RaycastToFloor(this.target.transform.position);
 
                         if (this.pointA != null && this.pointB != null)
                         {
@@ -319,11 +333,11 @@ namespace RiskierRain.Equipment
                             float num = 1f / ((float)portalBombCount - 1f);
                             float t = (float)this.bombsFired * num;
                             Ray aimRay = GetAimRay();
-                            Quaternion rotation = Quaternion.Slerp(this.startRotation.Value, this.endRotation.Value, t);
-                            aimRay.direction = rotation * Vector3.forward;
-                            float bonusPitch = UnityEngine.Random.Range(-randomRadius, randomRadius / 4f) / 2F;
+                            //Quaternion rotation = Quaternion.Slerp(this.startRotation.Value, this.endRotation.Value, t);
+                            //aimRay.direction = rotation * Vector3.forward;
+                            float bonusPitch = UnityEngine.Random.Range(0, randomRadius);
                             float bonusYaw = UnityEngine.Random.Range(-randomRadius, randomRadius);
-                            this.FireBomb(aimRay, bonusPitch, bonusYaw);
+                            this.FireBomb(aimRay, bonusPitch, bonusYaw, t);
                             EffectManager.SimpleMuzzleFlash(muzzleflashEffectPrefab, gameObject, muzzleString, true);
                         }
                         this.bombsFired++;
@@ -333,15 +347,30 @@ namespace RiskierRain.Equipment
                         isFiring = false;
                     }
                 }
+                if (!isFiring && !isAiming && chargeCount > 0)
+                {
+                    //volleyStopWatch += Time.fixedDeltaTime;
+                    //if (volleyStopWatch >= volleyDelay)
+                    {
+                        Debug.Log(chargeCount);
+                        PortalBombVolley();
+                    }
+                }
             }
         }
-        
+
+        private void OneTimeBarrierGain()
+        {
+            body.healthComponent.AddBarrier(body.healthComponent.fullCombinedHealth);
+            barrierBool = false;
+        }
+
         private void FirePortalBomb()
         {
             isAiming = false;
             isFiring = true;
             this.attackDuration = attackBaseDuration / body.attackSpeed;
-            StartAimMode(GetAimRay(), 4f, false);
+            StartAimMode(GetAimRay(), 2, false);
             //if (body.hasAuthority)
             {
                 this.fireInterval = this.attackDuration / (float)portalBombCount;
@@ -349,29 +378,37 @@ namespace RiskierRain.Equipment
             }
         }
 
-        private void FireBomb(Ray fireRay, float pitch, float yaw)
+        private void FireBomb(Ray fireRay, float pitch, float yaw, float bombsFired)//CHECK OUT FIRERAY IN DNSPY THANKS BESTIE
         {
+            RaycastHit raycastHit;
+            Vector3 aimDirection;
+            if (Physics.Raycast(fireRay, out raycastHit, maxDistance))
             {
-
-                Vector3 vector = Util.ApplySpread((Vector3)pointA, 0f, 0f, 1f, 1f, yaw, pitch);
-                Vector3 vector2 = vector - this.lastBombPosition;
-                if (this.bombsFired > 0 && vector2.sqrMagnitude < minimumDistanceBetweenBombs * minimumDistanceBetweenBombs)
-                {
-                    vector += vector2.normalized * minimumDistanceBetweenBombs;
-                }
-                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
-                fireProjectileInfo.projectilePrefab = portalBombProjectileEffect;
-                fireProjectileInfo.position = vector;
-                fireProjectileInfo.rotation = Quaternion.identity;
-                fireProjectileInfo.owner = gameObject;
-                fireProjectileInfo.damage = body.damage * damageCoefficient;
-                fireProjectileInfo.force = force;
-                fireProjectileInfo.crit = body.RollCrit();
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                this.lastBombPosition = vector;
+                aimDirection = raycastHit.point;
+                
             }
+            else
+            {
+                Debug.Log("raycast no hit :/");
+                aimDirection = base.transform.position;
+            }
+            Vector3 vector = Util.ApplySpread(aimDirection, 0f + bombsFired * 2, 3f + bombsFired * 2, 1f, 0.1f, 0, pitch);
+
+            FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
+            {
+                projectilePrefab = portalBombProjectileEffect,
+                position = vector,
+                rotation = Quaternion.identity,
+                owner = gameObject,
+                damage = body.damage * damageCoefficient,
+                force = force,
+                crit = body.RollCrit(),
+            };
+            
+            ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+            //this.lastBombPosition = vector;
         }
-        
+
         protected Ray GetAimRay()
         {
             if (body.inputBank)
@@ -380,7 +417,15 @@ namespace RiskierRain.Equipment
             }
             return new Ray(base.transform.position, base.transform.forward);
         }
-
+        private Vector3? RaycastToFloor(Vector3 position)
+        {
+            RaycastHit raycastHit;
+            if (Physics.Raycast(new Ray(position, Vector3.down), out raycastHit, 1000f, LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
+            {
+                return new Vector3?(raycastHit.point);
+            }
+            return null;
+        }
         protected void StartAimMode(Ray aimRay, float duration = 2f, bool snap = false)
         {
             if (body.characterDirection && aimRay.direction != Vector3.zero)
@@ -423,8 +468,8 @@ namespace RiskierRain.Equipment
         public static GameObject muzzleflashEffectPrefab = EntityStates.NullifierMonster.FirePortalBomb.muzzleflashEffectPrefab;
         public static string muzzleString = EntityStates.NullifierMonster.FirePortalBomb.muzzleString;
         public int portalBombCount;
-        public static float attackBaseDuration = 4;//EntityStates.NullifierMonster.FirePortalBomb.baseDuration;
-        public static float maxDistance = EntityStates.NullifierMonster.FirePortalBomb.maxDistance;
+        public static float attackBaseDuration = 1;//EntityStates.NullifierMonster.FirePortalBomb.baseDuration;
+        public static float maxDistance = EntityStates.NullifierMonster.FirePortalBomb.maxDistance * 4;
         public static float damageCoefficient = EntityStates.NullifierMonster.FirePortalBomb.damageCoefficient;
         public static float procCoefficient = EntityStates.NullifierMonster.FirePortalBomb.procCoefficient;
         public static float baseRandomRadius = 5;//EntityStates.NullifierMonster.FirePortalBomb.randomRadius;
@@ -437,6 +482,71 @@ namespace RiskierRain.Equipment
         private float fireTimer;
         private float fireInterval;
         private Vector3 lastBombPosition;
+
+        public bool barrierBool = true;
+
+    }
+    public class SimulatedBallsManager : CharacterBody.ItemBehavior
+    {
+        public CharacterBody body;
+        public GameObject prefab = EntityStates.NullifierMonster.FirePortalBomb.portalBombProjectileEffect;
+        private float timer = 0;
+        public float interval = 5f;
+        public int ballCount;
+
+        private void Start()
+        {
+            body = GetComponent<CharacterBody>();
+
+                ballCount = 5;
+
+        }
+
+        private void FixedUpdate()
+        {
+            timer += Time.fixedDeltaTime;
+            if (timer >= interval)
+            {
+                //var playerList = CharacterBody.readOnlyInstancesList.Where(x => x.isPlayerControlled).ToArray();
+                //for (int i = 0; i < playerList.Length; i++)
+                FindTarget();
+                if (target != null)
+                {
+                    
+                    for (int j = 0; j < ballCount; j++)
+                    {
+                        var fpi = new FireProjectileInfo
+                        {
+                            projectilePrefab = prefab,
+                            damage = Run.instance ? 5f + Mathf.Sqrt(Run.instance.ambientLevel * 200f) : 0f,
+                            rotation = Quaternion.identity,
+                            owner = gameObject,
+                            crit = body.RollCrit(),
+                            position = Util.ApplySpread(target.transform.position, 6f * j, 7f * j, 1f, 0.08f)
+                        };
+                        ProjectileManager.instance.FireProjectile(fpi);
+                        timer = 0f;
+                    }
+                }
+            }
+        }
+
+        //my code, god help us
+        private void FindTarget()
+        {
+            BullseyeSearch bullseyeSearch = new BullseyeSearch();
+            bullseyeSearch.viewer = body;
+            bullseyeSearch.searchOrigin = body.corePosition;
+            bullseyeSearch.searchDirection = body.corePosition;
+            bullseyeSearch.maxDistanceFilter = maxDistance;
+            bullseyeSearch.teamMaskFilter = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
+            bullseyeSearch.sortMode = BullseyeSearch.SortMode.DistanceAndAngle;
+            bullseyeSearch.RefreshCandidates();
+            this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
+        }
+
+        private HurtBox target;
+        public static float maxDistance = EntityStates.NullifierMonster.FirePortalBomb.maxDistance * 2;
 
     }
 }

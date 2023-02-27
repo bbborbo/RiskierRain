@@ -583,6 +583,12 @@ namespace RiskierRain
                 {
                     EclipseChanges();
                 }
+
+                //eclipse level select
+                if (GetConfigBool(currentCategory, true, "Difficulty: Eclipse Level Select"))
+                {
+                    EclipseLevelSelect();
+                }
                 #endregion
 
                 #region packets

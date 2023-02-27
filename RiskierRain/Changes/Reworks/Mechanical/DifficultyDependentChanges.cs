@@ -275,7 +275,10 @@ namespace RiskierRain
         public static float eclipsePlayerDegen = 0.2f;
         public static string eclipseEightDesc =
             $"\n<mspace=0.5em>(8)</mspace> Health Degeneration: <style=cIsHealth>-{Tools.ConvertDecimal(eclipsePlayerDegen)} per level</style>";
-
+        private void EclipseLevelSelect()
+        {
+            On.RoR2.EclipseRun.OverrideRuleChoices += EclipseRuleChoices;
+        }
         private void EclipseChanges()
         {
             //remove old stuff
@@ -286,8 +289,6 @@ namespace RiskierRain
             IL.RoR2.HealthComponent.TakeDamage += RemoveEclipseEffect;//lv8 eclipse curse :skull:
 
             IL.RoR2.CharacterBody.RecalculateStats += RemoveEclipseStats; //lv4 enemy speed lv7 enemy cooldowns
-
-            On.RoR2.EclipseRun.OverrideRuleChoices += EclipseRuleChoices;
 
             //new stuff
             GetStatCoefficients += this.EclipseStatBuffs;

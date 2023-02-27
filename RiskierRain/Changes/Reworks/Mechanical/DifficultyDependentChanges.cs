@@ -338,6 +338,8 @@ namespace RiskierRain
             {
                 if (ruleChoice.excludeByDefault == true && ruleChoice.difficultyIndex <= eclipseDifficultyIndex)
                 {
+                    if (ruleChoice.difficultyIndex == eclipseDifficultyIndex)
+                        difficultyRuleDef.defaultChoiceIndex = ruleChoice.localIndex;
                     mustInclude[ruleChoice.globalIndex] = true;
                     mustExclude[ruleChoice.globalIndex] = false;
                     //self.ForceChoice(mustInclude, mustExclude, ruleChoice);

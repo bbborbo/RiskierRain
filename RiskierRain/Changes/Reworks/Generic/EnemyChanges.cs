@@ -220,5 +220,27 @@ namespace RiskierRain
             }
         }
         #endregion
+
+        #region xi construct related
+        void MakeSpawnSlotSpawnsInheritEliteAffix()
+        {
+            On.RoR2.NetworkedBodySpawnSlot.OnSpawnedServer += SpawnSlotMinionsInheritEliteAffix;
+        }
+
+        private void SpawnSlotMinionsInheritEliteAffix(On.RoR2.NetworkedBodySpawnSlot.orig_OnSpawnedServer orig, NetworkedBodySpawnSlot self, GameObject ownerBodyObject, SpawnCard.SpawnResult spawnResult, Action<MasterSpawnSlotController.ISlot, SpawnCard.SpawnResult> callback)
+        {
+            orig(self, ownerBodyObject, spawnResult, callback);
+
+            CharacterBody ownerBody = ownerBodyObject.GetComponent<CharacterBody>();
+            if (spawnResult.success && spawnResult.spawnedInstance && ownerBody)
+            {
+                Inventory component = spawnResult.spawnedInstance.GetComponent<Inventory>();
+                if (component)
+                {
+                    component.CopyEquipmentFrom(ownerBody.inventory);
+                }
+            }
+        }
+        #endregion
     }
 }

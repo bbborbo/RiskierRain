@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain
 {
@@ -20,6 +21,49 @@ namespace RiskierRain
         float baseDropChance = 4;
         float eliteBonusDropChance = 3;
         float specialBonusDropChance = 7;
+
+        public static ExplicitPickupDropTable hordeDropTable;
+        void HordeOfManyDropsWakeOfVultures()
+        {
+            Debug.Log("??????");
+            ItemDef wakeItemDef = RoR2Content.Items.HeadHunter;//Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/HeadHunter/HeadHunter.asset").WaitForCompletion();
+            //wakeItemDef.tier = ItemTier.Boss;
+            //wakeItemDef.deprecatedTier = ItemTier.Boss;
+
+            ExplicitPickupDropTable.PickupDefEntry pickupEntry = new ExplicitPickupDropTable.PickupDefEntry();
+            pickupEntry.pickupDef = wakeItemDef;
+
+            hordeDropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+            hordeDropTable.canDropBeReplaced = true;
+            hordeDropTable.pickupEntries = new ExplicitPickupDropTable.PickupDefEntry[] { pickupEntry };
+
+            //On.RoR2.DeathRewards.Awake += SetDropTableForHordesOfMany;
+            //On.RoR2.TeleporterInteraction.Awake += SetBossDirectorDropTable;
+            On.RoR2.BossGroup.OnMemberDiscovered += SetHordeDropTable;
+        }
+
+        private void SetHordeDropTable(On.RoR2.BossGroup.orig_OnMemberDiscovered orig, BossGroup self, CharacterMaster memberMaster)
+        {
+            orig(self, memberMaster);
+            CharacterBody body = memberMaster.GetBody();
+            if (body && body.isChampion == false)
+            {
+                DeathRewards deathRewards = body.GetComponent<DeathRewards>();
+                deathRewards.bossDropTable = hordeDropTable;
+            }
+        }
+
+        private void SetDropTableForHordesOfMany(On.RoR2.DeathRewards.orig_Awake orig, DeathRewards self)
+        {
+            orig(self);
+            CharacterBody body = self.characterBody;
+            if (body && /*!body.isChampion &&*/ body.isBoss)
+            {
+                Debug.Log(body.name);
+                if(self.bossDropTable == null)
+                    self.bossDropTable = hordeDropTable;
+            }
+        }
 
         void BossesDropBossItems()
         {
@@ -116,12 +160,23 @@ namespace RiskierRain
                         DisposableScalpel.ConsumeScalpel(attackerBody);
                     }
 
+                    PickupIndex drop = deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+
+                    int quantumCodexCount = VoidGhorsTome.instance.GetCount(attackerBody);
+                    if(quantumCodexCount > 0)
+                    {
+                        if (Util.CheckRoll(VoidGhorsTome.GetCurrentVoidChance(quantumCodexCount) * 100))
+                        {
+                            if (VoidGhorsTome.voidBossDropTable.selector.Count > 0)
+                                drop = VoidGhorsTome.voidBossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+                        }
+                    }
+
                     Vector3 vector = enemyBody ? enemyBody.corePosition : Vector3.zero;
                     Vector3 normalized = (vector - attackerBody.corePosition).normalized;
 
                     PickupDropletController.CreatePickupDroplet(
-                        deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng), 
-                        vector, normalized * 15f);
+                        drop, vector, normalized * 15f);
                 }
             }
         }

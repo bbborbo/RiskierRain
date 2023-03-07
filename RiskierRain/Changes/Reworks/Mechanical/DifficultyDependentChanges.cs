@@ -11,6 +11,7 @@ using static RiskierRain.CoreModules.StatHooks;
 using EntityStates;
 using BepInEx;
 using R2API;
+using System.Collections.ObjectModel;
 
 namespace RiskierRain
 {
@@ -274,7 +275,10 @@ namespace RiskierRain
         public static float eclipsePlayerDegen = 0.2f;
         public static string eclipseEightDesc =
             $"\n<mspace=0.5em>(8)</mspace> Health Degeneration: <style=cIsHealth>-{Tools.ConvertDecimal(eclipsePlayerDegen)} per level</style>";
-
+        private void EclipseLevelSelect()
+        {
+            On.RoR2.EclipseRun.OverrideRuleChoices += EclipseRuleChoices;
+        }
         private void EclipseChanges()
         {
             //remove old stuff
@@ -309,6 +313,64 @@ namespace RiskierRain
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEnd);
             LanguageAPI.Add("ECLIPSE_8_DESCRIPTION", eclipse8Prefix + eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc 
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
+        }
+
+        private void EclipseRuleChoices(On.RoR2.EclipseRun.orig_OverrideRuleChoices orig, EclipseRun self, RuleChoiceMask mustInclude, RuleChoiceMask mustExclude, ulong runSeed)
+        {
+            //self.base.OverrideRuleChoices(mustInclude, mustExclude, runSeed);
+            int num = 0;
+            ReadOnlyCollection<NetworkUser> readOnlyInstancesList = NetworkUser.readOnlyInstancesList;
+            for (int i = 0; i < readOnlyInstancesList.Count; i++)
+            {
+                NetworkUser networkUser = readOnlyInstancesList[i];
+                SurvivorDef survivorPreference = networkUser.GetSurvivorPreference();
+                if (survivorPreference)
+                {
+                    int num2 = EclipseRun.GetNetworkUserSurvivorCompletedEclipseLevel(networkUser, survivorPreference) + 1;
+                    num = ((num > 0) ? Math.Min(num, num2) : num2);
+                }
+            }
+            RuleDef difficultyRuleDef = RuleCatalog.FindRuleDef("Difficulty");
+            num = Math.Min(num, EclipseRun.maxEclipseLevel);
+            DifficultyIndex eclipseDifficultyIndex = EclipseRun.GetEclipseDifficultyIndex(num);
+            
+            foreach (RuleChoiceDef ruleChoice in difficultyRuleDef.choices)
+            {
+                if (ruleChoice.excludeByDefault == true && ruleChoice.difficultyIndex <= eclipseDifficultyIndex)
+                {
+                    if (ruleChoice.difficultyIndex == eclipseDifficultyIndex)
+                        difficultyRuleDef.defaultChoiceIndex = ruleChoice.localIndex;
+                    mustInclude[ruleChoice.globalIndex] = true;
+                    mustExclude[ruleChoice.globalIndex] = false;
+                    //self.ForceChoice(mustInclude, mustExclude, ruleChoice);
+                }
+                else
+                {
+                    mustInclude[ruleChoice.globalIndex] = false;
+                    mustExclude[ruleChoice.globalIndex] = true;
+                }
+            }
+            //for(int i = 0; i < (int)DifficultyIndex.Count; i++)
+            //{
+            //    DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef((DifficultyIndex)i);
+            //    RuleDef ruleDef = RuleCatalog.FindRuleDef("Difficulty." + ((DifficultyIndex)i).ToString());
+            //    self.ForceChoice(mustInclude, mustExclude, ruleDef.FindChoice("Off"));
+            //    //self.ForceChoice(mustInclude, mustExclude, $"Difficulty.{(DifficultyIndex)i}.Off");
+            //}
+            //for(int i = 0; i < num; i++)
+            //{
+            //    //RuleDef ruleDef = RuleCatalog.FindRuleDef("Difficulty." + ().ToString());
+            //    //self.ForceChoice(mustInclude, mustExclude, ruleDef.FindChoice("On"));
+            //    self.ForceChoice(mustInclude, mustExclude, $"Difficulty.{EclipseRun.GetEclipseDifficultyIndex(i + 1).ToString()}");
+            //}
+
+            self.ForceChoice(mustInclude, mustExclude, $"Items.{RoR2Content.Items.LunarTrinket.name}.Off");
+            for (int j = 0; j < ArtifactCatalog.artifactCount; j++)
+            {
+                ArtifactDef artifactDef = ArtifactCatalog.GetArtifactDef((ArtifactIndex)j);
+                RuleDef ruleDef = RuleCatalog.FindRuleDef("Artifacts." + artifactDef.cachedName);
+                self.ForceChoice(mustInclude, mustExclude, ruleDef.FindChoice("Off"));
+            }
         }
 
         private void EclipseCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

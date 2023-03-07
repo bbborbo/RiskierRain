@@ -142,5 +142,22 @@ namespace RiskierRain
             orig(self, damageInfo, victim);
         }
         #endregion
+
+        #region op fuel array buff
+        void FuelArrayFunnyBuff()
+        {
+            On.EntityStates.QuestVolatileBattery.CountDown.OnEnter += FuelArrayUseEquipmentEffects;
+        }
+
+        private void FuelArrayUseEquipmentEffects(On.EntityStates.QuestVolatileBattery.CountDown.orig_OnEnter orig, EntityStates.QuestVolatileBattery.CountDown self)
+        {
+            orig(self);
+            CharacterBody body = self.networkedBodyAttachment.attachedBody;
+            if(body && body.equipmentSlot && body.hasAuthority)
+            {
+                body.equipmentSlot.OnEquipmentExecuted();
+            }
+        }
+        #endregion
     }
 }

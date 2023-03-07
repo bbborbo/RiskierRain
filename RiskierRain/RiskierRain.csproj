@@ -95,4 +95,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Changes\States\Misc\NewFolder\" />
+  </ItemGroup>
 </Project>

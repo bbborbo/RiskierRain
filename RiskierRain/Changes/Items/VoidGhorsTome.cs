@@ -66,6 +66,7 @@ namespace RiskierRain.Items
         }
         private void OverrideDropRewards(On.RoR2.BossGroup.orig_DropRewards orig, RoR2.BossGroup self)
 		{
+            return;
 			if (!Run.instance)
 			{
 				Debug.LogError("No valid run instance!");
@@ -182,6 +183,7 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
 		{
+            return;
 			voidT2DropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
             voidT2DropTable.tier1Weight = 0;
             voidT2DropTable.tier2Weight = 0;

@@ -20,6 +20,8 @@ namespace RiskierRain
             //roost
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.DistantRoost);
 
+            Helpers.AddNewMonsterToStage(DirectorCards.Vulture, MonsterCategory.Minibosses, DirectorAPI.Stage.DistantRoost);
+
             //plains
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
             Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
@@ -46,6 +48,7 @@ namespace RiskierRain
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.AphelianSanctuary);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.AphelianSanctuary);
 
+            Helpers.AddNewMonsterToStage(DirectorCards.Parent, MonsterCategory.Minibosses, DirectorAPI.Stage.AphelianSanctuary);
             Helpers.AddNewMonsterToStage(DirectorCards.Grovetender, MonsterCategory.Champions, DirectorAPI.Stage.AphelianSanctuary);
 
             //scorchewd acres
@@ -61,8 +64,11 @@ namespace RiskierRain
 
             //sirewns call
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SirensCall);
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Gup, DirectorAPI.Stage.SirensCall);
+
 
             //grove
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SunderedGrove);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.SunderedGrove);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.WanderingVagrant, DirectorAPI.Stage.SunderedGrove);
 
@@ -72,6 +78,7 @@ namespace RiskierRain
 
             //Sky meadow
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.LesserWisp, DirectorAPI.Stage.SkyMeadow);
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SkyMeadow);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.XiConstruct, DirectorAPI.Stage.SkyMeadow);
 
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SkyMeadow);
@@ -115,6 +122,9 @@ namespace RiskierRain
         public static CharacterSpawnCard Bison;
         public static CharacterSpawnCard ClayApothecary;
 
+        public static CharacterSpawnCard ElderLemurian;
+        public static CharacterSpawnCard Parent;
+
         public static CharacterSpawnCard Bronzong;
         public static CharacterSpawnCard GreaterWisp;
 
@@ -155,6 +165,10 @@ namespace RiskierRain
             BeetleGuard = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscbeetleguard");
             Mushrum = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscminimushroom");
             Bison = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/Bison/cscBison.asset").WaitForCompletion();
+
+            ElderLemurian = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/LemurianBruiser/cscLemurianBruiser.asset").WaitForCompletion();
+            Parent = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/Parent/cscParent.asset").WaitForCompletion();
+
 
             Bronzong = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscbell");
             GreaterWisp = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscgreaterwisp");
@@ -210,6 +224,9 @@ namespace RiskierRain
         public static DirectorCard Bison;
         public static DirectorCard BisonLoop;
 
+        public static DirectorCard ElderLemurian;
+        public static DirectorCard Parent;
+
         public static DirectorCard Bronzong;
         public static DirectorCard GreaterWisp;
 
@@ -261,6 +278,9 @@ namespace RiskierRain
             Bison = BuildDirectorCard(SpawnCards.Bison, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);
             Bronzong = BuildDirectorCard(SpawnCards.Bronzong);  //Basic Monster on SkyMeadow
             GreaterWisp = BuildDirectorCard(SpawnCards.GreaterWisp);
+
+            ElderLemurian = BuildDirectorCard(SpawnCards.ElderLemurian, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
+            Parent = BuildDirectorCard(SpawnCards.Parent, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
 
             TitanBlackBeach = BuildDirectorCard(SpawnCards.TitanBlackBeach);
             TitanDampCave = BuildDirectorCard(SpawnCards.TitanDampCave);

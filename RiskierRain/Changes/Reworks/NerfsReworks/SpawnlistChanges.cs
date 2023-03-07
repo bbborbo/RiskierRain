@@ -21,6 +21,7 @@ namespace RiskierRain
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.DistantRoost);
 
             Helpers.AddNewMonsterToStage(DirectorCards.Vulture, MonsterCategory.Minibosses, DirectorAPI.Stage.DistantRoost);
+            Helpers.AddNewMonsterToStage(DirectorCards.RoboBall, MonsterCategory.Champions, DirectorAPI.Stage.DistantRoost); //roost needed a loop boss and i couldnt think of anything better
 
             //plains
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
@@ -65,7 +66,6 @@ namespace RiskierRain
             //sirewns call
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SirensCall);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Gup, DirectorAPI.Stage.SirensCall);
-
 
             //grove
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SunderedGrove);
@@ -291,7 +291,7 @@ namespace RiskierRain
             BeetleQueen = BuildDirectorCard(SpawnCards.BeetleQueen);
             Dunestrider = BuildDirectorCard(SpawnCards.Dunestrider);
 
-            ImpOverlord = BuildDirectorCard(SpawnCards.ImpOverlord);
+            ImpOverlord = BuildDirectorCard(SpawnCards.ImpOverlord, 1, 1, DirectorCore.MonsterSpawnDistance.Standard);
             Grovetender = BuildDirectorCard(SpawnCards.Grovetender);
             RoboBall = BuildDirectorCard(SpawnCards.RoboBall);
             MagmaWorm = BuildDirectorCard(SpawnCards.MagmaWorm, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);

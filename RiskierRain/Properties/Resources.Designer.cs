@@ -79,5 +79,15 @@ namespace RiskierRain.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] orangecontent {
+            get {
+                object obj = ResourceManager.GetObject("orangecontent", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

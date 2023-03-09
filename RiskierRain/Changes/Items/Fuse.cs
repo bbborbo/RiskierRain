@@ -35,8 +35,8 @@ namespace RiskierRain.Items
 
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
-
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
+        //testing egg model
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
 

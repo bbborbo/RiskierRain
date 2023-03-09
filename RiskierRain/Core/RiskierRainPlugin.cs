@@ -57,8 +57,11 @@ namespace RiskierRain
         public const string modName = "RiskierRain";
         public const string version = "1.0.0";
 
+        public static PluginInfo PInfo { get; private set; }
+
         public static AssetBundle mainAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.itmightbebad);
         public static AssetBundle placeholderAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.borboitemicons);
+        public static AssetBundle orangeAssetBundle = Tools.LoadAssetBundle(RiskierRain.Properties.Resources.orangecontent);
         public static string dropPrefabsPath = "Assets/Models/DropPrefabs";
         public static string iconsPath = "Assets/Textures/Icons/";
         public static string eliteMaterialsPath = "Assets/Textures/Materials/Elite/";
@@ -110,6 +113,10 @@ namespace RiskierRain
 
         void Awake()
         {
+            PInfo = Info;
+
+            InitializeCoreModules();
+
             InitializeConfig();
             InitializeItems();
             InitializeSkills();
@@ -140,7 +147,7 @@ namespace RiskierRain
             LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", "lol");
             LanguageAPI.Add("ITEM_EXECUTELOWHEALTHELITE_PICKUP", "lol");
 
-            InitializeCoreModules();
+            
             new ContentPacks().Initialize();
         }
 

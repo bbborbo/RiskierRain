@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 1874836034
+CRC: 3724575786
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: orangecontent/items
+      Name: orangecontent
       Dependencies: {}

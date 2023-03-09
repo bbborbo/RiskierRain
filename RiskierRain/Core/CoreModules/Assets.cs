@@ -6,6 +6,7 @@ using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace RiskierRain.CoreModules
     {
         public static EffectDef CreateEffect(GameObject effect)
         {
+
             if (effect == null)
             {
                 Debug.LogError("Effect prefab was null");

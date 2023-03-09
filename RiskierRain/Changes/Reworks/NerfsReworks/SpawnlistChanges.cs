@@ -269,7 +269,7 @@ namespace RiskierRain
             BlindVerminSnowy = BuildDirectorCard(SpawnCards.BlindVerminSnowy);
 
             Imp = BuildDirectorCard(SpawnCards.Imp);
-            Vulture = BuildDirectorCard(SpawnCards.Vulture);
+            Vulture = BuildDirectorCard(SpawnCards.Vulture, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
 
             Golem = BuildDirectorCard(SpawnCards.Golem);
             BeetleGuard = BuildDirectorCard(SpawnCards.BeetleGuard);

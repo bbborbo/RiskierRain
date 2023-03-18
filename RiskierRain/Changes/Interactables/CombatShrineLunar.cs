@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 
 namespace RiskierRain.Changes.Interactables
 {
-    class CombatShrineLunar : InteractableBase
+    class CombatShrineLunar : InteractableBase<FakeShrine>
     {
         public override string interactableName => "Lunar Gallery";
 

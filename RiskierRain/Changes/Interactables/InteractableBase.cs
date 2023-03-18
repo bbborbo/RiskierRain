@@ -46,8 +46,8 @@ namespace RiskierRain.Interactables
 		public abstract void Init(ConfigFile config);
 		protected void CreateLang()
 		{
-			LanguageAPI.Add("VV_INTERACTABLE_" + this.interactableLangToken + "_NAME", this.interactableName);
-			LanguageAPI.Add("VV_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT", this.interactableContext);
+			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME", this.interactableName);
+			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT", this.interactableContext);
 		}
 
 		public void CreateInteractable()
@@ -126,11 +126,19 @@ namespace RiskierRain.Interactables
 								modelLocator.dontDetatchFromParent = true;
 								modelLocator.autoUpdateModelTransform = true;
 								Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
-								component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-															where x.gameObject.name.Contains(prefabName)
-															select x).First<MeshRenderer>();
-								component.strength = 1f;
-								component.highlightColor = Highlight.HighlightColor.interactive;
+								if (component == null)
+                                {
+									Debug.Log("highlight null, adding component");
+									component = interactableBodyModelPrefab.AddComponent<Highlight>();
+                                }
+								if (component != null)
+                                {
+									component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+																where x.gameObject.name.Contains(prefabName)
+																select x).First<MeshRenderer>();
+									component.strength = 1f;
+									component.highlightColor = Highlight.HighlightColor.interactive;
+								}
 								HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
 								if (hologramProjector == null)
                                 {
@@ -138,30 +146,31 @@ namespace RiskierRain.Interactables
 									hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
                                 }
 								if (hologramProjector != null)
-                                {
+								{
 									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
 									hologramProjector.displayDistance = 10f;
 									hologramProjector.disableHologramRotation = false;
-									ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
-									if (childLocator == null)
-                                    {
-										Debug.Log("childLocator null, adding component");
-										childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
-									}
-									if (childLocator != null)
-                                    {
-										childLocator.transformPairs = new ChildLocator.NameTransformPair[]
-										{
-											new ChildLocator.NameTransformPair
-											{
-												name = "FireworkOrigin",
-												transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
-											}
-										};
-										PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
-										Debug.Log("interactable registered");
-									}
 								}
+								ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
+								
+								if (childLocator == null)
+                                {
+									Debug.Log("childLocator null, adding component");
+									childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
+								}
+								if (childLocator != null)
+                                {
+									childLocator.transformPairs = new ChildLocator.NameTransformPair[]
+									{
+										new ChildLocator.NameTransformPair
+										{
+											name = "FireworkOrigin",
+											transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
+										}
+									};
+									PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+									Debug.Log("interactable registered");
+								}								
 							}							
 						}
 					}
@@ -192,7 +201,7 @@ namespace RiskierRain.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			Debug.Log("Created spawncard for " + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard) CreateInteractableSpawnCard(bool isFavored)

@@ -1,5 +1,7 @@
 ﻿using BepInEx.Configuration;
 using RiskierRain.CoreModules;
+using RiskierRain.Interactables;
+using RiskierRain.Items;
 using R2API;
 using RoR2;
 using System;
@@ -23,7 +25,7 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "EGG";
 
-        public override string ItemPickupDesc => "gain (stats). Start an egg hunt." +
+        public override string ItemPickupDesc => "Slightly increase health, regeneration, and damage. Start an egg hunt." +
             "<style=cIsVoid>Corrupts all Regenerating Scrap.</style>";
 
         public override string ItemFullDescription => "yeag";
@@ -32,9 +34,9 @@ namespace RiskierRain.Items
 
         public override ItemTier Tier => ItemTier.VoidTier2;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.OnKillEffect, ItemTag.InteractableRelated };
 
-        public override BalanceCategory Category => BalanceCategory.StateOfInteraction;
+        public override BalanceCategory Category => BalanceCategory.None;
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
 
@@ -49,14 +51,38 @@ namespace RiskierRain.Items
         {
             On.RoR2.GlobalEventManager.OnCharacterDeath += EggOnDeath;
             On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
-            //make interactable
+            On.RoR2.SceneDirector.PopulateScene += HideEggs;
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
+        private void HideEggs(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
+        {
+            orig(self);
+            this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
+            int num = 0;
+            using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (enumerator.Current.inventory.GetItemCount(this.ItemsDef) > 0)
+                    {
+                        num += 3;
+                    }
+                }
+            }
+            for (int j = 0; j < num; j++)
+            {
+                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(EggPile.instance.customInteractable.spawnCard, new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.Random
+                }, rng));
+            }
+        }
+
         private void EggStats(CharacterBody sender, StatHookEventArgs args)
         {
-            int itemCount = sender.inventory.GetItemCount(Egg.instance.ItemsDef.itemIndex);
+            int itemCount = GetCount(sender);
             if (itemCount > 0)
             {
                 args.baseHealthAdd += eggHealth * itemCount;
@@ -76,7 +102,7 @@ namespace RiskierRain.Items
             if (interactorBody.inventory.GetItemCount(this.ItemsDef) > 0) //can proc on picking up items, if i decide to fix this look into interactionprocfilter i guess
             {
                 int i = UnityEngine.Random.RandomRangeInt(0, 99);
-                if (i <= 9) //5/100
+                if (i <= 6) //5/100
                 {
                     EggReward(interactableObject);
                 };
@@ -92,7 +118,7 @@ namespace RiskierRain.Items
             if (damageReport.attackerBody.inventory.GetItemCount(this.ItemsDef) > 0)
             {
                 int i = UnityEngine.Random.RandomRangeInt(0, 99);
-                if (i <= 2) //1/100
+                if (i <= 3) //1/100
                 {
                     CharacterBody victim = damageReport.victimBody;
                     EggReward(victim);
@@ -109,7 +135,7 @@ namespace RiskierRain.Items
             dropletOrigin = body.gameObject.transform;
             PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position, Vector3.zero);
         }
-        private void EggReward(GameObject interactableObject)
+        public void EggReward(GameObject interactableObject)
         {
             PickupIndex pickupIndex = PickupIndex.none;
             GenerateWeightedSelection();
@@ -124,7 +150,7 @@ namespace RiskierRain.Items
         {
             weightedSelection = new WeightedSelection<PickupIndex>();
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(Egg.instance.ItemsDef.itemIndex), 1f);
-            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex("LunarCoin.Coin0"), 0.1f);//make golden egg later
+            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(GoldenEgg.instance.ItemsDef.itemIndex), 0.1f);
         }
 
         public override void Init(ConfigFile config)

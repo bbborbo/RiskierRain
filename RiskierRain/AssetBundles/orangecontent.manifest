@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2856104471
+CRC: 1100237383
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 3283c564d19d6f3bd333991bbfa029e8
+    Hash: 7274bde1f12135cccfc327b39796e435
   TypeTreeHash:
     serializedVersion: 2
-    Hash: ae2cf77de671e115b4e55d2b65767202
+    Hash: 0d58fbfade557d6768458e8c797610af
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -23,7 +23,11 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Prefabs/eggPile.prefab
 - Assets/Prefabs/egg.prefab
+- Assets/Prefabs/goldenegg.prefab
 Dependencies: []

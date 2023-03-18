@@ -16,7 +16,7 @@ using static RoR2.PickupDropTable;
 
 namespace RiskierRain.Changes.Interactables
 {
-	class FakeShrine : InteractableBase
+	class FakeShrine : InteractableBase<FakeShrine>
 	{
 		public override float voidSeedWeight => 0.2f;
 		public override int normalWeight => 15;
@@ -98,16 +98,14 @@ namespace RiskierRain.Changes.Interactables
         {
             orig(self, activator);
 			if (self.displayNameToken == this.interactableLangToken)
-            {
-                {
-					PickupIndex pickupIndex = PickupIndex.none;
-					this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
+            {                
+				PickupIndex pickupIndex = PickupIndex.none;
+				this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
 
-					pickupIndex = dropTable.GenerateDrop(rng);
-					dropletOrigin = self.gameObject.transform;
-					PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
-					self.SetAvailable(false);
-				}				
+				pickupIndex = dropTable.GenerateDrop(rng);
+				dropletOrigin = self.gameObject.transform;
+				PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
+				self.SetAvailable(false);								
 			}
         }
 		private Xoroshiro128Plus rng;

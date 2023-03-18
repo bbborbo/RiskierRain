@@ -25,10 +25,11 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "EGG";
 
-        public override string ItemPickupDesc => "Slightly increase health, regeneration, and damage. Start an egg hunt." +
-            "<style=cIsVoid>Corrupts all Regenerating Scrap.</style>";
+        public override string ItemPickupDesc => "Slightly increase health, regeneration, and damage. Start an egg hunt. " +
+            "<style=cIsVoid>Corrupts all Regenerating Scrap and Infusion.</style>";
 
-        public override string ItemFullDescription => "yeag";
+        public override string ItemFullDescription => $"Gain <style = cIsHealing>{eggHealth} max health, {eggRegen} hp/s regeneration,</style> and <style = cIsDamage>{eggDamage} damage</style>. <style = cIsUtility>Start an egg hunt.</style> " +
+            "<style = cIsVoid> Corrupts all Regenerating Scrap and Infusion.</style>";
 
         public override string ItemLore => "this egg is so fuckign yummuy";
 

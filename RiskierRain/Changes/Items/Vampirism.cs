@@ -13,11 +13,11 @@ namespace RiskierRain.Items
     {
         int maxHeal = 3;
         int bleedPerHeal = 5;
+        int vampireBleedChance = 10;
 
+        public override string ItemName => "Bloodsucking Coralite";
 
-        public override string ItemName => "Yummy";
-
-        public override string ItemLangTokenName => "VAMPIRETHING";
+        public override string ItemLangTokenName => "HEALFROMBLEEDINGENEMIES";
 
         public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies.";
 
@@ -42,25 +42,38 @@ namespace RiskierRain.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += VampireHit;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            //add bleedchance later
+            On.RoR2.GlobalEventManager.OnHitEnemy += VampireHit;
+            On.RoR2.CharacterBody.RecalculateStats += VampireBleedChance;
+            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;            
         }
 
-        private void VampireHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void VampireBleedChance(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
-            orig(self, damageInfo);
-            int bleedCount = self.body.GetBuffCount(RoR2Content.Buffs.Bleeding);
-            if (bleedCount > 0)
+            orig(self);
+            if (GetCount(self) > 0)
             {
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if (attackerBody != null)
+                self.bleedChance += vampireBleedChance;
+            }
+        }
+
+        private void VampireHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
+        {
+            orig(self, damageInfo, victim);
+            CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+            if (victimBody != null)
+            {
+                int bleedCount = victimBody.GetBuffCount(RoR2Content.Buffs.Bleeding);
+                if (bleedCount > 0)
                 {
-                    int itemCount = GetCount(attackerBody);
-                    if (itemCount > 0)
+                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    if (attackerBody != null)
                     {
-                        int healAmount = Mathf.Clamp((bleedCount / bleedPerHeal) + 1, 0, maxHeal * itemCount);
-                        attackerBody.healthComponent.Heal(healAmount, new ProcChainMask());
+                        int itemCount = GetCount(attackerBody);
+                        if (itemCount > 0 && damageInfo.procCoefficient > 0)
+                        {                            
+                            int healAmount = Mathf.Clamp((bleedCount / bleedPerHeal) + 1, 0, maxHeal * itemCount);
+                            attackerBody.healthComponent.Heal(healAmount, new ProcChainMask());                                                      
+                        }
                     }
                 }
             }

@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static RiskierRain.CoreModules.StatHooks;
+using System.Linq;
 
 namespace RiskierRain.CoreModules
 {
@@ -570,5 +571,46 @@ namespace RiskierRain.CoreModules
 
             return values;
         }
+
+        #region shaders lol
+
+        public static void SwapShadersFromMaterialsInBundle(AssetBundle bundle)
+        {
+            if (bundle.isStreamedSceneAssetBundle)
+            {
+                Debug.LogWarning($"Cannot swap material shaders from a streamed scene assetbundle.");
+                return;
+            }
+
+            Material[] assetBundleMaterials = bundle.LoadAllAssets<Material>().Where(mat => mat.shader.name.StartsWith("Stubbed")).ToArray();
+
+            for (int i = 0; i < assetBundleMaterials.Length; i++)
+            {
+                var material = assetBundleMaterials[i];
+                if (!material.shader.name.StartsWith("Stubbed"))
+                {
+                    Debug.LogWarning($"The material {material} has a shader which's name doesnt start with \"Stubbed\" ({material.shader.name}), this is not allowed for stubbed shaders for MSU. not swapping shader.");
+                    continue;
+                }
+                try
+                {
+                    SwapShader(material);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to swap shader of material {material}: {ex}");
+                }
+            }
+        }
+        private static void SwapShader(Material material)
+        {
+            var shaderName = material.shader.name.Substring("Stubbed".Length);
+            var adressablePath = $"{shaderName}.shader";
+            Shader shader = Addressables.LoadAssetAsync<Shader>(adressablePath).WaitForCompletion();
+            material.shader = shader;            
+            MaterialsWithSwappedShaders.Add(material);
+        }
+        public static List<Material> MaterialsWithSwappedShaders { get; } = new List<Material>();
+        #endregion
     }
 }

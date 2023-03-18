@@ -124,6 +124,7 @@ namespace RiskierRain
             InitializeEliteEquipment();
             InitializeScavengers();
             //InitializeEverything();
+            Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
             #region rework pending / priority removal
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies

@@ -97,7 +97,7 @@ namespace RiskierRain.Changes.Interactables
 		private void FakeShrineBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-			if (self.displayNameToken == this.interactableLangToken)
+			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {                
 				PickupIndex pickupIndex = PickupIndex.none;
 				this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);

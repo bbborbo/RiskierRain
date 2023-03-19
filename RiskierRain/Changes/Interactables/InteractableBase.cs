@@ -75,20 +75,20 @@ namespace RiskierRain.Interactables
                 }
 				PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
 
-				purchaseInteraction.displayNameToken = this.interactableLangToken;
-				purchaseInteraction.contextToken = this.interactableLangToken;
+				purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+				purchaseInteraction.contextToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT";
 				purchaseInteraction.costType = (CostTypeIndex)costTypeIndex;
 				purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
 				purchaseInteraction.cost = costAmount;
 				purchaseInteraction.available = true;
-				purchaseInteraction.setUnavailableOnTeleporterActivated = true;
+				purchaseInteraction.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
 				purchaseInteraction.isShrine = isShrine;
 				purchaseInteraction.isGoldShrine = false;
 
 				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
 				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
 				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
-				genericDisplayNameProvider.displayToken = this.interactableLangToken;
+				genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
 				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
 
 				if (childCollider == null)
@@ -192,7 +192,7 @@ namespace RiskierRain.Interactables
 			interactableSpawnCard.hullSize = HullClassification.Human;
 			interactableSpawnCard.prefab = model;
 			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
-			interactableSpawnCard.name = interactableName;
+			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
 
 			interactableDirectorCard = new DirectorCard
 			{
@@ -201,7 +201,7 @@ namespace RiskierRain.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created spawncard for " + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard) CreateInteractableSpawnCard(bool isFavored)
@@ -219,7 +219,7 @@ namespace RiskierRain.Interactables
 			interactableSpawnCard.hullSize = HullClassification.Human;
 			interactableSpawnCard.prefab = model;
 			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
-			interactableSpawnCard.name = interactableName;
+			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
 
 			interactableDirectorCard = new DirectorCard
 			{
@@ -228,7 +228,7 @@ namespace RiskierRain.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created favored spawncard for" + interactableName + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			Debug.Log("Created favored spawncard for" + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
 
@@ -264,14 +264,14 @@ namespace RiskierRain.Interactables
 
 		public string InteractableName(On.RoR2.PurchaseInteraction.orig_GetDisplayName orig, PurchaseInteraction self)
 		{
-			bool flag = self.displayNameToken == this.interactableLangToken;
 			string result;
-			if (flag)
+			if (self.displayNameToken == this.interactableLangToken)
 			{
 				result = this.interactableName;
 			}
 			else
 			{
+				Debug.Log("uh oh");
 				result = orig.Invoke(self);
 			}
 			return result;

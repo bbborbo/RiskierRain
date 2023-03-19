@@ -82,7 +82,7 @@ namespace RiskierRain.Interactables
         private void EggPileBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-            if (self.displayNameToken == this.interactableLangToken)
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
                 EggReward(self.gameObject);
                 GameObject.Destroy(self.gameObject);

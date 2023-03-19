@@ -11,7 +11,7 @@ namespace RiskierRain.Items
 {
     class StarVeil : ItemBase<StarVeil>
     {
-        static float iframeDurationBase = 0.67f;
+        static float iframeDurationBase = 0.33f;
         static float iframeDurationStack = 0.33f;
 
         static float stormDamageCoefficient = 3f;

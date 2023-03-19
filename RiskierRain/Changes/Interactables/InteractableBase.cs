@@ -81,14 +81,14 @@ namespace RiskierRain.Interactables
 				purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
 				purchaseInteraction.cost = costAmount;
 				purchaseInteraction.available = true;
-				purchaseInteraction.setUnavailableOnTeleporterActivated = true;
+				purchaseInteraction.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
 				purchaseInteraction.isShrine = isShrine;
 				purchaseInteraction.isGoldShrine = false;
 
 				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
 				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
 				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
-				genericDisplayNameProvider.displayToken = this.interactableLangToken;
+				genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
 				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
 
 				if (childCollider == null)

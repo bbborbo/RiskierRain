@@ -14,6 +14,7 @@ namespace RiskierRain.Changes.Interactables
 {
     class CombatShrineLunar : InteractableBase<FakeShrine>
     {
+        public static string baseUseMessage = "SHRINE_LUNARGALLERY_USE_MESSAGE";
         public override string interactableName => "Lunar Gallery";
 
         public override string interactableContext => "eat my transgendence nerd";
@@ -103,12 +104,47 @@ namespace RiskierRain.Changes.Interactables
             On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             On.RoR2.DirectorCore.TrySpawnObject += StoreEnemyAsVariable;
             On.RoR2.CombatDirector.Spawn += GiveEnemyItem;
+            On.RoR2.CombatDirector.CombatShrineActivation += GalleryShrineActivation;
+            LanguageAPI.Add(baseUseMessage, "<style=cShrine>You have summoned {1}s to fight <style=cIsLunar>with {2}</style>.</color>");
+            LanguageAPI.Add(baseUseMessage + "_2P", "<style=cShrine>{0} has summoned {1}s to fight <style=cIsLunar>with {2}</style>.</color>");
             CreateLang();
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
             var favored = CreateInteractableSpawnCard(true);
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes, favored.interactableSpawnCard, favored.directorCard, favoredStages);
             ConstructItemPool();
+        }
+
+        private void GalleryShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
+        {
+            GalleryDirector galleryComponent = self.GetComponent<GalleryDirector>();
+            if(galleryComponent != null)
+            {
+                self.enabled = true;
+                self.monsterCredit += monsterCredit;
+                self.OverrideCurrentMonsterCard(chosenDirectorCard);
+                self.monsterSpawnTimer = 0f;
+                CharacterMaster component = chosenDirectorCard.spawnCard.prefab.GetComponent<CharacterMaster>();
+                if (component)
+                {
+                    CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
+                    if (component2)
+                    {
+                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                        {
+                            subjectAsCharacterBody = interactor.GetComponent<CharacterBody>(),
+                            baseToken = baseUseMessage,
+                            paramTokens = new string[]
+                            {
+                                component2.baseNameToken,
+                                itemToGive.nameToken
+                            }
+                        });
+                    }
+                }
+                return;
+            }
+            orig(self, interactor, monsterCredit, chosenDirectorCard);
         }
 
         private bool GiveEnemyItem(On.RoR2.CombatDirector.orig_Spawn orig, CombatDirector self, SpawnCard spawnCard, EliteDef eliteDef, Transform spawnTarget, DirectorCore.MonsterSpawnDistance spawnDistance, bool preventOverhead, float valueMultiplier, DirectorPlacementRule.PlacementMode placementMode)

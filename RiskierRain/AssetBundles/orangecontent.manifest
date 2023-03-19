@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1230788374
+CRC: 1695194989
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: dbf5ce39b3ea646a13103f7d7e937824
+    Hash: 68c0a898fe1db9e49de16fd5baa4f712
   TypeTreeHash:
     serializedVersion: 2
     Hash: 898c8bddee9e29ddc6a46a9a891be428
@@ -31,11 +31,15 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/lunarGallery.fbx
 - Assets/Prefabs/eggPile.prefab
+- Assets/egg.fbx
 - Assets/Egg.mat
+- Assets/LunarGallery.mat
 - Assets/Icons/texEggIcon.png
 - Assets/Icons/texGoldenEggIcon.png
 - Assets/EggGold.mat
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
+- Assets/Prefabs/lunarGallery.prefab
 Dependencies: []

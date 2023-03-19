@@ -20,9 +20,9 @@ namespace RiskierRain.Changes.Interactables
 
         public override string interactableLangToken => "LUNAR_GALLERY";
 
-        public override GameObject interactableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineCombat/ShrineCombat.prefab").WaitForCompletion();
+        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarGallery.prefab");
 
-        public override bool modelIsCloned => true;
+        public override bool modelIsCloned => false;
 
         public override float voidSeedWeight => 0;
 
@@ -52,9 +52,9 @@ namespace RiskierRain.Changes.Interactables
 
         public override int maxSpawnsPerStage => 5;
 
-        public override string modelName => "mdlShrineCombat"; // RoR2/DLC1/RandomlyLunar/mdlDomino.fbx 
+        public override string modelName => "lunarGallery"; 
 
-        public override string prefabName => "ShrineCombat";
+        public override string prefabName => "lunarGallery";
 
         public override int category => 2;
 

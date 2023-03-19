@@ -135,7 +135,7 @@ namespace RiskierRain.Changes.Interactables
 
         private void LunarGalleryBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
-            if (self.displayNameToken == this.interactableLangToken)
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
                 Vector3 vector = Vector3.zero;
                 Quaternion rotation = Quaternion.identity;

@@ -90,9 +90,9 @@ namespace RiskierRain
                 CharacterBody victimBody = victim ? victim.GetComponent<CharacterBody>() : null;
 
                 CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                Inventory inventory = attackerBody.inventory;
+                Inventory inventory = attackerBody?.inventory;
 
-                if (attackerBody && victimBody)
+                if (attackerBody && victimBody && inventory)
                 {
                     BurnStatHook.InvokeStatHook(attackerBody);
 

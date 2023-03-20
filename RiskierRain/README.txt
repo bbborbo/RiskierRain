@@ -9,3 +9,4 @@ known issues!!
 -networking issues
 -custom interactables cant be pinged for some reason
 -certain entities throw an NRE when dealing damage; lightning rods from forgotten relics is the most common
+-safer spaces infinte blocking? investigate

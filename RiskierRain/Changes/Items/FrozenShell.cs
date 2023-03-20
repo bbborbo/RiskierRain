@@ -69,7 +69,6 @@ namespace RiskierRain.Items
                     {
                         args.armorAdd += baseArmor + Mathf.RoundToInt(stackArmor * itemCount);
                     }
-                    Debug.Log("turts" + buffCount + "armor: " + sender.armor);
                 }
             }
         }

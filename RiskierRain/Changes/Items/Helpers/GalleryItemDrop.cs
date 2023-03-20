@@ -45,7 +45,7 @@ namespace RiskierRain.Items.Helpers
         {
             orig(self, damageReport);
             CharacterBody victim = damageReport.victimBody;
-            if (victim.inventory.GetItemCount(this.ItemsDef) > 0)
+            if (victim.inventory?.GetItemCount(this.ItemsDef) > 0)
             {
                 RollReward(victim);
             }

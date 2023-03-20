@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2544201389
+CRC: 2425288594
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0ab7843cd62239d898fa68ffa7c002dc
+    Hash: 5d723d1a8037b7c01467d2cc781446f2
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -36,16 +36,33 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/lunarGallery.fbx
+- Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
+- Assets/Prefabs/bottle.prefab
+- Assets/frozenTurtleShell.fbx
 - Assets/Prefabs/eggPile.prefab
+- Assets/Prefabs/mdlScalpel.prefab
+- Assets/Icons/texFrozenShellIcon.png
 - Assets/egg.fbx
+- Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
+- Assets/Prefabs/mdlScalpelBroken.prefab
+- Assets/aaaaaaa.fbx
 - Assets/Egg.mat
+- Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
+- Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Icons/texEggIcon.png
+- Assets/scalpel.fbx
+- Assets/Ice.mat
+- Assets/Prefabs/frozenTurtleShell.prefab
+- Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
 - Assets/bottle.fbx
 - Assets/Prefabs/voidBottle.prefab
-- Assets/Prefabs/bottle.prefab
+- Assets/Black.mat
+- Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/Prefabs/mdlbottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
 - Assets/EggGold.mat
+- Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab

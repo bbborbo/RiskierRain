@@ -22,8 +22,8 @@ namespace RiskierRain.Changes.Items
         public static float luckBase = 1;
         public static float luckstack = 1; //maybe 1?
 
-        public static float healthRegenBase = -3;
-        public static float healthRegenStack = -3;
+        public static float healthRegenBase = -2;
+        public static float healthRegenStack = -2;
         public static float healthRegenLevelBase = -0.3f;
         public static float healthRegenLevelStack = -0.3f;
 
@@ -65,7 +65,7 @@ namespace RiskierRain.Changes.Items
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
         }
 
         private void AddBuffStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -138,7 +138,7 @@ namespace RiskierRain.Changes.Items
         HealthComponent healthComponent;
         BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarLuckBuff.buffIndex;
         BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarLuckBarrierCooldown.buffIndex;
-        public static int maxBuffCount = 10;//2
+        public static int maxBuffCount = 10;
         int buffCount = 0;
 
         public static float barrierFraction = 0.5f;

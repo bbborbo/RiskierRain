@@ -196,7 +196,6 @@ namespace RiskierRain.Interactables
                             if (directorCard != null)
                             {
                                 itemToGive = ChooseItem();
-                                Debug.Log($"gave enemy {itemToGive.nameToken}");
                                     component6.CombatShrineActivation(activator, monsterCredit, directorCard);
                                 EffectData effectData = new EffectData
                                 {
@@ -235,7 +234,6 @@ namespace RiskierRain.Interactables
         ItemDef ChooseItem()
         {
             int i = UnityEngine.Random.RandomRangeInt(0, itemPool.Length - 1);
-            Debug.Log($"i = {i}, length = {itemPool.Length}");
             return itemPool[i];
         }
     }

@@ -14,7 +14,7 @@ using System.Linq;
 //using UnityEngine.SceneManagement;
 using static RoR2.PickupDropTable;
 
-namespace RiskierRain.Changes.Interactables
+namespace RiskierRain.Interactables
 {
 	class FakeShrine : InteractableBase<FakeShrine>
 	{

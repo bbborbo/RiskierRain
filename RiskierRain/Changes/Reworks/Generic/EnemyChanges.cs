@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using EntityStates.NullifierMonster;
 
 namespace RiskierRain
 {
@@ -207,18 +208,48 @@ namespace RiskierRain
         }
         #endregion
         #region void reaver
+        GameObject nullifierPrefab;
         GameObject portalBombPrefab; //also used by simu elites
+        //EntityStateConfiguration nullifierAttackState;
 
         float bombSize = 10f; //1f, DOESNT WORK
+        int nullifierAttackSpeed = 10;
+        int nulliferBombCount = 10;
 
         void VoidReaverChanges()
         {
+            On.EntityStates.NullifierMonster.FirePortalBomb.OnEnter += BuffFirePortalBomb;
+
+            nullifierPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2 /Base/Nullifier/NullifierBody.prefab").WaitForCompletion();
+            if (nullifierPrefab)
+            {
+                CharacterBody nullifierBody = nullifierPrefab.GetComponent<CharacterBody>();
+                if (nullifierBody)
+                {
+                    nullifierBody.baseAttackSpeed = nullifierAttackSpeed;                    
+                }
+            }
+            //nullifierAttackState = Addressables.LoadAssetAsync<EntityStateConfiguration>("RoR2/Base/Nullifier/EntityStates.NullifierMonster.FirePortalBomb.asset").WaitForCompletion();
+            
+
             portalBombPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Nullifier/NullifierBombProjectile.prefab").WaitForCompletion();
             if (portalBombPrefab)
-            {
+            {                
                 portalBombPrefab.transform.localScale = Vector3.one * bombSize;
             }
         }
+
+        private void BuffFirePortalBomb(On.EntityStates.NullifierMonster.FirePortalBomb.orig_OnEnter orig, EntityStates.NullifierMonster.FirePortalBomb self)
+        {
+            FirePortalBomb.portalBombCount = nulliferBombCount;
+            orig(self);
+        }
+
+
+
+
+
+
         #endregion
 
         #region xi construct related

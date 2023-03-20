@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Changes.Items.Helpers
+namespace RiskierRain.Items.Helpers
 {
     class GalleryItemDrop : ItemBase<GalleryItemDrop>
     {

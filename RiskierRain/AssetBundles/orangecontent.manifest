@@ -1,17 +1,19 @@
 ManifestFileVersion: 0
-CRC: 1241276985
+CRC: 2544201389
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d571b57b29d1603f603aa79fc12e2341
+    Hash: 0ab7843cd62239d898fa68ffa7c002dc
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 898c8bddee9e29ddc6a46a9a891be428
+    Hash: baf34b70b1930327c83ade3f7445d6e3
 HashAppended: 0
 ClassTypes:
 - Class: 1
   Script: {instanceID: 0}
 - Class: 4
+  Script: {instanceID: 0}
+- Class: 20
   Script: {instanceID: 0}
 - Class: 21
   Script: {instanceID: 0}
@@ -27,6 +29,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 64
   Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
 - Class: 213
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
@@ -37,8 +41,12 @@ Assets:
 - Assets/Egg.mat
 - Assets/LunarGallery.mat
 - Assets/Icons/texEggIcon.png
+- Assets/bottle.fbx
+- Assets/Prefabs/voidBottle.prefab
+- Assets/Prefabs/bottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
 - Assets/EggGold.mat
+- Assets/Purble.mat
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/lunarGallery.prefab

@@ -33,7 +33,7 @@ namespace RiskierRain.Items
 
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
-        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/bottle.prefab");
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 

@@ -37,7 +37,39 @@ namespace RiskierRain.Items.Helpers
 
         public override void Hooks()
         {
-            return; //ehh ioll do it later
+            On.RoR2.DirectorCore.TrySpawnObject += StoreEnemyAsVariable; //move this to a seperate class and make it generic
+            On.RoR2.CombatDirector.Spawn += GiveEnemyItem;
+        }
+
+        private bool GiveEnemyItem(On.RoR2.CombatDirector.orig_Spawn orig, CombatDirector self, SpawnCard spawnCard, EliteDef eliteDef, Transform spawnTarget, DirectorCore.MonsterSpawnDistance spawnDistance, bool preventOverhead, float valueMultiplier, DirectorPlacementRule.PlacementMode placementMode)
+        {
+            bool value = orig(self, spawnCard, eliteDef, spawnTarget, spawnDistance, preventOverhead, valueMultiplier, placementMode);
+            if (value)
+            {
+                Inventory inv = enemySpawned.GetComponent<Inventory>();
+                int num = 0;
+                using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        int itemCount = enumerator.Current.inventory.GetItemCount(this.ItemsDef);
+                        if (itemCount > 0)
+                        {
+                            num += itemCount;
+                        }
+                    }
+                }
+                if (inv != null && num > 0)
+                {
+                    inv.GiveItem(HealthUp.instance.ItemsDef, num);
+                }
+            }
+            return value;
+        }
+        private GameObject StoreEnemyAsVariable(On.RoR2.DirectorCore.orig_TrySpawnObject orig, DirectorCore self, DirectorSpawnRequest directorSpawnRequest)
+        {
+            enemySpawned = orig(self, directorSpawnRequest);
+            return enemySpawned;
         }
 
         public override void Init(ConfigFile config)
@@ -46,5 +78,8 @@ namespace RiskierRain.Items.Helpers
             CreateItem();
             Hooks();
         }
+
+        GameObject enemySpawned;
+
     }
 }

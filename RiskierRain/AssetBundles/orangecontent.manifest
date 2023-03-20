@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2425288594
+CRC: 3068312548
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5d723d1a8037b7c01467d2cc781446f2
+    Hash: f95ba11cea56f02c9578028ef250efa7
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -40,25 +40,35 @@ Assets:
 - Assets/Prefabs/bottle.prefab
 - Assets/frozenTurtleShell.fbx
 - Assets/Prefabs/eggPile.prefab
+- Assets/Red.mat
+- Assets/Icons/texIconPickupITEM_BIRDBAND.png
 - Assets/Prefabs/mdlScalpel.prefab
 - Assets/Icons/texFrozenShellIcon.png
 - Assets/egg.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/Prefabs/mdlScalpelBroken.prefab
+- Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
+- Assets/Prefabs/mdlBirdBand.prefab
+- Assets/Prefabs/mdlFlowerCrown.prefab
 - Assets/aaaaaaa.fbx
 - Assets/Egg.mat
+- Assets/Prefabs/mdlUtilityBelt.prefab
 - Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
+- Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Icons/texEggIcon.png
 - Assets/scalpel.fbx
 - Assets/Ice.mat
 - Assets/Prefabs/frozenTurtleShell.prefab
+- Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
 - Assets/bottle.fbx
 - Assets/Prefabs/voidBottle.prefab
+- Assets/ring.fbx
 - Assets/Black.mat
 - Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/Green.mat
 - Assets/Prefabs/mdlbottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
 - Assets/EggGold.mat
@@ -66,5 +76,6 @@ Assets:
 - Assets/Purble.mat
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
+- Assets/Prefabs/mdlGreedyRing.prefab
 - Assets/Prefabs/lunarGallery.prefab
 Dependencies: []

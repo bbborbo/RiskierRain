@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using EntityStates.NullifierMonster;
 
 namespace RiskierRain
 {
@@ -207,17 +208,18 @@ namespace RiskierRain
         }
         #endregion
         #region void reaver
-        GameObject portalBombPrefab; //also used by simu elites
 
-        float bombSize = 10f; //1f, DOESNT WORK
+        int nulliferBombCount = 10;
 
         void VoidReaverChanges()
         {
-            portalBombPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Nullifier/NullifierBombProjectile.prefab").WaitForCompletion();
-            if (portalBombPrefab)
-            {
-                portalBombPrefab.transform.localScale = Vector3.one * bombSize;
-            }
+            On.EntityStates.NullifierMonster.FirePortalBomb.OnEnter += BuffFirePortalBomb;
+        }
+
+        private void BuffFirePortalBomb(On.EntityStates.NullifierMonster.FirePortalBomb.orig_OnEnter orig, EntityStates.NullifierMonster.FirePortalBomb self)
+        {
+            FirePortalBomb.portalBombCount = nulliferBombCount;
+            orig(self);
         }
         #endregion
 

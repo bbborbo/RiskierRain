@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Changes.Interactables
+namespace RiskierRain.Interactables
 {
     class CombatShrineLunar : InteractableBase<FakeShrine>
     {

@@ -297,7 +297,7 @@ namespace RiskierRain
 
             ImpOverlord = BuildDirectorCard(SpawnCards.ImpOverlord, 1, 1, DirectorCore.MonsterSpawnDistance.Standard);
             Grovetender = BuildDirectorCard(SpawnCards.Grovetender);
-            RoboBall = BuildDirectorCard(SpawnCards.RoboBall);
+            RoboBall = BuildDirectorCard(SpawnCards.RoboBall, 1 , 3, DirectorCore.MonsterSpawnDistance.Standard);
             MagmaWorm = BuildDirectorCard(SpawnCards.MagmaWorm, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);
 
             Reminder = BuildDirectorCard(SpawnCards.Reminder);

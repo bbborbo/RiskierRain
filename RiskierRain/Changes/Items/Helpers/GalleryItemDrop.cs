@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Changes.Items.Helpers
+namespace RiskierRain.Items.Helpers
 {
     class GalleryItemDrop : ItemBase<GalleryItemDrop>
     {
@@ -45,7 +45,7 @@ namespace RiskierRain.Changes.Items.Helpers
         {
             orig(self, damageReport);
             CharacterBody victim = damageReport.victimBody;
-            if (victim.inventory.GetItemCount(this.ItemsDef) > 0)
+            if (victim.inventory?.GetItemCount(this.ItemsDef) > 0)
             {
                 RollReward(victim);
             }

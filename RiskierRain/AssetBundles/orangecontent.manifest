@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3068312548
+CRC: 1339192036
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f95ba11cea56f02c9578028ef250efa7
+    Hash: e9a956f537c8aed293680bc488ba8639
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -43,10 +43,15 @@ Assets:
 - Assets/Red.mat
 - Assets/Icons/texIconPickupITEM_BIRDBAND.png
 - Assets/Prefabs/mdlScalpel.prefab
+- Assets/Icons/texIconPickupITEM_GOODEXECUTIONITEM.png
 - Assets/Icons/texFrozenShellIcon.png
 - Assets/egg.fbx
+- Assets/Prefabs/mdlPermafrost.prefab
+- Assets/fixedbird.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/Prefabs/mdlScalpelBroken.prefab
+- Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
+- Assets/Prefabs/mdlSlungus.prefab
 - Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
 - Assets/Prefabs/mdlBirdBand.prefab
 - Assets/Prefabs/mdlFlowerCrown.prefab
@@ -54,23 +59,34 @@ Assets:
 - Assets/Egg.mat
 - Assets/Prefabs/mdlUtilityBelt.prefab
 - Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
+- Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Icons/texEggIcon.png
+- Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/Ice.mat
+- Assets/Prefabs/mdlNaturesGift.prefab
 - Assets/Prefabs/frozenTurtleShell.prefab
+- Assets/Prefabs/mdlPhrygianLily.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
+- Assets/Icons/texIconPickupITEM_SLUNGUS.png
+- Assets/Blue.mat
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
 - Assets/bottle.fbx
 - Assets/Prefabs/voidBottle.prefab
 - Assets/ring.fbx
 - Assets/Black.mat
+- Assets/Icons/texIconPickupITEM_BORBOMANAFLOWER.png
 - Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/Flower.fbx
+- Assets/Prefabs/mdlTragicFacade.prefab
 - Assets/Green.mat
+- Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png
 - Assets/Prefabs/mdlbottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
+- Assets/Prefabs/mdlS2Engine.prefab
 - Assets/EggGold.mat
 - Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat

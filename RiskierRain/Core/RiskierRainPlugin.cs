@@ -728,6 +728,12 @@ namespace RiskierRain
                     VoidReaverChanges();
                 }
 
+                //void barnacle
+                if (GetConfigBool(currentCategory, true, "Enemy: Void Barnacle"))
+                {
+                    BarnacleChanges();
+                }
+
                 //gup
                 if (GetConfigBool(currentCategory, true, "Enemy: Gup"))
                 {

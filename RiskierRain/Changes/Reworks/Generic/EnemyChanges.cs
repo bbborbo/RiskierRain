@@ -222,6 +222,24 @@ namespace RiskierRain
             orig(self);
         }
         #endregion
+        #region void barnacle
+        GameObject barnaclePrefab;
+
+        float fuckRegen = 0;
+        void BarnacleChanges()
+        {
+            barnaclePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidBarnacle/VoidBarnacleBody.prefab").WaitForCompletion();
+            if (barnaclePrefab)
+            {
+                CharacterBody barnacleBody = barnaclePrefab.GetComponent<CharacterBody>();
+                if (barnacleBody)
+                {
+                    barnacleBody.baseRegen = fuckRegen;
+                    barnacleBody.levelRegen = fuckRegen;
+                }
+            }
+        }
+        #endregion
 
         #region xi construct related
         void MakeSpawnSlotSpawnsInheritEliteAffix()

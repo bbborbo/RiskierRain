@@ -77,7 +77,7 @@ namespace RiskierRain
 
         private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
-            if (damageInfo.damageType.HasFlag(DamageType.Shock5s))
+            if (damageInfo.damageType.HasFlag(DamageType.Shock5s) &!damageInfo.damageType.HasFlag(DamageType.VoidDeath))//untested nre spam fix
             {
                 Debug.Log("shock hit!");
                 //GameObject attacker = damageInfo.attacker;

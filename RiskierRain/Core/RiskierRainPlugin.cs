@@ -734,6 +734,12 @@ namespace RiskierRain
                     BarnacleChanges();
                 }
 
+                //xi construct
+                if (GetConfigBool(currentCategory, true, "Enemy: Xi Construct"))
+                {
+                    XiAIFix();
+                }
+
                 //gup
                 if (GetConfigBool(currentCategory, true, "Enemy: Gup"))
                 {

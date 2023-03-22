@@ -4,6 +4,7 @@ using R2API.Utils;
 using RiskierRain.Equipment;
 using RoR2;
 using RoR2.Projectile;
+using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -258,6 +259,32 @@ namespace RiskierRain
                 if (component)
                 {
                     component.CopyEquipmentFrom(ownerBody.inventory);
+                }
+            }
+        }
+
+        //ai stuff?? RoR2/DLC1/MajorAndMinorConstruct/MegaConstructMaster.prefab
+        GameObject xiMaster = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/MajorAndMinorConstruct/MegaConstructMaster.prefab").WaitForCompletion();
+        AISkillDriver[] xiAI;
+        void XiAIFix()
+        {
+            if (xiMaster)
+            {
+                xiAI = xiMaster.GetComponents<AISkillDriver>();
+                if (xiAI != null)
+                {
+                    //shield
+                    xiAI[1].selectionRequiresTargetLoS = true; //false
+                    xiAI[1].maxDistance = 60; //infinite
+                    //followfast
+                    xiAI[2].minDistance = 150; //200
+                    //followstep
+                    xiAI[4].minDistance = 40; //100
+                    //strafestep
+                    xiAI[5].minDistance = 10; //30
+                    xiAI[5].maxDistance = 40; //100
+                    //fleestep
+                    xiAI[6].maxDistance = 10; //30
                 }
             }
         }

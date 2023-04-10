@@ -77,8 +77,8 @@ namespace RiskierRain
 
         private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
-            if (damageInfo.damageType.HasFlag(DamageType.Shock5s))
-            {
+            if (damageInfo.damageType.HasFlag(DamageType.Shock5s)) 
+            { 
                 Debug.Log("shock hit!");
                 //GameObject attacker = damageInfo.attacker;
                 self.body.AddTimedBuff(Assets.shockMarker, Assets.shockMarkerDuration);//add authority
@@ -106,26 +106,34 @@ namespace RiskierRain
                 }
                 else
                 {
-                    //if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
-                    if (self.characterBody.HasBuff(Assets.shockMarker))
+                    if (self.characterBody.HasBuff(Assets.shockMarker))//it breaks here!
                     {
                         Debug.Log("shock broken!");
-                        CharacterBody attacker = self.healthComponent?.lastHitAttacker?.GetComponent<CharacterBody>();
-                        if (attacker != null)
+                        HealthComponent hcVictim = self.healthComponent;                        
+                        GameObject attackerObject = hcVictim.lastHitAttacker;
+                        if(attackerObject == null)
                         {
-                            if (attacker.maxShield > 0 && attacker.healthComponent.shield != attacker.maxShield)
+                            Debug.Log("attacker object null");
+                        }
+                        else 
+                        {
+                            CharacterBody attacker = attackerObject.GetComponent<CharacterBody>();
+                            if (attacker != null)
                             {
-                                ShockHeal(attacker.healthComponent);
+                                if (attacker.maxShield > 0 && attacker.healthComponent?.shield != attacker.maxShield)
+                                {
+                                    ShockHeal(attacker.healthComponent);
+                                }
+                                else
+                                {
+                                    Debug.Log("no shield!");
+                                }
                             }
                             else
                             {
-                                Debug.Log("no shield!");
+                                Debug.Log("no attacker!");
                             }
-                        }
-                        else
-                        {
-                            Debug.Log("no attacker!");
-                        }
+                        }                        
                     }
                     else
                     {

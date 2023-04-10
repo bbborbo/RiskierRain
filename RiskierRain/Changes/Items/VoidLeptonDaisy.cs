@@ -46,9 +46,9 @@ namespace RiskierRain.Changes.Items
         public override ItemTier Tier => ItemTier.VoidTier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.HoldoutZoneRelated, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
         public ExpansionDef requiredExpansion => SOTVExpansionDef;//ExpansionCatalog._expansionDefs.DLC1; //what the fuck
-        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlPhrygianLily.prefab");
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png");
 
         public override BalanceCategory Category => BalanceCategory.None;
 

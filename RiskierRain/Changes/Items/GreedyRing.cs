@@ -49,9 +49,9 @@ Of course, you can always buy the premium version for unlimited discounts~
         public override ItemTag[] ItemTags => new ItemTag[] 
             { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.InteractableRelated };
 
-        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlGreedyRing.prefab");
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png");
 
         public override BalanceCategory Category => BalanceCategory.StateOfDifficulty;
 

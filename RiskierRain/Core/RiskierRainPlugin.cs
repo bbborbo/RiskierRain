@@ -728,6 +728,18 @@ namespace RiskierRain
                     VoidReaverChanges();
                 }
 
+                //void barnacle
+                if (GetConfigBool(currentCategory, true, "Enemy: Void Barnacle"))
+                {
+                    BarnacleChanges();
+                }
+
+                //xi construct
+                if (GetConfigBool(currentCategory, true, "Enemy: Xi Construct"))
+                {
+                    XiAIFix();
+                }
+
                 //gup
                 if (GetConfigBool(currentCategory, true, "Enemy: Gup"))
                 {

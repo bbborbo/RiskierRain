@@ -17,7 +17,7 @@ namespace RiskierRain.Items
     class Egg : ItemBase<Egg>
     {
         public int eggHealth = 2;
-        public float eggRegen = 0.05f;
+        public float eggRegen = 0.1f;
         public float eggDamage = 0.1f;
 
 

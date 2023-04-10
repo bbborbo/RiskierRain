@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace RiskierRain.Changes.Items
@@ -15,19 +16,21 @@ namespace RiskierRain.Changes.Items
     {
         public static BuffDef lunarLuckBuff;
         public static BuffDef lunarLuckBarrierCooldown;
+        static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
+
 
         public static float luckBase = 1;
-        public static float luckstack = 0; //maybe 1?
+        public static float luckstack = 1; //maybe 1?
 
-        public static float healthRegenBase = -3;
-        public static float healthRegenStack = -3;
+        public static float healthRegenBase = -2;
+        public static float healthRegenStack = -2;
         public static float healthRegenLevelBase = -0.3f;
         public static float healthRegenLevelStack = -0.3f;
 
         public static float damageBase = 4;
         public static float damageLevel = 0.6f;
 
-        public override string ItemName => "oofie ouchies";
+        public override string ItemName => "Elegy of Extinction";
 
         public override string ItemLangTokenName => "LUNARHEALTHDEGEN";
 
@@ -43,19 +46,26 @@ namespace RiskierRain.Changes.Items
 
         public override BalanceCategory Category => BalanceCategory.StateOfHealth;
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/LunarPortalOnUse/PickupLunarPortalOnUse.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/LunarPortalOnUse/texLunarPortalOnUseIcon.png").WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
-            return null;
+            return IDR;
+        }
+
+        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        {
+            orig();
+            CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
         }
 
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
+            On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
         }
 
         private void AddBuffStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -128,7 +138,7 @@ namespace RiskierRain.Changes.Items
         HealthComponent healthComponent;
         BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarLuckBuff.buffIndex;
         BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarLuckBarrierCooldown.buffIndex;
-        public static int maxBuffCount = 10;//2
+        public static int maxBuffCount = 10;
         int buffCount = 0;
 
         public static float barrierFraction = 0.5f;
@@ -144,7 +154,7 @@ namespace RiskierRain.Changes.Items
         {
             float missingHealthFraction = 1 - (healthComponent.health + healthComponent.shield) / healthComponent.fullCombinedHealth;
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (maxBuffCount));
-            if (newBuffCount > buffCount && buffCount < maxBuffCount)
+            while (newBuffCount > buffCount && buffCount < maxBuffCount)
             {
                 this.body.AddBuff(luckUpBuffIndex);
                 buffCount++;
@@ -154,7 +164,7 @@ namespace RiskierRain.Changes.Items
                     body.AddTimedBuff(barrierCooldownBuffIndex, barrierCoolDown);
                 }
             }
-            else if (newBuffCount < buffCount && buffCount > 0)
+            while (newBuffCount < buffCount && buffCount > 0)
             {
                 this.body.RemoveBuff(luckUpBuffIndex);
                 buffCount--;

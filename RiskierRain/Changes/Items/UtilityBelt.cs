@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RoR2.Skills;
 
 namespace RiskierRain.Items
 {
@@ -46,6 +47,16 @@ namespace RiskierRain.Items
         {
             On.RoR2.CharacterBody.OnSkillActivated += UtilityBeltBarrierGrant;
             On.RoR2.SkillLocator.ApplyAmmoPack += UtilityBeltBandolierSynergy;
+            On.RoR2.GenericSkill.Reset += UtilityBeltCooldownReset;
+        }
+
+        private void UtilityBeltCooldownReset(On.RoR2.GenericSkill.orig_Reset orig, GenericSkill self)
+        {
+            orig(self);
+            if(self.skillFamily == self.characterBody?.skillLocator?.utility?.skillFamily)
+            {
+                self.characterBody.ClearTimedBuffs(utilityBeltCooldown);
+            }
         }
 
         private void UtilityBeltBandolierSynergy(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)

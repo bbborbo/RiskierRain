@@ -2,10 +2,13 @@
 using EntityStates.Captain.Weapon;
 using EntityStates.CaptainDefenseMatrixItem;
 using EntityStates.CaptainSupplyDrop;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
+using RoR2.Stats;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -70,6 +73,9 @@ namespace RiskierRain.SurvivorTweaks
             GetSkillsFromBodyObject(bodyObject);
 
             //passive
+            On.RoR2.CaptainDefenseMatrixController.TryGrantItem += MicrobotGuh;
+            On.RoR2.CaptainDefenseMatrixController.OnServerMasterSummonGlobal += MicrobotGah;
+
             On.EntityStates.CaptainDefenseMatrixItem.DefenseMatrixOn.OnEnter += NerfMicrobots;
             LanguageAPI.Add("ITEM_CAPTAINDEFENSEMATRIX_DESC", 
                 $"Shoot down <style=cIsDamage>1</style> <style=cStack>(+1 per stack)</style> projectiles " +
@@ -171,6 +177,38 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("CAPTAIN_SUPPLY_SHOCKING_DESCRIPTION", 
                 $"Periodically <style=cIsDamage>Shock</style> all nearby enemies, immobilizing them. " +
                 $"Deals <style=cIsDamage>{Tools.ConvertDecimal(shockDamageCoefficient)} damage</style> per hit.");
+        }
+
+        private void MicrobotGah(On.RoR2.CaptainDefenseMatrixController.orig_OnServerMasterSummonGlobal orig, CaptainDefenseMatrixController self, MasterSummon.MasterSummonReport summonReport)
+        {
+            if (self.characterBody.master && self.characterBody.master == summonReport.leaderMasterInstance)
+            {
+                CharacterMaster summonMasterInstance = summonReport.summonMasterInstance;
+                if (summonMasterInstance)
+                {
+                    CharacterBody body = summonMasterInstance.GetBody();
+                    if (body && (body.bodyFlags & CharacterBody.BodyFlags.Mechanical) > CharacterBody.BodyFlags.None)
+                    {
+                        summonMasterInstance.inventory.GiveItem(RoR2Content.Items.ScrapRed, self.defenseMatrixToGrantMechanicalAllies);
+                    }
+                }
+            }
+        }
+
+        private void MicrobotGuh(On.RoR2.CaptainDefenseMatrixController.orig_TryGrantItem orig, CaptainDefenseMatrixController self)
+        {
+            if (self.characterBody.master)
+            {
+                bool flag = false;
+                if (self.characterBody.master.playerStatsComponent)
+                {
+                    flag = (self.characterBody.master.playerStatsComponent.currentStats.GetStatValueDouble(PerBodyStatDef.totalTimeAlive, BodyCatalog.GetBodyName(self.characterBody.bodyIndex)) > 0.0);
+                }
+                if (!flag && self.characterBody.master.inventory.GetItemCount(RoR2Content.Items.ScrapRed) <= 0)
+                {
+                    self.characterBody.master.inventory.GiveItem(RoR2Content.Items.ScrapRed, self.defenseMatrixToGrantPlayer);
+                }
+            }
         }
 
         private void ChangeVanillaUtilities(SkillFamily family)

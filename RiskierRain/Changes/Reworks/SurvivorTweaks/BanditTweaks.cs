@@ -33,7 +33,7 @@ namespace RiskierRain.SurvivorTweaks
         public static float stealthCooldown = 9f; //6
 
         public static float lightsOutDamage = 7f; //6
-        public static float lightsOutCooldown = 5f; //4
+        public static float lightsOutCooldown = 8f; //4
         public static float desperadoDamage = 2.5f; //6
         public static float desperadoCooldown = 3f; //4
 
@@ -369,12 +369,14 @@ namespace RiskierRain.SurvivorTweaks
         {
             orig(self, bulletAttack);
             bulletAttack.damage = lightsOutDamage * self.damageStat;
+            bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
         }
 
         private void ModifyDesperadoDamage(On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver self, BulletAttack bulletAttack)
         {
             orig(self, bulletAttack);
             bulletAttack.damage = desperadoDamage * self.damageStat;
+            bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
 
             int num = 0;
             if (self.characterBody)

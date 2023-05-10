@@ -17,7 +17,7 @@ namespace RiskierRain.Items
     {
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
-        public static float slungusWaitTime = 1f;
+        public static float slungusWaitTime = 0.6f;
         public float damageIncreaseBase = 0.2f;
         public float damageIncreaseStack = 0.3f;
 

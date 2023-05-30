@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace RiskierRain.CoreModules
 {
-    class Assets : CoreModule
+    public partial class Assets : CoreModule
     {
         public static EffectDef CreateEffect(GameObject effect)
         {
@@ -92,6 +92,7 @@ namespace RiskierRain.CoreModules
             AddShockDebuff();
             AddShockCooldown();
             AddPlanulaChargeBuff();
+            AddMaskHauntAssets();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -111,6 +112,24 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
             On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
+        }
+
+        public static BuffDef hauntDebuff;
+        public static GameObject hauntEffectPrefab;
+        private void AddMaskHauntAssets()
+        {
+            hauntDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                hauntDebuff.buffColor = new Color(0.9f, 0.7f, 1.0f);
+                hauntDebuff.canStack = false;
+                hauntDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                hauntDebuff.isDebuff = true;
+                hauntDebuff.name = "HappiestMaskHauntDebuff";
+            }
+            Assets.buffDefs.Add(hauntDebuff);
+
+            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
+            hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
         }
 
         public static GameObject miredUrnTarball;
@@ -340,6 +359,7 @@ namespace RiskierRain.CoreModules
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;
         public static float harvestExecutionThreshold = 0.2f;
+        public static float hauntExecutionThreshold = 0.25f;
 
         private void AddBanditExecutionDebuff()
         {
@@ -542,6 +562,9 @@ namespace RiskierRain.CoreModules
                     //rex harvest (finisher)
                     bool hasRexHarvestBuff = body.HasBuff(RoR2Content.Buffs.Fruiting);
                     newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
+
+                    bool hasHauntBuff = body.HasBuff(hauntDebuff);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, hauntExecutionThreshold, hasHauntBuff);
 
                     //guillotine
                     int executionBuffCount = body.GetBuffCount(executionDebuffIndex);

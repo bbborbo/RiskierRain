@@ -391,6 +391,12 @@ namespace RiskierRain
                 {
                     MakeSpawnSlotSpawnsInheritEliteAffix();
                 }
+
+                //happiest mask
+                if (GetConfigBool(currentCategory, true, "Happiest Mask"))
+                {
+                    HappiestMaskRework();
+                }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();
 

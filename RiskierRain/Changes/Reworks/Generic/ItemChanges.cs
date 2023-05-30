@@ -371,7 +371,7 @@ namespace RiskierRain
             if (ItemCatalog.GetItemDef(itemIndex).ContainsTag(ItemTag.OnKillEffect) && itemCount == 0)
             {
                 CharacterMaster master = self.GetComponent<CharacterMaster>();
-                if(master != null)
+                if (master != null)
                 {
                     MinionOwnership mo = master.minionOwnership;
                     CharacterMaster ownerMaster = mo.ownerMaster;
@@ -395,7 +395,7 @@ namespace RiskierRain
             On.RoR2.MushroomVoidBehavior.FixedUpdate += FuckWungusHeal;
 
             LanguageAPI.Add("ITEM_MUSHROOMVOID_PICKUP", "Regenerate health while sprinting. <style=cIsVoid>Corrupts all Bustling Fungi</style>.");
-            LanguageAPI.Add("ITEM_MUSHROOMVOID_DESC", 
+            LanguageAPI.Add("ITEM_MUSHROOMVOID_DESC",
                 $"Increases <style=cIsHealing>base health regeneration</style> " +
                 $"by <style=cIsHealing>+{wungusRegenBase} hp/s</style> " +
                 $"<style=cStack>(+{wungusRegenStack} hp/s per stack)</style> <style=cIsUtility>while sprinting</style>. " +
@@ -471,7 +471,7 @@ namespace RiskierRain
         public void ReworkShuriken()
         {
             shurikenProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/ShurikenProjectile");
-            if(shurikenProjectilePrefab != null)
+            if (shurikenProjectilePrefab != null)
             {
                 ProjectileController pc = shurikenProjectilePrefab.GetComponent<ProjectileController>();
                 if (pc)
@@ -487,7 +487,7 @@ namespace RiskierRain
 
             On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyShurikenAttack;
 
-            LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_PICKUP", 
+            LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_PICKUP",
                 "Activating your Primary skill also throws a shuriken that bleeds enemies. Recharges over time.");
             LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_DESC",
                 $"Activating your <style=cIsUtility>Primary skill</style> " +
@@ -504,7 +504,7 @@ namespace RiskierRain
         {
             Ray aimRay = self.GetAimRay();
             ProjectileManager.instance.FireProjectile(
-                self.projectilePrefab, aimRay.origin, 
+                self.projectilePrefab, aimRay.origin,
                 Util.QuaternionSafeLookRotation(aimRay.direction) * self.GetRandomRollPitch(),
                 self.gameObject, self.body.damage * (shurikenBaseDamage), 0f,
                 Util.CheckRoll(self.body.crit, self.body.master), DamageColorIndex.Item, null, -1f);
@@ -521,7 +521,7 @@ namespace RiskierRain
             GetStatCoefficients += ShrimpShieldFix;
 
             LanguageAPI.Add("ITEM_MISSILEVOID_PICKUP", "While you have shield, fire missiles on every hit. <style=cIsVoid>Corrupts all AtG Missile Mk. 3s</style>.");
-            LanguageAPI.Add("ITEM_MISSILEVOID_DESC", 
+            LanguageAPI.Add("ITEM_MISSILEVOID_DESC",
                 $"Gain <style=cIsHealing>{shrimpShieldBase} shield</style>. " +
                 $"While you have a <style=cIsHealing>shield</style>, " +
                 $"hitting an enemy fires <style=cIsDamage>3</style> missiles that each deal " +
@@ -533,7 +533,7 @@ namespace RiskierRain
         private void ShrimpShieldFix(CharacterBody sender, StatHookEventArgs args)
         {
             Inventory inv = sender.inventory;
-            if(inv && inv.GetItemCount(DLC1Content.Items.MissileVoid) > 0)
+            if (inv && inv.GetItemCount(DLC1Content.Items.MissileVoid) > 0)
             {
                 args.shieldMultAdd -= 0.1f;
                 args.baseShieldAdd += shrimpShieldBase;

@@ -180,7 +180,7 @@ namespace RiskierRain
                 "<style=cIsUtility>Slow</style> enemies on hit for <style=cIsUtility>-60% movement speed and attack speed</style> " +
                 "for <style=cIsUtility>2s</style> <style=cStack>(+2s per stack)</style>.");
 
-            this.templarPrefab.GetComponent<CharacterBody>().baseAttackSpeed *= 1 + kitSlowAspdReduction;
+            //this.templarPrefab.GetComponent<CharacterBody>().baseAttackSpeed *= 1 + kitSlowAspdReduction;
             this.chimeraWispPrefab.GetComponent<CharacterBody>().baseAttackSpeed = 0.7f;
         }
 

@@ -359,7 +359,7 @@ namespace RiskierRain.CoreModules
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;
         public static float harvestExecutionThreshold = 0.2f;
-        public static float hauntExecutionThreshold = 0.15f;
+        public static float hauntExecutionThreshold = 0.25f;
 
         private void AddBanditExecutionDebuff()
         {

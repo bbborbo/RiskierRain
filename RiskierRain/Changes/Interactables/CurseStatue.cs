@@ -104,7 +104,6 @@ namespace RiskierRain.Interactables
                 //pickupIndex = PickupCatalog.FindPickupIndex(Items.Helpers.EnemyHealthUp.instance.ItemsDef.itemIndex);
                 dropletOrigin = self.gameObject.transform;
                 PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
-                self.SetAvailable(false);
             }
         }
         public Transform dropletOrigin;

@@ -265,7 +265,7 @@ namespace RiskierRain.Interactables
 		public string InteractableName(On.RoR2.PurchaseInteraction.orig_GetDisplayName orig, PurchaseInteraction self)
 		{
 			string result;
-			if (self.displayNameToken == this.interactableLangToken)
+			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" )
 			{
 				result = this.interactableName;
 			}

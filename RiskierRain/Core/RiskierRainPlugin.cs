@@ -123,6 +123,7 @@ namespace RiskierRain
             InitializeEquipment();
             InitializeEliteEquipment();
             InitializeScavengers();
+            InitializeStorms();
             //InitializeEverything();
             Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 

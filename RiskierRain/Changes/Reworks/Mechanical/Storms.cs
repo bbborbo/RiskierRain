@@ -16,15 +16,22 @@ namespace RiskierRain
             On.RoR2.Run.BeginStage += StormsBeginStage;
             On.RoR2.Run.EndStage += StormsEndStage;
         }
-        static GameObject StormControllerInstance;
+        GameObject StormControllerInstance; //this probably sucks but im just tryna see if itll work lol
         private void StormsBeginStage(On.RoR2.Run.orig_BeginStage orig, RoR2.Run self)
         {
             orig(self);
+            if (StormControllerInstance != null)
+                Destroy(StormControllerInstance);
+            StormControllerInstance = new GameObject();
+            StageStormController guh = gameObject.AddComponent<StageStormController>();
         }
 
         private void StormsEndStage(On.RoR2.Run.orig_EndStage orig, RoR2.Run self)
         {
             orig(self);
+            if (StormControllerInstance == null)
+                return;
+            Destroy(StormControllerInstance);
         }
     }
 
@@ -49,6 +56,7 @@ namespace RiskierRain
         {
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
             CalculateStormStartDelay();
+            DetermineStormType();
             stormStartTime = stageBeginTime + stormStartDelay;
         }
         void CalculateStormStartDelay()
@@ -67,7 +75,7 @@ namespace RiskierRain
                     break;
             }
             float random = RoR2.Run.instance.stageRng.RangeFloat(0, 2);
-            stormStartDelay = (delay + random) * 60;
+            stormStartDelay = (delay + random) * 11;//60; small number for testing thx
         }
         void DetermineStormType()
         {
@@ -87,7 +95,7 @@ namespace RiskierRain
                 switch (stormType)
                 {
                     case StormType.MeteorDefault:
-                        warningMessage = "A shower of meteors begin to fall...";
+                        warningMessage = "A meteor storm is approaching...";
                         break;
                     case StormType.Lightning:
                         warningMessage = "A storm approaches...";
@@ -99,6 +107,12 @@ namespace RiskierRain
                         warningMessage = "The air around you begins to freeze...";
                         break;
                 }
+
+                //the message thing. make its own method mebbe
+                RoR2.Chat.AddMessage(warningMessage);
+
+
+                hasSentStormWarning = true;
             }
             if (!hasBegunStorm && currentTime > stormStartTime)
             {
@@ -106,7 +120,7 @@ namespace RiskierRain
                 switch (stormType)
                 {
                     case StormType.MeteorDefault:
-                        warningMessage = "A meteor storm is approaching...";
+                        warningMessage = "A shower of meteors begin to fall...";
                         break;
                     case StormType.Lightning:
                         warningMessage = "A meteor storm is approaching...";
@@ -118,7 +132,18 @@ namespace RiskierRain
                         warningMessage = "A meteor storm is approaching...";
                         break;
                 }
+
+                RoR2.Chat.AddMessage(warningMessage);
+                ActivateStorm();
+                
             }
+        }
+
+        void ActivateStorm()
+        {
+            hasBegunStorm = true;
+
+
         }
     }
 }

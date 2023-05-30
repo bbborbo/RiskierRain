@@ -35,6 +35,24 @@ namespace RiskierRain
                 $"below <style=cIsHealth>{Tools.ConvertDecimal(Assets.hauntExecutionThreshold)}</style> health. " +
                 $"Execution <style=cIsDamage>spawns a ghost</style> of the killed enemy with <style=cIsDamage>1500%</style> damage, " +
                 $"lasting for <style=cIsDamage>{ghostDurationPerStack}s</style> <style=cStack>(+{ghostDurationPerStack}s per stack)</style>.");
+            LanguageAPI.Add("ITEM_GHOSTONKILL_LORE", 
+                "<style=cMono>\r\n\u002F\u002F--AUTO-TRANSCRIPTION FROM RALLYPOINT DELTA --\u002F\u002F</style>\r\n\r\n" +
+                "\u201CSir, the ghosts are back." +
+                "\u201D\r\n\r\nThe man sighed. After a routine expedition, one of the crew members \u2013 a simple soldier " +
+                "- had recovered an artifact thought to have been aboard the Contact Light \u2013 " +
+                "a simple mask, adorned with a painfully happy grin. " +
+                "\r\n\r\n\u201CI\u2019ll take care of it.\u201D The man trudged down the hall towards the barracks. " +
+                "The Lemurians he had killed earlier that day walked down the hall by him, barely earning a second glance from the man. " +
+                "This had become so commonplace that most of the crew members in this block had grown accustomed to having a ghostly room-mate." +
+                "\r\n\r\nBut enough was enough. Stepping through the ghost of an Imp, the man slammed the door open. " +
+                "The lights were off, and in the corner sat the soldier." +
+                "\r\n\r\n\u201CAlright, we\u2019ve had enough fun playing with the dead. Fork it over." +
+                "\u201D\r\n\r\nNo response. The man grunted and hoisted the soldier to his feet, giving him a few rough shakes. " +
+                "\u201CHey, can you hear me!? I said hand over the mask! I\u2019m tired of waking up next to Beetles, so give it a rest already--\u201D" +
+                "\r\n\r\nThe soldier\u2019s limp body moved. Slowly, the soldier raised his finger \u2013 pointing directly at the man." +
+                "\r\n\r\n\u201CWhat are you...?\u201D With a sense of dread, the man turned and saw the Lemurians he had killed earlier step into the room. " +
+                "Their mouths began to glow with an otherworldly light." +
+                "\r\n\r\nThe man cursed under his breath as he loaded his shotgun. \u201CThis planet, I tell you...\u201D");
         }
 
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)

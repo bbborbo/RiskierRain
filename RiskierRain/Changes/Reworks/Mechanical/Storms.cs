@@ -43,7 +43,7 @@ namespace RiskierRain
                 
             StormControllerInstance = new GameObject();
             StageStormController guh = StormControllerInstance.AddComponent<StageStormController>();
-            
+            guh.SetStormLevel(self);
             guh.teleporter = teleporter;
             teleporter = null;
         }
@@ -100,13 +100,24 @@ namespace RiskierRain
 
             On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
+            On.RoR2.Run.OnAmbientLevelUp += Run_OnAmbientLevelUp;
             //On.RoR2.TeleporterInteraction.OnChargingFinished += new TeleporterInteraction.hook_OnChargingFinished(this.TeleporterInteraction_OnChargingFinished);
         }
 
+        private void Run_OnAmbientLevelUp(On.RoR2.Run.orig_OnAmbientLevelUp orig, Run self)
+        {
+            orig(self);
+            SetStormLevel(self);
+        }
+        public void SetStormLevel(Run run)
+        {
+            stormLevel = run.ambientLevel;
+        }
         public void RemoveStormController()
         {
             On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor -= MeteorWave_GetNextMeteor;
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
+            On.RoR2.Run.OnAmbientLevelUp -= Run_OnAmbientLevelUp;
             Destroy(this.gameObject);
         }
 
@@ -281,7 +292,7 @@ namespace RiskierRain
             new BlastAttack
             {
                 inflictor = base.gameObject,
-                baseDamage = this.meteorBlastDamageCoefficient * 10,//change this flat value to a scaling thing yeagh 
+                baseDamage = this.meteorBlastDamageCoefficient * stormLevel,//multiplies by ambient level. if this is unsatisfactory change later
                 baseForce = this.meteorBlastForce,
                 attackerFiltering = AttackerFiltering.Default,
                 crit = false,
@@ -356,6 +367,8 @@ namespace RiskierRain
 
         //all the projectile/prefab stuff
         //public float clearRadius = 50; //no idea what this should be
+        public float stormLevel = 0;
+
         public float waveMinInterval = 1;
         public float waveMaxInterval = 4;
 

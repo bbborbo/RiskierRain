@@ -1,5 +1,6 @@
 ﻿using EntityStates.Engi.Mine;
 using MonoMod.Cil;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,13 @@ namespace RiskierRain.SurvivorTweaks
 
         public override void Init()
         {
+            GetSkillsFromBodyObject(bodyObject);
+
+            //primary
+            primary.variants[0].skillDef.cancelSprintingOnActivation = false;
+            LanguageAPI.Add("ENGI_PRIMARY_DESCRIPTION", "<style=cIsUtility>Agile.</style> Charge up to <style=cIsDamage>8</style> grenades that deal <style=cIsDamage>100% damage</style> each.");
+
+            //secondary
             IL.EntityStates.Engi.Mine.Detonate.Explode += DetonationRadiusBoost;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += ChangeMineArmTime;
         }

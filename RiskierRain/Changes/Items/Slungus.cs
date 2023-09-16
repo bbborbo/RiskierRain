@@ -63,7 +63,7 @@ The affected area experiences lowered temperature; you may want to wear warm clo
 FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanent change in time perception, spacial warping, mania or lethargy, hallucination, paranoia, acute panic attack, or otherwise dissatisfactory results. All purchases are final.";
 
         public override ItemTier Tier => ItemTier.Tier2;
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist }; //, ItemTag.Damage
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.CannotCopy }; //, ItemTag.Damage
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSlungus.prefab");
 

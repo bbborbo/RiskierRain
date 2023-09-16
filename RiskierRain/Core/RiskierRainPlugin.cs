@@ -20,6 +20,7 @@ using System.Security;
 using System.Security.Permissions;
 using ThreeEyedGames;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
@@ -128,8 +129,9 @@ namespace RiskierRain
             Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
             #region rework pending / priority removal
+            ItemDef ooca = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/OutOfCombatArmor/OutOfCombatArmor.asset").WaitForCompletion();
+            RiskierRainPlugin.RetierItem(ooca, ItemTier.Boss); //weirdly shaped opal
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor)); //weirdly shaped opal
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
@@ -884,6 +886,12 @@ namespace RiskierRain
         static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
         {
             ItemDef def = LoadItemDef(itemName);
+            def = RetierItem(def, tier);
+            return def;
+        }
+
+        static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
+        {
             if (def != null)
             {
                 def.tier = tier;
@@ -891,6 +899,7 @@ namespace RiskierRain
             }
             return def;
         }
+
         public static void RemoveEquipment(string equipName)
         {
             EquipmentDef equipDef = LoadEquipDef(equipName);

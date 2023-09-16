@@ -17,6 +17,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public override void Init()
         {
+            GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
 
             //primary

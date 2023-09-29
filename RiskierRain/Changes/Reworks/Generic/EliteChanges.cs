@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using HG;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace RiskierRain
 {
@@ -236,6 +238,62 @@ namespace RiskierRain
         void MendingEliteChanges()
         {
             //IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
+            On.RoR2.HealNearbyController.Tick += BarrierTick;
+        }
+        private void BarrierTick(On.RoR2.HealNearbyController.orig_Tick orig, HealNearbyController self)
+        {
+            if (!self.networkedBodyAttachment || !self.networkedBodyAttachment.attachedBody || !self.networkedBodyAttachment.attachedBodyObject)
+            {
+                return;
+            }
+            List<HurtBox> list = CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
+            self.SearchForTargets(list);
+            float amount = self.damagePerSecondCoefficient * self.networkedBodyAttachment.attachedBody.damage / self.tickRate;
+            List<Transform> list2 = CollectionPool<Transform, List<Transform>>.RentCollection();
+            int i = 0;
+            while (i < list.Count)
+            {
+                HurtBox hurtBox = list[i];
+                if (!hurtBox || !hurtBox.healthComponent || !self.networkedBodyAttachment.attachedBody.healthComponent.alive
+                    || /*hurtBox.healthComponent.health >= hurtBox.healthComponent.fullHealth ||*/ hurtBox.healthComponent.body.HasBuff(DLC1Content.Buffs.EliteEarth))
+                {
+                    goto IL_14A;
+                }
+                HealthComponent healthComponent = hurtBox.healthComponent;
+                if (!(hurtBox.healthComponent.body == self.networkedBodyAttachment.attachedBody))
+                {
+                    CharacterBody body = healthComponent.body;
+                    Transform item = ((body != null) ? body.coreTransform : null) ?? hurtBox.transform;
+                    list2.Add(item);
+                    if (NetworkServer.active)
+                    {
+                        //healthComponent.Heal(amount, default(ProcChainMask), true);
+                        healthComponent.AddBarrier(amount);
+                        goto IL_14A;
+                    }
+                    goto IL_14A;
+                }
+            IL_158:
+                i++;
+                continue;
+            IL_14A:
+                if (list2.Count < self.maxTargets)
+                {
+                    goto IL_158;
+                }
+                break;
+            }
+            self.isTetheredToAtLeastOneObject = ((float)list2.Count > 0f);
+            if (self.tetherVfxOrigin)
+            {
+                self.tetherVfxOrigin.SetTetheredTransforms(list2);
+            }
+            if (self.activeVfx)
+            {
+                self.activeVfx.SetActive(self.isTetheredToAtLeastOneObject);
+            }
+            CollectionPool<Transform, List<Transform>>.ReturnCollection(list2);
+            CollectionPool<HurtBox, List<HurtBox>>.ReturnCollection(list);
         }
         
         private void ReplaceHealingWithBarrier(ILContext il)
@@ -247,21 +305,22 @@ namespace RiskierRain
                 );
             c.Remove();
             //c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Action<HealthComponent, float, RoR2.ProcChainMask/*, HealNearbyController*/>>((targetHealthComponent, healAmount, procChainMask/*, self*/) =>
+            c.EmitDelegate<Action<HealthComponent, float, RoR2.ProcChainMask, bool/*, HealNearbyController*/>>((targetHealthComponent, healAmount, procChainMask, nonRegen/*, self*/) =>
             {
                 //CharacterBody body = self.networkedBodyAttachment.attachedBody;
                 //if (body.HasBuff(DLC1Content.Buffs.EliteEarth))
                 //{
-                //    float barrierAmt = 0;
-                //    targetHealthComponent.AddBarrier(barrierAmt);
+                    float barrierAmt = 0;
+                    barrierAmt = healAmount;
+                    targetHealthComponent.AddBarrier(barrierAmt);
                 //}
                 //else
                 //{
                 //    targetHealthComponent.Heal(healAmount, procChainMask, isRegen);
                 //}
             });
-
-            //c.Remove();
+            c.Index++;
+            c.Remove();
         }
 
         

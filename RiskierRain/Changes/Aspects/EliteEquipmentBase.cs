@@ -105,6 +105,7 @@ namespace RiskierRain.Equipment
         public virtual Material EliteOverlayMaterial { get; set; } = null;
         public virtual string EliteRampTextureName { get; set; } = null;
         public virtual BalanceCategory Category { get; set; } = BalanceCategory.None;
+        public virtual float DropOnDeathChance { get; set; } = 1/4000;
 
         public EliteDef EliteDef;
 
@@ -182,6 +183,7 @@ namespace RiskierRain.Equipment
             EliteEquipmentDef.enigmaCompatible = EnigmaCompatible;
             EliteEquipmentDef.isBoss = IsBoss;
             EliteEquipmentDef.isLunar = IsLunar;
+            EliteEquipmentDef.dropOnDeathChance = DropOnDeathChance;
 
             //cross references
             EliteDef.eliteEquipmentDef = EliteEquipmentDef;

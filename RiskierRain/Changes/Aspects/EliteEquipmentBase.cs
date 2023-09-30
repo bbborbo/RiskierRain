@@ -146,6 +146,7 @@ namespace RiskierRain.Equipment
             }
             #endregion
 
+            //elite buff
             EliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
             EliteBuffDef.name = EliteAffixToken;
             EliteBuffDef.buffColor = EliteBuffColor;
@@ -156,12 +157,16 @@ namespace RiskierRain.Equipment
                 EliteBuffDef.iconSprite = iconSprite;
             }
 
+            //elite def
             EliteDef = ScriptableObject.CreateInstance<EliteDef>();
             EliteDef.name = "BORBO_ELITE_" + EliteAffixToken;
             EliteDef.modifierToken = "BORBO_ELITE_" + EliteAffixToken + "_MODIFIER";
             EliteDef.color = EliteBuffColor;
+            EliteDef.shaderEliteRampIndex = 0;
+            Texture2D eliteRamp = RiskierRainPlugin.mainAssetBundle.LoadAsset<Texture2D>(RiskierRainPlugin.eliteMaterialsPath + EliteRampTextureName + ".png");
+            EliteRamp.AddRamp(EliteDef, eliteRamp);
 
-
+            //elite equipment
             EliteEquipmentDef = ScriptableObject.CreateInstance<EquipmentDef>();
             EliteEquipmentDef.name = "BORBO_ELITE_EQUIPMENT_" + EliteAffixToken;
             EliteEquipmentDef.nameToken = "BORBO_ELITE_EQUIPMENT_" + EliteAffixToken + "_NAME";
@@ -178,6 +183,7 @@ namespace RiskierRain.Equipment
             EliteEquipmentDef.isBoss = IsBoss;
             EliteEquipmentDef.isLunar = IsLunar;
 
+            //cross references
             EliteDef.eliteEquipmentDef = EliteEquipmentDef;
             EliteEquipmentDef.passiveBuffDef = EliteBuffDef;
             EliteBuffDef.eliteDef = EliteDef;
@@ -187,6 +193,8 @@ namespace RiskierRain.Equipment
             //EliteAPI.Add(new CustomElite(EliteDef, CanAppearInEliteTiers));
             Assets.eliteDefs.Add(EliteDef);
             Assets.buffDefs.Add(EliteBuffDef);
+            //Assets.equipDefs.Add(EliteEquipmentDef);
+            CustomElite customElite = new CustomElite(EliteDef, CanAppearInEliteTiers);
 
 
             #region BorboEliteDef

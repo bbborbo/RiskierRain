@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 479880381
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: borboitemicons
+      Dependencies: {}
+    Info_1:
+      Name: itmightbebad
+      Dependencies: {}

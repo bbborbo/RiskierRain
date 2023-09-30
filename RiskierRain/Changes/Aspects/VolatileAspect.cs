@@ -33,7 +33,7 @@ namespace RiskierRain.Equipment
 
         public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
-        public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
+        //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
         public override string EliteRampTextureName { get; set; } = "texRampVolatile";
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
 

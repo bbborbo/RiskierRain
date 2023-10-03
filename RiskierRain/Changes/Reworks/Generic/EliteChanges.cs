@@ -161,7 +161,7 @@ namespace RiskierRain
         #endregion
 
         #region voidtouched
-        public float voidtouchedNullifyBaseDuration = 20;
+        public float voidtouchedNullifyBaseDuration = 15;
         void VoidtouchedEliteChanges()
         {
             IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVoidtouchedCollapse;

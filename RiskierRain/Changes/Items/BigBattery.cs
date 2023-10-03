@@ -13,9 +13,10 @@ namespace RiskierRain.Items
 {
     class BigBattery : ItemBase<BigBattery>
     {
-        public static float shieldPercent = 0.1f;
+        public static float shieldPercentBase = 0.02f;
+        public static float shieldPercentStack = 0.04f;
         public static float rechargeRateIncrease = 0.1f;
-        public static float aspdIncrease = 0.1f;
+        public static float aspdIncrease = 0.2f;
 
         public override string ItemName => "AAAAAAA Battery";
 
@@ -24,13 +25,14 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, gain an attack speed bonus.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
-            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercent)}</style> of your maximum health. " +
+            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(shieldPercentStack)} per stack)</style>. " +
             $"Increases <style=cIsHealing>shield recharge rate</style> " +
             $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(rechargeRateIncrease)} per stack)</style>. " +
             $"While shields are active, increase <style=cIsDamage>attack speed</style> " +
-            $"by <style=cIsDamage>{Tools.ConvertDecimal(rechargeRateIncrease)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(rechargeRateIncrease)} per stack)</style>.";
+            $"by <style=cIsDamage>{Tools.ConvertDecimal(aspdIncrease)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(aspdIncrease)} per stack)</style>.";
         public override string ItemLore =>
 @"Order: Prototype Battey
 Tracking Number: 11***********
@@ -79,7 +81,7 @@ The new standard power supply
 
 You know?";
 
-        public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlAAAAAAA.prefab");
@@ -147,7 +149,7 @@ You know?";
                 HealthComponent hc = sender.healthComponent;
                 if (hc != null)
                 {
-                    args.baseShieldAdd += sender.maxHealth * shieldPercent;
+                    args.baseShieldAdd += sender.maxHealth * (shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
 
                     if (Fuse.HasShield(hc))
                     {

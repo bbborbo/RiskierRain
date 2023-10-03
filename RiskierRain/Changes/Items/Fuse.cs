@@ -16,9 +16,9 @@ namespace RiskierRain.Items
         public static BuffDef fuseRecharge;
         public static float fuseRechargeTime = 1;
 
-        public static float baseShield = 25;
-        public static float radiusBase = 18;
-        public static float radiusStack = 2;
+        public static float baseShield = 40;
+        public static float radiusBase = 16;
+        public static float radiusStack = 4;
         public override string ItemName => "Volatile Fuse";
 
         public override string ItemLangTokenName => "BORBOFUSE";
@@ -33,7 +33,7 @@ namespace RiskierRain.Items
 
         public override string ItemLore => "";
 
-        public override ItemTier Tier => ItemTier.Tier1;
+        public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
         //testing egg model
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");

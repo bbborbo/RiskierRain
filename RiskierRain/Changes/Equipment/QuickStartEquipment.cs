@@ -44,7 +44,6 @@ namespace RiskierRain.Equipment
 
         public override void Init(ConfigFile config)
         {
-            Debug.Log("sfghsakjfdsd");
             CreateEquipment();
             CreateLang();
             Hooks();

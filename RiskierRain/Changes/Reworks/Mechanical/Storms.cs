@@ -366,7 +366,6 @@ namespace RiskierRain
         }
 
         //all the projectile/prefab stuff
-        //public float clearRadius = 50; //no idea what this should be
         public float stormLevel = 0;
 
         public float waveMinInterval = 1;

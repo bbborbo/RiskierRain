@@ -90,6 +90,40 @@ namespace RiskierRain
             }
         }
 
+
+        #region Orange Interactable Changes
+
+        void OrangeInteractableStuff()
+        {
+            GoldShrineRework();
+        }
+
+
+        GameObject goldShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineGoldshoresAccess/ShrineGoldshoresAccess.prefab").WaitForCompletion();
+        int goldShrineCost = 5;
+        private void GoldShrineRework()
+        {
+            Debug.Log("goldshrining");
+            if(goldShrine == null)
+            {
+                Debug.Log("goldshrine null!! uh oh!!!!");
+                return;
+            }
+
+            PurchaseInteraction goldShrineInteraction = goldShrine.GetComponent<PurchaseInteraction>();
+            if(goldShrineInteraction == null)
+            {
+                Debug.Log("goldshrine purchase thing null bwuh");
+                return;
+            }
+
+            goldShrineInteraction.costType = CostTypeIndex.LunarCoin; // gold
+            goldShrineInteraction.cost = goldShrineCost;
+
+        }
+
+        #endregion
+
         #region Blood Shrines
         private static int teamMaxHealth;
         private const float totalHealthFraction = 2.18f; // health bars

@@ -19,6 +19,36 @@ namespace RiskierRain
 {
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
+        public static bool IsDoubleJump(CharacterMotor motor, CharacterBody body)
+        {
+            int maxJumpCount = body.maxJumpCount;
+            int baseJumpCount = body.baseJumpCount;
+            int timesJumped = motor.jumpCount + 1;
+
+            if (timesJumped > baseJumpCount)
+                return true;
+            return false;
+        }
+        public static bool IsBaseJump(CharacterMotor motor, CharacterBody body)
+        {
+            int maxJumpCount = body.maxJumpCount;
+            int baseJumpCount = body.baseJumpCount;
+            int timesJumped = motor.jumpCount + 1;
+
+            if (timesJumped <= baseJumpCount)
+                return true;
+            return false;
+        }
+        public static bool IsLastJump(CharacterMotor motor, CharacterBody body)
+        {
+            int maxJumpCount = body.maxJumpCount;
+            int baseJumpCount = body.baseJumpCount;
+            int timesJumped = motor.jumpCount + 1;
+
+            if (timesJumped == maxJumpCount)
+                return true;
+            return false;
+        }
         public static int fallBootsJumpCount = 3;
         public bool fallBootsSuperJumpLast = true;
         public float superJumpStrengthFirst = 1.2f; //2
@@ -49,18 +79,18 @@ namespace RiskierRain
         }
 
         #region hopoo feather
+        float featherBaseDuration = 0.75f;
+        float featherStackDuration = 0.5f;
         private void FeatherRework()
         {
             OnJumpEvent += FeatherOnJump;
-            On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
-            GetStatCoefficients += FeatherDamageBoost;
-            LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Triple jump. Jumping increases your damage until you land.");
+            //On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
+            //GetStatCoefficients += FeatherDamageBoost;
+            LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Triple jump. Jumping gives you a boost of movement speed.");
             LanguageAPI.Add("ITEM_FEATHER_DESC",
                 $"Gain <style=cIsUtility>{featherJumpCount}</style> jumps. " +
-                $"<style=cIsUtility>On jump</style>, gain a buff that increases damage dealt " +
-                $"by <style=cIsDamage>{Tools.ConvertDecimal(hopooDamageIncreasePerBuff)}</style> " +
-                $"<style=cStack>(+{Tools.ConvertDecimal(hopooDamageIncreasePerBuff)} per stack)</style> " +
-                $"until you land.");
+                $"<style=cIsUtility>On jump</style>, increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>125%</style>, " +
+                $"fading over <style=cIsUtility>{featherBaseDuration}</style> <style=cStack>(+{featherStackDuration} per stack)</style> seconds.");
         }
 
         private void FeatherDamageBoost(CharacterBody sender, StatHookEventArgs args)
@@ -91,9 +121,38 @@ namespace RiskierRain
             if (body)
             {
                 Inventory inv = body.inventory;
-                if(inv && inv.GetItemCount(RoR2Content.Items.Feather) > 0)
+                if(inv)
                 {
-                    body.AddBuff(Assets.hopooDamageBuff);
+                    int count = inv.GetItemCount(RoR2Content.Items.Feather);
+                    if(count > 0 && IsDoubleJump(motor, body))
+                    {
+                        int increments = 5;
+                        float totalDuration = featherBaseDuration + (float)(count - 1) * featherStackDuration;
+                        body.ClearTimedBuffs(DLC1Content.Buffs.KillMoveSpeed);
+                        for (int l = 0; l < increments; l++)
+                        {
+                            body.AddTimedBuff(DLC1Content.Buffs.KillMoveSpeed, totalDuration * (float)(l + 1) / (float)increments);
+                        }
+                        EffectData effectData = new EffectData();
+                        effectData.origin = body.corePosition;
+                        CharacterMotor characterMotor = body.characterMotor;
+                        bool flag = false;
+                        if (characterMotor)
+                        {
+                            Vector3 moveDirection = characterMotor.moveDirection;
+                            if (moveDirection != Vector3.zero)
+                            {
+                                effectData.rotation = Util.QuaternionSafeLookRotation(moveDirection);
+                                flag = true;
+                            }
+                        }
+                        if (!flag)
+                        {
+                            effectData.rotation = body.transform.rotation;
+                        }
+                        EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MoveSpeedOnKillActivate"), effectData, true);
+                    }
+                    //body.AddBuff(Assets.hopooDamageBuff);
                 }
             }
         }
@@ -152,10 +211,7 @@ namespace RiskierRain
                     CharacterMotor motor = self.bodyMotor;
                     if (motor)
                     {
-                        int maxJumps = motor.body.maxJumpCount;
-                        int remainingJumps = maxJumps - motor.jumpCount;
-                        //Debug.Log(motor.jumpCount);
-                        shouldSuperJump = (remainingJumps == 1);
+                        shouldSuperJump = IsLastJump(motor, self.body);
                     }
                 }
 

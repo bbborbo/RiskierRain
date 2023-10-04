@@ -142,10 +142,11 @@ namespace RiskierRain.Items
             int maxJumpCount = body.maxJumpCount;
             int baseJumpCount = body.baseJumpCount;
 
-            if (motor.jumpCount < maxJumpCount - baseJumpCount)
+            if (IsBaseJump(motor, body))
                 return;
 
-            BottleCloud.CreateNinjaSmokeBomb(motor.body);
+            if(IsLastJump(motor, body))
+                BottleCloud.CreateNinjaSmokeBomb(motor.body);
 
             TeamIndex teamIndex = this.body.teamComponent.teamIndex;
             int num = 0;

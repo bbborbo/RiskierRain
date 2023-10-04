@@ -171,7 +171,7 @@ namespace RiskierRain
         }
 
         public static float doubleJumpVerticalBonus = 1.0f; //1.5f
-        public static float doubleJumpHorizontalBonus = 1.3f; //1.5f
+        public static float doubleJumpHorizontalBonus = 1.1f; //1.3f; //1.5f
         private void FeatherNerf(ILContext il)
         {
             ILCursor c = new ILCursor(il);

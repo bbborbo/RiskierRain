@@ -163,10 +163,7 @@ namespace RiskierRain.Items
             if (body && body.inventory?.GetItemCount(BottleFart.instance.ItemsDef) <= 0)
                 return;
 
-            int maxJumpCount = body.maxJumpCount;
-            int baseJumpCount = body.baseJumpCount;
-
-            if (motor.jumpCount < maxJumpCount - baseJumpCount)
+            if (!IsDoubleJump(motor, body))
                 return;
 
 

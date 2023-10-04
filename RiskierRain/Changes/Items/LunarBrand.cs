@@ -28,9 +28,15 @@ namespace RiskierRain.Changes.Items
 
         public override string ItemLangTokenName => "LUNARBRAND";
 
-        public override string ItemPickupDesc => "Chance to burn enemies. Inflicting X stacks of burn Cauterizes enemies, dealing damage BUT giving them armor and immunity to bleeding effects. Cauterize ignores armor.";
+        public override string ItemPickupDesc => "Cauterize burning enemies, inflicting heavy damage " +
+            "<style=cIsHealth>AND increasing their armor, rendering them invulnerable to Bleed.</style>";
 
-        public override string ItemFullDescription => "see above";
+        public override string ItemFullDescription => $"<style=cIsDamage>{RiskierRainPlugin.brandBurnChance}%</style> chance to ignite on hit. " + 
+            $"Inflicting <style=cIsDamage>{burnThreshold}</style> stacks of burn Cauterizes enemies " +
+            $"for <style=cIsDamage>{duration}</style> seconds <style=cStack>(+{durationStack} per stack)</style>, " +
+            $"dealing <style=cIsDamage>{Tools.ConvertDecimal(cauterizeDamageCoef)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(cauterizeDamageStack)} per stack)</style> damage through armor. " +
+            $"<style=cIsHealth>Cauterized enemies are invulnerable to Bleed and have +{cauterizeArmor} armor.</style>";
 
         public override string ItemLore => "";
 
@@ -79,20 +85,26 @@ namespace RiskierRain.Changes.Items
                 {
                     Debug.Log("cauterize!!");
                     int i = 0;
-                    while (burnCount > 0 && i < threshold)//remove weak fire first
+                    while(i < threshold)
                     {
-                        victimBody.healthComponent.body.RemoveOldestTimedBuff(RoR2Content.Buffs.OnFire);
-                        burnCount--;
-                        i++;
-                        Debug.Log("burn = " + burnCount);
+                        if (burnCount > 0)
+                        {
+                            victimBody.healthComponent.body.RemoveOldestTimedBuff(RoR2Content.Buffs.OnFire);
+                            burnCount--;
+                            i++;
+                            Debug.Log("burn = " + burnCount);
+                        }
+                        else if (strongBurnCount > 0)
+                        {
+                            victimBody.healthComponent.body.RemoveOldestTimedBuff(DLC1Content.Buffs.StrongerBurn);
+                            strongBurnCount--;
+                            i++;
+                            Debug.Log("superburn" + strongBurnCount);
+                        }
+                        else
+                            break;
                     }
-                    while (strongBurnCount > 0 && i < threshold)//remove strong fire second
-                    {
-                        victimBody.healthComponent.body.RemoveOldestTimedBuff(DLC1Content.Buffs.StrongerBurn);
-                        burnCount--;
-                        i++;
-                        Debug.Log("superburn" + strongBurnCount);
-                    }
+
                     Cauterize(attackerBody, damageInfo, victimBody);//do the thing
                     threshold += burnThreshold;
                     Debug.Log("threshold = " + threshold);

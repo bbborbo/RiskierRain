@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
+using RiskierRain.Artifacts;
 using RiskierRain.CoreModules;
 using RiskierRain.Equipment;
 using RiskierRain.Interactables;
@@ -123,6 +124,7 @@ namespace RiskierRain
             InitializeSkills();
             InitializeEquipment();
             InitializeEliteEquipment();
+            InitializeArtifacts();
             InitializeScavengers();
             InitializeStorms();
             //InitializeEverything();
@@ -1184,7 +1186,7 @@ namespace RiskierRain
                 if (equipment.IsHidden)
                     return;
 
-                if (ValidateEquipment(equipment, Equipments))
+                if (equipment.ForceEnable || ValidateEquipment(equipment, Equipments))
                 {
                     equipment.Init(Config);
                 }
@@ -1396,6 +1398,61 @@ namespace RiskierRain
             }
 
             return forceUnlock;
+        }
+        #endregion
+
+        #region artifacts
+
+
+        public List<ArtifactBase> Artifacts = new List<ArtifactBase>();
+        public static Dictionary<ArtifactBase, bool> ArtifactStatusDictionary = new Dictionary<ArtifactBase, bool>();
+
+        void InitializeArtifacts()
+        {
+            var ArtifactTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(ArtifactBase)));
+
+            foreach (var itemType in ArtifactTypes)
+            {
+                ArtifactBase artifact = (ArtifactBase)System.Activator.CreateInstance(itemType);
+                if (ValidateArtifact(artifact, Artifacts))
+                {
+                    artifact.Init(CustomConfigFile);
+                }
+                else
+                {
+                    Debug.Log("Artifact of " + artifact.ArtifactName + " Did not initialize!");
+                }
+            }
+        }
+        bool ValidateArtifact(ArtifactBase artifact, List<ArtifactBase> itemList)
+        {
+            BalanceCategory category = artifact.Category;
+
+            var enabled = false;// item.Tier == ItemTier.NoTier;
+
+            if (!enabled)
+            {
+                string name = artifact.ArtifactName.Replace("'", "");
+                if (category != BalanceCategory.None && category != BalanceCategory.Count && !enabled)
+                {
+                    enabled = IsCategoryEnabled(category) &&
+                    CustomConfigFile.Bind<bool>(category.ToString() + " Content", $"Enable Artifact of {name}", true, "Should this artifact be available?").Value;
+                }
+                else
+                {
+                    enabled = IsCategoryEnabled(category) &&
+                    CustomConfigFile.Bind<bool>("Uncategorized Content", $"Enable Artifact of {name}", true, "Should this artifact be available?").Value;
+                    Debug.Log($"{name} artifact initializing into Balance Category: {category}!!");
+                }
+            }
+
+            //ItemStatusDictionary.Add(item, itemEnabled);
+
+            if (enabled)
+            {
+                itemList.Add(artifact);
+            }
+            return enabled;
         }
         #endregion
     }

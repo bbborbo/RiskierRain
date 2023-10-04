@@ -52,6 +52,7 @@ namespace RiskierRain.Equipment
 
         public virtual bool IsLunar { get; } = false;
         public virtual bool IsHidden { get; } = false;
+        public virtual bool ForceEnable { get; } = false;
         public virtual ColorCatalog.ColorIndex ColorIndex { get; } = ColorCatalog.ColorIndex.Equipment;
 
         public EquipmentDef EquipDef;

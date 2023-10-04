@@ -27,7 +27,7 @@ namespace RiskierRain.Equipment
         string baseThreshold = Tools.ConvertDecimal(Assets.newExecutionThresholdBase + Assets.newExecutionThresholdStack);
         string stackThreshold = Tools.ConvertDecimal(Assets.newExecutionThresholdStack);
 
-        public override string EquipmentName => "The Guillotine";
+        public override string EquipmentName => "Old Guillotine";
 
         public override string EquipmentLangTokenName => "BOBOGUILLOTINE";
 
@@ -167,8 +167,7 @@ namespace RiskierRain.Equipment
         public override void Init(ConfigFile config)
         {
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
-            Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
-            return;
+            //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             CreateEquipment();
             CreateLang();

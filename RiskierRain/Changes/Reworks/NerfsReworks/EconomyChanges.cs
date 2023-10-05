@@ -508,14 +508,14 @@ namespace RiskierRain
         public int lunarPodLimit = 2;//-1
         private void LunarPodOccurrenceHook(DccsPool pool, StageInfo currentStage)
         {
-            string barrelName = DirectorAPI.Helpers.InteractableNames.LunarPod.ToLower();
+            string podName = DirectorAPI.Helpers.InteractableNames.LunarPod.ToLower();
             if (IsStageOne(currentStage.stage))
             {
-                ChangeInteractableWeightForPool(pool, barrelName, lunarPodWeightS1, lunarPodLimitS1);
+                ChangeInteractableWeightForPool(pool, podName, lunarPodWeightS1, lunarPodLimitS1);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
             {
-                ChangeInteractableWeightForPool(pool, barrelName, lunarPodWeight, lunarPodLimit);
+                ChangeInteractableWeightForPool(pool, podName, lunarPodWeight, lunarPodLimit);
             }
         }
         #endregion

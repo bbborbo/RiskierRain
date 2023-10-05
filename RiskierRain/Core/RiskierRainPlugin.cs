@@ -697,6 +697,12 @@ namespace RiskierRain
                     DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
                 }
 
+                //equipment barrels and shops
+                if (GetConfigBool(currentCategory, true, "Economy: Equipment Barrel/Shop"))
+                {
+                    DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
+                }
+
                 //misc orange stuff i fucking guess
                 if (GetConfigBool(currentCategory, true, "Economy: Gold Shrine"))
                 {

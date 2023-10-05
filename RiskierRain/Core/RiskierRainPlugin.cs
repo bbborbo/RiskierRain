@@ -698,9 +698,9 @@ namespace RiskierRain
                 }
 
                 //equipment barrels and shops
-                if (GetConfigBool(currentCategory, true, "Economy: Equipment Barrel/Shop"))
+                if (GetConfigBool(currentCategory, true, "Economy: Lunar Pod"))
                 {
-                    DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
+                    DirectorAPI.InteractableActions += LunarPodOccurrenceHook;
                 }
 
                 //misc orange stuff i fucking guess

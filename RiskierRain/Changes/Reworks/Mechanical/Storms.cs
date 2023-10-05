@@ -143,7 +143,7 @@ namespace RiskierRain
                     delay = RiskierRainPlugin.drizzleStormDelay;
                     break;
             }
-            float random = Run.instance.stageRng.RangeFloat(0, 2);
+            float random = Run.instance.stageRng.RangeFloat(0, 1);
             stormStartDelay = (delay + random) * 60;
         }
         void DetermineStormType()
@@ -168,7 +168,7 @@ namespace RiskierRain
                 switch (stormType)
                 {
                     case StormType.MeteorDefault:
-                        warningMessage = "A meteor storm is approaching...";
+                        warningMessage = "<style=cIsUtility>A meteor storm is approaching...</style>";
                         break;
                     case StormType.Lightning:
                         warningMessage = "A storm approaches...";
@@ -193,7 +193,7 @@ namespace RiskierRain
                 switch (stormType)
                 {
                     case StormType.MeteorDefault:
-                        warningMessage = "A shower of meteors begin to fall...";
+                        warningMessage = "<style=cIsUtility>A shower of meteors begins to fall...</style>";
                         break;
                     case StormType.Lightning:
                         warningMessage = "A meteor storm is approaching...";
@@ -368,8 +368,8 @@ namespace RiskierRain
         //all the projectile/prefab stuff
         public float stormLevel = 0;
 
-        public float waveMinInterval = 1;
-        public float waveMaxInterval = 4;
+        public float waveMinInterval = 0.5f;
+        public float waveMaxInterval = 1.5f;
 
         private List<MeteorStormController.Meteor> meteorList;
         private List<MeteorStormController.MeteorWave> waveList;
@@ -380,9 +380,9 @@ namespace RiskierRain
         GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
         GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
         public float meteorTravelEffectDuration = 2;
-        public float meteorImpactDelay = 2;
-        public float meteorBlastDamageCoefficient = 5;
-        public float meteorbBastRadius = 10;
+        public float meteorImpactDelay = 2.5f;
+        public float meteorBlastDamageCoefficient = 10;
+        public float meteorbBastRadius = 14;
         public float meteorBlastForce = 0;
 
     }

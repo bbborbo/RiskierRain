@@ -698,9 +698,9 @@ namespace RiskierRain
                 }
 
                 //misc orange stuff i fucking guess
-                if (GetConfigBool(currentCategory, true, "Economy: misc orange shit"))
+                if (GetConfigBool(currentCategory, true, "Economy: Gold Shrine"))
                 {
-                    OrangeInteractableStuff();
+                    GoldShrineRework();
                 }
 
                 //blood shrine

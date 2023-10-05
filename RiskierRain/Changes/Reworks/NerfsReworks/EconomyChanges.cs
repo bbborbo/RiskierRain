@@ -91,14 +91,7 @@ namespace RiskierRain
         }
 
 
-        #region Orange Interactable Changes
-
-        void OrangeInteractableStuff()
-        {
-            GoldShrineRework();
-        }
-
-
+        #region Gold Shrine
         GameObject goldShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineGoldshoresAccess/ShrineGoldshoresAccess.prefab").WaitForCompletion();
         int goldShrineCost = 5;
         private void GoldShrineRework()

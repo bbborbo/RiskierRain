@@ -21,13 +21,13 @@ namespace RiskierRain.Interactables
 
         public override string interactableLangToken => "LUNAR_GALLERY";
 
-        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarGallery.prefab");
+        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarGallery.prefab");
 
         public override bool modelIsCloned => false;
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 500;
+        public override int normalWeight => 2;
 
         public override int spawnCost => 20;
 
@@ -53,13 +53,13 @@ namespace RiskierRain.Interactables
 
         public override int maxSpawnsPerStage => 5;
 
-        public override string modelName => "lunarGallery"; 
+        public override string modelName => "mdlLunarGallery"; 
 
-        public override string prefabName => "lunarGallery";
+        public override string prefabName => "mdlLunarGallery";
 
         public override int category => 2;
 
-        public override int favoredWeight => 10000;
+        public override int favoredWeight => 6;
 
         public string[] validScenes = {
             "golemplains",

@@ -103,7 +103,6 @@ namespace RiskierRain
         int goldShrineCost = 5;
         private void GoldShrineRework()
         {
-            Debug.Log("goldshrining");
             if(goldShrine == null)
             {
                 Debug.Log("goldshrine null!! uh oh!!!!");

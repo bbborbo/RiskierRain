@@ -17,20 +17,20 @@ namespace RiskierRain.Interactables
 
         public override string interactableLangToken => "CURSE_STATUE";
 
-        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/curseStatue.prefab");
-        public override string modelName => "curseStatue";
+        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlCurseStatue.prefab");
+        public override string modelName => "mdlCurseStatue";
 
-        public override string prefabName => "curseStatue";
+        public override string prefabName => "mdlCurseStatue";
 
         public override bool modelIsCloned => false;
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 100000000;
+        public override int normalWeight => 1000;
 
         public override int favoredWeight => 0;
 
-        public override int category => 2;
+        public override int category => 7;
 
         public override int spawnCost => 0;
 
@@ -48,13 +48,13 @@ namespace RiskierRain.Interactables
 
         public override bool isShrine => true;
 
-        public override bool orientToFloor => false;
+        public override bool orientToFloor => true;
 
         public override bool skipSpawnWhenSacrificeArtifactEnabled => false;
 
         public override float weightScalarWhenSacrificeArtifactEnabled => 1;
 
-        public override int maxSpawnsPerStage => 10;
+        public override int maxSpawnsPerStage => 3;
 
         public string[] validScenes = {
             "golemplains",

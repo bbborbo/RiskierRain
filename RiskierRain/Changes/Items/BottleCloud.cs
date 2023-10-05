@@ -145,8 +145,6 @@ namespace RiskierRain.Items
             if (IsBaseJump(motor, body))
                 return;
 
-            if(IsLastJump(motor, body))
-                BottleCloud.CreateNinjaSmokeBomb(motor.body);
 
             TeamIndex teamIndex = this.body.teamComponent.teamIndex;
             int num = 0;
@@ -172,6 +170,14 @@ namespace RiskierRain.Items
             if (num > 0)
             {
                 cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
+                BottleCloud.CreateNinjaSmokeBomb(motor.body);
+            }
+            else if (IsLastJump(motor, body))
+            {
+                EffectManager.SpawnEffect(StealthMode.smokeBombEffectPrefab, new EffectData
+                {
+                    origin = body.footPosition
+                }, true);
             }
         }
 

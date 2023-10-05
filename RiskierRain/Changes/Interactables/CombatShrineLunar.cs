@@ -27,7 +27,7 @@ namespace RiskierRain.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 2;
+        public override int normalWeight => 500;
 
         public override int spawnCost => 20;
 
@@ -59,7 +59,7 @@ namespace RiskierRain.Interactables
 
         public override int category => 2;
 
-        public override int favoredWeight => 6;
+        public override int favoredWeight => 10000;
 
         public string[] validScenes = {
             "golemplains",

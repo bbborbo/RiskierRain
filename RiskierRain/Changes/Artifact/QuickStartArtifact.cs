@@ -41,6 +41,11 @@ namespace RiskierRain.Artifacts
         private void GiveQuickStart(On.RoR2.CharacterBody.orig_Start orig, CharacterBody self)
         {
             orig(self);
+            bool isStageone = Run.instance.stageClearCount == 0;
+            if (!isStageone)
+            {
+                return;
+            }
             if (self.isPlayerControlled)
             {
                 OnPlayerCharacterBodyStartServer(self);

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1450347440
+CRC: 1807141481
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: cfaf90399b0ecdb7f5cd586ad2d5452f
+    Hash: 65c821d9f7ca73326cfc0b9deaba5b2f
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -52,7 +52,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/Prefabs/mdlScalpelBroken.prefab
 - Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
-- Assets/Prefabs/curseStatue.prefab
+- Assets/Prefabs/mdlCurseStatue.prefab
 - Assets/Prefabs/mdlSlungus.prefab
 - Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
 - Assets/Prefabs/mdlBirdBand.prefab
@@ -76,7 +76,6 @@ Assets:
 - Assets/Icons/texIconPickupITEM_SLUNGUS.png
 - Assets/Blue.mat
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
-- Assets/Prefabs/mdlCurseStatue.prefab
 - Assets/bottle.fbx
 - Assets/Prefabs/voidBottle.prefab
 - Assets/ring.fbx
@@ -96,5 +95,5 @@ Assets:
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/mdlGreedyRing.prefab
-- Assets/Prefabs/lunarGallery.prefab
+- Assets/Prefabs/mdlLunarGallery.prefab
 Dependencies: []

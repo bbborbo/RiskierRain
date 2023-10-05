@@ -410,7 +410,7 @@ namespace RiskierRain
 
         #region equipment barrels
         public int equipBarrelWeightS1 = 20;//2
-        public int equipBarrelLimitS1 = 4;//-1
+        public int equipBarrelLimitS1 = 5;//-1
         public int equipBarrelWeight = 6;//2
         public int equipBarrelLimit = 2;//-1
         public int equipShopWeightS3 = 20;//2
@@ -497,6 +497,25 @@ namespace RiskierRain
                 RemoveExistingInteractable(pool, printerWhite);
                 RemoveExistingInteractable(pool, printerGreen);
                 RemoveExistingInteractable(pool, printerRed);
+            }
+        }
+        #endregion
+
+        #region lunar pods
+        public int lunarPodWeightS1 = 20;//2
+        public int lunarPodLimitS1 = 6;//-1
+        public int lunarPodWeight = 6;//2
+        public int lunarPodLimit = 2;//-1
+        private void LunarPodOccurrenceHook(DccsPool pool, StageInfo currentStage)
+        {
+            string barrelName = DirectorAPI.Helpers.InteractableNames.LunarPod.ToLower();
+            if (IsStageOne(currentStage.stage))
+            {
+                ChangeInteractableWeightForPool(pool, barrelName, lunarPodWeightS1, lunarPodLimitS1);
+            }
+            else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, ""))
+            {
+                ChangeInteractableWeightForPool(pool, barrelName, lunarPodWeight, lunarPodLimit);
             }
         }
         #endregion

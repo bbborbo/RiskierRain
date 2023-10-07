@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RiskierRain;
 
-namespace RiskierRain.Changes.Interactables
+namespace RiskierRain.Interactables
 {
     class ConstructConstruct : InteractableBase<ConstructConstruct>
     {
@@ -14,7 +15,7 @@ namespace RiskierRain.Changes.Interactables
 
         public override string interactableContext => "Kick the Construct";
 
-        public override string interactableLangToken => "CONSTRUCT_CONSCTRUCT";
+        public override string interactableLangToken => "CONSTRUCT_CONSTRUCT";
 
         public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/constructConstruct.prefab");
 
@@ -67,16 +68,19 @@ namespace RiskierRain.Changes.Interactables
 
         public override void Init(ConfigFile config)
         {
-            //hasAddedInteractable = false;
-            //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            //On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
-            //On.RoR2.PurchaseInteraction.OnInteractionBegin += ConstructConstructBehavior;
-            //On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
-            //CreateLang();
-            //CreateInteractable();
-            //var cards = CreateInteractableSpawnCard();
-            //customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+            hasAddedInteractable = false;
+            On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
+            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
+            On.RoR2.PurchaseInteraction.OnInteractionBegin += ConstructConstructBehavior;
+            On.RoR2.CombatDirector.CombatShrineActivation += ConstructShrineActivation;
+            On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
+            CreateLang();
+            CreateInteractable();
+            var cards = CreateInteractableSpawnCard();
+            customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
         }
+
+        public static string baseUseMessage = "CONSTRUCT_CONSTRUCT_USE_MESSAGE";
 
         private void ConstructConstructBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
@@ -85,7 +89,49 @@ namespace RiskierRain.Changes.Interactables
             {
                 return;
             }
+            self.gameObject.AddComponent<RiskierRainCombatDirector>();
+            GameObject obj = CombatEncounterHelper.MethodOne(self, activator);
+            orig(self, activator);
+        }
 
+        private void ConstructShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
+        {
+            RiskierRainCombatDirector galleryComponent = self.GetComponent<RiskierRainCombatDirector>();
+            if (galleryComponent != null)
+            {
+                self.enabled = true;
+                self.monsterCredit += monsterCredit;
+                self.OverrideCurrentMonsterCard(DirectorCards.AlphaConstruct);
+                self.monsterSpawnTimer = 0f;
+                SpawnCard a = chosenDirectorCard.spawnCard;
+                if (a == null)
+                {
+                }
+                GameObject b = a.prefab;
+                if (b == null)
+                {
+                }
+                CharacterMaster component = b.GetComponent<CharacterMaster>();
+                if (component == null)
+                {
+                    return;
+                }
+                CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
+                if (component2)
+                {
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                    {
+                        subjectAsCharacterBody = interactor.GetComponent<CharacterBody>(),
+                        baseToken = baseUseMessage,
+                        paramTokens = new string[]
+                        {
+                            component2.baseNameToken
+                        }
+                    });
+                }
+                return;
+            }
+            orig(self, interactor, monsterCredit, chosenDirectorCard);
         }
     }
 }

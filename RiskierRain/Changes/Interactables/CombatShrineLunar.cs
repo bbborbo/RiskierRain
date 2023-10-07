@@ -117,35 +117,27 @@ namespace RiskierRain.Interactables
 
         private void GalleryShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
         {
-            Debug.Log("GSA1");
             RiskierRainCombatDirector galleryComponent = self.GetComponent<RiskierRainCombatDirector>();
             if(galleryComponent != null)
             {
-                Debug.Log("GSA2");
                 self.enabled = true;
                 self.monsterCredit += monsterCredit;
                 self.OverrideCurrentMonsterCard(chosenDirectorCard);
                 self.monsterSpawnTimer = 0f;
-                Debug.Log("GSA3");
                 SpawnCard a = chosenDirectorCard.spawnCard;
                 if (a == null)
                 {
-                    Debug.Log("null1");
                 }
                 GameObject b = a.prefab;
                 if (b == null)
                 {
-                    Debug.Log("null2");
                 }
                 CharacterMaster component = b.GetComponent<CharacterMaster>();
-                Debug.Log("GSA4");
                 if (component == null)
                 {
-                    Debug.Log("null3");
                     return;
                 }
                 CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
-                Debug.Log("GSA5");
                 if (component2)
                 {
                     Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
@@ -158,9 +150,7 @@ namespace RiskierRain.Interactables
                             itemToGive.nameToken
                         }
                     });
-                    Debug.Log("GSA6");
-                }
-                
+                }                
                 return;
             }
             orig(self, interactor, monsterCredit, chosenDirectorCard);

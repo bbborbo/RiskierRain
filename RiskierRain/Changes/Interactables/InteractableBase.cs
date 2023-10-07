@@ -119,7 +119,7 @@ namespace RiskierRain.Interactables
                     }
 					if (modelLocator != null)
                     {
-						modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(prefabName);//pawsible problem area? ()
+						modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
 						modelLocator.modelBaseTransform = modelLocator.modelTransform;
 						modelLocator.dontDetatchFromParent = true;
 						modelLocator.autoUpdateModelTransform = true;

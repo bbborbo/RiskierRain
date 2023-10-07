@@ -25,7 +25,6 @@ namespace RiskierRain
 
             //plains
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
-            Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
 
 
             //siphoned
@@ -36,6 +35,8 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.BlindVerminSnowy, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SiphonedForest);
             Helpers.AddNewMonsterToStage(DirectorCards.Bison, MonsterCategory.Minibosses, DirectorAPI.Stage.SiphonedForest);
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
+            Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
+
 
             //wetland
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.WetlandAspect);
@@ -311,6 +312,17 @@ namespace RiskierRain
                 preventOverhead = false,
                 minimumStageCompletions = minStages,
                 spawnDistance = spawnDistance
+            };
+            return dc;
+        }
+        public static DirectorCard BuildDirectorCard(InteractableSpawnCard spawnCard, int weight, int minStages)
+        {
+            DirectorCard dc = new DirectorCard
+            {
+                spawnCard = spawnCard,
+                selectionWeight = weight,
+                preventOverhead = false,
+                minimumStageCompletions = minStages
             };
             return dc;
         }

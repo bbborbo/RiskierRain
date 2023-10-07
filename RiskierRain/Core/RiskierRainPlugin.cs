@@ -1294,6 +1294,10 @@ namespace RiskierRain
                     //}
                 }
             }
+
+            //idk where else to put this
+            //doublechest/roulette chest rework
+            DoubleChestHook();
         }
 
         //bool ValidateInteractable(InteractableBase interactable, List<InteractableBase> itemList)

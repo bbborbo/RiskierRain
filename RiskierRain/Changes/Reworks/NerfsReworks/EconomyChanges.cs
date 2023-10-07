@@ -54,7 +54,7 @@ namespace RiskierRain
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250
-        int casinoChestTypeCost = 25; //50; make this 40 once they dont suck
+        int casinoChestTypeCost = 25; //50; first interact is free, cost is incurred on second interract
         int chanceShrineTypeCost = 15; //17
 
         void FixMoneyScaling()
@@ -269,6 +269,7 @@ namespace RiskierRain
             if (casinoChest != null)
             {
                 casinoChest.cost = casinoChestTypeCost;
+                casinoChest.displayNameToken = "Double Chest";//doesnt work
             }
             if (chanceShrine != null)
             {
@@ -443,16 +444,24 @@ namespace RiskierRain
         #region scrappers
         public int scrapperWeight = 1000;//12
         public int scrapperLimit = 3;//-1
+
+        public int doubleChestWeight = 15; //idk
+
         private void ScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string scrapperName = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();//.ToLower();
 
-            bool isPrinterStage = OnScrapperStage(currentStage.stage);
+            string doubleChestName = DirectorAPI.Helpers.InteractableNames.AdaptiveChest.ToLowerInvariant();
+
+            bool isScrapperStage = OnScrapperStage(currentStage.stage);
             //Debug.Log(currentStage.stage.ToString() + " Is Scrapper Stage: " + isPrinterStage);
 
-            if (isPrinterStage)
+            if (isScrapperStage)
             {
+                Debug.Log("scrapper stage 1");
                 ChangeInteractableWeightForPool(pool, scrapperName, scrapperWeight, scrapperLimit);
+                ChangeInteractableWeightForPool(pool, doubleChestName, doubleChestWeight);
+                Debug.Log("scrapper stage 2");
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "") || IsModdedPrinterStage(currentStage.stage))
             {
@@ -555,6 +564,99 @@ namespace RiskierRain
         {
             return stage == ParseInternalStageName("FBLScene");
         }
+        #endregion
+
+        #region roulette chest rework
+
+        BasicPickupDropTable doubleChestDropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
+        InteractableSpawnCard doubleChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
+        DirectorCard doubleChestDirectorCard;
+        public void DoubleChestHook()
+        {
+            ChangeDoubleChestDropTable();
+            AddDoubleChestToStage1();            
+
+            On.RoR2.RouletteChestController.Cycling.OnEnter += DoubleChestOnInteract;
+            On.RoR2.RouletteChestController.GetPickupIndexForTime += DoubleChestScrap;
+            On.RoR2.RouletteChestController.EjectPickupServer += DoubleChestDoubleLoot;            
+        }
+
+        private void BuildDoubleChestDirectorCard()
+        {
+            doubleChestDirectorCard = DirectorCards.BuildDirectorCard(doubleChestSpawnCard, doubleChestWeight, 0);
+        }
+
+        private void AddDoubleChestToStage1()
+        {
+            BuildDoubleChestDirectorCard();
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.TitanicPlains);
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.DistantRoost);
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.SiphonedForest);
+        }
+
+        private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, PickupIndex pickupIndex)
+        {
+            orig(self, pickupIndex);
+            if (pickupIndex == PickupIndex.none)
+            {
+                return;
+            }
+            PickupDropletController.CreatePickupDroplet(pickupIndex, self.ejectionTransform.position, self.ejectionTransform.rotation * (self.localEjectionVelocity + new Vector3(2, 0, 0)));
+        }
+
+        private PickupIndex DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupIndexForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
+        {
+            float threshHold = 5;
+            bool isFirstItem;
+
+            isFirstItem = (threshHold > (self.bonusTime));
+
+            if (!isFirstItem)
+            {
+                return PickupCatalog.FindPickupIndex(RoR2Content.Items.ScrapWhite.itemIndex);
+            }
+            self.bonusTime += 0.01f;
+            return orig(self, time);
+        }
+
+        private void ChangeDoubleChestDropTable()
+        {
+            if (doubleChestDropTable == null)
+            {
+                Debug.Log("droptable null uhhh");
+                return;
+            }
+            doubleChestDropTable.tier1Weight = 1;
+            doubleChestDropTable.tier2Weight = 0;
+            doubleChestDropTable.tier3Weight = 0;
+            doubleChestDropTable.equipmentWeight = 0;
+        }
+
+        private void DoubleChestOnInteract(On.RoR2.RouletteChestController.Cycling.orig_OnEnter orig, EntityStates.EntityState self)
+        {
+            RouletteChestController chestController = self.gameObject.GetComponent<RouletteChestController>();
+            //chestController.dropTable = RoR2.MultiShopController.drop
+            chestController.maxEntries = 2;
+            chestController.bonusTime = 3;
+
+            orig(self);
+            
+            if (chestController == null)
+            {
+                Debug.Log("auuuuuh fuck :3");
+                return;
+            }
+            PurchaseInteraction purchaseInteraction = chestController.purchaseInteraction;
+            if (purchaseInteraction == null)
+            {
+                Debug.Log("purchase interaction null 3:");
+                return;
+            }
+            purchaseInteraction.costType = CostTypeIndex.Money;
+            purchaseInteraction.cost = casinoChestTypeCost;
+        }
+
+
         #endregion
     }
 }

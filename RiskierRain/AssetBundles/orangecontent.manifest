@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 984986250
+CRC: 281601665
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 937546783d0522bd201dad3aa6021bf6
+    Hash: 73fe2b922feefea27ab850e17230af17
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -44,6 +44,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_BIRDBAND.png
 - Assets/Prefabs/mdlScalpel.prefab
 - Assets/Icons/texIconPickupITEM_GOODEXECUTIONITEM.png
+- Assets/Prefabs/mdlConstructConstruct.prefab
 - Assets/Icons/texFrozenShellIcon.png
 - Assets/curseStatue.fbx
 - Assets/egg.fbx
@@ -74,6 +75,7 @@ Assets:
 - Assets/Prefabs/mdlPhrygianLily.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
 - Assets/Prefabs/curseStatue.prefab
+- Assets/Prefabs/constructConstruct.prefab
 - Assets/Icons/texIconPickupITEM_SLUNGUS.png
 - Assets/Blue.mat
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
@@ -83,6 +85,7 @@ Assets:
 - Assets/Black.mat
 - Assets/Icons/texIconPickupITEM_BORBOMANAFLOWER.png
 - Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/constructConstruct.fbx
 - Assets/Flower.fbx
 - Assets/Prefabs/mdlTragicFacade.prefab
 - Assets/Green.mat

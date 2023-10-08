@@ -63,7 +63,7 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/starVeil.prefab");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Resources.Load<Sprite>("Assets/Icons/texIconPickupITEM_STARVEIL.png");
 
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 

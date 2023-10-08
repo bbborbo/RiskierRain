@@ -33,7 +33,7 @@ namespace RiskierRain.Items
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/coralite.prefab");
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

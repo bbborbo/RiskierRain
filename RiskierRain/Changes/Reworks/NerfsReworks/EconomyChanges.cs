@@ -17,6 +17,7 @@ using R2API;
 using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
+using static RiskierRain.Secrets;
 
 namespace RiskierRain
 {
@@ -458,10 +459,8 @@ namespace RiskierRain
 
             if (isScrapperStage)
             {
-                Debug.Log("scrapper stage 1");
                 ChangeInteractableWeightForPool(pool, scrapperName, scrapperWeight, scrapperLimit);
                 ChangeInteractableWeightForPool(pool, doubleChestName, doubleChestWeight);
-                Debug.Log("scrapper stage 2");
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "") || IsModdedPrinterStage(currentStage.stage))
             {
@@ -569,18 +568,38 @@ namespace RiskierRain
         #region roulette chest rework
 
         BasicPickupDropTable doubleChestDropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
-        InteractableSpawnCard doubleChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
-        DirectorCard doubleChestDirectorCard;
+        InteractableSpawnCard doubleChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/CasinoChest/iscCasinoChest.asset").WaitForCompletion();
+        public DirectorCard doubleChestDirectorCard;//MOVE THIS SOMEWHERE BETTER LATER :3
         public void DoubleChestHook()
         {
             ChangeDoubleChestDropTable();
-            AddDoubleChestToStage1();            
+            BuildDoubleChestDirectorCard();
+            AddDoubleChestToStage1();
+            AddDoubleChestSecrets();
 
             On.RoR2.RouletteChestController.Cycling.OnEnter += DoubleChestOnInteract;
             On.RoR2.RouletteChestController.GetPickupIndexForTime += DoubleChestScrap;
             On.RoR2.RouletteChestController.EjectPickupServer += DoubleChestDoubleLoot;            
         }
+        private void AddDoubleChestSecrets()
+        {
+            //titanic plains
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(-109, -99, 42));//doublechest
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -100, 29));//big chest maybe
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(183, -91, -144));//doublechest //bonus mob
+            //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(139, -119, 194));//doublechest queatet
+            //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(64, -115, -264));//lunar pod? very stupid
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(100, -154, -342));//doublechest, make chance based
 
+            Vector3[] quartetSpots = new Vector3[5];
+            quartetSpots[0] = new Vector3(139, -119, 194);
+            quartetSpots[1] = new Vector3(156, -120, -196);
+            quartetSpots[2] = new Vector3(152, -112, -222);
+            quartetSpots[3] = new Vector3(120, -112, -209);
+            quartetSpots[4] = new Vector3(89, -116, -192);
+            SpawnSemiRandom("golemplains", doubleChestSpawnCard, quartetSpots);
+
+        }
         private void BuildDoubleChestDirectorCard()
         {
             doubleChestDirectorCard = DirectorCards.BuildDirectorCard(doubleChestSpawnCard, doubleChestWeight, 0);
@@ -588,7 +607,6 @@ namespace RiskierRain
 
         private void AddDoubleChestToStage1()
         {
-            BuildDoubleChestDirectorCard();
             DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.TitanicPlains);
             DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.DistantRoost);
             DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.SiphonedForest);

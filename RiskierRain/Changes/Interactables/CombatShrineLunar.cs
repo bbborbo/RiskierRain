@@ -117,7 +117,7 @@ namespace RiskierRain.Interactables
 
         private void GalleryShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
         {
-            RiskierRainCombatDirector galleryComponent = self.GetComponent<RiskierRainCombatDirector>();
+            GalleryDirector galleryComponent = self.GetComponent<GalleryDirector>();
             if(galleryComponent != null)
             {
                 self.enabled = true;
@@ -162,12 +162,17 @@ namespace RiskierRain.Interactables
             if (value)
             {
                 Inventory inv = enemySpawned.GetComponent<Inventory>();
-                RiskierRainCombatDirector isGallery = self.gameObject.GetComponent<RiskierRainCombatDirector>();
-                if (inv != null && isGallery != null)
+                GalleryDirector component = self.gameObject.GetComponent<GalleryDirector>();
+                if (inv == null)
                 {
-                    inv.GiveItem(itemToGive);
-                    inv.GiveItem(Items.Helpers.GalleryItemDrop.instance.ItemsDef);
+                    return value;
                 }
+                if (component == null)
+                {
+                    return value;
+                }
+                inv.GiveItem(itemToGive);
+                inv.GiveItem(Items.Helpers.GalleryItemDrop.instance.ItemsDef);                
             }
             return value;
         }
@@ -185,9 +190,9 @@ namespace RiskierRain.Interactables
                 orig(self, activator);
                 return;
             }
-            self.gameObject.AddComponent<RiskierRainCombatDirector>();
+            GalleryDirector component = self.gameObject.AddComponent<GalleryDirector>();
             ChooseItem();
-            GameObject obj = CombatEncounterHelper.MethodOne(self, activator);
+            GameObject obj = CombatEncounterHelper.MethodOne(self, activator, 40, 1);
             orig(self, activator);
             
             //Vector3 vector = Vector3.zero;

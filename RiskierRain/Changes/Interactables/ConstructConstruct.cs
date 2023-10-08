@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RiskierRain;
+using static RiskierRain.Secrets;
 
 namespace RiskierRain.Interactables
 {
@@ -78,9 +79,25 @@ namespace RiskierRain.Interactables
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+            ConstructConstructSecrets(cards.interactableSpawnCard);
         }
 
         public static string baseUseMessage = "CONSTRUCT_CONSTRUCT_USE_MESSAGE";
+
+        private void ConstructConstructSecrets(SpawnCard spawncard)
+        {
+            Vector3[] caveSpots = new Vector3[3];
+            caveSpots[0] = new Vector3(23, -35, 65);
+            caveSpots[1] = new Vector3(26, -34, 99);
+            caveSpots[2] = new Vector3(28, -34, 36);
+            SpawnSemiRandom("sulfurpools", spawncard, caveSpots);
+            Vector3[] wallSpots = new Vector3[2];
+            wallSpots[0] = new Vector3(173, 2, -154);
+            wallSpots[1] = new Vector3(128, 0, -194);
+            SpawnSemiRandom("sulfurpools", spawncard, wallSpots, 0.5f);
+
+            SpawnSecret("foggyswamp", spawncard, new Vector3(258, -150, -170)); //0.3f?
+        }
 
         private void ConstructConstructBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
@@ -89,19 +106,20 @@ namespace RiskierRain.Interactables
             {
                 return;
             }
-            self.gameObject.AddComponent<RiskierRainCombatDirector>();
-            GameObject obj = CombatEncounterHelper.MethodOne(self, activator);
+            self.gameObject.AddComponent<ConstructDirector>();
+            GameObject obj = CombatEncounterHelper.MethodOne(self, activator, 200, 2);//this might be way too much well see :3
+
             orig(self, activator);
         }
 
         private void ConstructShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
         {
-            RiskierRainCombatDirector galleryComponent = self.GetComponent<RiskierRainCombatDirector>();
-            if (galleryComponent != null)
+            ConstructDirector constructComponent = self.GetComponent<ConstructDirector>();
+            if (constructComponent != null)
             {
                 self.enabled = true;
                 self.monsterCredit += monsterCredit;
-                self.OverrideCurrentMonsterCard(DirectorCards.AlphaConstruct);
+                self.OverrideCurrentMonsterCard(DirectorCards.AlphaConstructNear);
                 self.monsterSpawnTimer = 0f;
                 SpawnCard a = chosenDirectorCard.spawnCard;
                 if (a == null)

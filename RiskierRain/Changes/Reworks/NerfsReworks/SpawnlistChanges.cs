@@ -35,7 +35,7 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.BlindVerminSnowy, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SiphonedForest);
             Helpers.AddNewMonsterToStage(DirectorCards.Bison, MonsterCategory.Minibosses, DirectorAPI.Stage.SiphonedForest);
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
-            Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
+            Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest); //what was i cooking
 
 
             //wetland
@@ -201,6 +201,7 @@ namespace RiskierRain
         public static bool initialized = false;
 
         public static DirectorCard AlphaConstruct;
+        public static DirectorCard AlphaConstructNear;
 
         public static DirectorCard Beetle;
         public static DirectorCard Lemurian;
@@ -255,6 +256,7 @@ namespace RiskierRain
             initialized = true;
 
             AlphaConstruct = BuildDirectorCard(SpawnCards.AlphaConstruct, 1, 1, DirectorCore.MonsterSpawnDistance.Standard);
+            AlphaConstructNear = BuildDirectorCard(SpawnCards.AlphaConstruct, 1, 1, DirectorCore.MonsterSpawnDistance.Close);
 
             Beetle = BuildDirectorCard(SpawnCards.Beetle);
             Lemurian = BuildDirectorCard(SpawnCards.Lemurian);

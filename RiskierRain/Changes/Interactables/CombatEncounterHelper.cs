@@ -10,9 +10,8 @@ namespace RiskierRain.Interactables
     static class CombatEncounterHelper
     {
 
-        public static GameObject MethodOne(PurchaseInteraction purchaseInteraction, Interactor activator) // RENAME LATER
+        public static GameObject MethodOne(PurchaseInteraction purchaseInteraction, Interactor activator,int credits, int value = 0) // RENAME LATER
         {
-            bool value = false;
             Vector3 vector = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
             Transform transform = purchaseInteraction.gameObject.transform;
@@ -30,12 +29,13 @@ namespace RiskierRain.Interactables
             GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject, vector, Quaternion.identity);
             NetworkServer.Spawn(gameObject2);
             CombatDirector component6 = gameObject2.GetComponent<CombatDirector>();
-            component6.gameObject.AddComponent<RiskierRainCombatDirector>();
+            //component6.gameObject.AddComponent<RiskierRainCombatDirector>();
+            ParseDirectorType(component6.gameObject, value);
             if (!(component6 && Stage.instance))
             {
                 return null;
             }
-            float monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient;
+            float monsterCredit = credits * Stage.instance.entryDifficultyCoefficient;
             DirectorCard directorCard = component6.SelectMonsterCardForCombatShrine(monsterCredit);
             if (directorCard != null)
             {
@@ -47,10 +47,11 @@ namespace RiskierRain.Interactables
                     rotation = rotation
                 };
 
-                GameObject monstersOnShrineUse = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse");
-
-                EffectManager.SpawnEffect(monstersOnShrineUse, effectData, true);
-                value = true;
+                if (value == 1)
+                {
+                    GameObject monstersOnShrineUse = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse");
+                    EffectManager.SpawnEffect(monstersOnShrineUse, effectData, true);
+                }
             }
             //NetworkServer.Destroy(gameObject2);
 
@@ -58,14 +59,27 @@ namespace RiskierRain.Interactables
         }
 
 
-        public static void MethodTwo()
+        public static void ParseDirectorType(GameObject obj, int value)
         {
-
+            switch (value)
+            {
+                case 1:
+                    obj.AddComponent<GalleryDirector>();
+                    break;
+                case 2:
+                    obj.AddComponent<ConstructDirector>();
+                    break;
+                default:
+                    obj.AddComponent<GalleryDirector>();//change later
+                    break;
+            }
         }
     }
 
-    class RiskierRainCombatDirector : MonoBehaviour
+    class GalleryDirector : MonoBehaviour
     {
-
+    }
+    class ConstructDirector : MonoBehaviour
+    {
     }
 }

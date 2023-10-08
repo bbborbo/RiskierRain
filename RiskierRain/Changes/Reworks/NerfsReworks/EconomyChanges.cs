@@ -630,6 +630,36 @@ namespace RiskierRain
             snowyForestSpots[1] = new Vector3(92, 41, -32);
             snowyForestSpots[2] = new Vector3(110, 79, 19);
             SpawnSemiRandom("snowyforest", doubleChestSpawnCard, snowyForestSpots);
+
+            //ancientloft
+            SpawnSecret("ancientloft", doubleChestSpawnCard, new Vector3(165, 62, -31), 0.8f); //doublechest
+
+            //wispgraveyard
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-411, 6, -15), 0.8f);
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 57, 286));
+
+            //frozenwall
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(87, 82, -250), 0.5f);
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-104, 35, 49));
+            //SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-139, 50, 7)); idk :3
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(0, 34, 5));
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(196, 25, 32));
+
+            Vector3[] frozenWallCliffSpots = new Vector3[3];
+            frozenWallCliffSpots[0] = new Vector3(69, 115, 153);
+            frozenWallCliffSpots[1] = new Vector3(66, 115, 98);
+            frozenWallCliffSpots[2] = new Vector3(56, 111, 55);
+
+
+            //sulfurpools
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(11, -18, 37));
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(9, -7, -51), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(-155, 27, 46), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(17, 28, 45), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(94, 22, -133), 0.5f);
+
+
         }
         private void BuildDoubleChestDirectorCard()
         {

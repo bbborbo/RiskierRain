@@ -132,10 +132,12 @@ namespace RiskierRain.Interactables
 						}
 						if (component != null)
 						{
-							component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-														where x.gameObject.name.Contains(prefabName)
+
+						component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+														where x.gameObject.name.Contains(modelName)
 														select x).First<MeshRenderer>();
-							component.strength = 1f;
+
+						component.strength = 1f;
 							component.highlightColor = Highlight.HighlightColor.interactive;
 						}
 						HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();

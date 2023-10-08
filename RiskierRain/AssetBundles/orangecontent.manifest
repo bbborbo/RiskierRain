@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2560720956
+CRC: 3266228782
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0674c00c1aa1d08f6e2b5861867a9134
+    Hash: fe296dce9e83ea3de8c16bdb305f2317
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -35,8 +35,11 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Prefabs/starVeil.prefab
 - Assets/lunarGallery.fbx
+- Assets/Prefabs/enemyDamageUp.prefab
 - Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
+- Assets/Prefabs/coralite.prefab
 - Assets/Prefabs/bottle.prefab
 - Assets/frozenTurtleShell.fbx
 - Assets/Prefabs/eggPile.prefab
@@ -48,6 +51,7 @@ Assets:
 - Assets/Icons/texFrozenShellIcon.png
 - Assets/curseStatue.fbx
 - Assets/egg.fbx
+- Assets/scaleSpeedUp.fbx
 - Assets/Prefabs/mdlPermafrost.prefab
 - Assets/fixedbird.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
@@ -62,15 +66,20 @@ Assets:
 - Assets/Egg.mat
 - Assets/Prefabs/mdlUtilityBelt.prefab
 - Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
+- Assets/Prefabs/enemyHealthUp.prefab
 - Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png
+- Assets/enemyHealthUp.fbx
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Icons/texEggIcon.png
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
+- Assets/enemyDamageUp.fbx
 - Assets/Ice.mat
 - Assets/Prefabs/mdlNaturesGift.prefab
+- Assets/Prefabs/scaleSpeedUp.prefab
+- Assets/coralite.fbx
 - Assets/Prefabs/frozenTurtleShell.prefab
 - Assets/Prefabs/mdlPhrygianLily.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
@@ -92,10 +101,12 @@ Assets:
 - Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png
 - Assets/Prefabs/mdlbottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
+- Assets/compressionLoop.fbx
 - Assets/Prefabs/mdlS2Engine.prefab
 - Assets/EggGold.mat
 - Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat
+- Assets/Prefabs/compressionLoop.prefab
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/mdlGreedyRing.prefab

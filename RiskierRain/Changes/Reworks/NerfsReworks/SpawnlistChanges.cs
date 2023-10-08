@@ -42,9 +42,11 @@ namespace RiskierRain
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.WetlandAspect);
 
             Helpers.AddNewMonsterToStage(DirectorCards.AlphaConstruct, MonsterCategory.BasicMonsters, DirectorAPI.Stage.WetlandAspect);
+            Helpers.AddNewMonsterToStage(DirectorCards.ElderLemurian, MonsterCategory.Minibosses, DirectorAPI.Stage.WetlandAspect);
             Helpers.AddNewMonsterToStage(DirectorCards.ImpOverlord, MonsterCategory.Champions, DirectorAPI.Stage.WetlandAspect);
 
             //aqwuaduct
+            Helpers.AddNewMonsterToStage(DirectorCards.ElderLemurian, MonsterCategory.Minibosses, DirectorAPI.Stage.AbandonedAqueduct);
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.AbandonedAqueduct);
 
             //sanctuary
@@ -57,6 +59,8 @@ namespace RiskierRain
             //scorchewd acres
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.ScorchedAcres);
 
+            Helpers.AddNewMonsterToStage(DirectorCards.Gup, MonsterCategory.Minibosses, DirectorAPI.Stage.ScorchedAcres);
+
             //rallypoint delta
             Helpers.AddNewMonsterToStage(DirectorCards.RoboBall, MonsterCategory.Champions, DirectorAPI.Stage.RallypointDelta);
 
@@ -65,6 +69,7 @@ namespace RiskierRain
 
             Helpers.AddNewMonsterToStage(DirectorCards.Larva, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SulfurPools);
             Helpers.AddNewMonsterToStage(DirectorCards.ClayApothecary, MonsterCategory.Minibosses, DirectorAPI.Stage.SulfurPools);
+            Helpers.AddNewMonsterToStage(DirectorCards.Parent, MonsterCategory.Minibosses, DirectorAPI.Stage.SulfurPools);
 
             //abyssal
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
@@ -121,6 +126,7 @@ namespace RiskierRain
 
         public static CharacterSpawnCard ElderLemurian;
         public static CharacterSpawnCard Parent;
+        public static CharacterSpawnCard Gup;
 
         public static CharacterSpawnCard Bronzong;
         public static CharacterSpawnCard GreaterWisp;
@@ -165,7 +171,7 @@ namespace RiskierRain
 
             ElderLemurian = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/LemurianBruiser/cscLemurianBruiser.asset").WaitForCompletion();
             Parent = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/Parent/cscParent.asset").WaitForCompletion();
-
+            Gup = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/Gup/cscGupBody.asset").WaitForCompletion();
 
             Bronzong = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscbell");
             GreaterWisp = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscgreaterwisp");
@@ -224,6 +230,7 @@ namespace RiskierRain
 
         public static DirectorCard ElderLemurian;
         public static DirectorCard Parent;
+        public static DirectorCard Gup;
 
         public static DirectorCard Bronzong;
         public static DirectorCard GreaterWisp;
@@ -280,6 +287,7 @@ namespace RiskierRain
 
             ElderLemurian = BuildDirectorCard(SpawnCards.ElderLemurian, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
             Parent = BuildDirectorCard(SpawnCards.Parent, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
+            Gup = BuildDirectorCard(SpawnCards.Gup, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
 
             TitanBlackBeach = BuildDirectorCard(SpawnCards.TitanBlackBeach);
             TitanDampCave = BuildDirectorCard(SpawnCards.TitanDampCave);

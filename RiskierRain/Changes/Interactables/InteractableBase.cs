@@ -133,7 +133,7 @@ namespace RiskierRain.Interactables
 						if (component != null)
 						{
 							component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-														where x.gameObject.name.Contains(modelName)
+														where x.gameObject.name.Contains(prefabName)
 														select x).First<MeshRenderer>();
 							component.strength = 1f;
 							component.highlightColor = Highlight.HighlightColor.interactive;

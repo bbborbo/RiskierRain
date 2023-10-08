@@ -583,13 +583,13 @@ namespace RiskierRain
         }
         private void AddDoubleChestSecrets()
         {
-            //titanic plains
+            //titanic plains 1
             SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(-109, -99, 42));//doublechest
-            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -100, 29));//big chest maybe
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -102, 29), 0.4f);//big chest maybe
             SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(183, -91, -144));//doublechest //bonus mob
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(139, -119, 194));//doublechest queatet
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(64, -115, -264));//lunar pod? very stupid
-            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(100, -154, -342));//doublechest, make chance based
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(100, -154, -342), 0.4f);//doublechest, make chance based
 
             Vector3[] quartetSpots = new Vector3[5];
             quartetSpots[0] = new Vector3(139, -119, 194);
@@ -599,6 +599,37 @@ namespace RiskierRain
             quartetSpots[4] = new Vector3(89, -116, -192);
             SpawnSemiRandom("golemplains", doubleChestSpawnCard, quartetSpots);
 
+            //titanic plains 2
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-33, 62, -57));//doublechest make this one a semirandom later
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-77, 55, -102));//doublechest this too
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-214, 41, -29), 0.8f);//doublechest
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(141, 61, -4), 0.4f);//doublechest
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(151, 15, -230));//doublechest
+
+            //blackbeach 1
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-23, -174, -387));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(93, -124, -299));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(31, -212, -120));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-288, -17, -181), 0.3f);//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-337, -200, -230), 0.5f);//doublechest
+
+            //blackbeach 2
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-101, 27, 11), 0.8f);//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-134, 48, -103), 0.4f);//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(12, 89, -126));//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(117, 66, 151));//doublechest //make this check if the pillar spawned lmao :3
+
+            //snowyforest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-252, 24, 57), 0.5f);//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(24, 69, 2));//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-34, 80, -193));//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(38, 44, -27), 0.5f);//doublechest
+
+            Vector3[] snowyForestSpots = new Vector3[3];
+            snowyForestSpots[0] = new Vector3(136, 53, 191);
+            snowyForestSpots[1] = new Vector3(92, 41, -32);
+            snowyForestSpots[2] = new Vector3(110, 79, 19);
+            SpawnSemiRandom("snowyforest", doubleChestSpawnCard, snowyForestSpots);
         }
         private void BuildDoubleChestDirectorCard()
         {

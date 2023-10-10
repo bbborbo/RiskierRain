@@ -1,16 +1,19 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRain.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace RiskierRain.Items
 {
     class VoidScug : ItemBase<VoidScug>
     {
         public static GameObject scugNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");
+        public static BuffDef scugBuff;
         public static float radiusBase = 16;
         public static float radiusStack = 4;
 
@@ -41,16 +44,26 @@ namespace RiskierRain.Items
         public override void Hooks()
         {
             On.RoR2.HealthComponent.TakeDamage += ScugTakeDamage;
+            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
-
+        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        {
+            orig(self);
+            if (NetworkServer.active)
+            {
+                if (self.master)
+                {
+                    ScugBehavior scugBehavior = self.AddItemBehavior<ScugBehavior>(GetCount(self));
+                }
+            }
+        }
         private void ScugTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
-            bool danger = !self.body.outOfDanger;
             CharacterBody body = self.body;
             int scugItemCount = GetCount(body);
             orig(self, damageInfo);
 
-            if (scugItemCount > 0 && danger)
+            if (scugItemCount > 0 && body.HasBuff(scugBuff))
             {
                 ScugBlast(body, scugItemCount);
             }
@@ -83,7 +96,44 @@ namespace RiskierRain.Items
         {
             CreateItem();
             CreateLang();
+            CreateBuff();
             Hooks();
         }
+        private void CreateBuff()
+        {
+            scugBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                scugBuff.name = "ScugBuff";
+                scugBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("texbuffelementalringsreadyicon");
+                scugBuff.buffColor = new Color(0.9f, 0.8f, 0.0f);
+                scugBuff.canStack = false;
+                scugBuff.isDebuff = false;
+                scugBuff.isHidden = true;
+            };
+            Assets.buffDefs.Add(scugBuff);
+        }
+    }
+    class ScugBehavior : CharacterBody.ItemBehavior
+    {
+        
+        private void FixedUpdate()
+        {
+            this.SetProvidingBuff(body.outOfDanger);
+        }
+        private void SetProvidingBuff(bool shouldProvideBuff)
+        {
+            if (shouldProvideBuff == providingBuff)
+            {
+                return;
+            }
+            providingBuff = shouldProvideBuff;
+            if (providingBuff)
+            {
+                body.AddBuff(DLC1Content.Buffs.OutOfCombatArmorBuff);
+                return;
+            }
+            body.RemoveBuff(DLC1Content.Buffs.OutOfCombatArmorBuff);
+        }
+        private bool providingBuff;
     }
 }

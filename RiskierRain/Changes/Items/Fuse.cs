@@ -94,7 +94,7 @@ namespace RiskierRain.Items
                         attacker = self.gameObject,
                         crit = Util.CheckRoll(self.body.crit, self.body.master),
                         falloffModel = BlastAttack.FalloffModel.None,
-                        damageType = DamageType.Shock5s,
+                        damageType = DamageType.Stun1s,
                         teamIndex = TeamComponent.GetObjectTeam(self.gameObject)
                     };
                     fuseNova.Fire();

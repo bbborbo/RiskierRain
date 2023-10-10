@@ -145,6 +145,8 @@ namespace RiskierRain
             #endregion
 
             RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
+            Debug.LogWarning("2r4r sticky bomb guh");
+            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
 
             RoR2Application.onLoad += InitializeEverything;
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 
@@ -323,7 +324,9 @@ namespace RiskierRain
         public static float stickyDamageCoeffStack = 0.4f;
         void StickyRework()
         {
-            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
+            //ItemDef stickybomb = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/StickyBomb/StickyBomb.asset").WaitForCompletion();
+            //stickybomb._itemTierDef = ItemTierCatalog.GetItemTierDef(ItemTier.Tier2);
+            //RetierItem(stickybomb, ItemTier.NoTier);
 
             IL.RoR2.GlobalEventManager.OnHitEnemy += StickyBombRework;
             LanguageAPI.Add("ITEM_STICKYBOMB_DESC",

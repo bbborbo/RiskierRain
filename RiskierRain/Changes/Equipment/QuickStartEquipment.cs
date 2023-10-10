@@ -12,11 +12,11 @@ namespace RiskierRain.Equipment
 {
     class QuickStartEquipment : EquipmentBase<QuickStartEquipment>
     {
-        public override string EquipmentName => "idfk";
+        public override string EquipmentName => "Stillborn prayer";
 
         public override string EquipmentLangTokenName => "QUICKSTARTEQUIPMENT";
 
-        public override string EquipmentPickupDesc => "Grants an Uncommon item of your choice";
+        public override string EquipmentPickupDesc => "Grants a single wish";
 
         public override string EquipmentFullDescription => "Grants an Uncommon item of your choice";
 

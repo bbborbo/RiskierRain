@@ -106,7 +106,7 @@ namespace RiskierRain.Equipment
             c.Emit(OpCodes.Stloc_0);
         }
 
-       
+        private int minDuration = 7; // just enough time to get 2 simu attacks, probably
 
         private void SimulatedSpawn(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
@@ -120,8 +120,8 @@ namespace RiskierRain.Equipment
                 {
                     if (attackerBody)
                     {
-                        int duration = (int) ((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth)* 50);
-                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, duration);
+                        int duration = (int) ((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth)* 30);
+                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, Math.Max(duration, minDuration));
                         CharacterMaster ghostMaster = ghost.master;
                         if (ghostMaster != null)
                         {

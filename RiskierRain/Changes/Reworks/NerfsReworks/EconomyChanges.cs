@@ -17,6 +17,7 @@ using R2API;
 using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
+using static RiskierRain.Secrets;
 
 namespace RiskierRain
 {
@@ -54,7 +55,7 @@ namespace RiskierRain
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250
-        int casinoChestTypeCost = 25; //50; make this 40 once they dont suck
+        int casinoChestTypeCost = 25; //50; first interact is free, cost is incurred on second interract
         int chanceShrineTypeCost = 15; //17
 
         void FixMoneyScaling()
@@ -269,6 +270,7 @@ namespace RiskierRain
             if (casinoChest != null)
             {
                 casinoChest.cost = casinoChestTypeCost;
+                casinoChest.displayNameToken = "Double Chest";//doesnt work
             }
             if (chanceShrine != null)
             {
@@ -443,16 +445,22 @@ namespace RiskierRain
         #region scrappers
         public int scrapperWeight = 1000;//12
         public int scrapperLimit = 3;//-1
+
+        public int doubleChestWeight = 15; //idk
+
         private void ScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string scrapperName = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();//.ToLower();
 
-            bool isPrinterStage = OnScrapperStage(currentStage.stage);
+            string doubleChestName = DirectorAPI.Helpers.InteractableNames.AdaptiveChest.ToLowerInvariant();
+
+            bool isScrapperStage = OnScrapperStage(currentStage.stage);
             //Debug.Log(currentStage.stage.ToString() + " Is Scrapper Stage: " + isPrinterStage);
 
-            if (isPrinterStage)
+            if (isScrapperStage)
             {
                 ChangeInteractableWeightForPool(pool, scrapperName, scrapperWeight, scrapperLimit);
+                ChangeInteractableWeightForPool(pool, doubleChestName, doubleChestWeight);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "") || IsModdedPrinterStage(currentStage.stage))
             {
@@ -555,6 +563,185 @@ namespace RiskierRain
         {
             return stage == ParseInternalStageName("FBLScene");
         }
+        #endregion
+
+        #region roulette chest rework
+
+        BasicPickupDropTable doubleChestDropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
+        InteractableSpawnCard doubleChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/CasinoChest/iscCasinoChest.asset").WaitForCompletion();
+        public DirectorCard doubleChestDirectorCard;//MOVE THIS SOMEWHERE BETTER LATER :3
+        public void DoubleChestHook()
+        {
+            ChangeDoubleChestDropTable();
+            BuildDoubleChestDirectorCard();
+            AddDoubleChestToStage1();
+            AddDoubleChestSecrets();
+
+            On.RoR2.RouletteChestController.Cycling.OnEnter += DoubleChestOnInteract;
+            On.RoR2.RouletteChestController.GetPickupIndexForTime += DoubleChestScrap;
+            On.RoR2.RouletteChestController.EjectPickupServer += DoubleChestDoubleLoot;            
+        }
+        private void AddDoubleChestSecrets()
+        {
+            //titanic plains 1
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(-109, -100, 42));//doublechest
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -103, 29), 0.4f);//big chest maybe
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(183, -92, -144));//doublechest //bonus mob
+            //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(139, -119, 194));//doublechest queatet
+            //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(64, -115, -264));//lunar pod? very stupid
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(100, -155, -342), 0.4f);//doublechest, make chance based
+
+            Vector3[] quartetSpots = new Vector3[5];
+            quartetSpots[0] = new Vector3(139, -119, 194);
+            quartetSpots[1] = new Vector3(156, -120, -196);
+            quartetSpots[2] = new Vector3(152, -112, -222);
+            quartetSpots[3] = new Vector3(120, -112, -209);
+            quartetSpots[4] = new Vector3(89, -116, -192);
+            SpawnSemiRandom("golemplains", doubleChestSpawnCard, quartetSpots);
+
+            //titanic plains 2
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-33, 61, -57));//doublechest make this one a semirandom later
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-77, 54, -102));//doublechest this too
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-214, 42, -29), 0.8f);//doublechest
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(141, 60, -4), 0.4f);//doublechest
+            SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(151, 14, -230));//doublechest
+
+            //blackbeach 1
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-23, -175, -387));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(93, -125, -299));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(31, -213, -120));//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-288, -18, -181), 0.3f);//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-337, -201, -230), 0.5f);//doublechest
+
+            //blackbeach 2
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-101, 28, 11), 0.8f);//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-134, 47, -103), 0.4f);//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(12, 88, -126));//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(117, 65, 151));//doublechest //make this check if the pillar spawned lmao :3
+
+            //snowyforest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-252, 22, 57), 0.5f);//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(24, 67, 2));//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-34, 70, -193));//doublechest
+            SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(38, 42, -27), 0.5f);//doublechest
+
+            Vector3[] snowyForestSpots = new Vector3[3];
+            snowyForestSpots[0] = new Vector3(136, 53, 191);
+            snowyForestSpots[1] = new Vector3(92, 41, -32);
+            snowyForestSpots[2] = new Vector3(110, 79, 19);
+            SpawnSemiRandom("snowyforest", doubleChestSpawnCard, snowyForestSpots);
+
+            //ancientloft
+            SpawnSecret("ancientloft", doubleChestSpawnCard, new Vector3(165, 62, -31), 0.8f); //doublechest
+
+            //wispgraveyard
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 57, 286));//didnt spawn idk why
+
+            Vector3[] wispGraveyardSpots = new Vector3[4];
+            wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
+            wispGraveyardSpots[1] = new Vector3(-418, 6, -67);
+            wispGraveyardSpots[2] = new Vector3(-383, 6, -102);
+            wispGraveyardSpots[3] = new Vector3(-421, 6, -39);
+            SpawnSemiRandom("wispgraveyard", doubleChestSpawnCard, wispGraveyardSpots);
+
+            //frozenwall
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(87, 82, -250), 0.5f);
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-104, 35, 49));
+            //SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-139, 50, 7)); idk :3
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(0, 34, 5));
+            SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(196, 25, 32));//DOESNT ALWAYS SPAWN
+
+            Vector3[] frozenWallCliffSpots = new Vector3[3];
+            frozenWallCliffSpots[0] = new Vector3(69, 115, 153);
+            frozenWallCliffSpots[1] = new Vector3(66, 115, 98);
+            frozenWallCliffSpots[2] = new Vector3(56, 111, 55);
+
+
+            //sulfurpools
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(11, -19, 37));
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(9, -7, -51), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(-155, 27, 46), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(176, 28, 45), 0.5f);
+            SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(94, 22, -133), 0.5f);
+
+
+        }
+        private void BuildDoubleChestDirectorCard()
+        {
+            doubleChestDirectorCard = DirectorCards.BuildDirectorCard(doubleChestSpawnCard, doubleChestWeight, 0);
+        }
+
+        private void AddDoubleChestToStage1()
+        {
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.TitanicPlains);
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.DistantRoost);
+            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.SiphonedForest);
+        }
+
+        private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, PickupIndex pickupIndex)
+        {
+            orig(self, pickupIndex);
+            if (pickupIndex == PickupIndex.none)
+            {
+                return;
+            }
+            PickupDropletController.CreatePickupDroplet(pickupIndex, self.ejectionTransform.position, self.ejectionTransform.rotation * (self.localEjectionVelocity + new Vector3(2, 0, 0)));
+        }
+
+        private PickupIndex DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupIndexForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
+        {
+            float threshHold = 5;
+            bool isFirstItem;
+
+            isFirstItem = (threshHold > (self.bonusTime));
+
+            if (!isFirstItem)
+            {
+                return PickupCatalog.FindPickupIndex(RoR2Content.Items.ScrapWhite.itemIndex);
+            }
+            self.bonusTime += 0.01f;
+            return orig(self, time);
+        }
+
+        private void ChangeDoubleChestDropTable()
+        {
+            if (doubleChestDropTable == null)
+            {
+                Debug.Log("droptable null uhhh");
+                return;
+            }
+            doubleChestDropTable.tier1Weight = 1;
+            doubleChestDropTable.tier2Weight = 0;
+            doubleChestDropTable.tier3Weight = 0;
+            doubleChestDropTable.equipmentWeight = 0;
+        }
+
+        private void DoubleChestOnInteract(On.RoR2.RouletteChestController.Cycling.orig_OnEnter orig, EntityStates.EntityState self)
+        {
+            RouletteChestController chestController = self.gameObject.GetComponent<RouletteChestController>();
+            //chestController.dropTable = RoR2.MultiShopController.drop
+            chestController.maxEntries = 2;
+            chestController.bonusTime = 3;
+
+            orig(self);
+            
+            if (chestController == null)
+            {
+                Debug.Log("auuuuuh fuck :3");
+                return;
+            }
+            PurchaseInteraction purchaseInteraction = chestController.purchaseInteraction;
+            if (purchaseInteraction == null)
+            {
+                Debug.Log("purchase interaction null 3:");
+                return;
+            }
+            purchaseInteraction.costType = CostTypeIndex.Money;
+            purchaseInteraction.cost = casinoChestTypeCost;
+        }
+
+
         #endregion
     }
 }

@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 
 namespace RiskierRain.Interactables
 {
-    class CombatShrineLunar : InteractableBase<FakeShrine>
+    class CombatShrineLunar : InteractableBase<CombatShrineLunar>
     {
         public static string baseUseMessage = "SHRINE_LUNARGALLERY_USE_MESSAGE";
         public override string interactableName => "Lunar Gallery";
@@ -27,7 +27,7 @@ namespace RiskierRain.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 2;
+        public override int normalWeight => 200;
 
         public override int spawnCost => 20;
 
@@ -57,9 +57,9 @@ namespace RiskierRain.Interactables
 
         public override string prefabName => "mdlLunarGallery";
 
-        public override int category => 2;
+        public override int category => 4;
 
-        public override int favoredWeight => 6;
+        public override int favoredWeight => 600;
 
         public string[] validScenes = {
             "golemplains",
@@ -124,24 +124,33 @@ namespace RiskierRain.Interactables
                 self.monsterCredit += monsterCredit;
                 self.OverrideCurrentMonsterCard(chosenDirectorCard);
                 self.monsterSpawnTimer = 0f;
-                CharacterMaster component = chosenDirectorCard.spawnCard.prefab.GetComponent<CharacterMaster>();
-                if (component)
+                SpawnCard a = chosenDirectorCard.spawnCard;
+                if (a == null)
                 {
-                    CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
-                    if (component2)
-                    {
-                        Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
-                        {
-                            subjectAsCharacterBody = interactor.GetComponent<CharacterBody>(),
-                            baseToken = baseUseMessage,
-                            paramTokens = new string[]
-                            {
-                                component2.baseNameToken,
-                                itemToGive.nameToken
-                            }
-                        });
-                    }
                 }
+                GameObject b = a.prefab;
+                if (b == null)
+                {
+                }
+                CharacterMaster component = b.GetComponent<CharacterMaster>();
+                if (component == null)
+                {
+                    return;
+                }
+                CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
+                if (component2)
+                {
+                    Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
+                    {
+                        subjectAsCharacterBody = interactor.GetComponent<CharacterBody>(),
+                        baseToken = baseUseMessage,
+                        paramTokens = new string[]
+                        {
+                            component2.baseNameToken,
+                            itemToGive.nameToken
+                        }
+                    });
+                }                
                 return;
             }
             orig(self, interactor, monsterCredit, chosenDirectorCard);
@@ -153,12 +162,17 @@ namespace RiskierRain.Interactables
             if (value)
             {
                 Inventory inv = enemySpawned.GetComponent<Inventory>();
-                GalleryDirector isGallery = self.gameObject.GetComponent<GalleryDirector>();
-                if (inv != null && isGallery != null)
+                GalleryDirector component = self.gameObject.GetComponent<GalleryDirector>();
+                if (inv == null)
                 {
-                    inv.GiveItem(itemToGive);
-                    inv.GiveItem(Items.Helpers.GalleryItemDrop.instance.ItemsDef);
+                    return value;
                 }
+                if (component == null)
+                {
+                    return value;
+                }
+                inv.GiveItem(itemToGive);
+                inv.GiveItem(Items.Helpers.GalleryItemDrop.instance.ItemsDef);                
             }
             return value;
         }
@@ -171,48 +185,59 @@ namespace RiskierRain.Interactables
 
         private void LunarGalleryBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+            if (self.displayNameToken != "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
-                Vector3 vector = Vector3.zero;
-                Quaternion rotation = Quaternion.identity;
-                Transform transform = self.gameObject.transform;
-                if (transform)
-                {
-                    vector = transform.position;
-                    rotation = transform.rotation;
-                }
-                {
-                    GameObject gameObject = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Encounters/MonstersOnShrineUseEncounter");
-                    if (gameObject)
-                    {
-                        GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject, vector, Quaternion.identity);
-                        NetworkServer.Spawn(gameObject2);
-                        CombatDirector component6 = gameObject2.GetComponent<CombatDirector>();
-                        component6.gameObject.AddComponent<GalleryDirector>();
-                        if (component6 && Stage.instance)
-                        {
-                            float monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient;
-                            DirectorCard directorCard = component6.SelectMonsterCardForCombatShrine(monsterCredit);
-                            if (directorCard != null)
-                            {
-                                itemToGive = ChooseItem();
-                                    component6.CombatShrineActivation(activator, monsterCredit, directorCard);
-                                EffectData effectData = new EffectData
-                                {
-                                    origin = vector,
-                                    rotation = rotation
-                                };
-                                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse"), effectData, true);
-                                self.SetAvailable(false);
-                                return;
-                            }
-                            NetworkServer.Destroy(gameObject2);
-                        }
-                    }
-                    
-                }
+                orig(self, activator);
+                return;
             }
+            GalleryDirector component = self.gameObject.AddComponent<GalleryDirector>();
+            ChooseItem();
+            GameObject obj = CombatEncounterHelper.MethodOne(self, activator, 40, 1);
             orig(self, activator);
+            
+            //Vector3 vector = Vector3.zero;
+            //Quaternion rotation = Quaternion.identity;
+            //Transform transform = self.gameObject.transform;
+            //if (transform)
+            //{
+            //    vector = transform.position;
+            //    rotation = transform.rotation;
+            //}   
+            //
+            //GameObject gameObject = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Encounters/MonstersOnShrineUseEncounter");
+            //
+            //if (gameObject == null)
+            //{
+            //    return;
+            //}
+            //
+            //GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject, vector, Quaternion.identity);
+            //NetworkServer.Spawn(gameObject2);
+            //CombatDirector component6 = gameObject2.GetComponent<CombatDirector>();
+            //component6.gameObject.AddComponent<GalleryDirector>();
+            //
+            //if (!(component6 && Stage.instance))
+            //{
+            //    return;
+            //}
+            //
+            //float monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient;
+            //DirectorCard directorCard = component6.SelectMonsterCardForCombatShrine(monsterCredit);
+            //
+            //if (directorCard != null)
+            //{
+            //    ChooseItem();
+            //    component6.CombatShrineActivation(activator, monsterCredit, directorCard);
+            //    EffectData effectData = new EffectData
+            //    {
+            //        origin = vector,
+            //        rotation = rotation
+            //    };
+            //
+            //    EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse"), effectData, true);
+            //    return;
+            //}
+            //NetworkServer.Destroy(gameObject2);
         }
         GameObject enemySpawned;
         ItemDef[] itemPool = new ItemDef[10];
@@ -231,15 +256,11 @@ namespace RiskierRain.Interactables
             itemPool[8] = DLC1Content.Items.HalfSpeedDoubleHealth;
             itemPool[9] = DLC1Content.Items.LunarSun;//UNTESTED LMAOOOOOO
         }
-        ItemDef ChooseItem()
+        public void ChooseItem()
         {
             int i = UnityEngine.Random.RandomRangeInt(0, itemPool.Length - 1);
-            return itemPool[i];
+            itemToGive = itemPool[i];
         }
-    }
-    public class GalleryDirector : MonoBehaviour
-    {
-
     }
 
 }

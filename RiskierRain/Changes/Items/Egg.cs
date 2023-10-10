@@ -26,10 +26,10 @@ namespace RiskierRain.Items
         public override string ItemLangTokenName => "EGG";
 
         public override string ItemPickupDesc => "Slightly increase health, regeneration, and damage. Start an egg hunt. " +
-            "<style=cIsVoid>Corrupts all Regenerating Scrap and Infusion.</style>";
+            "<style=cIsVoid>Corrupts most edible and animal matter.</style>";
 
         public override string ItemFullDescription => $"Gain <style = cIsHealing>{eggHealth} max health, {eggRegen} hp/s regeneration,</style> and <style = cIsDamage>{eggDamage} damage</style>. <style = cIsUtility>Start an egg hunt.</style> " +
-            "<style = cIsVoid> Corrupts all Regenerating Scrap and Infusion.</style>";
+            "<style = cIsVoid> Corrupts all Regenerating Scrap, Infusion, Bison Steak, and Alien Heads.</style>";
 
         public override string ItemLore => "this egg is so fuckign yummuy";
 
@@ -173,10 +173,24 @@ namespace RiskierRain.Items
                 itemDef1 = RoR2Content.Items.Infusion, //consumes infusion
                 itemDef2 = Egg.instance.ItemsDef
             };
+            ItemDef.Pair transformation3 = new ItemDef.Pair()
+            {
+                itemDef1 = RoR2Content.Items.FlatHealth, //consumes meat
+                itemDef2 = Egg.instance.ItemsDef
+            };
+            ItemDef.Pair transformation4 = new ItemDef.Pair()
+            {
+                itemDef1 = RoR2Content.Items.AlienHead, //consumes gah
+                itemDef2 = Egg.instance.ItemsDef
+            };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation1);
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation2);
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
+                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation3);
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
+                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation4);
             orig();
         }
 

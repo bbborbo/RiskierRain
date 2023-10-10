@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1807141481
+CRC: 132617434
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 65c821d9f7ca73326cfc0b9deaba5b2f
+    Hash: 78915f0c21e98fb2c70acdd248fd79c0
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -35,21 +35,29 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Prefabs/starVeil.prefab
 - Assets/lunarGallery.fbx
+- Assets/Prefabs/enemyDamageUp.prefab
 - Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
+- Assets/Prefabs/coralite.prefab
 - Assets/Prefabs/bottle.prefab
+- Assets/spine.fbx
 - Assets/frozenTurtleShell.fbx
 - Assets/Prefabs/eggPile.prefab
 - Assets/Red.mat
 - Assets/Icons/texIconPickupITEM_BIRDBAND.png
 - Assets/Prefabs/mdlScalpel.prefab
+- Assets/chargedSpine.fbx
 - Assets/Icons/texIconPickupITEM_GOODEXECUTIONITEM.png
+- Assets/Prefabs/mdlConstructConstruct.prefab
 - Assets/Icons/texFrozenShellIcon.png
 - Assets/curseStatue.fbx
 - Assets/egg.fbx
+- Assets/scaleSpeedUp.fbx
 - Assets/Prefabs/mdlPermafrost.prefab
 - Assets/fixedbird.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
+- Assets/Prefabs/mdlChargedSpine.prefab
 - Assets/Prefabs/mdlScalpelBroken.prefab
 - Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
 - Assets/Prefabs/mdlCurseStatue.prefab
@@ -61,18 +69,26 @@ Assets:
 - Assets/Egg.mat
 - Assets/Prefabs/mdlUtilityBelt.prefab
 - Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
+- Assets/Prefabs/enemyHealthUp.prefab
 - Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png
+- Assets/enemyHealthUp.fbx
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Icons/texEggIcon.png
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
+- Assets/enemyDamageUp.fbx
 - Assets/Ice.mat
 - Assets/Prefabs/mdlNaturesGift.prefab
+- Assets/Prefabs/scaleSpeedUp.prefab
+- Assets/coralite.fbx
 - Assets/Prefabs/frozenTurtleShell.prefab
 - Assets/Prefabs/mdlPhrygianLily.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
+- Assets/starVeil.fbx
+- Assets/Prefabs/curseStatue.prefab
+- Assets/Prefabs/constructConstruct.prefab
 - Assets/Icons/texIconPickupITEM_SLUNGUS.png
 - Assets/Blue.mat
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
@@ -81,17 +97,26 @@ Assets:
 - Assets/ring.fbx
 - Assets/Black.mat
 - Assets/Icons/texIconPickupITEM_BORBOMANAFLOWER.png
+- Assets/Icons/texIconPickupITEM_STARVEIL.png
 - Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/Prefabs/spineInteractable.prefab
+- Assets/Icons/texIconPickupITEM_CHARGED_MALACHITE_SPINE.png
+- Assets/constructConstruct.fbx
 - Assets/Flower.fbx
+- Assets/Prefabs/mdlSpine.prefab
 - Assets/Prefabs/mdlTragicFacade.prefab
 - Assets/Green.mat
 - Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png
 - Assets/Prefabs/mdlbottle.prefab
 - Assets/Icons/texGoldenEggIcon.png
+- Assets/compressionLoop.fbx
+- Assets/Icons/texIconPickupITEM_LUNARINCREASECD.png
+- Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png
 - Assets/Prefabs/mdlS2Engine.prefab
 - Assets/EggGold.mat
 - Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat
+- Assets/Prefabs/compressionLoop.prefab
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/mdlGreedyRing.prefab

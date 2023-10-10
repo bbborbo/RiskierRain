@@ -27,7 +27,7 @@ namespace RiskierRain.Items
         float shardsPerSecondStack = 0;
 
 
-        public override string ItemName => "Shard Vomitter";
+        public override string ItemName => "Compression Loop";
 
         public override string ItemLangTokenName => "LUNARINCREASECD";
 
@@ -42,9 +42,9 @@ namespace RiskierRain.Items
 
         public override BalanceCategory Category => BalanceCategory.StateOfDamage;
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/compressionLoop.prefab");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_LUNARINCREASECD.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

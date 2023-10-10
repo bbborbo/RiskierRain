@@ -822,6 +822,10 @@ namespace RiskierRain
 
             //interactables bc they need to load after items:
             InitializeInteractables();
+            //need to do this after interactablestuff
+            //List<DirectorCard> directorCards = new List<DirectorCard>();
+            //directorCards.Add(doubleChestDirectorCard);
+            //Secrets.AddSecrets(directorCards);
         }
 
         /*[HarmonyPrefix, HarmonyPatch(typeof(RoR2.Items.ContagiousItemManager), nameof(RoR2.Items.ContagiousItemManager.Init))]
@@ -1297,6 +1301,10 @@ namespace RiskierRain
                     //}
                 }
             }
+
+            //idk where else to put this
+            //doublechest/roulette chest rework
+            DoubleChestHook();
         }
 
         //bool ValidateInteractable(InteractableBase interactable, List<InteractableBase> itemList)

@@ -55,9 +55,9 @@ namespace RiskierRain.Interactables
 			if (interactableModel == null)
 			{
 				Debug.Log("interactableModel null :(");
+				return;
 			}
-			else
-			{
+			bool hajabaja = modelName == prefabName;
 				if (!modelIsCloned)
                 {
 					model = interactableModel;
@@ -94,88 +94,86 @@ namespace RiskierRain.Interactables
 				if (childCollider == null)
                 {
 					Debug.Log("child null");
+					return;
                 }
-                else
+				GameObject childGameObject = childCollider.gameObject;
+				if (childGameObject == null)
+                {
+					Debug.Log("childobject null");
+					return;
+                }
+				EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
+				if (entityLocator == null)
 				{
-					GameObject childGameObject = childCollider.gameObject;
-					if (childGameObject == null)
+					Debug.Log("entitylocator null, adding component");
+					entityLocator = childGameObject.AddComponent<EntityLocator>();
+				}
+				if (entityLocator != null)
+				{
+					entityLocator.entity = interactableBodyModelPrefab;
+					ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
+					if (modelLocator == null)
                     {
-						Debug.Log("childobject null");
+						Debug.Log("modellocator null, adding component");
+						modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
                     }
-                    else
+					if (modelLocator != null)
                     {
-						EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
-						if (entityLocator == null)
+						modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
+						modelLocator.modelBaseTransform = modelLocator.modelTransform;
+						modelLocator.dontDetatchFromParent = true;
+						modelLocator.autoUpdateModelTransform = true;
+
+						Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
+						if (component == null)
 						{
-							Debug.Log("entitylocator null, adding component");
-							entityLocator = childGameObject.AddComponent<EntityLocator>();
+							Debug.Log("highlight null, adding component");
+							component = interactableBodyModelPrefab.AddComponent<Highlight>();
 						}
-						if (entityLocator != null)
+						if (component != null)
 						{
-							entityLocator.entity = interactableBodyModelPrefab;
-							ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
-							if (modelLocator == null)
-                            {
-								Debug.Log("modellocator null, adding component");
-								modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
-                            }
-							if (modelLocator != null)
-                            {
-								modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);
-								modelLocator.modelBaseTransform = modelLocator.modelTransform;
-								modelLocator.dontDetatchFromParent = true;
-								modelLocator.autoUpdateModelTransform = true;
-								Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
-								if (component == null)
-                                {
-									Debug.Log("highlight null, adding component");
-									component = interactableBodyModelPrefab.AddComponent<Highlight>();
-                                }
-								if (component != null)
-                                {
-									component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-																where x.gameObject.name.Contains(prefabName)
-																select x).First<MeshRenderer>();
-									component.strength = 1f;
-									component.highlightColor = Highlight.HighlightColor.interactive;
-								}
-								HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
-								if (hologramProjector == null)
-                                {
-									Debug.Log("hologramProjector null, adding component");
-									hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
-                                }
-								if (hologramProjector != null)
+
+						component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+														where x.gameObject.name.Contains(modelName)
+														select x).First<MeshRenderer>();
+
+						component.strength = 1f;
+							component.highlightColor = Highlight.HighlightColor.interactive;
+						}
+						HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
+						if (hologramProjector == null)
+                              {
+							Debug.Log("hologramProjector null, adding component");
+							hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
+                              }
+						if (hologramProjector != null)
+						{
+							hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
+							hologramProjector.displayDistance = 10f;
+							hologramProjector.disableHologramRotation = false;
+						}
+						ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
+						
+						if (childLocator == null)
+                              {
+							Debug.Log("childLocator null, adding component");
+							childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
+						}
+						if (childLocator != null)
+                              {
+							childLocator.transformPairs = new ChildLocator.NameTransformPair[]
+							{
+								new ChildLocator.NameTransformPair
 								{
-									hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
-									hologramProjector.displayDistance = 10f;
-									hologramProjector.disableHologramRotation = false;
+									name = "FireworkOrigin",
+									transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
 								}
-								ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
-								
-								if (childLocator == null)
-                                {
-									Debug.Log("childLocator null, adding component");
-									childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
-								}
-								if (childLocator != null)
-                                {
-									childLocator.transformPairs = new ChildLocator.NameTransformPair[]
-									{
-										new ChildLocator.NameTransformPair
-										{
-											name = "FireworkOrigin",
-											transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
-										}
-									};
-									PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
-									Debug.Log("interactable registered");
-								}								
-							}							
-						}
-					}
-				}				
-			}
+							};
+							PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+							Debug.Log("interactable registered");
+						}								
+					}							
+				}
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard()
         {

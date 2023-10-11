@@ -525,45 +525,6 @@ namespace RiskierRain.Equipment
             });
             projectileData.Add(new ZapinatorProjectileData()
             {
-                prefab = Resources.Load<GameObject>("prefabs/projectiles/ElectricOrbProjectile"),
-                type = ZapinatorProjectileType.MovesFromSpawn | ZapinatorProjectileType.RequiresSurface,
-
-                possibleModifiers = new ZapinatorModifiers[]
-                {
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.BigKnockback,
-                    ZapinatorModifiers.TinyDamage,
-                    ZapinatorModifiers.BadAccuracy,
-                    ZapinatorModifiers.BadAccuracy
-                },
-                maxModifiers = 3,
-                bonusModifiers = 2
-            });
-            projectileData.Add(new ZapinatorProjectileData()
-            {
-                prefab = Resources.Load<GameObject>("prefabs/projectiles/EngiBubbleShield"),
-                type = ZapinatorProjectileType.Defensive | ZapinatorProjectileType.MovesFromSpawn,
-
-                possibleModifiers = new ZapinatorModifiers[]
-                {
-                    ZapinatorModifiers.BigKnockback,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.VeryFast,
-                    ZapinatorModifiers.VerySlow,
-                    ZapinatorModifiers.BadAccuracy,
-                    ZapinatorModifiers.BadAccuracy,
-                    ZapinatorModifiers.Backwards,
-                    ZapinatorModifiers.Nothing,
-                    ZapinatorModifiers.Nothing
-                },
-                maxModifiers = 3,
-                bonusModifiers = 2
-            });
-            projectileData.Add(new ZapinatorProjectileData()
-            {
                 prefab = Resources.Load<GameObject>("prefabs/projectiles/EngiMine"),
                 type = ZapinatorProjectileType.MovesFromSpawn,
 
@@ -686,25 +647,6 @@ namespace RiskierRain.Equipment
             });
             projectileData.Add(new ZapinatorProjectileData()
             {
-                prefab = Resources.Load<GameObject>("prefabs/projectiles/SyringeProjectile"),
-                type = ZapinatorProjectileType.MovesFromSpawn,
-
-                possibleModifiers = new ZapinatorModifiers[]
-                {
-                    ZapinatorModifiers.BigDamage,
-                    ZapinatorModifiers.BigProcs,
-                    ZapinatorModifiers.BigKnockback,
-                    ZapinatorModifiers.BigKnockback,
-                    ZapinatorModifiers.SelfKnockback,
-                    ZapinatorModifiers.SelfKnockback,
-                    ZapinatorModifiers.Debuff,
-                    ZapinatorModifiers.Nothing
-                },
-                maxModifiers = 3,
-                bonusModifiers = 2
-            });
-            projectileData.Add(new ZapinatorProjectileData()
-            {
                 prefab = Resources.Load<GameObject>("prefabs/projectiles/SyringeProjectileHealing"),
                 type = ZapinatorProjectileType.MovesFromSpawn,
 
@@ -719,26 +661,6 @@ namespace RiskierRain.Equipment
                     ZapinatorModifiers.VerySlow,
                     ZapinatorModifiers.Nothing,
                     ZapinatorModifiers.BigProcs
-                },
-                maxModifiers = 3,
-                bonusModifiers = 2
-            });
-            projectileData.Add(new ZapinatorProjectileData()
-            {
-                prefab = Resources.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile"),
-                type = ZapinatorProjectileType.MovesFromSpawn,
-
-                possibleModifiers = new ZapinatorModifiers[]
-                {
-                    ZapinatorModifiers.SelfKnockback,
-                    ZapinatorModifiers.VerySlow,
-                    ZapinatorModifiers.TinyDamage,
-                    ZapinatorModifiers.BigAoe,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.MultiShot,
-                    ZapinatorModifiers.Backwards,
-                    ZapinatorModifiers.BadAccuracy,
-                    ZapinatorModifiers.BadAccuracy
                 },
                 maxModifiers = 3,
                 bonusModifiers = 2
@@ -833,24 +755,6 @@ namespace RiskierRain.Equipment
             });
             projectileData.Add(new ZapinatorProjectileData()
             {
-                prefab = Resources.Load<GameObject>("prefabs/projectiles/TarBall"),
-                type = ZapinatorProjectileType.MovesFromSpawn,
-
-                possibleModifiers = new ZapinatorModifiers[]
-                {
-                    ZapinatorModifiers.BigDamage,
-                    ZapinatorModifiers.BigProcs,
-                    ZapinatorModifiers.BigAoe,
-                    ZapinatorModifiers.BigKnockback,
-                    ZapinatorModifiers.SelfKnockback,
-                    ZapinatorModifiers.NegativeKnockback,
-                    ZapinatorModifiers.MultiShot
-                },
-                maxModifiers = 3,
-                bonusModifiers = 2
-            });
-            projectileData.Add(new ZapinatorProjectileData()
-            {
                 prefab = Resources.Load<GameObject>("prefabs/projectiles/TarSeeker"),
                 type = ZapinatorProjectileType.MovesFromSpawn,
 
@@ -881,6 +785,84 @@ namespace RiskierRain.Equipment
                 maxModifiers = 3,
                 bonusModifiers = 2
             });
+            /*
+            projectileData.Add(new ZapinatorProjectileData()
+            {
+                prefab = Resources.Load<GameObject>("prefabs/projectiles/ElectricOrbProjectile"),
+                type = ZapinatorProjectileType.MovesFromSpawn | ZapinatorProjectileType.RequiresSurface,
+
+                possibleModifiers = new ZapinatorModifiers[]
+                {
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.BigKnockback,
+                    ZapinatorModifiers.TinyDamage,
+                    ZapinatorModifiers.BadAccuracy,
+                    ZapinatorModifiers.BadAccuracy
+                },
+                maxModifiers = 3,
+                bonusModifiers = 2
+            });
+            projectileData.Add(new ZapinatorProjectileData()
+            {
+                prefab = Resources.Load<GameObject>("prefabs/projectiles/TarBall"),
+                type = ZapinatorProjectileType.MovesFromSpawn,
+
+                possibleModifiers = new ZapinatorModifiers[]
+                {
+                    ZapinatorModifiers.BigDamage,
+                    ZapinatorModifiers.BigProcs,
+                    ZapinatorModifiers.BigAoe,
+                    ZapinatorModifiers.BigKnockback,
+                    ZapinatorModifiers.SelfKnockback,
+                    ZapinatorModifiers.NegativeKnockback,
+                    ZapinatorModifiers.MultiShot
+                },
+                maxModifiers = 3,
+                bonusModifiers = 2
+            });
+            projectileData.Add(new ZapinatorProjectileData()
+            {
+                prefab = Resources.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile"),
+                type = ZapinatorProjectileType.MovesFromSpawn,
+
+                possibleModifiers = new ZapinatorModifiers[]
+                {
+                    ZapinatorModifiers.SelfKnockback,
+                    ZapinatorModifiers.VerySlow,
+                    ZapinatorModifiers.TinyDamage,
+                    ZapinatorModifiers.BigAoe,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.Backwards,
+                    ZapinatorModifiers.BadAccuracy,
+                    ZapinatorModifiers.BadAccuracy
+                },
+                maxModifiers = 3,
+                bonusModifiers = 2
+            });
+            projectileData.Add(new ZapinatorProjectileData()
+            {
+                prefab = Resources.Load<GameObject>("prefabs/projectiles/EngiBubbleShield"),
+                type = ZapinatorProjectileType.Defensive | ZapinatorProjectileType.MovesFromSpawn,
+
+                possibleModifiers = new ZapinatorModifiers[]
+                {
+                    ZapinatorModifiers.BigKnockback,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.MultiShot,
+                    ZapinatorModifiers.VeryFast,
+                    ZapinatorModifiers.VerySlow,
+                    ZapinatorModifiers.BadAccuracy,
+                    ZapinatorModifiers.BadAccuracy,
+                    ZapinatorModifiers.Backwards,
+                    ZapinatorModifiers.Nothing,
+                    ZapinatorModifiers.Nothing
+                },
+                maxModifiers = 3,
+                bonusModifiers = 2
+            });
             projectileData.Add(new ZapinatorProjectileData()
             {
                 prefab = Resources.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Hacking"),
@@ -896,7 +878,7 @@ namespace RiskierRain.Equipment
                 maxModifiers = 3,
                 bonusModifiers = 2
             });
-            /*projectileData.Add(new ZapinatorProjectileData()
+            projectileData.Add(new ZapinatorProjectileData()
             {
                 prefab = Resources.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Healing"),
                 type = ZapinatorProjectileType.Captain | ZapinatorProjectileType.Defensive,

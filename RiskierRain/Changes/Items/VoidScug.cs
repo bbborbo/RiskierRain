@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
@@ -33,8 +34,8 @@ namespace RiskierRain.Items
 
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
-        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScug.prefab");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDSCUG.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -45,6 +46,7 @@ namespace RiskierRain.Items
         {
             On.RoR2.HealthComponent.TakeDamage += ScugTakeDamage;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
         {
@@ -78,6 +80,7 @@ namespace RiskierRain.Items
                 origin = body.transform.position,
                 scale = currentRadius
             }, true);
+            ApplyChillSphere(body, itemCount);
             BlastAttack scugNova = new BlastAttack()
             {
                 baseDamage = body.damage,
@@ -112,6 +115,47 @@ namespace RiskierRain.Items
             };
             Assets.buffDefs.Add(scugBuff);
         }
+
+        static void ApplyChillSphere(CharacterBody body, int itemCount)
+        {
+            Vector3 corePosition = body.corePosition;
+            scugSphereSearch.origin = corePosition;
+            scugSphereSearch.mask = LayerIndex.entityPrecise.mask;
+            scugSphereSearch.radius = radiusBase + radiusStack * (itemCount - 1);
+            scugSphereSearch.RefreshCandidates();
+            scugSphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex));
+            scugSphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
+            scugSphereSearch.OrderCandidatesByDistance();
+            scugSphereSearch.GetHurtBoxes(scugOnKillHurtBoxBuffer);
+            scugSphereSearch.ClearCandidates();
+            
+            for (int i = 0; i < scugOnKillHurtBoxBuffer.Count; i++)
+            {
+                HurtBox hurtBox = scugOnKillHurtBoxBuffer[i];
+                if (hurtBox.healthComponent)
+                {
+                    hurtBox.healthComponent.body.AddTimedBuff(RoR2Content.Buffs.Slow80, 10);
+                }
+            }
+            scugOnKillHurtBoxBuffer.Clear();
+        }
+
+
+
+        private static readonly SphereSearch scugSphereSearch = new SphereSearch();
+        private static readonly List<HurtBox> scugOnKillHurtBoxBuffer = new List<HurtBox>();
+
+        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        {
+            ItemDef.Pair transformation = new ItemDef.Pair()
+            {
+                itemDef1 = RoR2Content.Items.HealWhileSafe, //consumes slug
+                itemDef2 = VoidScug.instance.ItemsDef
+            };
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
+            orig();
+        }
+
     }
     class ScugBehavior : CharacterBody.ItemBehavior
     {
@@ -129,10 +173,10 @@ namespace RiskierRain.Items
             providingBuff = shouldProvideBuff;
             if (providingBuff)
             {
-                body.AddBuff(DLC1Content.Buffs.OutOfCombatArmorBuff);
+                body.AddBuff(VoidScug.scugBuff);
                 return;
             }
-            body.RemoveBuff(DLC1Content.Buffs.OutOfCombatArmorBuff);
+            body.RemoveBuff(VoidScug.scugBuff);
         }
         private bool providingBuff;
     }

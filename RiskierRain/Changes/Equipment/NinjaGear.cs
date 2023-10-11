@@ -34,9 +34,9 @@ namespace RiskierRain.Equipment
 
         public override string EquipmentLore => "";
 
-        public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject EquipmentModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
 
-        public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EquipmentIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
         public override bool CanDrop { get; } = true;

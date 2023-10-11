@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 132617434
+CRC: 2033891817
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 78915f0c21e98fb2c70acdd248fd79c0
+    Hash: 79184ee9977dc1c347a97a5d533a2f0c
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -36,10 +36,14 @@ ClassTypes:
 SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Prefabs/starVeil.prefab
+- Assets/stache.fbx
 - Assets/lunarGallery.fbx
 - Assets/Prefabs/enemyDamageUp.prefab
 - Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
+- Assets/Prefabs/mdlNinjaGear.prefab
+- Assets/Orange.mat
 - Assets/Prefabs/coralite.prefab
+- Assets/ninjaGear.fbx
 - Assets/Prefabs/bottle.prefab
 - Assets/spine.fbx
 - Assets/frozenTurtleShell.fbx
@@ -48,6 +52,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_BIRDBAND.png
 - Assets/Prefabs/mdlScalpel.prefab
 - Assets/chargedSpine.fbx
+- Assets/Prefabs/mdlScug.prefab
 - Assets/Icons/texIconPickupITEM_GOODEXECUTIONITEM.png
 - Assets/Prefabs/mdlConstructConstruct.prefab
 - Assets/Icons/texFrozenShellIcon.png
@@ -58,9 +63,10 @@ Assets:
 - Assets/fixedbird.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/Prefabs/mdlChargedSpine.prefab
+- Assets/scug.fbx
+- Assets/Prefabs/lunarGallery.prefab
 - Assets/Prefabs/mdlScalpelBroken.prefab
 - Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
-- Assets/Prefabs/mdlCurseStatue.prefab
 - Assets/Prefabs/mdlSlungus.prefab
 - Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
 - Assets/Prefabs/mdlBirdBand.prefab
@@ -75,11 +81,13 @@ Assets:
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
+- Assets/Prefabs/mdlChefStache.prefab
 - Assets/Icons/texEggIcon.png
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/enemyDamageUp.fbx
 - Assets/Ice.mat
+- Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png
 - Assets/Prefabs/mdlNaturesGift.prefab
 - Assets/Prefabs/scaleSpeedUp.prefab
 - Assets/coralite.fbx
@@ -87,6 +95,8 @@ Assets:
 - Assets/Prefabs/mdlPhrygianLily.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
 - Assets/starVeil.fbx
+- Assets/Icons/texIconPickupITEM_CHEFITEM.png
+- Assets/Prefabs/mdlZappinator.prefab
 - Assets/Prefabs/curseStatue.prefab
 - Assets/Prefabs/constructConstruct.prefab
 - Assets/Icons/texIconPickupITEM_SLUNGUS.png
@@ -114,11 +124,12 @@ Assets:
 - Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png
 - Assets/Prefabs/mdlS2Engine.prefab
 - Assets/EggGold.mat
+- Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png
 - Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat
 - Assets/Prefabs/compressionLoop.prefab
+- Assets/Icons/texIconPickupITEM_VOIDSCUG.png
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/mdlGreedyRing.prefab
-- Assets/Prefabs/mdlLunarGallery.prefab
 Dependencies: []

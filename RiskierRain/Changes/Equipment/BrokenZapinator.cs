@@ -50,10 +50,9 @@ namespace RiskierRain.Equipment
 
         public override string EquipmentLore => "I can't believe we left this in the game!";
 
-        public override GameObject EquipmentModel => Resources.Load<GameObject>("prefabs/NullModel");
+        public override GameObject EquipmentModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 
-        public override Sprite EquipmentIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-
+        public override Sprite EquipmentIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
         public override float Cooldown { get; } = 20f;
 
         public override BalanceCategory Category => BalanceCategory.StateOfDamage;

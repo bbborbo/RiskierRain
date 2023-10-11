@@ -9,7 +9,7 @@ namespace RiskierRain.Equipment.Zapinator
     {
         public bool hasRolledBonusMultipliers = false;
 
-        public float damageCoefficient = 5;
+        public float damageCoefficient = 10;
         public float procCoefficient = 0.5f;
         public float aoeSizeMultiplier = 1;
 

@@ -1305,6 +1305,8 @@ namespace RiskierRain
             //idk where else to put this
             //doublechest/roulette chest rework
             DoubleChestHook();
+
+            Secrets.AddSecrets();
         }
 
         //bool ValidateInteractable(InteractableBase interactable, List<InteractableBase> itemList)

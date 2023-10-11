@@ -18,9 +18,35 @@ namespace RiskierRain
         const bool DEBUG = true;
 
         #region secret spawns
-        public static void AddSecrets(List<DirectorCard> directorCards)
+
+        //RoR2/Base/DuplicatorLarge/iscDuplicatorLarge.asset
+
+        public static void AddSecrets()
         {
+            InteractableSpawnCard greenPrinterSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/DuplicatorLarge/iscDuplicatorLarge.asset").WaitForCompletion();
+            InteractableSpawnCard bigChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/Chest2/iscChest2.asset").WaitForCompletion();
+            InteractableSpawnCard lunarPodSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/LunarChest/iscLunarChest.asset").WaitForCompletion();
             
+
+            //ancient loft
+            SpawnSecret("ancientloft", greenPrinterSpawnCard, new Vector3(-86, 29, 34));
+            SpawnSecret("ancientloft", bigChestSpawnCard, new Vector3(-104, 106, 265));
+            SpawnSecret("ancientloft", greenPrinterSpawnCard, new Vector3(-68, 40, -59));
+            //foggyswamp
+            SpawnSecret("foggyswamp", greenPrinterSpawnCard, new Vector3(257, 84, -140));
+            SpawnSecret("foggyswamp", greenPrinterSpawnCard, new Vector3(145, -75, -75));
+            SpawnSecret("foggyswamp", greenPrinterSpawnCard, new Vector3(-108, -104, -138));
+            SpawnSecret("foggyswamp", greenPrinterSpawnCard, new Vector3(-86, 29, 34));
+            SpawnSecret("foggyswamp", bigChestSpawnCard, new Vector3(-128, -127, 98));
+            SpawnSecret("foggyswamp", lunarPodSpawnCard, new Vector3(-7 - 130, -356));
+            //goolake
+            SpawnSecret("goolake", bigChestSpawnCard, new Vector3(22, -158, -371));
+            SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(-7, -81, -174));
+            SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(221, -100, 296));
+            SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(351, -78, 108));
+            SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(118, -91, -7));
+            SpawnSecret("goolake", bigChestSpawnCard, new Vector3(174, -11, -252));
+
         }
         #endregion
 
@@ -42,6 +68,12 @@ namespace RiskierRain
                     {
                         return;
                     }
+                }
+                bool floor = CheckForGeometry(pos + new Vector3(0, 2, 0));
+                if (!floor)
+                {
+                    Debug.Log("no floor!!");
+                    return;
                 }
                 DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule() { placementMode = DirectorPlacementRule.PlacementMode.Direct };
                 if (spawnCard == null) Debug.Log("spawncardnullwtf");
@@ -100,6 +132,11 @@ namespace RiskierRain
         public static bool RollForSecret(float chance)
         {
             return UnityEngine.Random.RandomRange(0, 1f) < chance;
+        }
+
+        public static bool CheckForGeometry(Vector3 cords)
+        {
+            return Physics.Raycast(cords, Vector3.down, 5);
         }
         #endregion
     }

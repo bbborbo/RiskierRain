@@ -585,7 +585,7 @@ namespace RiskierRain
         {
             //titanic plains 1
             SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(-109, -100, 42));//doublechest
-            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -103, 29), 0.4f);//big chest maybe
+            SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -100, 29), 0.4f);//big chest maybe
             SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(183, -92, -144));//doublechest //bonus mob
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(139, -119, 194));//doublechest queatet
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(64, -115, -264));//lunar pod? very stupid
@@ -609,15 +609,15 @@ namespace RiskierRain
             //blackbeach 1
             SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-23, -175, -387));//doublechest
             SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(93, -125, -299));//doublechest
-            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(31, -213, -120));//doublechest
-            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-288, -18, -181), 0.3f);//doublechest
-            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-337, -201, -230), 0.5f);//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(31, -213, -120));//doublechest floor issue
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-288, -16, -181), 0.3f);//doublechest
+            SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-337, -199, -230), 0.5f);//doublechest
 
             //blackbeach 2
-            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-101, 28, 11), 0.8f);//doublechest
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-101, 28, 11), 0.8f);//doublechest floor issue
             SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-134, 47, -103), 0.4f);//doublechest
             SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(12, 88, -126));//doublechest
-            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(117, 65, 151));//doublechest //make this check if the pillar spawned lmao :3
+            SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(117, 65, 151));//doublechest floor issue
 
             //snowyforest
             SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-252, 22, 57), 0.5f);//doublechest
@@ -636,7 +636,7 @@ namespace RiskierRain
 
             //wispgraveyard
             SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
-            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 57, 286));//didnt spawn idk why
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 59, 286));//didnt spawn idk why
 
             Vector3[] wispGraveyardSpots = new Vector3[4];
             wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
@@ -738,7 +738,7 @@ namespace RiskierRain
                 return;
             }
             purchaseInteraction.costType = CostTypeIndex.Money;
-            purchaseInteraction.cost = casinoChestTypeCost;
+            purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, RoR2.Stage.instance.entryDifficultyCoefficient);
         }
 
 

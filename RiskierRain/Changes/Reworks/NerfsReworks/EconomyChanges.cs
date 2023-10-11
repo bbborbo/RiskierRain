@@ -738,7 +738,7 @@ namespace RiskierRain
                 return;
             }
             purchaseInteraction.costType = CostTypeIndex.Money;
-            purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, Run.instance.difficultyCoefficient);
+            purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, RoR2.Stage.instance.entryDifficultyCoefficient);
         }
 
 

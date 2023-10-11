@@ -625,6 +625,12 @@ namespace RiskierRain
                 $"depending on the quality of the printer.");
             On.RoR2.CostTypeDef.IsAffordable += SuperScrapIsAffordable;
             On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
+            On.RoR2.CharacterMaster.TryRegenerateScrap += SuperScrapRegenerate;
+        }
+
+        private void SuperScrapRegenerate(On.RoR2.CharacterMaster.orig_TryRegenerateScrap orig, CharacterMaster self)
+        {
+            //You thought there would be something here?
         }
 
         private int GetSuperScrapPrinterCredit(ItemTier tier)
@@ -665,6 +671,11 @@ namespace RiskierRain
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
                         activatorInventory.RemoveItem(DLC1Content.Items.RegeneratingScrap, 1);
+                        activatorInventory.GiveItem(DLC1Content.Items.RegeneratingScrapConsumed, 1);
+                        CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
+                            DLC1Content.Items.RegeneratingScrap.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex, 
+                            CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
+
                         int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
                         if (cost > printerCredit)
                         {

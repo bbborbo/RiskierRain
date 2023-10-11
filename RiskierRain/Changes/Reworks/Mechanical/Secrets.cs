@@ -43,6 +43,12 @@ namespace RiskierRain
                         return;
                     }
                 }
+                bool floor = CheckForGeometry(pos + new Vector3(0, 2, 0));
+                if (!floor)
+                {
+                    Debug.Log("no floor!!");
+                    return;
+                }
                 DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule() { placementMode = DirectorPlacementRule.PlacementMode.Direct };
                 if (spawnCard == null) Debug.Log("spawncardnullwtf");
                 if (directorPlacementRule == null) Debug.Log("placementrulenulwtf");
@@ -100,6 +106,11 @@ namespace RiskierRain
         public static bool RollForSecret(float chance)
         {
             return UnityEngine.Random.RandomRange(0, 1f) < chance;
+        }
+
+        public static bool CheckForGeometry(Vector3 cords)
+        {
+            return Physics.Raycast(cords, Vector3.down, 5);
         }
         #endregion
     }

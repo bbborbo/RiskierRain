@@ -147,6 +147,8 @@ namespace RiskierRain
             RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
             Debug.LogWarning("2r4r sticky bomb guh");
             RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
+            Debug.LogWarning("2r4r regen scrap guh");
+            RetierItem(nameof(DLC1Content.Items.RegeneratingScrap), ItemTier.Tier3);
 
             RoR2Application.onLoad += InitializeEverything;
 
@@ -403,6 +405,12 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Happiest Mask"))
                 {
                     HappiestMaskRework();
+                }
+
+                //regenerating scrap
+                if (GetConfigBool(currentCategory, true, "Regenerating Scrap"))
+                {
+                    RegeneratingScrapRework();
                 }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();

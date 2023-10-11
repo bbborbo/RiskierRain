@@ -605,5 +605,103 @@ namespace RiskierRain
 
 
         #endregion
+
+        #region regenerating scrap
+        int regenScrapCommonCredit = 10;
+        int regenScrapUncommonCredit = 5;
+        int regenScrapRareCredit = 2;
+        int regenScrapBossCredit = 1;
+        void RegeneratingScrapRework()
+        {
+            LanguageAPI.Add("ITEM_REGENERATINGSCRAP_NAME", "Chimera Scrap");
+            LanguageAPI.Add("ITEM_REGENERATINGSCRAP_PICKUP", "Prioritized when used with <style=cIsHealth>ANY</style> 3D Printer. Creates extra items for lower tiers.");
+            LanguageAPI.Add("ITEM_REGENERATINGSCRAP_DESC", $"Does nothing. Prioritized when used with " +
+                $"<style=cIsHealth>ALL</style> 3D Printers. " +
+                $"Creates <style=cStack>(</style>{regenScrapCommonCredit}<style=cStack> / " +
+                $"<style=cIsHealing>{regenScrapUncommonCredit}</style> / " +
+                $"<style=cIsHealth>{regenScrapRareCredit}</style>)</style> items, " +
+                $"depending on the quality of the printer.");
+            On.RoR2.CostTypeDef.IsAffordable += RegenScrapIsAffordable;
+            On.RoR2.CostTypeDef.PayCost += RegenScrapPayCost;
+        }
+
+        private int GetRegenScrapPrinterCredit(ItemTier tier)
+        {
+            int printerCredit;
+            switch (tier)
+            {
+                default:
+                    printerCredit = 1;
+                    break;
+                case ItemTier.Tier1:
+                    printerCredit = regenScrapCommonCredit;
+                    break;
+                case ItemTier.Tier2:
+                    printerCredit = regenScrapUncommonCredit;
+                    break;
+                case ItemTier.Tier3:
+                    printerCredit = regenScrapRareCredit;
+                    break;
+                case ItemTier.Boss:
+                    printerCredit = regenScrapBossCredit;
+                    break;
+            }
+            return printerCredit;
+        }
+
+        private CostTypeDef.PayCostResults RegenScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
+        {
+            CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
+            if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null)
+            {
+                Inventory activatorInventory = activatorBody.inventory;
+                if (activatorInventory)
+                {
+                    int regenScrapCount = activatorInventory.GetItemCount(DLC1Content.Items.RegeneratingScrap);
+                    if(regenScrapCount > 0)
+                    {
+                        CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
+
+                        activatorInventory.RemoveItem(DLC1Content.Items.RegeneratingScrap, 1);
+                        int printerCredit = Mathf.Min(GetRegenScrapPrinterCredit(self.itemTier), cost);
+                        if (cost > printerCredit)
+                        {
+                            int remainder = cost - printerCredit;
+                            payCostResults = orig(self, remainder, activator, purchasedObject, rng, avoidedItemIndex);
+                        }
+                        for (int i = 0; i < printerCredit; i++)
+                        {
+                            payCostResults.itemsTaken.Add(DLC1Content.Items.RegeneratingScrap.itemIndex);
+                        }
+
+                        return payCostResults;
+                    }
+                }
+            }
+            // this runs if only one of the other ifs are false
+            return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
+        }
+
+        private bool RegenScrapIsAffordable(On.RoR2.CostTypeDef.orig_IsAffordable orig, CostTypeDef self, int cost, Interactor activator)
+        {
+            CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
+            if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null)
+            {
+                Inventory activatorInventory = activatorBody.inventory;
+                if (activatorInventory)
+                {
+                    int regenScrapCount = activatorInventory.GetItemCount(DLC1Content.Items.RegeneratingScrap);
+                    if(regenScrapCount > 0)
+                    {
+                        int printerCredits = GetRegenScrapPrinterCredit(self.itemTier) * regenScrapCount;
+                        bool hasEnoughRegenScrap = printerCredits >= cost;
+                        return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalItemsOfTier(self.itemTier, cost - printerCredits));
+                    }
+                }
+            }
+            // this runs if only one of the other ifs are false
+            return orig(self, cost, activator);
+        }
+        #endregion
     }
 }

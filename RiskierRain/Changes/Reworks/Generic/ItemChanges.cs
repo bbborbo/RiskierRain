@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using On.RoR2.Items;
 using R2API;
+using RiskierRain.Changes.Components;
 using RiskierRain.Items;
 using RoR2;
 using RoR2.Orbs;
@@ -606,11 +607,12 @@ namespace RiskierRain
 
         #endregion
 
-        #region regenerating scrap
+        #region regenerating scrap, regen scrap, chimera scrap
         int regenScrapCommonCredit = 10;
         int regenScrapUncommonCredit = 5;
         int regenScrapRareCredit = 2;
         int regenScrapBossCredit = 1;
+        public static bool shouldSuperScrapOverBuy = false;
         void RegeneratingScrapRework()
         {
             LanguageAPI.Add("ITEM_REGENERATINGSCRAP_NAME", "Chimera Scrap");
@@ -621,11 +623,11 @@ namespace RiskierRain
                 $"<style=cIsHealing>{regenScrapUncommonCredit}</style> / " +
                 $"<style=cIsHealth>{regenScrapRareCredit}</style>)</style> items, " +
                 $"depending on the quality of the printer.");
-            On.RoR2.CostTypeDef.IsAffordable += RegenScrapIsAffordable;
-            On.RoR2.CostTypeDef.PayCost += RegenScrapPayCost;
+            On.RoR2.CostTypeDef.IsAffordable += SuperScrapIsAffordable;
+            On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
         }
 
-        private int GetRegenScrapPrinterCredit(ItemTier tier)
+        private int GetSuperScrapPrinterCredit(ItemTier tier)
         {
             int printerCredit;
             switch (tier)
@@ -649,10 +651,10 @@ namespace RiskierRain
             return printerCredit;
         }
 
-        private CostTypeDef.PayCostResults RegenScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
+        private CostTypeDef.PayCostResults SuperScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
         {
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
-            if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null)
+            if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null && self.itemTier != ItemTier.Lunar)
             {
                 Inventory activatorInventory = activatorBody.inventory;
                 if (activatorInventory)
@@ -663,13 +665,20 @@ namespace RiskierRain
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
                         activatorInventory.RemoveItem(DLC1Content.Items.RegeneratingScrap, 1);
-                        int printerCredit = Mathf.Min(GetRegenScrapPrinterCredit(self.itemTier), cost);
+                        int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
                         if (cost > printerCredit)
                         {
                             int remainder = cost - printerCredit;
                             payCostResults = orig(self, remainder, activator, purchasedObject, rng, avoidedItemIndex);
                         }
-                        for (int i = 0; i < printerCredit; i++)
+                        else if (printerCredit > cost)
+                        {
+                            SuperScrapPaymentController sspc = purchasedObject.AddComponent<SuperScrapPaymentController>();
+                            sspc.paymentCreditsRemaining = printerCredit - cost;
+                        }
+
+                        int n = Mathf.Min(cost, printerCredit);
+                        for (int i = 0; i < n; i++)
                         {
                             payCostResults.itemsTaken.Add(DLC1Content.Items.RegeneratingScrap.itemIndex);
                         }
@@ -682,7 +691,7 @@ namespace RiskierRain
             return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
         }
 
-        private bool RegenScrapIsAffordable(On.RoR2.CostTypeDef.orig_IsAffordable orig, CostTypeDef self, int cost, Interactor activator)
+        private bool SuperScrapIsAffordable(On.RoR2.CostTypeDef.orig_IsAffordable orig, CostTypeDef self, int cost, Interactor activator)
         {
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
             if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null)
@@ -693,7 +702,7 @@ namespace RiskierRain
                     int regenScrapCount = activatorInventory.GetItemCount(DLC1Content.Items.RegeneratingScrap);
                     if(regenScrapCount > 0)
                     {
-                        int printerCredits = GetRegenScrapPrinterCredit(self.itemTier) * regenScrapCount;
+                        int printerCredits = GetSuperScrapPrinterCredit(self.itemTier) * regenScrapCount;
                         bool hasEnoughRegenScrap = printerCredits >= cost;
                         return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalItemsOfTier(self.itemTier, cost - printerCredits));
                     }

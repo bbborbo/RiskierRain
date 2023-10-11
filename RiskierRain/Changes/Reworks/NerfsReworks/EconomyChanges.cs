@@ -636,7 +636,7 @@ namespace RiskierRain
 
             //wispgraveyard
             SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
-            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 57, 286));//didnt spawn idk why
+            SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 59, 286));//didnt spawn idk why
 
             Vector3[] wispGraveyardSpots = new Vector3[4];
             wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
@@ -738,7 +738,7 @@ namespace RiskierRain
                 return;
             }
             purchaseInteraction.costType = CostTypeIndex.Money;
-            purchaseInteraction.cost = casinoChestTypeCost;
+            purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, Run.instance.difficultyCoefficient);
         }
 
 

@@ -34,8 +34,8 @@ namespace RiskierRain.Items
 
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
 
-        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScug.prefab");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDSCUG.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

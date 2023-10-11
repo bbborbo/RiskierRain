@@ -19,6 +19,10 @@ namespace RiskierRain.Items
         public static float baseShield = 40;
         public static float radiusBase = 16;
         public static float radiusStack = 4;
+
+        public static float minStunDuration = 0.5f;
+        public static float maxStunDuration = 4f;
+
         public override string ItemName => "Volatile Fuse";
 
         public override string ItemLangTokenName => "BORBOFUSE";
@@ -89,7 +93,7 @@ namespace RiskierRain.Items
                     {
                         baseDamage = self.body.damage,
                         radius = currentRadius,
-                        procCoefficient = Mathf.Min(shieldHealthFraction + 0.1f, 1),
+                        procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction),
                         position = self.transform.position,
                         attacker = self.gameObject,
                         crit = Util.CheckRoll(self.body.crit, self.body.master),

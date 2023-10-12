@@ -15,6 +15,10 @@ using static R2API.DamageAPI;
 #pragma warning disable 
 namespace ChillRework
 {
+    [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.DamageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]
     public partial class ChillRework : BaseUnityPlugin

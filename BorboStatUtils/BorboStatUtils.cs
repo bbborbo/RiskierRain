@@ -9,6 +9,8 @@ using UnityEngine;
 
 namespace BorboStatUtils
 {
+    [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
     public class BorboStatUtils : BaseUnityPlugin

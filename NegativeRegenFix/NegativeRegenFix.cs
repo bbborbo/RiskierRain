@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace NegativeRegenFix
 {
-    [BepInPlugin(guid, teamName, modName)]
+    [BepInPlugin(guid, modName, version)]
     public class NegativeRegenFix : BaseUnityPlugin
     {
         #region plugin info

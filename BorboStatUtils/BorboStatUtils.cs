@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace BorboStatUtils
 {
-    [BepInPlugin(guid, teamName, modName)]
+    [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
     public class BorboStatUtils : BaseUnityPlugin
     {
@@ -26,6 +26,7 @@ namespace BorboStatUtils
 
         public void Awake()
         {
+            SetExecutionHooks();
             LanguageAPI.Add(executeKeywordToken,
                 $"<style=cKeywordName>Finisher</style>" +
                 $"<style=cSub>Enemies targeted by this skill can be " +
@@ -36,11 +37,11 @@ namespace BorboStatUtils
         #region luck
         internal static void SetLuckHooks()
         {
-            On.RoR2.CharacterBody.RecalculateStats += RecalculateLuckStat;
+            //On.RoR2.CharacterBody.RecalculateStats += RecalculateLuckStat;
         }
         internal static void UnsetLuckHooks()
         {
-            On.RoR2.CharacterBody.RecalculateStats -= RecalculateLuckStat;
+            //On.RoR2.CharacterBody.RecalculateStats -= RecalculateLuckStat;
         }
 
         public delegate void LuckHookEventHandler(CharacterBody sender, float luck);
@@ -114,8 +115,8 @@ namespace BorboStatUtils
         }
 
         public delegate void ExecuteHookEventHandler(CharacterBody sender, float executeThreshold);
-        public static event ExecuteHookEventHandler GetExecutionThreshold
-        {
+        public static event ExecuteHookEventHandler GetExecutionThreshold;
+        /*{
             add
             {
                 SetExecutionHooks();
@@ -133,7 +134,7 @@ namespace BorboStatUtils
                     UnsetExecutionHooks();
                 }
             }
-        }
+        }*/
         private static event ExecuteHookEventHandler _getExecutionThreshold;
         private static void InterceptExecutionThreshold(ILContext il)
         {
@@ -173,8 +174,9 @@ namespace BorboStatUtils
             {
                 if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                 {
-                    //GetExecutionThreshold?.Invoke(currentThreshold, body);
-                    if (_getExecutionThreshold != null)
+                    Debug.LogWarning("sdfhbsdf");
+                    GetExecutionThreshold?.Invoke(body, currentThreshold);
+                    /*if (_getExecutionThreshold != null)
                     {
                         foreach (ExecuteHookEventHandler @event in _getExecutionThreshold.GetInvocationList())
                         {
@@ -187,7 +189,7 @@ namespace BorboStatUtils
                                 Debug.LogError(e);
                             }
                         }
-                    }
+                    }*/
                 }
             }
 

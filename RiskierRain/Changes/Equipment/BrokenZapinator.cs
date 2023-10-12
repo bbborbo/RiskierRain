@@ -15,6 +15,9 @@ namespace RiskierRain.Equipment
 {
     class BrokenZapinator : EquipmentBase
     {
+        BasicPickupDropTable zapinatorDropTable;
+        public float itemChance = 1;
+
         float maxAimDistance = 500;
 
         static GameObject supplyDropMuzzleFlash = Resources.Load<GameObject>("prefabs/effects/muzzleflashes/CaptainAirstrikeMuzzleEffect");
@@ -46,14 +49,14 @@ namespace RiskierRain.Equipment
 
         public override string EquipmentPickupDesc => "It might be broken...";
 
-        public override string EquipmentFullDescription => "Fires a projectile for <style=cIsDamage>100% damage.</style>";
+        public override string EquipmentFullDescription => "Fires a projectile for <style=cIsDamage>100% damage</style>.";
 
         public override string EquipmentLore => "I can't believe we left this in the game!";
 
         public override GameObject EquipmentModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 
         public override Sprite EquipmentIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
-        public override float Cooldown { get; } = 20f;
+        public override float Cooldown { get; } = 35f;
 
         public override BalanceCategory Category => BalanceCategory.StateOfDamage;
 
@@ -72,6 +75,18 @@ namespace RiskierRain.Equipment
             Hooks();
             CreateEquipment();
             CreateLang();
+
+            zapinatorDropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
+            zapinatorDropTable.tier1Weight = 1;
+            zapinatorDropTable.tier2Weight = 1;
+            zapinatorDropTable.tier3Weight = 1;
+            zapinatorDropTable.voidTier1Weight = 1;
+            zapinatorDropTable.voidTier2Weight = 1;
+            zapinatorDropTable.voidTier3Weight = 1;
+            zapinatorDropTable.equipmentWeight = 1;
+            zapinatorDropTable.lunarItemWeight = 1;
+            zapinatorDropTable.lunarEquipmentWeight = 1;
+            zapinatorDropTable.bossWeight = 1;
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
@@ -81,23 +96,39 @@ namespace RiskierRain.Equipment
             CharacterBody ownerBody = slot.characterBody;
             if (ownerBody != null)
             {
-                int projectileIndex = UnityEngine.Random.Range(0, ZapinatorProjectileCatalog.zapinatorProjectileCount);
-                ZapinatorProjectileData projectileData = ZapinatorProjectileCatalog.GetProjectileDataFromIndex(projectileIndex);
-                ZapinatorRollData modifierRoll = RollModifiersFromProjectileData(projectileData, ownerBody);
-
-                bool crit = Util.CheckRoll(ownerBody.crit, ownerBody.master);
-
-                if ((projectileData.type & ZapinatorProjectileType.Captain) > 0)
+                if(Util.CheckRoll(itemChance, 0))
                 {
-                    b = CreateSupplyDrop(slot, ownerBody, projectileData, modifierRoll, crit);
-                }
-                else if ((projectileData.type & ZapinatorProjectileType.Defensive) > 0)
-                {
-
+                    PickupIndex pickupIndex = PickupIndex.none;
+                    if (zapinatorDropTable)
+                    {
+                        pickupIndex = zapinatorDropTable.GenerateDrop(ownerBody.equipmentSlot.rng);
+                        Ray aimRay = GetAimRay(ownerBody);
+                        aimRay.direction += Vector3.up * 0.25f;
+                        PickupDropletController.CreatePickupDroplet(pickupIndex, aimRay.origin, aimRay.direction * 25);
+                        ownerBody.characterMotor.ApplyForce(aimRay.direction * -1500, true, false);
+                        b = true;
+                    }
                 }
                 else
                 {
-                    b = CreateOrdinaryProjectile(slot, ownerBody, projectileData, modifierRoll, crit);
+                    int projectileIndex = UnityEngine.Random.Range(0, ZapinatorProjectileCatalog.zapinatorProjectileCount);
+                    ZapinatorProjectileData projectileData = ZapinatorProjectileCatalog.GetProjectileDataFromIndex(projectileIndex);
+                    ZapinatorRollData modifierRoll = RollModifiersFromProjectileData(projectileData, ownerBody);
+
+                    bool crit = Util.CheckRoll(ownerBody.crit, ownerBody.master);
+
+                    if ((projectileData.type & ZapinatorProjectileType.Captain) > 0)
+                    {
+                        b = CreateSupplyDrop(slot, ownerBody, projectileData, modifierRoll, crit);
+                    }
+                    else if ((projectileData.type & ZapinatorProjectileType.Defensive) > 0)
+                    {
+
+                    }
+                    else
+                    {
+                        b = CreateOrdinaryProjectile(slot, ownerBody, projectileData, modifierRoll, crit);
+                    }
                 }
 
                 // rolling to just not consume a charge for the lols

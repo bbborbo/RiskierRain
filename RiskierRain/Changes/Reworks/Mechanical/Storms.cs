@@ -6,6 +6,7 @@ using UnityEngine;
 using RoR2;
 using System.Linq;
 using UnityEngine.AddressableAssets;
+using EntityStates;
 
 namespace RiskierRain
 {
@@ -20,32 +21,20 @@ namespace RiskierRain
 
         void InitializeStorms()
         {
-            On.RoR2.Run.BeginStage += StormsBeginStage;
             On.RoR2.Run.EndStage += StormsEndStage;
             On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
         }
-        GameObject StormControllerInstance; //this probably sucks but im just tryna see if itll work lol
-        private void StormsBeginStage(On.RoR2.Run.orig_BeginStage orig, RoR2.Run self)
+        StageStormController StormControllerInstance; //this probably sucks but im just tryna see if itll work lol
+
+        private void CreateNewStormController()
         {
-            orig(self);
             if (StormControllerInstance != null)
             {
-                StageStormController var = StormControllerInstance.GetComponent<StageStormController>();
-                if (var != null)
-                {
-                    var.RemoveStormController();
-                }
-                else
-                {
-                    Destroy(StormControllerInstance);
-                }
+                Destroy(StormControllerInstance.gameObject);
             }
-                
-            StormControllerInstance = new GameObject();
-            StageStormController guh = StormControllerInstance.AddComponent<StageStormController>();
-            guh.SetStormLevel(self);
-            guh.teleporter = teleporter;
-            teleporter = null;
+
+            GameObject go = new GameObject();
+            StormControllerInstance = go.AddComponent<StageStormController>();
         }
 
         private void StormsEndStage(On.RoR2.Run.orig_EndStage orig, RoR2.Run self)
@@ -53,18 +42,17 @@ namespace RiskierRain
             orig(self);
             if (StormControllerInstance == null)
                 return;
-           StormControllerInstance.GetComponent<StageStormController>()?.RemoveStormController();
+           StormControllerInstance.RemoveStormController();
         }
         private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
         {
-            orig.Invoke(self, sceneDirector, teleporter);
-            
-            this.teleporter = teleporter;
-            StageStormController var = StormControllerInstance.GetComponent<StageStormController>();
-            if (var != null)
+            orig(self, sceneDirector, teleporter);
+
+            CreateNewStormController();
+            if (StormControllerInstance != null && teleporter != null)
             {
                 Debug.Log("woag00");
-                var.teleporter = teleporter;
+                StormControllerInstance.teleporter = teleporter;
             }
         }
     }
@@ -85,13 +73,13 @@ namespace RiskierRain
         StormType stormType;
         bool hasSentStormWarning = false;
         bool hasBegunStorm = false;
-        bool teleporterStarted = false;
+        bool teleporterActive = false;
 
         public GameObject teleporter;
         private TeleporterInteraction teleporterInteraction;
 
 
-        void Start()
+        public void Start()
         {
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
             CalculateStormStartDelay();
@@ -100,24 +88,22 @@ namespace RiskierRain
 
             On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
-            On.RoR2.Run.OnAmbientLevelUp += Run_OnAmbientLevelUp;
-            //On.RoR2.TeleporterInteraction.OnChargingFinished += new TeleporterInteraction.hook_OnChargingFinished(this.TeleporterInteraction_OnChargingFinished);
+            On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
         }
 
-        private void Run_OnAmbientLevelUp(On.RoR2.Run.orig_OnAmbientLevelUp orig, Run self)
+        private void TeleporterInteraction_ChargedState_OnEnter(On.RoR2.TeleporterInteraction.ChargedState.orig_OnEnter orig, BaseState self)
         {
             orig(self);
-            SetStormLevel(self);
+            teleporterActive = false;
         }
-        public void SetStormLevel(Run run)
-        {
-            stormLevel = run.ambientLevel;
-        }
-        public void RemoveStormController()
+
+        public void OnDestroy()
         {
             On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor -= MeteorWave_GetNextMeteor;
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
-            On.RoR2.Run.OnAmbientLevelUp -= Run_OnAmbientLevelUp;
+        }
+        public void RemoveStormController()
+        {
             Destroy(this.gameObject);
         }
 
@@ -125,7 +111,7 @@ namespace RiskierRain
         {
             orig.Invoke(self, activator);
             this.teleporterInteraction = self;
-            this.teleporterStarted = true;
+            this.teleporterActive = true;
         }
 
         void CalculateStormStartDelay()
@@ -248,7 +234,7 @@ namespace RiskierRain
                         EffectManager.SpawnEffect(this.meteorWarningEffectPrefab, new EffectData
                         {
                             origin = nextMeteor.impactPosition,
-                            scale = this.meteorbBastRadius
+                            scale = this.meteorBlastRadius
                         }, true);
                     }
                 }
@@ -275,9 +261,6 @@ namespace RiskierRain
             this.waveList = new List<MeteorStormController.MeteorWave>();
         }
 
-
-
-
         private void DetonateMeteor(MeteorStormController.Meteor meteor)
         {
             EffectData effectData = new EffectData
@@ -288,61 +271,56 @@ namespace RiskierRain
             new BlastAttack
             {
                 inflictor = base.gameObject,
-                baseDamage = this.meteorBlastDamageCoefficient * stormLevel,//multiplies by ambient level. if this is unsatisfactory change later
+                baseDamage = this.meteorBlastDamageCoefficient * Run.instance.ambientLevel,//multiplies by ambient level. if this is unsatisfactory change later
                 baseForce = this.meteorBlastForce,
                 attackerFiltering = AttackerFiltering.Default,
                 crit = false,
                 falloffModel = BlastAttack.FalloffModel.SweetSpot,
-                attacker = this.teleporter,
+                attacker = this.gameObject,//this.teleporter ,
                 bonusForce = Vector3.zero,
                 damageColorIndex = DamageColorIndex.Fragile,
                 position = meteor.impactPosition,
                 procChainMask = default(ProcChainMask),
                 procCoefficient = 0f,
-                teamIndex = TeamIndex.Monster,//this might unintentionally harm void enemies and such but idk how to make something trhat exclusively harms the player team
-                radius = meteorbBastRadius
+                teamIndex = TeamIndex.Monster,// | TeamIndex.Void | TeamIndex.Neutral,
+                radius = meteorBlastRadius
             }.Fire();
         }
 
         //teleporter safe zone
         private object MeteorWave_GetNextMeteor(On.RoR2.MeteorStormController.MeteorWave.orig_GetNextMeteor orig, object self)
         {
-            object result;
+            object meteor = orig.Invoke(self);
             try
             {
-                if (teleporterStarted)
+                if (teleporterActive)
                 {
                     if (teleporterInteraction == null)
                     {
-                        Debug.Log("tp interaction null?");
+                        Debug.LogError("tp interaction null?");
+                        return meteor;
                     }
                     if (teleporterInteraction.holdoutZoneController == null)
                     {
-                        Debug.Log("holdout zone null???");
+                        Debug.LogError("holdout zone null???");
+                        return meteor;
                     }
-                    object obj = orig.Invoke(self);
-                    Vector3 a = (Vector3)obj.GetType().GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(obj); //i have no goddamn clue what this does lmao
-                    Debug.Log("vector = " + a);
-                    if (this.IsInRange(a, this.teleporter.transform.position, teleporterInteraction.holdoutZoneController.currentRadius + 10f))
+                    //i have no goddamn clue what this does lmao
+                    //this uses reflection to find the impact position of the meteor that was spawned -borbo
+                    Vector3 impactPosition = (Vector3)meteor.GetType()
+                        .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor); 
+
+                    if (this.IsInRange(impactPosition, this.teleporter.transform.position, teleporterInteraction.holdoutZoneController.currentRadius + meteorBlastRadius))
                     {
-                        result = null;
+                        meteor = null;
                     }
-                    else
-                    {
-                        result = obj;
-                    }
-                }
-                else
-                {
-                    result = orig.Invoke(self);
                 }
             }
             catch (Exception ex)
             {
                 Debug.LogError(ex.Message);
-                result = orig.Invoke(self);
             }
-            return result;
+            return meteor;
         }
         private bool IsInRange(Vector3 a, Vector3 b, float dist)
         {
@@ -350,10 +328,8 @@ namespace RiskierRain
         }
 
         //all the projectile/prefab stuff
-        public float stormLevel = 0;
-
-        public float waveMinInterval = 0.5f;
-        public float waveMaxInterval = 1.5f;
+        public float waveMinInterval = 1f;
+        public float waveMaxInterval = 2f;
 
         private List<MeteorStormController.Meteor> meteorList;
         private List<MeteorStormController.MeteorWave> waveList;
@@ -365,7 +341,7 @@ namespace RiskierRain
         public float meteorTravelEffectDuration = 2;
         public float meteorImpactDelay = 2.5f;
         public float meteorBlastDamageCoefficient = 10;
-        public float meteorbBastRadius = 14;
+        public float meteorBlastRadius = 14;
         public float meteorBlastForce = 0;
 
     }

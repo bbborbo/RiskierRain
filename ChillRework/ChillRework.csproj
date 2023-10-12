@@ -3,19 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="AssetBundles\orangecontent" />
-    <None Remove="borboitemicons" />
-    <None Remove="itmightbebad" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="AssetBundles\orangecontent" />
-    <EmbeddedResource Include="borboitemicons" />
-    <EmbeddedResource Include="itmightbebad" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
@@ -75,9 +62,6 @@
     <Reference Include="Wwise">
       <HintPath>libs\Wwise.dll</HintPath>
     </Reference>
-    <Reference Include="AncientScepter">
-      <HintPath>libs\AncientScepter.dll</HintPath>
-    </Reference>
     <Reference Include="Decalicious">
       <HintPath>libs\Decalicious.dll</HintPath>
     </Reference>
@@ -89,22 +73,5 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Changes\States\Misc\NewFolder\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BorboStatUtils\BorboStatUtils.csproj" />
-    <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
-    <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
   </ItemGroup>
 </Project>

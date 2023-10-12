@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace RiskierRain.Items
 {
-    class Vampirism : ItemBase<Vampirism>
+    class LunarVampirism : ItemBase<LunarVampirism>
     {
         int maxHeal = 3;
         int bleedPerHeal = 5;
@@ -59,20 +59,21 @@ namespace RiskierRain.Items
         private void VampireHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
         {
             orig(self, damageInfo, victim);
-            CharacterBody victimBody = victim.GetComponent<CharacterBody>();
-            if (victimBody != null)
+            GameObject attacker = damageInfo.attacker;
+            if(attacker != null)
             {
-                int bleedCount = victimBody.GetBuffCount(RoR2Content.Buffs.Bleeding);
-                if (bleedCount > 0)
+                CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+                CharacterBody attackerBody = attacker.GetComponent<CharacterBody>();
+                if (victimBody != null && attackerBody != null)
                 {
-                    CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                    if (attackerBody != null)
+                    int bleedCount = victimBody.GetBuffCount(RoR2Content.Buffs.Bleeding);
+                    if (bleedCount > 0)
                     {
                         int itemCount = GetCount(attackerBody);
                         if (itemCount > 0 && damageInfo.procCoefficient > 0)
-                        {                            
+                        {
                             int healAmount = Mathf.Clamp((bleedCount / bleedPerHeal) + 1, 0, maxHeal * itemCount);
-                            attackerBody.healthComponent.Heal(healAmount, new ProcChainMask());                                                      
+                            attackerBody.healthComponent.Heal(healAmount, new ProcChainMask());
                         }
                     }
                 }
@@ -91,7 +92,7 @@ namespace RiskierRain.Items
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.Seed, //consumes leeching seed
-                itemDef2 = Vampirism.instance.ItemsDef
+                itemDef2 = LunarVampirism.instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
             orig();

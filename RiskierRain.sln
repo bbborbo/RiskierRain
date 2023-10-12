@@ -3,12 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32126.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskierRain", "RiskierRain\RiskierRain.csproj", "{1CADEA57-5686-4068-94A8-0402C13A28FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RiskierRain", "RiskierRain\RiskierRain.csproj", "{1CADEA57-5686-4068-94A8-0402C13A28FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A} = {8EF62317-2F3A-4AF5-98DE-6CF766BB529A}
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5} = {41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C62FD910-E90E-42D1-863C-B15B3A177AD5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChillRework", "ChillRework\ChillRework.csproj", "{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BorboStatUtils", "BorboStatUtils\BorboStatUtils.csproj", "{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NegativeRegenFix", "NegativeRegenFix\NegativeRegenFix.csproj", "{08B8379B-E045-4F59-B9F7-18D66AE32433}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +30,18 @@ Global
 		{1CADEA57-5686-4068-94A8-0402C13A28FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CADEA57-5686-4068-94A8-0402C13A28FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CADEA57-5686-4068-94A8-0402C13A28FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

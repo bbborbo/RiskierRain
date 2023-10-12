@@ -23,6 +23,8 @@ using ThreeEyedGames;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
+using BorboStatUtils;
+using ChillRework;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -32,16 +34,24 @@ using static R2API.RecalculateStatsAPI;
 #pragma warning disable 
 namespace RiskierRain
 {
-    [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.DirectorAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     //[BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(ChillRework.ChillRework.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.Transgendence", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Withor.AcridBiteLunge", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.johnedwa.RTAutoSprintEx", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("HIFU.UltimateCustomRun", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
@@ -147,6 +157,8 @@ namespace RiskierRain
             RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
             Debug.LogWarning("2r4r sticky bomb guh");
             RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
+            Debug.LogWarning("2r4r regen scrap guh");
+            RetierItem(nameof(DLC1Content.Items.RegeneratingScrap), ItemTier.Tier3);
 
             RoR2Application.onLoad += InitializeEverything;
 
@@ -403,6 +415,12 @@ namespace RiskierRain
                 if (GetConfigBool(currentCategory, true, "Happiest Mask"))
                 {
                     HappiestMaskRework();
+                }
+
+                //regenerating scrap
+                if (GetConfigBool(currentCategory, true, "Regenerating Scrap"))
+                {
+                    RegeneratingScrapRework();
                 }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();

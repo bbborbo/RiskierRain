@@ -2,8 +2,10 @@
 using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
+using RoR2;
 using System.Security.Permissions;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.DamageAPI;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -25,6 +27,7 @@ namespace ChillRework
         public const string version = "1.0.0";
         #endregion
 
+        public static BuffDef ChillBuff;
         public static ModdedDamageType ChillOnHit;
         public const string chillKeywordToken = "2R4R_KEYWORD_CHILL";
         public const int chillStacksMax = 10;
@@ -42,6 +45,8 @@ namespace ChillRework
 
         public void ReworkChill()
         {
+            ChillBuff = Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Common/bdSlow80.asset").WaitForCompletion();
+            ChillBuff.canStack = true;
             ChillOnHit = ReserveDamageType();
             ChillHooks();
         }

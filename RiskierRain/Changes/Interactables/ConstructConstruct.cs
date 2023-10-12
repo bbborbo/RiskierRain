@@ -101,15 +101,17 @@ namespace RiskierRain.Interactables
 
         private void ConstructConstructBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
-            orig(self, activator);
+            
             if (self.displayNameToken != "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
+                orig(self, activator);
                 return;
             }
             self.gameObject.AddComponent<ConstructDirector>();
             GameObject obj = CombatEncounterHelper.MethodOne(self, activator, 200, 2);//this might be way too much well see :3
 
             orig(self, activator);
+            self.available = false;
         }
 
         private void ConstructShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)

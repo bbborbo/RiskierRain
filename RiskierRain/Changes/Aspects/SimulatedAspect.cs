@@ -16,13 +16,13 @@ using Mono.Cecil.Cil;
 
 namespace RiskierRain.Equipment
 {
-    class SimulatedAspect : EliteEquipmentBase
+    class SimulatedAspect : EliteEquipmentBase<SimulatedAspect>
     {
         public override string EliteEquipmentName => "Abyssal gaze"; //temp name
 
         public override string EliteAffixToken => "AFFIX_SIMULATED";
 
-        public override string EliteEquipmentPickupDesc => "Become a simulation. lol";
+        public override string EliteEquipmentPickupDesc => "Become an aspect of the simulacrum";
 
         public override string EliteEquipmentFullDescription => "Some stats up idk, lol";
 

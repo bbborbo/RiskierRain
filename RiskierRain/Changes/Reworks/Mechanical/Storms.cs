@@ -259,10 +259,6 @@ namespace RiskierRain
             for (int j = this.meteorList.Count - 1; j >= 0; j--)
             {
                 MeteorStormController.Meteor meteor = this.meteorList[j];
-                if (meteor.startTime < num2 && !meteor.didTravelEffect)
-                {
-                    this.DoMeteorEffect(meteor);
-                }
                 if (meteor.startTime < num)
                 {
                     this.meteorList.RemoveAt(j);
@@ -306,18 +302,6 @@ namespace RiskierRain
                 teamIndex = TeamIndex.Monster,//this might unintentionally harm void enemies and such but idk how to make something trhat exclusively harms the player team
                 radius = meteorbBastRadius
             }.Fire();
-        }
-
-        private void DoMeteorEffect(MeteorStormController.Meteor meteor)
-        {
-            meteor.didTravelEffect = true;
-            if (this.meteorImpactEffectPrefab)
-            {
-                EffectManager.SpawnEffect(this.meteorTravelEffectPrefab, new EffectData
-                {
-                   origin = meteor.impactPosition
-                }, true);
-            }
         }
 
         //teleporter safe zone
@@ -376,7 +360,6 @@ namespace RiskierRain
         private float waveTimer;
 
         //meteors:
-        GameObject meteorTravelEffectPrefab;
         GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
         GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
         public float meteorTravelEffectDuration = 2;

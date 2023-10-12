@@ -175,7 +175,6 @@ namespace BorboStatUtils
             {
                 if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                 {
-                    Debug.LogWarning("sdfhbsdf");
                     //GetExecutionThreshold?.Invoke(body, ref currentThreshold);
                     if (_getExecutionThreshold != null)
                     {

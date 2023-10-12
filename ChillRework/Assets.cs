@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using R2API;
 using RoR2;
+using RoR2.Projectile;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -85,6 +86,8 @@ namespace ChillRework
             component.delayEffect = this.CreateIceDelayEffect();
             component.damageType = DamageType.Freeze2s;
             component.baseForce = 250f;
+
+            ProjectileController pc = blast.AddComponent<ProjectileController>();
 
             //AltArtiPassive.iceBlast = blast;
             //projectilePrefabs.Add(blast);

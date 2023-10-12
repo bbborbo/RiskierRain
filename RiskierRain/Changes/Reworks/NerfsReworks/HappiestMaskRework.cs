@@ -16,15 +16,19 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using static BorboStatUtils.BorboStatUtilsPlugin;
 
 namespace RiskierRain
 {
     partial class RiskierRainPlugin
     {
+        public static float hauntExecutionThreshold = 0.25f;
         float ghostSpawnChanceOnExecute = 100;
         float ghostDurationPerStack = 6.66f;
+
         public void HappiestMaskRework()
         {
+            GetExecutionThreshold += MaskExecution;
             RoR2.GlobalEventManager.onServerCharacterExecuted += HappiestMaskGhostSpawn;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHappiestMaskRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddMaskBehavior;
@@ -32,7 +36,7 @@ namespace RiskierRain
             LanguageAPI.Add("ITEM_GHOSTONKILL_PICKUP", "Haunt nearby enemies, marking them for execution. Executing enemies summons a ghost.");
             LanguageAPI.Add("ITEM_GHOSTONKILL_DESC", $"Once every <style=cIsDamage>{HappiestMaskBehavior.baseHauntInterval}</style> seconds, " +
                 $"Haunt a nearby non-boss enemy, marking them for Execution " +
-                $"below <style=cIsHealth>{Tools.ConvertDecimal(Assets.hauntExecutionThreshold)}</style> health. " +
+                $"below <style=cIsHealth>{Tools.ConvertDecimal(hauntExecutionThreshold)}</style> health. " +
                 $"Execution <style=cIsDamage>spawns a ghost</style> of the killed enemy with <style=cIsDamage>1500%</style> damage, " +
                 $"lasting for <style=cIsDamage>{ghostDurationPerStack}s</style> <style=cStack>(+{ghostDurationPerStack}s per stack)</style>.");
             LanguageAPI.Add("ITEM_GHOSTONKILL_LORE", 
@@ -53,6 +57,12 @@ namespace RiskierRain
                 "\r\n\r\n\u201CWhat are you...?\u201D With a sense of dread, the man turned and saw the Lemurians he had killed earlier step into the room. " +
                 "Their mouths began to glow with an otherworldly light." +
                 "\r\n\r\nThe man cursed under his breath as he loaded his shotgun. \u201CThis planet, I tell you...\u201D");
+        }
+
+        private void MaskExecution(CharacterBody sender, float executeThreshold)
+        {
+            bool hasHauntBuff = sender.HasBuff(Assets.hauntDebuff);
+            executeThreshold = ModifyExecutionThreshold(ref executeThreshold, hauntExecutionThreshold, hasHauntBuff);
         }
 
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)

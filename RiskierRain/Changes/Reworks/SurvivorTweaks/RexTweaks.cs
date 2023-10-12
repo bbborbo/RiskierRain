@@ -7,6 +7,7 @@ using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using UnityEngine;
+using static BorboStatUtils.BorboStatUtilsPlugin;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -46,12 +47,19 @@ namespace RiskierRain.SurvivorTweaks
             On.EntityStates.Treebot.Weapon.FirePlantSonicBoom.OnEnter += NerfBrambleVolley;
 
             //special
+            GetExecutionThreshold += HarvestFinisher;
             On.EntityStates.Treebot.TreebotFireFruitSeed.OnEnter += FireFruitEnter;
             special.variants[0].skillDef.keywordTokens = new string[1] { CoreModules.Assets.executeKeywordToken };
             LanguageAPI.Add("TREEBOT_SPECIAL_ALT1_DESCRIPTION",
                 $"<style=cIsHealth>Finisher</style>. Fire a <style=cIsDamage>injection</style> that deals <style=cIsDamage>330% damage</style>. " +
                 $"When killed, injected enemies drop multiple " +
                 $"<style=cIsHealing>fruits</style> that heal for <style=cIsHealing>25% HP</style>.");
+        }
+
+        private void HarvestFinisher(CharacterBody sender, float executeThreshold)
+        {
+            bool hasRexHarvestBuff = sender.HasBuff(RoR2Content.Buffs.Fruiting);
+            ModifyExecutionThreshold(ref executeThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
         }
 
         private void NerfSyringe(On.EntityStates.Treebot.Weapon.FireSyringe.orig_OnEnter orig, FireSyringe self)

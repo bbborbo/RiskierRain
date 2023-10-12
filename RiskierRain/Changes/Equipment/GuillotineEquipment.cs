@@ -11,11 +11,17 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using static BorboStatUtils.BorboStatUtilsPlugin;
 
 namespace RiskierRain.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {
+        public static BuffDef luckBuffIndex;
+        public static BuffDef executionDebuffIndex;
+        public static float newExecutionThresholdBase = 0.15f;
+        public static float newExecutionThresholdStack = 0.10f;
+
         bool strongerVsBosses = false;
         bool strongerVsElites = true;
 
@@ -24,8 +30,8 @@ namespace RiskierRain.Equipment
         private float guillotineDamageCoefficient = 1;
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
-        string baseThreshold = Tools.ConvertDecimal(Assets.newExecutionThresholdBase + Assets.newExecutionThresholdStack);
-        string stackThreshold = Tools.ConvertDecimal(Assets.newExecutionThresholdStack);
+        string baseThreshold = Tools.ConvertDecimal(newExecutionThresholdBase + newExecutionThresholdStack);
+        string stackThreshold = Tools.ConvertDecimal(newExecutionThresholdStack);
 
         public override string EquipmentName => "Old Guillotine";
 
@@ -78,6 +84,46 @@ namespace RiskierRain.Equipment
             IL.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
             On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            GetExecutionThreshold += GuillotineExecutionThreshold;
+            ModifyLuckStat += GuillotineLuckBuff;
+        }
+
+        private void GuillotineLuckBuff(CharacterBody sender, float luck)
+        {
+            luck += sender.GetBuffCount(luckBuffIndex);
+        }
+
+        private void AddExecutionDebuff()
+        {
+            executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+
+            executionDebuffIndex.buffColor = Color.white;
+            executionDebuffIndex.canStack = true;
+            executionDebuffIndex.isDebuff = false;
+            executionDebuffIndex.name = "ExecutionDebuffStackable";
+            executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+
+            Assets.buffDefs.Add(executionDebuffIndex);
+        }
+        private void AddLuckBuff()
+        {
+            luckBuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+
+            luckBuffIndex.buffColor = Color.green;
+            luckBuffIndex.canStack = true;
+            luckBuffIndex.isDebuff = false;
+            luckBuffIndex.name = "LuckBuffStackable";
+            luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+
+            Assets.buffDefs.Add(luckBuffIndex);
+        }
+
+        private void GuillotineExecutionThreshold(CharacterBody sender, float executeThreshold)
+        {
+            int executionBuffCount = sender.GetBuffCount(executionDebuffIndex);
+
+            float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
+            ModifyExecutionThreshold(ref executeThreshold, threshold, executionBuffCount > 0);
         }
 
         private void GuillotineExecuteBehavior(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
@@ -88,9 +134,9 @@ namespace RiskierRain.Equipment
             if(attackerBody && victimBody)
             {
                 SkillLocator skillLocator = attackerBody.skillLocator;
-                if(victimBody.HasBuff(Assets.executionDebuffIndex))
+                if(victimBody.HasBuff(executionDebuffIndex))
                 {
-                    attackerBody.AddTimedBuffAuthority(Assets.luckBuffIndex.buffIndex, luckDuration);
+                    attackerBody.AddTimedBuffAuthority(luckBuffIndex.buffIndex, luckDuration);
 
                     if(skillLocator != null)
                     {
@@ -169,6 +215,8 @@ namespace RiskierRain.Equipment
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
             //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            AddExecutionDebuff();
+            AddLuckBuff();
             CreateEquipment();
             CreateLang();
             Hooks();
@@ -186,7 +234,7 @@ namespace RiskierRain.Equipment
                 CharacterBody attackerBody = slot.characterBody;
                 if (targetBody)
                 {
-                    if (targetBody.HasBuff(Assets.executionDebuffIndex))
+                    if (targetBody.HasBuff(executionDebuffIndex))
                     {
                         slot.InvalidateCurrentTarget();
                     }
@@ -196,7 +244,7 @@ namespace RiskierRain.Equipment
                         DamageType type = DamageType.Generic;
                         if (targetBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                         {
-                            damage = Assets.newExecutionThresholdBase * targetBody.maxHealth;
+                            damage = newExecutionThresholdBase * targetBody.maxHealth;
                             type |= DamageType.NonLethal;
                         }
                         else
@@ -205,7 +253,7 @@ namespace RiskierRain.Equipment
 
                             for(int i = 0; i < executeCount; i++)
                             {
-                                targetBody.AddTimedBuff(Assets.executionDebuffIndex, executeDuration);
+                                targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
                             }
                             damage = attackerBody.damage * guillotineDamageCoefficient;
                         }

@@ -81,7 +81,6 @@ namespace RiskierRain.CoreModules
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
             AddTrophyHunterDebuffs();
-            AddBanditExecutionDebuff();
             AddShredDebuff();
             AddCooldownBuff();
             AddAspdPenaltyDebuff();
@@ -96,24 +95,12 @@ namespace RiskierRain.CoreModules
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
-            LanguageAPI.Add(executeKeywordToken,
-                $"<style=cKeywordName>Finisher</style>" +
-                $"<style=cSub>Enemies targeted by this skill can be " +
-                $"<style=cIsHealth>instantly killed</style> if below " +
-                $"<style=cIsHealth>{Tools.ConvertDecimal(survivorExecuteThreshold)} health</style>.</style>");
 
             LanguageAPI.Add(shredKeywordToken, $"<style=cKeywordName>Shred</style>" +
                 $"<style=cSub>Apply a stacking debuff that increases ALL damage taken by {shredArmorReduction}% per stack. Critical Strikes apply more Shred.</style>");
-
-            AddExecutionDebuff();
-            AddLuckBuff();
-            IL.RoR2.HealthComponent.TakeDamage += AddExecutionThreshold;
-            On.RoR2.HealthComponent.GetHealthBarValues += DisplayExecutionThreshold;
-            On.RoR2.CharacterBody.AddTimedBuff_BuffIndex_float += LuckBuffAdd;
-            On.RoR2.CharacterBody.RemoveBuff_BuffIndex += LuckBuffRemove;
-            On.RoR2.CharacterMaster.OnInventoryChanged += LuckCalculation;
         }
 
+        #region happiest mask
         public static BuffDef hauntDebuff;
         public static GameObject hauntEffectPrefab;
         private void AddMaskHauntAssets()
@@ -131,6 +118,7 @@ namespace RiskierRain.CoreModules
             GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
             hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
         }
+        #endregion
 
         public static GameObject miredUrnTarball;
         private void CreateMiredUrnTarball()
@@ -354,34 +342,9 @@ namespace RiskierRain.CoreModules
             buffDefs.Add(captainCdrBuff);
         }
 
-        public static BuffDef desperadoExecutionDebuff;
-        public static BuffDef lightsoutExecutionDebuff;
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;
         public static float harvestExecutionThreshold = 0.2f;
-        public static float hauntExecutionThreshold = 0.25f;
-
-        private void AddBanditExecutionDebuff()
-        {
-            desperadoExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                desperadoExecutionDebuff.buffColor = Color.black;
-                desperadoExecutionDebuff.canStack = false;
-                desperadoExecutionDebuff.isDebuff = true;
-                desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
-                desperadoExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            }
-            buffDefs.Add(desperadoExecutionDebuff);
-            lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                lightsoutExecutionDebuff.buffColor = Color.black;
-                lightsoutExecutionDebuff.canStack = false;
-                lightsoutExecutionDebuff.isDebuff = true;
-                lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
-                lightsoutExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            }
-            buffDefs.Add(lightsoutExecutionDebuff);
-        }
 
         public static BuffDef bossHunterDebuff;
         public static BuffDef bossHunterDebuffWithScalpel;
@@ -450,72 +413,7 @@ namespace RiskierRain.CoreModules
             buffDefs.Add(combatTelescopeCritChance);
         }
 
-        public static void RecalculateLuck(CharacterMaster master)
-        {
-            float luck = 0;
-            CharacterBody body = master.GetBody();
-            if (body)
-            {
-                luck += body.GetBuffCount(luckBuffIndex);
-            }
-            luck += (float)master.inventory.GetItemCount(RoR2Content.Items.Clover);
-            luck -= (float)master.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
 
-            master.luck = luck;
-        }
-        private void LuckCalculation(On.RoR2.CharacterMaster.orig_OnInventoryChanged orig, CharacterMaster self)
-        {
-            orig(self);
-            RecalculateLuck(self);
-        }
-        private void LuckBuffRemove(On.RoR2.CharacterBody.orig_RemoveBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
-        {
-            orig(self, buffType);
-            if (buffType == luckBuffIndex.buffIndex)
-            {
-                RecalculateLuck(self.master);
-            }
-        }
-        private void LuckBuffAdd(On.RoR2.CharacterBody.orig_AddTimedBuff_BuffIndex_float orig, CharacterBody self, BuffIndex buffType, float duration)
-        {
-            orig(self, buffType, duration);
-            if(buffType == luckBuffIndex.buffIndex)
-            {
-                RecalculateLuck(self.master);
-            }
-        }
-
-        public static BuffDef executionDebuffIndex;
-        public static float newExecutionThresholdBase = 0.15f;
-        public static float newExecutionThresholdStack = 0.10f;
-
-        public static BuffDef luckBuffIndex;
-
-        private void AddExecutionDebuff()
-        {
-            executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
-
-            executionDebuffIndex.buffColor = Color.white;
-            executionDebuffIndex.canStack = true;
-            executionDebuffIndex.isDebuff = false;
-            executionDebuffIndex.name = "ExecutionDebuffStackable";
-            executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
-
-            buffDefs.Add(executionDebuffIndex);
-        }
-
-        private void AddLuckBuff()
-        {
-            luckBuffIndex = ScriptableObject.CreateInstance<BuffDef>();
-
-            luckBuffIndex.buffColor = Color.green;
-            luckBuffIndex.canStack = true;
-            luckBuffIndex.isDebuff = false;
-            luckBuffIndex.name = "LuckBuffStackable";
-            luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
-
-            buffDefs.Add(luckBuffIndex);
-        }
 
         private void AddExecutionThreshold(ILContext il)
         {
@@ -556,20 +454,20 @@ namespace RiskierRain.CoreModules
                 if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                 {
                     //bandit specials (finisher)
-                    bool hasBanditExecutionBuff = body.HasBuff(desperadoExecutionDebuff) || body.HasBuff(lightsoutExecutionDebuff);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);
+                    /*bool hasBanditExecutionBuff = body.HasBuff(desperadoExecutionDebuff) || body.HasBuff(lightsoutExecutionDebuff);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);*/
                     
                     //rex harvest (finisher)
-                    bool hasRexHarvestBuff = body.HasBuff(RoR2Content.Buffs.Fruiting);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
+                    /*bool hasRexHarvestBuff = body.HasBuff(RoR2Content.Buffs.Fruiting);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasRexHarvestBuff);*/
 
-                    bool hasHauntBuff = body.HasBuff(hauntDebuff);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, hauntExecutionThreshold, hasHauntBuff);
+                    /*bool hasHauntBuff = body.HasBuff(hauntDebuff);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, hauntExecutionThreshold, hasHauntBuff);*/
 
                     //guillotine
-                    int executionBuffCount = body.GetBuffCount(executionDebuffIndex);
+                    /*int executionBuffCount = body.GetBuffCount(executionDebuffIndex);
                     float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-                    newThreshold = ModifyExecutionThreshold(newThreshold, threshold, executionBuffCount > 0);
+                    newThreshold = ModifyExecutionThreshold(newThreshold, threshold, executionBuffCount > 0);*/
                 }
             }
 

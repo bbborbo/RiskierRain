@@ -54,7 +54,7 @@ namespace RiskierRain.Enemies.VoidDreamers
 							{
 								component.SetEquipmentIndex(SimulatedAspect.instance.EliteEquipmentDef.equipmentIndex);
 								component.GiveItem(RoR2Content.Items.UseAmbientLevel);
-								component.GiveItem(RoR2Content.Items.HealthDecay);
+								component.GiveItem(RoR2Content.Items.HealthDecay, 30);
 							}
 						}
 					}));
@@ -63,10 +63,30 @@ namespace RiskierRain.Enemies.VoidDreamers
 					{
 						return;
 					}
-					instance.TrySpawnObject(directorSpawnRequest);
+					GameObject guy = instance.TrySpawnObject(directorSpawnRequest);
+					//BanishToVoidDimension(guy);
 				}
 			}
 		}
+		private void BanishToVoidDimension(GameObject victim)
+        {
+			HealthComponent hc = victim.GetComponent<HealthComponent>();
+			if (hc == null)
+            {
+				Debug.Log("whoops!!");
+				return;
+            }
+			hc.TakeDamage(new DamageInfo
+			{
+				damage = 1,
+				crit = false,
+				inflictor = base.characterBody.gameObject,
+				attacker = base.characterBody.gameObject,
+				//procChainMask = ProcChainMask.
+				procCoefficient = 1,
+				damageType = DamageType.VoidDeath
+			});
+        }
 		private void SearchEnemies()
         {
 			if (NetworkServer.active)

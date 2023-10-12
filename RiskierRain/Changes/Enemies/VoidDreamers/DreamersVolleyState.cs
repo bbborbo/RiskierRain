@@ -43,7 +43,6 @@ namespace RiskierRain.Enemies.VoidDreamers
                 speedOverride = speed,
                 useSpeedOverride = true,
             };
-            Debug.Log($"{fireProjectileInfo.damage}, {damageCoefficient}, {damageStat}");
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
         }
 

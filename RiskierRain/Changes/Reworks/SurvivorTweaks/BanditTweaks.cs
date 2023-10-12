@@ -12,7 +12,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
-using static BorboStatUtils.BorboStatUtilsPlugin;
+using static BorboStatUtils.BorboStatUtils;
 
 namespace RiskierRain.SurvivorTweaks
 {

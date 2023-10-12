@@ -7,7 +7,7 @@ using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using UnityEngine;
-using static BorboStatUtils.BorboStatUtilsPlugin;
+using static BorboStatUtils.BorboStatUtils;
 
 namespace RiskierRain.SurvivorTweaks
 {

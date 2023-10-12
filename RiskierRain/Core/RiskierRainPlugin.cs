@@ -40,8 +40,8 @@ namespace RiskierRain
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.Transgendence", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(ChillReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(BorboStatUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(ChillRework.ChillRework.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency("com.DestroyedClone.AncientScepter", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("Withor.AcridBiteLunge", BepInDependency.DependencyFlags.SoftDependency)]

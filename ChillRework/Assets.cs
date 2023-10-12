@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ChillRework
 {
-    public partial class ChillReworkPlugin : BaseUnityPlugin
+    public partial class ChillRework : BaseUnityPlugin
     {
         public static EffectDef RegisterEffect(GameObject effect)
         {

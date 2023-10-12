@@ -16,7 +16,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static BorboStatUtils.BorboStatUtilsPlugin;
+using static BorboStatUtils.BorboStatUtils;
 
 namespace RiskierRain
 {

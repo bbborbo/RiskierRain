@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static BorboStatUtils.BorboStatUtilsPlugin;
+using static BorboStatUtils.BorboStatUtils;
 
 namespace RiskierRain.Equipment
 {

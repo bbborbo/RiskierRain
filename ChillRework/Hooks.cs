@@ -10,7 +10,7 @@ using static R2API.DamageAPI;
 
 namespace ChillRework
 {
-    public partial class ChillReworkPlugin : BaseUnityPlugin
+    public partial class ChillRework : BaseUnityPlugin
     {
         public void FixSnapfreeze()
         {

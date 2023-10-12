@@ -15,7 +15,7 @@ namespace ChillRework
 {
     [BepInPlugin(guid, teamName, modName)]
     [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]
-    public partial class ChillReworkPlugin : BaseUnityPlugin
+    public partial class ChillRework : BaseUnityPlugin
     {
         #region plugin info
         public static PluginInfo PInfo { get; private set; }

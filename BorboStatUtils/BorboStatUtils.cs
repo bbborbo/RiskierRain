@@ -11,7 +11,7 @@ namespace BorboStatUtils
 {
     [BepInPlugin(guid, teamName, modName)]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
-    public class BorboStatUtilsPlugin : BaseUnityPlugin
+    public class BorboStatUtils : BaseUnityPlugin
     {
         #region plugin info
         public static PluginInfo PInfo { get; private set; }

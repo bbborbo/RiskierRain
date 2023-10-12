@@ -194,50 +194,7 @@ namespace RiskierRain.Interactables
             ChooseItem();
             GameObject obj = CombatEncounterHelper.MethodOne(self, activator, 40, 1);
             orig(self, activator);
-            
-            //Vector3 vector = Vector3.zero;
-            //Quaternion rotation = Quaternion.identity;
-            //Transform transform = self.gameObject.transform;
-            //if (transform)
-            //{
-            //    vector = transform.position;
-            //    rotation = transform.rotation;
-            //}   
-            //
-            //GameObject gameObject = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Encounters/MonstersOnShrineUseEncounter");
-            //
-            //if (gameObject == null)
-            //{
-            //    return;
-            //}
-            //
-            //GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject, vector, Quaternion.identity);
-            //NetworkServer.Spawn(gameObject2);
-            //CombatDirector component6 = gameObject2.GetComponent<CombatDirector>();
-            //component6.gameObject.AddComponent<GalleryDirector>();
-            //
-            //if (!(component6 && Stage.instance))
-            //{
-            //    return;
-            //}
-            //
-            //float monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient;
-            //DirectorCard directorCard = component6.SelectMonsterCardForCombatShrine(monsterCredit);
-            //
-            //if (directorCard != null)
-            //{
-            //    ChooseItem();
-            //    component6.CombatShrineActivation(activator, monsterCredit, directorCard);
-            //    EffectData effectData = new EffectData
-            //    {
-            //        origin = vector,
-            //        rotation = rotation
-            //    };
-            //
-            //    EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse"), effectData, true);
-            //    return;
-            //}
-            //NetworkServer.Destroy(gameObject2);
+            self.available = false;
         }
         GameObject enemySpawned;
         ItemDef[] itemPool = new ItemDef[10];

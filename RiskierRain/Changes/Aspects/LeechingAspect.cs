@@ -25,7 +25,7 @@ namespace RiskierRain.Equipment
         public static float maxHealFraction = 2f;
         public static GameObject pulsePrefab;
 
-        public override string EliteEquipmentName => "N\u2019Kuhana\u2019s Respite";
+        public override string EliteEquipmentName => "N\u2019Kuhana\u2019s Concession";//change this later
 
         public override string EliteAffixToken => "AFFIX_LEECH";
 

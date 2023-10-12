@@ -37,9 +37,10 @@ namespace ChillRework
             CreateIceNovaAssets();
             LangFixes();
             FixSnapfreeze();
+            ReworkChill();
         }
 
-        public void ChillRework()
+        public void ReworkChill()
         {
             ChillOnHit = ReserveDamageType();
             ChillHooks();

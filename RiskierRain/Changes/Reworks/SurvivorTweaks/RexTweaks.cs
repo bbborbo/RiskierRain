@@ -56,10 +56,10 @@ namespace RiskierRain.SurvivorTweaks
                 $"<style=cIsHealing>fruits</style> that heal for <style=cIsHealing>25% HP</style>.");
         }
 
-        private void HarvestFinisher(CharacterBody sender, float executeThreshold)
+        private void HarvestFinisher(CharacterBody sender, ref float executeThreshold)
         {
             bool hasRexHarvestBuff = sender.HasBuff(RoR2Content.Buffs.Fruiting);
-            ModifyExecutionThreshold(ref executeThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
         }
 
         private void NerfSyringe(On.EntityStates.Treebot.Weapon.FireSyringe.orig_OnEnter orig, FireSyringe self)

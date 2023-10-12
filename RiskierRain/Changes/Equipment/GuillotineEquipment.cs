@@ -88,7 +88,7 @@ namespace RiskierRain.Equipment
             ModifyLuckStat += GuillotineLuckBuff;
         }
 
-        private void GuillotineLuckBuff(CharacterBody sender, float luck)
+        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
         {
             luck += sender.GetBuffCount(luckBuffIndex);
         }
@@ -118,12 +118,12 @@ namespace RiskierRain.Equipment
             Assets.buffDefs.Add(luckBuffIndex);
         }
 
-        private void GuillotineExecutionThreshold(CharacterBody sender, float executeThreshold)
+        private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
         {
             int executionBuffCount = sender.GetBuffCount(executionDebuffIndex);
 
             float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-            ModifyExecutionThreshold(ref executeThreshold, threshold, executionBuffCount > 0);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, threshold, executionBuffCount > 0);
         }
 
         private void GuillotineExecuteBehavior(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)

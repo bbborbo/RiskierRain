@@ -59,10 +59,10 @@ namespace RiskierRain
                 "\r\n\r\nThe man cursed under his breath as he loaded his shotgun. \u201CThis planet, I tell you...\u201D");
         }
 
-        private void MaskExecution(CharacterBody sender, float executeThreshold)
+        private void MaskExecution(CharacterBody sender, ref float executeThreshold)
         {
             bool hasHauntBuff = sender.HasBuff(Assets.hauntDebuff);
-            executeThreshold = ModifyExecutionThreshold(ref executeThreshold, hauntExecutionThreshold, hasHauntBuff);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, hauntExecutionThreshold, hasHauntBuff);
         }
 
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)

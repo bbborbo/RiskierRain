@@ -393,10 +393,10 @@ namespace RiskierRain.SurvivorTweaks
             Assets.buffDefs.Add(lightsoutExecutionDebuff);
         }
 
-        private void BanditFinisher(CharacterBody sender, float executeThreshold)
+        private void BanditFinisher(CharacterBody sender, ref float executeThreshold)
         {
             bool hasBanditExecutionBuff = sender.HasBuff(desperadoExecutionDebuff) || sender.HasBuff(lightsoutExecutionDebuff);
-            ModifyExecutionThreshold(ref executeThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);
         }
 
         private void ModifyLightsOutDamage(On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmResetRevolver self, BulletAttack bulletAttack)

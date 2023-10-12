@@ -26,7 +26,6 @@ namespace BorboStatUtils
 
         public void Awake()
         {
-            SetExecutionHooks();
             LanguageAPI.Add(executeKeywordToken,
                 $"<style=cKeywordName>Finisher</style>" +
                 $"<style=cSub>Enemies targeted by this skill can be " +
@@ -35,16 +34,17 @@ namespace BorboStatUtils
         }
 
         #region luck
+        // i basically copied how this delegate stuff works from RecalculateStatsAPI
         internal static void SetLuckHooks()
         {
-            //On.RoR2.CharacterBody.RecalculateStats += RecalculateLuckStat;
+            On.RoR2.CharacterBody.RecalculateStats += RecalculateLuckStat;
         }
         internal static void UnsetLuckHooks()
         {
-            //On.RoR2.CharacterBody.RecalculateStats -= RecalculateLuckStat;
+            On.RoR2.CharacterBody.RecalculateStats -= RecalculateLuckStat;
         }
 
-        public delegate void LuckHookEventHandler(CharacterBody sender, float luck);
+        public delegate void LuckHookEventHandler(CharacterBody sender, ref float luck);
         public static event LuckHookEventHandler ModifyLuckStat
         {
             add
@@ -82,11 +82,11 @@ namespace BorboStatUtils
 
                 if (_modifyLuckStat != null)
                 {
-                    foreach (ExecuteHookEventHandler @event in _modifyLuckStat.GetInvocationList())
+                    foreach (LuckHookEventHandler @event in _modifyLuckStat.GetInvocationList())
                     {
                         try
                         {
-                            @event(body, luck);
+                            @event(body, ref luck);
                         }
                         catch (Exception e)
                         {
@@ -103,6 +103,7 @@ namespace BorboStatUtils
         #endregion
 
         #region execute
+        // i basically copied how this delegate stuff works from RecalculateStatsAPI
         internal static void SetExecutionHooks()
         {
             IL.RoR2.HealthComponent.TakeDamage += InterceptExecutionThreshold;
@@ -114,9 +115,9 @@ namespace BorboStatUtils
             On.RoR2.HealthComponent.GetHealthBarValues -= DisplayExecutionThreshold;
         }
 
-        public delegate void ExecuteHookEventHandler(CharacterBody sender, float executeThreshold);
-        public static event ExecuteHookEventHandler GetExecutionThreshold;
-        /*{
+        public delegate void ExecuteHookEventHandler(CharacterBody sender, ref float executeThreshold);
+        public static event ExecuteHookEventHandler GetExecutionThreshold
+        {
             add
             {
                 SetExecutionHooks();
@@ -134,7 +135,7 @@ namespace BorboStatUtils
                     UnsetExecutionHooks();
                 }
             }
-        }*/
+        }
         private static event ExecuteHookEventHandler _getExecutionThreshold;
         private static void InterceptExecutionThreshold(ILContext il)
         {
@@ -175,28 +176,28 @@ namespace BorboStatUtils
                 if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                 {
                     Debug.LogWarning("sdfhbsdf");
-                    GetExecutionThreshold?.Invoke(body, currentThreshold);
-                    /*if (_getExecutionThreshold != null)
+                    //GetExecutionThreshold?.Invoke(body, ref currentThreshold);
+                    if (_getExecutionThreshold != null)
                     {
                         foreach (ExecuteHookEventHandler @event in _getExecutionThreshold.GetInvocationList())
                         {
                             try
                             {
-                                @event(body, newThreshold);
+                                @event(body, ref newThreshold);
                             }
                             catch (Exception e)
                             {
                                 Debug.LogError(e);
                             }
                         }
-                    }*/
+                    }
                 }
             }
 
             return newThreshold;
         }
 
-        public static float ModifyExecutionThreshold(ref float currentThreshold, float newThreshold, bool condition)
+        public static float ModifyExecutionThreshold(float currentThreshold, float newThreshold, bool condition)
         {
             if (condition)
             {

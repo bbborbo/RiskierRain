@@ -68,7 +68,7 @@ namespace RiskierRain.Enemies.VoidDreamers
 				//Vector3 rot = new Vector3(90f, 0f, 0f);
 				rotation = Quaternion.identity;//Quaternion.Euler(rot);
 				FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
-				fireProjectileInfo.projectilePrefab = DreamersFlamePillarSkill.dreamersFlamePillar;
+				fireProjectileInfo.projectilePrefab = DreamersFlamePillarSkill.dreamersFlamePillarWarning;
 				fireProjectileInfo.position = point;
 				fireProjectileInfo.rotation = rotation;
 				fireProjectileInfo.owner = base.gameObject;
@@ -133,4 +133,5 @@ namespace RiskierRain.Enemies.VoidDreamers
 		private float durationBetweenCast;
 		private float totalExplosions;
 	}
+
 }

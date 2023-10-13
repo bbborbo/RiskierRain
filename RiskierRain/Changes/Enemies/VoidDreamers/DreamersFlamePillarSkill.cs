@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using RoR2.Projectile;
+using RiskierRain.CoreModules;
+using UnityEngine.Events;
 
 namespace RiskierRain.Enemies.VoidDreamers
 {
@@ -14,7 +17,7 @@ namespace RiskierRain.Enemies.VoidDreamers
     {
 
         public static GameObject dreamersFlamePillar;
-        public static GameObject dreamersFlamePillarGhost;
+        public static GameObject dreamersFlamePillarWarning;
         public override string SkillName => "Extend field / attack";
 
         public override string SkillDescription => "";
@@ -37,9 +40,10 @@ namespace RiskierRain.Enemies.VoidDreamers
                 interruptPriority: EntityStates.InterruptPriority.Skill
             );
 
+       
+
         public override void Hooks()
         {
-            ;
         }
 
         public override void Init(ConfigFile config)
@@ -48,13 +52,20 @@ namespace RiskierRain.Enemies.VoidDreamers
             CreateSkill();
             CreateProjectile();
         }
-
         private void CreateProjectile()
         {
             dreamersFlamePillar = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherFirePillar.prefab").WaitForCompletion().InstantiateClone("DreamersFlame", true);
-            dreamersFlamePillarGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherFirePillarGhost.prefab").WaitForCompletion().InstantiateClone("DreamersFlameGhost", true);
-
-
+            dreamersFlamePillarWarning = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Titan/TitanPreFistProjectile.prefab").WaitForCompletion().InstantiateClone("DreamersFlameGhost", true);
+            ProjectileImpactExplosion pie = dreamersFlamePillarWarning.GetComponent<ProjectileImpactExplosion>();
+            //UnityEngine.Object.Destroy(pie);
+            pie.impactEffect = dreamersFlamePillar;
+            //pie.lifetime = 3;
+            ProjectileFireChildren pfc = dreamersFlamePillarWarning.AddComponent<ProjectileFireChildren>();
+            pfc.childProjectilePrefab = dreamersFlamePillar;
+            pfc.timer = pie.lifetime;
+            Assets.projectilePrefabs.Add(dreamersFlamePillar);
+            Assets.projectilePrefabs.Add(dreamersFlamePillarWarning);
         }
     }
+
 }

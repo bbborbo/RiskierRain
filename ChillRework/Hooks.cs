@@ -36,48 +36,51 @@ namespace ChillRework
 
         private void ChillOnHitHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
-            CharacterBody vBody = victim?.GetComponent<CharacterBody>();
-            CharacterBody aBody = damageInfo.attacker?.GetComponent<CharacterBody>();
-
-            if (vBody != null && aBody != null && damageInfo.procCoefficient != 0 && !damageInfo.rejected)
+            if(victim != null && damageInfo.attacker != null)
             {
-                if (damageInfo.damageType.HasFlag(DamageType.Freeze2s))
+                CharacterBody vBody = victim?.GetComponent<CharacterBody>();
+                CharacterBody aBody = damageInfo.attacker?.GetComponent<CharacterBody>();
+
+                if (vBody != null && aBody != null && damageInfo.procCoefficient != 0 && !damageInfo.rejected)
                 {
-                    this.frozenBy[victim] = damageInfo.attacker;
-                    float chillCount = chillStacksOnFreeze;
-                    if (damageInfo.damageType.HasFlag(DamageType.AOE))
+                    if (damageInfo.damageType.HasFlag(DamageType.Freeze2s))
                     {
-                        chillCount -= 1;
-                    }
-                    for (int i = 0; i < chillCount; i++)
-                    {
-                        if (Util.CheckRoll(damageInfo.procCoefficient * 100, aBody.master))
+                        this.frozenBy[victim] = damageInfo.attacker;
+                        float chillCount = chillStacksOnFreeze;
+                        if (damageInfo.damageType.HasFlag(DamageType.AOE))
                         {
-                            vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
+                            chillCount -= 1;
+                        }
+                        for (int i = 0; i < chillCount; i++)
+                        {
+                            if (Util.CheckRoll(damageInfo.procCoefficient * 100, aBody.master))
+                            {
+                                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        if (damageInfo.HasModdedDamageType(ChillOnHit))//(damageInfo.damageType.HasFlag(DamageType.SlowOnHit))
+                        {
+                            damageInfo.RemoveModdedDamageType(ChillOnHit);
+                            float procChance = Mathf.Min(1, chillProcChance * damageInfo.procCoefficient * damageInfo.procCoefficient) * 100;
+
+                            if (Util.CheckRoll(procChance, aBody.master))
+                            {
+                                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
+                            }
                         }
                     }
                 }
-                else
+                int chillDebuffCount = vBody.GetBuffCount(RoR2Content.Buffs.Slow80);
+                if (chillDebuffCount >= chillStacksMax) //Arctic Blast
                 {
-
-                    if (damageInfo.HasModdedDamageType(ChillOnHit))//(damageInfo.damageType.HasFlag(DamageType.SlowOnHit))
-                    {
-                        damageInfo.RemoveModdedDamageType(ChillOnHit);
-                        float procChance = Mathf.Min(1, chillProcChance * damageInfo.procCoefficient * damageInfo.procCoefficient) * 100;
-
-                        if (Util.CheckRoll(procChance, aBody.master))
-                        {
-                            vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
-                        }
-                    }
+                    OnMaxChill?.Invoke(damageInfo, victim);
+                    /*vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80);
+                    AltArtiPassive.DoNova(aBody, icePower, damageInfo.position, AltArtiPassive.novaDebuffThreshold);*/
                 }
-            }
-            int chillDebuffCount = vBody.GetBuffCount(RoR2Content.Buffs.Slow80);
-            if (chillDebuffCount >= chillStacksMax) //Arctic Blast
-            {
-                OnMaxChill?.Invoke(damageInfo, victim);
-                /*vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80);
-                AltArtiPassive.DoNova(aBody, icePower, damageInfo.position, AltArtiPassive.novaDebuffThreshold);*/
             }
             orig(self, damageInfo, victim);
         }

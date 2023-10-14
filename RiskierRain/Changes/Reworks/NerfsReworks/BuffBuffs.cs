@@ -168,10 +168,10 @@ namespace RiskierRain
         #region slows
         GameObject templarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/ClayBruiserBody");
         GameObject chimeraWispPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/LunarWispBody");
-        static float tarSlowAspdReduction = 0.3f;
-        static float kitSlowAspdReduction = 0.3f;
-        static float chronoSlowAspdReduction = 0.5f;
-        static float chillSlowAspdReduction = 0.6f;
+        public static float tarSlowAspdReduction = 0.3f;
+        public static float kitSlowAspdReduction = 0.3f;
+        public static float chronoSlowAspdReduction = 0.5f;
+        public static float chillSlowAspdReduction = 0.6f;
 
         void BuffSlows()
         {

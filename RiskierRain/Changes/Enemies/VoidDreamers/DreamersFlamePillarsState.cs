@@ -126,7 +126,6 @@ namespace RiskierRain.Enemies.VoidDreamers
 		public static float damageCoefficient = 2.1f;
 		public static float randomRadius = 16f;
 		public static float radius = 6f;
-		public static GameObject projectilePrefab;
 
 
 		private float duration;

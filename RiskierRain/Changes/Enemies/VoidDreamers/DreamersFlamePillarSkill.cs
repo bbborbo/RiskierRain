@@ -58,7 +58,7 @@ namespace RiskierRain.Enemies.VoidDreamers
             dreamersFlamePillarWarning = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Titan/TitanPreFistProjectile.prefab").WaitForCompletion().InstantiateClone("DreamersFlameGhost", true);
             ProjectileImpactExplosion pie = dreamersFlamePillarWarning.GetComponent<ProjectileImpactExplosion>();
             //UnityEngine.Object.Destroy(pie);
-            pie.impactEffect = dreamersFlamePillar;
+            pie.impactEffect = null;
             //pie.lifetime = 3;
             ProjectileFireChildren pfc = dreamersFlamePillarWarning.AddComponent<ProjectileFireChildren>();
             pfc.childProjectilePrefab = dreamersFlamePillar;

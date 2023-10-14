@@ -90,7 +90,7 @@ namespace RiskierRain.Items
                 attacker = body.gameObject,
                 crit = Util.CheckRoll(body.crit, body.master),
                 falloffModel = BlastAttack.FalloffModel.None,
-                damageType = DamageType.SlowOnHit,
+                damageType = DamageType.Generic,
                 teamIndex = TeamComponent.GetObjectTeam(body.gameObject)
             };
             scugNova.Fire();

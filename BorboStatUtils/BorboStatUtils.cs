@@ -97,8 +97,11 @@ namespace BorboStatUtils
                     }
                 }
             }
-            luck += (float)master.inventory.GetItemCount(RoR2Content.Items.Clover);
-            luck -= (float)master.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
+            if (master.inventory)
+            {
+                luck += (float)master.inventory.GetItemCount(RoR2Content.Items.Clover);
+                luck -= (float)master.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
+            }
 
             master.luck = luck;
         }

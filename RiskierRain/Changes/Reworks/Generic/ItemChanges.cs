@@ -48,8 +48,6 @@ namespace RiskierRain
         public static float capacitorCooldown = 20f; //20
         void StunChanges()
         {
-            RetierItem(nameof(RoR2Content.Items.StunChanceOnHit), ItemTier.NoTier);
-
             LoadEquipDef(nameof(RoR2Content.Equipment.Lightning)).cooldown = capacitorCooldown;
             IL.RoR2.EquipmentSlot.FireLightning += CapacitorNerf;
             IL.RoR2.Orbs.LightningStrikeOrb.OnArrival += CapacitorBuff;

@@ -20,7 +20,7 @@ namespace BorboStatUtils
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "HouseOfFruits";
         public const string modName = "2R4RStatUtils";
-        public const string version = "1.0.0";
+        public const string version = "1.0.2";
         #endregion
 
         public const string executeKeywordToken = "2R4R_EXECUTION_KEYWORD";
@@ -72,13 +72,16 @@ namespace BorboStatUtils
         private static void RecalculateLuckStat(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
-            CalculateLuck(self.master);
+            CalculateLuck(self);
         }
-        public static void CalculateLuck(CharacterMaster master)
+        public static void CalculateLuck(CharacterBody self)
         {
+            CharacterMaster master = self.master;
+            if (master == null)
+                return;
+
             float luck = 0;
-            CharacterBody body = master.GetBody();
-            if (body)
+            if (self)
             {
                 //luck += body.GetBuffCount(luckBuffIndex);
 
@@ -88,7 +91,7 @@ namespace BorboStatUtils
                     {
                         try
                         {
-                            @event(body, ref luck);
+                            @event(self, ref luck);
                         }
                         catch (Exception e)
                         {
@@ -97,10 +100,10 @@ namespace BorboStatUtils
                     }
                 }
             }
-            if (master.inventory)
+            if (self.inventory)
             {
-                luck += (float)master.inventory.GetItemCount(RoR2Content.Items.Clover);
-                luck -= (float)master.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
+                luck += (float)self.inventory.GetItemCount(RoR2Content.Items.Clover);
+                luck -= (float)self.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
             }
 
             master.luck = luck;

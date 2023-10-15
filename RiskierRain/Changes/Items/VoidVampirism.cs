@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace RiskierRain.Items
 {
-    class LunarVampirism : ItemBase<LunarVampirism>
+    class VoidVampirism : ItemBase<VoidVampirism>
     {
         int maxHeal = 3;
         int bleedPerHeal = 5;
@@ -19,7 +19,7 @@ namespace RiskierRain.Items
 
         public override string ItemLangTokenName => "HEALFROMBLEEDINGENEMIES";
 
-        public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies.";
+        public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies. Corrupts all Leeching Seeds.";
 
         public override string ItemFullDescription => "later";
 
@@ -92,7 +92,7 @@ namespace RiskierRain.Items
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.Seed, //consumes leeching seed
-                itemDef2 = LunarVampirism.instance.ItemsDef
+                itemDef2 = VoidVampirism.instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
             orig();

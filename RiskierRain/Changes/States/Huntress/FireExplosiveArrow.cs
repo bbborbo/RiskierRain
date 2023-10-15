@@ -17,20 +17,21 @@ namespace RiskierRain.EntityState.Huntress
 		public static GameObject muzzleFlashCrit = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/MuzzleflashHuntressFlurry");
 
 		public bool isCrit;
-		public static float maxDamage = 3.2f;
-		public static float minDamage = 0.8f;
+		public static float maxDamage = 3.8f;
+		public static float minDamage = 1.2f;
 
         public override void OnEnter()
 		{
+			//isCrit = base.RollCrit();
 			this.projectilePrefab = isCrit ? ExplosiveArrowSkill.critArrowPrefab : ExplosiveArrowSkill.regularArrowPrefab;
 			this.muzzleflashEffectPrefab = null;
-			this.baseDuration = 0.1f;
 			this.selfForce = 1000f;
 
 			maxDamageCoefficient = maxDamage;
 			minDamageCoefficient = minDamage;
 			base.OnEnter();
 
+			base.PlayCrossfade("Body", "FireArrowSnipe", "FireArrowSnipe.playbackRate", this.duration, this.duration * 0.2f);
 			EffectManager.SimpleMuzzleFlash(isCrit ? muzzleFlashCrit : muzzleFlash, base.gameObject, new FireSeekingArrow().muzzleString, false);
             if (isCrit)
             {
@@ -57,6 +58,8 @@ namespace RiskierRain.EntityState.Huntress
 
 		public override void ModifyProjectile(ref FireProjectileInfo projectileInfo)
         {
+			if (isCrit)
+				projectileInfo.projectilePrefab = ExplosiveArrowSkill.critArrowPrefab;
 			projectileInfo.crit = isCrit;
             base.ModifyProjectile(ref projectileInfo);
         }

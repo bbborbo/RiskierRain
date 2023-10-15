@@ -12,51 +12,68 @@ namespace RiskierRain.EntityState.Huntress
 {
     class ChargeExplosiveArrow : BaseChargeBombState
     {
-        public static GameObject muzzleFlashPerfectTiming = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/Muzzleflash1");
-        public static float baseWindUpDuration = 0.9f;
-        public static float baseWindDownDuration = 0.1f;
+        public static GameObject muzzleFlashPerfectTiming = FireFlurrySeekingArrow.critMuzzleflashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/Muzzleflash1");
+        public static GameObject muzzleFlashFullCharge = ChargeArrow.muzzleflashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("prefabs/effects/muzzleflashes/Muzzleflash1");
+        
+        public static float baseWindUpDuration = 0.6f;
+        public static float baseWindDownDuration = 0.25f;
         public static float sweetSpotDuration = 0.2f; // not affected by attack speed
         internal float windUpDuration;
         bool hasFullyCharged = false;
+        bool isCrit = false;
         public override void OnEnter()
         {
-            baseDuration = baseWindUpDuration + (sweetSpotDuration * this.attackSpeedStat) + baseWindDownDuration;
+            isCrit = Util.CheckRoll(characterBody.crit, characterBody.master);
+            if (isCrit)
+            {
+                EffectManager.SimpleMuzzleFlash(muzzleFlashPerfectTiming, base.gameObject, new FireSeekingArrow().muzzleString, false);
+            }
+            baseDuration = baseWindUpDuration;// + (sweetSpotDuration * this.attackSpeedStat) + baseWindDownDuration;
             windUpDuration = baseWindUpDuration / this.attackSpeedStat;
-            minChargeDuration = (FireExplosiveArrow.minDamage / FireExplosiveArrow.maxDamage) * windUpDuration;
+            minChargeDuration = 0;// (FireExplosiveArrow.minDamage / FireExplosiveArrow.maxDamage) * windUpDuration;
 
             base.OnEnter();
             //this.animator.SetBool("chargingArrow", true);
-            base.PlayCrossfade("Gesture, Override", "FireSeekingShot", "FireSeekingShot.playbackRate", 2 * this.duration, this.duration * 0.2f / this.attackSpeedStat);
-            base.PlayCrossfade("Gesture, Additive", "FireSeekingShot", "FireSeekingShot.playbackRate", 2 * this.duration, this.duration * 0.2f / this.attackSpeedStat);
+            //this.PlayAnimation("Gesture, Override", "FireSeekingArrow");
+            //this.PlayAnimation("Gesture, Additive", "FireSeekingArrow");
+            //base.PlayCrossfade("Gesture, Override", "ArrowBarrageLoop", 0.1f);
+            //base.PlayCrossfade("Gesture, Additive", "ArrowBarrageLoop", 0.1f);
+            //base.PlayCrossfade("Gesture, Override", "FireSeekingShot", "FireSeekingShot.playbackRate", 2 * this.duration, this.duration * 0.2f / this.attackSpeedStat);
+            base.PlayCrossfade("Gesture, Additive", "FireSeekingShot", "FireSeekingShot.playbackRate", 2 * this.duration, this.duration * 0.2f);
             //base.PlayCrossfade("Body", "ArrowBarrageLoop", windUpDuration);
         }
-        public override void FixedUpdate()
+       public override void FixedUpdate()
         {
-            base.FixedUpdate(); 
-            if(IsPerfectCharge())
+            fixedAge += Time.fixedDeltaTime;
+            if(fixedAge >= this.duration)
             {
-                //this.animator.SetBool("chargingArrow", false);
-                EffectManager.SimpleMuzzleFlash(muzzleFlashPerfectTiming, base.gameObject, new FireSeekingArrow().muzzleString, false);
                 if (!hasFullyCharged)
                 {
-                    Util.PlaySound(AimStunDrone.enterSoundString, base.gameObject);
+                    this.animator.SetFloat("FireSeekingShot.fire", 0);
                     hasFullyCharged = true;
+                    Util.PlaySound(AimStunDrone.exitSoundString, base.gameObject);
+                    EffectManager.SimpleMuzzleFlash(isCrit ? muzzleFlashPerfectTiming : muzzleFlashFullCharge, base.gameObject, new FireSeekingArrow().muzzleString, false);
                 }
+                base.PlayCrossfade("Gesture", "ArrowBarrageLoop", 0.1f);
             }
-            else if(hasFullyCharged)
+
+            float charge = this.CalcCharge();
+            if (base.isAuthority && ((!base.IsKeyDownAuthority() && base.fixedAge >= this.minChargeDuration)))
             {
-                Util.PlaySound(AimStunDrone.exitSoundString, base.gameObject);
-                hasFullyCharged = false;
+                BaseThrowBombState nextState = this.GetNextState();
+                nextState.charge = charge;
+                this.outer.SetNextState(nextState);
             }
         }
 
         public override void OnExit()
         {
             base.OnExit();
-            this.animator.SetFloat("FireSeekingShot.fire", 0); 
+            //this.animator.SetFloat("FireSeekingShot.fire", 0);
+            this.PlayAnimation("Gesture", "BufferEmpty");
+            this.PlayAnimation("Gesture", "BufferEmpty");
             if (hasFullyCharged)
             {
-                Util.PlaySound(AimStunDrone.exitSoundString, base.gameObject);
                 hasFullyCharged = false;
             }
         }
@@ -64,7 +81,8 @@ namespace RiskierRain.EntityState.Huntress
         public override BaseThrowBombState GetNextState()
         {
             FireExplosiveArrow nextState = new FireExplosiveArrow();
-            nextState.isCrit = base.RollCrit() ? true : IsPerfectCharge();
+            nextState.baseDuration = baseWindDownDuration;
+            nextState.isCrit = this.isCrit;
             return nextState;
         }
 

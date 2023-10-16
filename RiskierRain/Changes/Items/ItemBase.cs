@@ -71,6 +71,7 @@ namespace RiskierRain.Items
 
         internal static void CloneVanillaDisplayRules(UnityEngine.Object newDef, UnityEngine.Object vanillaDef)
         {
+            Debug.LogError("Unable to clone vanilla display rules!");
             return;
             if (newDef != null)
             {

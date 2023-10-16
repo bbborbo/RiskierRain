@@ -19,10 +19,10 @@ namespace RiskierRain.Items
         public static int baseGoldChunk = 25;
         public static bool includeDeploys = true;
 
-        static float bonusDamageMin = 0.2f;
-        static float bonusDamageMax => bonusDamagePerChunk * maxPlatinum;
+        static float bonusDamageMin = 0.15f;
+        static float bonusDamageMax => bonusDamageMin + bonusDamagePerChunk * maxPlatinum;
 
-        static float bonusDamagePerChunk = 0.05f;
+        static float bonusDamagePerChunk = 0.03f;
         float bonusGold = 0.1f;
         public static BuffDef bronzeDamageBuff;
         public static int maxBronze = 3;
@@ -41,9 +41,14 @@ namespace RiskierRain.Items
 
         public override string ItemPickupDesc => "Deal bonus damage based on the gold you have saved up.";
 
-        public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
+        /*public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
             $"Also deal <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style></style> " +
-            $"bonus damage <style=cIsDamage>per chest you can afford</style>, for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
+            $"bonus damage <style=cIsDamage>per chest you can afford</style>, for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";*/
+
+        public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
+            $"Also deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style> bonus damage</style>, " +
+            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style>per chest you can afford</style>, " +
+            $"for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
 
         public override string ItemLore =>
 @"Man, this thing is so cool. B-zap! Haha.
@@ -109,7 +114,7 @@ What happened to all of our gold?";
                 int damageBoostCount = coinGun.damageBoostCount;
 
                 //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
-                float damageMult = Mathf.Lerp(bonusDamageMin, bonusDamageMax, (buffCount - 1) / (damageBoostCount - 1)) * itemCount;
+                float damageMult = Mathf.Lerp(bonusDamageMin, bonusDamageMax, buffCount / damageBoostCount) * itemCount;
 
                 args.damageMultAdd += damageMult;
             }

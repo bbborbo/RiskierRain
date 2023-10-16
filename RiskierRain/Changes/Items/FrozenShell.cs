@@ -16,7 +16,8 @@ namespace RiskierRain.Items
         internal static BuffDef frozenShellArmorBuff;
         internal static float freeArmor = 10;
         internal static float baseArmor = 0;
-        internal static float stackArmor = 5; //(100 / 3)
+        internal static float maxArmor = 50; //(100 / 3)
+        public static int maxBuffCount = 10;
 
         public override string ItemName => "Frozen Turtle Shell";
 
@@ -26,9 +27,9 @@ namespace RiskierRain.Items
 
         public override string ItemFullDescription => $"<style=cIsHealing>Increase armor</style> by " +
             $"<style=cIsHealing>{freeArmor}</style> <style=cStack>(+{freeArmor} per stack)</style>. " +
-            $"Falling below <style=cIsHealth>50%</style> max health grants an <style=cIsUtility>ice barrier</style> that gives " +
-            $"<style=cIsHealing>{Mathf.RoundToInt(baseArmor + stackArmor)}</style> " +
-            $"<style=cStack>(+{Mathf.RoundToInt(stackArmor)} per stack)</style> additional armor.";//outdated fix later
+            $"For every missing <style=cIsHealth>{Mathf.RoundToInt(100 / (float)maxBuffCount)}% of max health</style>, " +
+            $"gain <style=cIsHealing>{Mathf.RoundToInt(maxArmor / maxBuffCount)}</style> " +
+            $"<style=cStack>(+{Mathf.RoundToInt(maxArmor / maxBuffCount)} per stack)</style> additional armor .";//outdated fix later
 
         public override string ItemLore => "";
 
@@ -61,15 +62,9 @@ namespace RiskierRain.Items
                 args.armorAdd += freeArmor * itemCount;
 
                 int buffCount = sender.GetBuffCount(frozenShellArmorBuff);
-                if (buffCount > 0)
-                {
-                    //args.armorAdd += baseArmor + Mathf.RoundToInt(stackArmor * itemCount);
-                    //new
-                    for (int i = 0; i < buffCount; i++)
-                    {
-                        args.armorAdd += baseArmor + Mathf.RoundToInt(stackArmor * itemCount);
-                    }
-                }
+                float fraction = buffCount / maxBuffCount;
+                int buffArmor = Mathf.RoundToInt(maxArmor * fraction);
+                args.armorAdd += itemCount * (baseArmor + buffArmor * buffCount);
             }
         }
 
@@ -112,7 +107,6 @@ namespace RiskierRain.Items
         BuffIndex iceBarrierBuffIndex = FrozenShell.frozenShellArmorBuff.buffIndex;
         //bool hasBuff = false;
         //new version
-        public static int maxBuffCount = 10;
         int buffCount = 0;
 
         private void Start()
@@ -123,24 +117,23 @@ namespace RiskierRain.Items
         private void FixedUpdate()
         {
             float combinedHealthFraction = healthComponent.combinedHealthFraction;
-            //if (hasBuff)
-            //{
-            //    if (combinedHealthFraction > 0.5f)
-            //    {
-            //        this.body.RemoveBuff(iceBarrierBuffIndex);
-            //        hasBuff = false;
-            //    }
-            //}
-            //else if (combinedHealthFraction <= 0.5f)
-            //{
-            //    this.body.AddBuff(iceBarrierBuffIndex);
-            //    hasBuff = true;
-            //}
+            /*if (hasBuff)
+            {
+                if (combinedHealthFraction > 0.5f)
+                {
+                    this.body.RemoveBuff(iceBarrierBuffIndex);
+                    hasBuff = false;
+                }
+            }
+            else if (combinedHealthFraction <= 0.5f)
+            {
+                this.body.AddBuff(iceBarrierBuffIndex);
+                hasBuff = true;
+            }*/
             //new version
             float missingHealthFraction = (1 - combinedHealthFraction);
-            int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (maxBuffCount));
-            bool armorChange = (newBuffCount != buffCount);
-            while (newBuffCount > buffCount && buffCount < maxBuffCount)
+            int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (FrozenShell.maxBuffCount));
+            while (newBuffCount > buffCount && buffCount < FrozenShell.maxBuffCount)
             {
                 this.body.AddBuff(iceBarrierBuffIndex);
                 buffCount++;                
@@ -149,10 +142,6 @@ namespace RiskierRain.Items
             {
                 this.body.RemoveBuff(iceBarrierBuffIndex);
                 buffCount--;
-            }
-            if (armorChange)
-            {
-                body.RecalculateStats();//this hsould work but might be laggy
             }
         }
         void OnDestroy()

@@ -14,9 +14,8 @@ namespace RiskierRain.Items
     class FrozenShell : ItemBase<FrozenShell>
     {
         internal static BuffDef frozenShellArmorBuff;
-        internal static float freeArmor = 10;
-        internal static float baseArmor = 0;
-        internal static float maxArmor = 50; //(100 / 3)
+        internal static int freeArmor = 10;
+        internal static int maxBonusArmor = 50; //(100 / 3)
         public static int maxBuffCount = 10;
 
         public override string ItemName => "Frozen Turtle Shell";
@@ -28,8 +27,8 @@ namespace RiskierRain.Items
         public override string ItemFullDescription => $"<style=cIsHealing>Increase armor</style> by " +
             $"<style=cIsHealing>{freeArmor}</style> <style=cStack>(+{freeArmor} per stack)</style>. " +
             $"For every missing <style=cIsHealth>{Mathf.RoundToInt(100 / (float)maxBuffCount)}% of max health</style>, " +
-            $"gain <style=cIsHealing>{Mathf.RoundToInt(maxArmor / maxBuffCount)}</style> " +
-            $"<style=cStack>(+{Mathf.RoundToInt(maxArmor / maxBuffCount)} per stack)</style> additional armor .";//outdated fix later
+            $"gain <style=cIsHealing>{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)}</style> " +
+            $"<style=cStack>(+{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)} per stack)</style> additional armor.";//outdated fix later
 
         public override string ItemLore => "";
 
@@ -59,12 +58,10 @@ namespace RiskierRain.Items
             int itemCount = GetCount(sender);
             if (itemCount > 0)
             {
-                args.armorAdd += freeArmor * itemCount;
-
                 int buffCount = sender.GetBuffCount(frozenShellArmorBuff);
                 float fraction = buffCount / maxBuffCount;
-                int buffArmor = Mathf.RoundToInt(maxArmor * fraction);
-                args.armorAdd += itemCount * (baseArmor + buffArmor * buffCount);
+                int buffArmor = Mathf.RoundToInt(maxBonusArmor * fraction);
+                args.armorAdd += itemCount * (freeArmor + buffArmor * buffCount);
             }
         }
 

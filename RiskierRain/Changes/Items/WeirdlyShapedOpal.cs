@@ -15,15 +15,15 @@ namespace RiskierRain.Items
 {
     class WeirdlyShapedOpal : ItemBase<WeirdlyShapedOpal>
 	{
-		public static int opalArmorBase = 12;
+		public static int opalArmorBase = 10;
 		public static float opalRegenBase = 1f;
-		public static int opalArmorPerBuff = 12;
+		public static int opalArmorPerBuff = 8;
 		public static float opalRegenPerBuff = 0.5f;
 		public static int opalMaxBuff = 5;
 		public static float opalAreaRadius = 20;
 		public static float opalAreaRadiusSqr => opalAreaRadius * opalAreaRadius;
 		public static BuffDef opalStatBuff;
-		public static GameObject opalAreaIndicator;
+		public static GameObject opalAreaIndicator = null;
 
 		static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 

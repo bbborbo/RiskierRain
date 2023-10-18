@@ -55,16 +55,6 @@ namespace RiskierRain
             args.armorAdd += freeArmor;
         }
 
-        private void TeddyChanges()
-        {
-            IL.RoR2.HealthComponent.TakeDamage += TeddyChanges;
-            LanguageAPI.Add("ITEM_BEAR_DESC",
-                $"<style=cIsHealing>{15 * teddyNewMaxValue}%</style> " +
-                $"<style=cStack>(+{15 * teddyNewMaxValue}% per stack)</style> " +
-                $"chance to <style=cIsHealing>block</style> incoming damage. " +
-                $"<style=cIsUtility>Unaffected by luck</style>.");
-        }
-
         private void MeatReduceHealth(CharacterBody sender, StatHookEventArgs args)
         {
             Inventory inv = sender.inventory;
@@ -74,7 +64,47 @@ namespace RiskierRain
             }
         }
 
-        public static float teddyNewMaxValue = 0.6f; //1.0
+        private void TeddyChanges()
+        {
+            IL.RoR2.HealthComponent.TakeDamage += TeddyChanges;
+            IL.RoR2.HealthComponent.TakeDamage += VoidBearChanges;
+            LanguageAPI.Add("ITEM_BEAR_DESC",
+                $"<style=cIsHealing>{15}%</style> " +
+                $"<style=cStack>(+{15}% per stack)</style> " +
+                $"chance to <style=cIsHealing>block</style> incoming damage, " +
+                $"up to a maximum of <style=cIsHealing>{Tools.ConvertDecimal(teddyNewMaxValue)}%</style>. " +
+                $"<style=cIsUtility>Unaffected by luck</style>.");
+            LanguageAPI.Add("ITEM_BEARVOID_DESC",
+                $"<style=cIsHealing>Blocks</style> incoming damage once. " +
+                $"Recharges after <style=cIsUtility>{voidBearNewMaxCooldown} seconds</style> <style=cStack>(-10% per stack)</style>, " +
+                $"to a minimum of <style=cIsUtility>{voidBearNewMinCooldown} seconds</style>. " +
+                $"<style=cIsVoid>Corrupts all Tougher Times</style>.");
+        }
+        public static float voidBearNewMaxCooldown = 15f;
+        public static float voidBearNewMinCooldown = 5f;
+        private void VoidBearChanges(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int countLoc = 14;
+            c.GotoNext(MoveType.AfterLabel,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "BearVoid"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchStloc(out countLoc)
+                );
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
+                );
+            c.EmitDelegate<Func<float, float>>((inDuration) =>
+            {
+                float baseDuration = 15;
+                float outDuration = 5;
+                outDuration += inDuration * ((baseDuration - outDuration) / baseDuration);
+                return outDuration;
+            });
+        }
+
+        public static float teddyNewMaxValue = 0.5f; //1.0
         private void TeddyChanges(ILContext il)
         {
             ILCursor c = new ILCursor(il);

@@ -26,7 +26,7 @@ namespace RiskierRain.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 200;
+        public override int normalWeight => 100;
 
         public override int favoredWeight => 0;
 

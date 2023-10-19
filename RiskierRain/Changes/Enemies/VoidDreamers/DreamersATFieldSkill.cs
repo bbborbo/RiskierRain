@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using HarmonyLib;
 using R2API;
 using RiskierRain.CoreModules;
 using RiskierRain.Skills;
@@ -15,7 +16,7 @@ namespace RiskierRain.Enemies.VoidDreamers
     class DreamersATFieldSkill : SkillBase
     {
         public static GameObject atField;
-        //public static GameObject invisField;
+        public static GameObject invisField;
         public override string SkillName => "Extend Field / Defend";
 
         public override string SkillDescription => "";
@@ -80,6 +81,7 @@ namespace RiskierRain.Enemies.VoidDreamers
             //RoR2/Base/Engi/EngiBubbleShield.prefab
             atField = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiBubbleShield.prefab").WaitForCompletion().InstantiateClone("ATFieldShield", true);
             //invisField = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteHaunted/AffixHauntedWard.prefab").WaitForCompletion().InstantiateClone("ATFieldInvis", true);
+            //BuffWard invisWard = invisField.GetComponent<BuffWard>();
 
             ProjectileStickOnImpact psoi = atField.GetComponent<ProjectileStickOnImpact>();
             psoi.ignoreWorld = true;
@@ -93,19 +95,31 @@ namespace RiskierRain.Enemies.VoidDreamers
             ps.desiredForwardSpeed = 0;
             ps.updateAfterFiring = true;
 
-            BuffWard buffward = atField.AddComponent<BuffWard>();
-            buffward.shape = 0;
-            buffward.buffDef = RoR2Content.Buffs.AffixHauntedRecipient;
-            buffward.radius = 20;//weh
-            buffward.interval = 0.2f;
-            buffward.floorWard = false;
-            buffward.expires = false;
-            buffward.expireDuration = 0;
-            buffward.invertTeamFilter = false;
-            buffward.animateRadius = false;
-            buffward.requireGrounded = false;
+            ApplyTorqueOnStart atos = atField.GetComponent<ApplyTorqueOnStart>();
+            UnityEngine.Object.Destroy(atos);
+
+            //BuffWard buffward = atField.AddComponent<BuffWard>();
+            //buffward.shape = 0;
+            //buffward.buffDef = RoR2Content.Buffs.AffixHauntedRecipient;
+            //buffward.radius = 20;//weh
+            //buffward.interval = 0.2f;
+            //buffward.floorWard = false;
+            //buffward.expires = false;
+            //buffward.expireDuration = 0;
+            //buffward.invertTeamFilter = false;
+            //buffward.requireGrounded = false;
+            //buffward.animateRadius = invisWard.animateRadius;
+            //buffward.radiusCoefficientCurve = invisWard.radiusCoefficientCurve;
+            //buffward.rangeIndicator = invisWard.rangeIndicator;
+            //buffward.rangeIndicatorScaleVelocity = invisWard.rangeIndicatorScaleVelocity;
+            //ProjectileSimple ps2 = invisField.AddComponent<ProjectileSimple>();
+            //ps2.velocity = 0;
+            //ps2.desiredForwardSpeed = 0;
+            //ps2.updateAfterFiring = true;
+
 
             atField.AddComponent<ATFieldComponent>();
+            //invisField.AddComponent<ATFieldComponent>();
 
             Assets.projectilePrefabs.Add(atField);
             //Assets.projectilePrefabs.Add(invisField);
@@ -114,6 +128,43 @@ namespace RiskierRain.Enemies.VoidDreamers
 
     class ATFieldComponent : MonoBehaviour
     {
-
+        SphereSearch sphereSearch;
+        const float auraRadius = 10;
+        public void Awake()
+        {
+            sphereSearch = new SphereSearch
+            {
+                radius = auraRadius,
+                queryTriggerInteraction = QueryTriggerInteraction.Ignore,
+                mask = LayerIndex.entityPrecise.mask
+            };
+        }
+        public void FixedUpdate()
+        {
+            DoInvisBuff();
+        }
+        void DoInvisBuff()
+        {
+            sphereSearch.origin = gameObject.transform.position;
+            this.sphereSearch.RefreshCandidates();
+            this.sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
+            TeamMask mask = default(TeamMask);
+            mask.AddTeam(TeamIndex.Player);//improve later
+            sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
+            CollectionExtensions.Do<HurtBox>(sphereSearch.GetHurtBoxes(), delegate (HurtBox hurtBox)
+            {
+                UnityEngine.Object x;
+                if (hurtBox == null)
+                {
+                    x = null;
+                }
+                else
+                {
+                    HealthComponent healthComponent = hurtBox.healthComponent;
+                    x = ((healthComponent != null) ? healthComponent.body : null);
+                }
+                    hurtBox.healthComponent.body.AddTimedBuff(RoR2Content.Buffs.AffixHauntedRecipient, 1f);                
+            });
+        }
     }
 }

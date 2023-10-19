@@ -51,35 +51,48 @@ namespace RiskierRain.Enemies.VoidDreamers
             }
             outer.SetNextStateToMain();
         }
+
         private void LaunchField()
         {
-            ATFieldComponent atField = GameObject.FindObjectOfType<ATFieldComponent>();
-            if (atField == null)
+            ATFieldComponent[] fieldParts = GameObject.FindObjectsOfType<ATFieldComponent>();
+            for (int i = 0; i <
+                fieldParts.Length; i++)
             {
-                Debug.Log("atfield null wah wah");
-                return;
+                LaunchProjectile(fieldParts[i].gameObject);
             }
-            Debug.Log("shoot the goober");
-            ProjectileSimple ps = atField.gameObject.GetComponent<ProjectileSimple>();
+        }
+        private void LaunchProjectile(GameObject projectile)
+        {
+            Debug.Log("shootthegoober");
+            ProjectileSimple ps = projectile.GetComponent<ProjectileSimple>();
             if (ps == null)
             {
                 Debug.Log("wahwahwah");
                 return;
             }
-            ps.desiredForwardSpeed = 20;
+            ps.desiredForwardSpeed = 10;
         }
 
         private void FireField()
         {
             hasFiredField = true;
-
+            Ray aimray = base.GetAimRay();
             FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
             fireProjectileInfo.projectilePrefab = DreamersATFieldSkill.atField;
             fireProjectileInfo.owner = base.gameObject;
             fireProjectileInfo.position = base.gameObject.transform.position;
-            fireProjectileInfo.rotation = base.gameObject.transform.rotation;
+            fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimray.direction);
             fireProjectileInfo.damage = 0;
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+            FireProjectileInfo invisFieldInfo = default(FireProjectileInfo);
+            invisFieldInfo.projectilePrefab = DreamersATFieldSkill.invisField;
+            invisFieldInfo.owner = base.gameObject;
+            invisFieldInfo.position = base.gameObject.transform.position;
+            invisFieldInfo.rotation = Util.QuaternionSafeLookRotation(aimray.direction);
+            invisFieldInfo.damage = 0;
+            ProjectileManager.instance.FireProjectile(invisFieldInfo);
+
         }
 
         private void CheckHealth()

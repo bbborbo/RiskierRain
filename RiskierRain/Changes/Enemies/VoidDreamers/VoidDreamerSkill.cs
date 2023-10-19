@@ -57,6 +57,8 @@ namespace RiskierRain.Enemies.VoidDreamers
 
             ProjectileSteerTowardTarget stt = dreamOrbPrefab.GetComponent<ProjectileSteerTowardTarget>();
             UnityEngine.Object.Destroy(stt);//fuck ur homing
+            ProjectileSimple ps = dreamOrbPrefab.GetComponent<ProjectileSimple>();
+            ps.lifetime = 10;
 
 
             Assets.projectilePrefabs.Add(dreamOrbPrefab);

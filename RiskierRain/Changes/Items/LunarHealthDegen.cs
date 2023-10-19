@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static BorboStatUtils.BorboStatUtils;
 
 namespace RiskierRain.Changes.Items
 {
@@ -20,7 +21,7 @@ namespace RiskierRain.Changes.Items
 
 
         public static float luckBase = 1;
-        public static float luckstack = 1; //maybe 1?
+        public static float luckStack = 1; //maybe 1?
 
         public static float healthRegenBase = -2;
         public static float healthRegenStack = -2;
@@ -66,6 +67,15 @@ namespace RiskierRain.Changes.Items
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
             On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
+            ModifyLuckStat += ElegyLuck;
+        }
+
+        private void ElegyLuck(CharacterBody sender, ref float luck)
+        {
+            if (sender.GetBuffCount(lunarLuckBuff.buffIndex) >= 7)
+            {
+                luck += luckBase + (luckStack * GetCount(sender));
+            }
         }
 
         private void AddBuffStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -75,18 +85,17 @@ namespace RiskierRain.Changes.Items
 
             if (itemCount > 0)
             {
-                self.regen += healthRegenBase + (healthRegenStack * itemCount - 1);//health degen
-
+                float degenMod = 1;
                 int buffCount = self.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
                 if (buffCount >= 4)
                 {
                     self.damage += (damageBase + damageLevel * (self.level - 1));
                     if (buffCount >= 7)
                     {
-                        self.damage += (damageBase + damageLevel * (self.level - 1));//remove once luck works
-                                                                                     //ADD LUCK
+                        degenMod = 0.5f;
                     }
                 }
+                self.regen += (healthRegenBase + healthRegenStack * (itemCount - 1)) * degenMod;//health degen
             }
         }
 

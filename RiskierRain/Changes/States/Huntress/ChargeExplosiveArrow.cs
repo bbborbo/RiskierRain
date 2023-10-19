@@ -1,4 +1,5 @@
-﻿using EntityStates.Huntress.HuntressWeapon;
+﻿using EntityStates;
+using EntityStates.Huntress.HuntressWeapon;
 using EntityStates.LemurianMonster;
 using EntityStates.Mage.Weapon;
 using EntityStates.Toolbot;
@@ -89,6 +90,10 @@ namespace RiskierRain.EntityState.Huntress
         bool IsPerfectCharge()
         {
             return (this.fixedAge >= windUpDuration && this.fixedAge < windUpDuration + sweetSpotDuration);
+        }
+        public override InterruptPriority GetMinimumInterruptPriority()
+        {
+            return InterruptPriority.Skill;
         }
     }
 }

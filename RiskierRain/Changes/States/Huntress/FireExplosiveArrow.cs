@@ -8,6 +8,7 @@ using EntityStates.Mage.Weapon;
 using RoR2;
 using RoR2.Projectile;
 using UnityEngine;
+using EntityStates;
 
 namespace RiskierRain.EntityState.Huntress
 {
@@ -62,6 +63,10 @@ namespace RiskierRain.EntityState.Huntress
 				projectileInfo.projectilePrefab = ExplosiveArrowSkill.critArrowPrefab;
 			projectileInfo.crit = isCrit;
             base.ModifyProjectile(ref projectileInfo);
-        }
-    }
+		}
+		public override InterruptPriority GetMinimumInterruptPriority()
+		{
+			return InterruptPriority.Any;
+		}
+	}
 }

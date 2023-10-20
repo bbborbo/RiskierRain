@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -78,6 +79,9 @@ namespace RiskierRain.SurvivorTweaks
 
         void ChangeVanillaSpecials(SkillFamily family)
         {
+            On.EntityStates.Huntress.BaseArrowBarrage.OnEnter += AddHuntressUltProtection;
+            On.EntityStates.Huntress.BaseArrowBarrage.OnExit += RemoveHuntressUltProtection;
+
             arrowRainPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/HuntressArrowRain.prefab").WaitForCompletion();
             family.variants[0].skillDef.baseRechargeInterval = arrowRainCooldown;
             ArrowRain.arrowRainRadius = arrowRainRadius;
@@ -101,6 +105,24 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("HUNTRESS_SPECIAL_ALT1_DESCRIPTION", $"<style=cIsUtility>Teleport</style> backwards into the sky. " +
                 $"Fire up to <style=cIsDamage>3</style> energy bolts, " +
                 $"dealing <style=cIsDamage>3x{Tools.ConvertDecimal(ballistaDamageCoefficient)} damage</style>.");
+        }
+
+        private void AddHuntressUltProtection(On.EntityStates.Huntress.BaseArrowBarrage.orig_OnEnter orig, BaseArrowBarrage self)
+        {
+            orig(self);
+            if (NetworkServer.active && self.characterBody)
+            {
+                self.characterBody.AddBuff(RoR2Content.Buffs.SmallArmorBoost);
+            }
+        }
+
+        private void RemoveHuntressUltProtection(On.EntityStates.Huntress.BaseArrowBarrage.orig_OnExit orig, BaseArrowBarrage self)
+        {
+            orig(self);
+            if (NetworkServer.active && self.characterBody && self.characterBody.HasBuff(RoR2Content.Buffs.SmallArmorBoost))
+            {
+                self.characterBody.RemoveBuff(RoR2Content.Buffs.SmallArmorBoost);
+            }
         }
 
         private void BallistaBuff(On.EntityStates.GenericBulletBaseState.orig_OnEnter orig, EntityStates.GenericBulletBaseState self)

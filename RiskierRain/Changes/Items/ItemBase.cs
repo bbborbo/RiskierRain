@@ -145,6 +145,12 @@ namespace RiskierRain.Items
 
             return body.inventory.GetItemCount(ItemsDef);
         }
+        public int GetCount(Inventory inventory)
+        {
+            if (!inventory) { return 0; }
+
+            return inventory.GetItemCount(ItemsDef);
+        }
 
         public int GetCount(CharacterMaster master)
         {

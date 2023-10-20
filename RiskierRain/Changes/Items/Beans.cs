@@ -97,7 +97,7 @@ namespace RiskierRain.Items
                 beansHealBuff.canStack = true;
                 beansHealBuff.isDebuff = false;
                 beansHealBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffMedkitHealIcon");
-            };
+            }
             Assets.buffDefs.Add(beansHealBuff);
         }
     }

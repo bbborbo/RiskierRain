@@ -133,7 +133,8 @@ namespace RiskierRain.Items
                     if(permanentBuffCount < gammaKnifeMaxBuffs * itemCount)
                     {
                         attackerInventory.GiveItem(GammaKnifeStatBoost.instance.ItemsDef);
-                        CharacterMasterNotificationQueue.PushItemNotification(attackerBody.master, GammaKnifeStatBoost.instance.ItemsDef.itemIndex);
+                        if(!GammaKnifeStatBoost.shouldBeInvisible)
+                            CharacterMasterNotificationQueue.PushItemNotification(attackerBody.master, GammaKnifeStatBoost.instance.ItemsDef.itemIndex);
                     }
                 }
             }

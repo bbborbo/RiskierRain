@@ -10,7 +10,7 @@ namespace RiskierRain.Items
 {
     class GammaKnifeStatBoost : ItemBase<GammaKnifeStatBoost>
     {
-        bool shouldBeInvisible = false;
+        public static bool shouldBeInvisible = false;
         public override string ItemName => "Fake-Soul Butter";
 
         public override string ItemLangTokenName => "GAMMAKNIFESTATBOOST";

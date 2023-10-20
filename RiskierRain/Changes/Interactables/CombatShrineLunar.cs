@@ -55,11 +55,11 @@ namespace RiskierRain.Interactables
 
         public override string modelName => "mdlLunarGallery"; 
 
-        public override string prefabName => "mdlLunarGallery";
+        public override string prefabName => "lunarGallery";
 
         public override int category => 4;
 
-        public override int favoredWeight => 600;
+        public override int favoredWeight => 25;
 
         public string[] validScenes = {
             "golemplains",
@@ -197,21 +197,21 @@ namespace RiskierRain.Interactables
             self.available = false;
         }
         GameObject enemySpawned;
-        ItemDef[] itemPool = new ItemDef[10];
+        ItemDef[] itemPool = new ItemDef[8];
         ItemDef itemToGive;
 
         void ConstructItemPool()//probably this sucks fix later
         {
             itemPool[0] = LunarIncreaseCD.instance.ItemsDef;
-            itemPool[1] = StarVeil.instance.ItemsDef;//busted
-            itemPool[2] = RoR2Content.Items.LunarPrimaryReplacement;//pretty busted
-            itemPool[3] = RoR2Content.Items.LunarSecondaryReplacement;//untested
-            itemPool[4] = RoR2Content.Items.RandomDamageZone;
-            itemPool[5] = RoR2Content.Items.LunarBadLuck;
-            itemPool[6] = RoR2Content.Items.LunarDagger;
-            itemPool[7] = DLC1Content.Items.HalfAttackSpeedHalfCooldowns;
-            itemPool[8] = DLC1Content.Items.HalfSpeedDoubleHealth;
-            itemPool[9] = DLC1Content.Items.LunarSun;//UNTESTED LMAOOOOOO
+            //itemPool[1] = StarVeil.instance.ItemsDef;//busted
+            //itemPool[2] = RoR2Content.Items.LunarPrimaryReplacement;//pretty busted
+            itemPool[1] = RoR2Content.Items.LunarSecondaryReplacement;//untested
+            itemPool[2] = RoR2Content.Items.RandomDamageZone;
+            itemPool[3] = RoR2Content.Items.LunarBadLuck;
+            itemPool[4] = RoR2Content.Items.LunarDagger;
+            itemPool[5] = DLC1Content.Items.HalfAttackSpeedHalfCooldowns;
+            itemPool[6] = DLC1Content.Items.HalfSpeedDoubleHealth;
+            itemPool[7] = DLC1Content.Items.LunarSun;//UNTESTED LMAOOOOOO
         }
         public void ChooseItem()
         {

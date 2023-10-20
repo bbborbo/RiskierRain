@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2033891817
+CRC: 3979931663
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 79184ee9977dc1c347a97a5d533a2f0c
+    Hash: 10f49addc8c60bec12b0e7a849af10b5
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -132,4 +132,5 @@ Assets:
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Prefabs/mdlGreedyRing.prefab
+- Assets/Prefabs/mdlLunarGallery.prefab
 Dependencies: []

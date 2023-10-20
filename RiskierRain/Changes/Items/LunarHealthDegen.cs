@@ -89,13 +89,13 @@ namespace RiskierRain.Changes.Items
                 int buffCount = self.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
                 if (buffCount >= 4)
                 {
-                    self.damage += (damageBase + damageLevel * (self.level - 1));
+                    self.damage += (damageBase + (damageLevel * (self.level - 1)));
                     if (buffCount >= 7)
                     {
                         degenMod = 0.5f;
                     }
                 }
-                self.regen += (healthRegenBase + healthRegenStack * (itemCount - 1)) * degenMod;//health degen
+                self.regen += (healthRegenBase + (healthRegenStack * (itemCount - 1))) * degenMod;//health degen
             }
         }
 

@@ -30,7 +30,7 @@ namespace RiskierRain.SurvivorTweaks
             GetSkillsFromBodyObject(bodyObject);
 
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.moveSpeed = moveSpeed;
+            body.baseMoveSpeed = moveSpeed;
 
             secondary.variants[0].skillDef.baseRechargeInterval = secondaryCooldown;
             secondary.variants[0].skillDef.cancelSprintingOnActivation = false;

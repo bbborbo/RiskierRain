@@ -23,7 +23,7 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Chance on killing an enemy to summon void infestors. <style=cIsVoid>Corrupts all Happiest Masks.</style>";
 
         public override string ItemFullDescription => 
-            $"Killing mosnters has a " +
+            $"Killing monsters has a " +
             $"<style=cIsDamage>{procChance}%</style> chance " +
             $"to spawn {baseInfestors} <style=cStack>(+{stackInfestors} per stack)</style> " +
             $"<style=cIsDamage>void infestors</style> in their place. " +

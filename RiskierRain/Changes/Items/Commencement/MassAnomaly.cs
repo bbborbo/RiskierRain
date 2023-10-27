@@ -37,7 +37,7 @@ namespace RiskierRain.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist, ItemTag.WorldUnique };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist, ItemTag.WorldUnique, ItemTag.CannotSteal };
 
         public override BalanceCategory Category => BalanceCategory.StateOfCommencement;
 

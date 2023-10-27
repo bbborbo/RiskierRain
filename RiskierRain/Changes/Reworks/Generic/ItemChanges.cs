@@ -734,6 +734,14 @@ namespace RiskierRain
             On.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRadius += FoconNewRadius;
             IL.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRate += FoconApplyRate;
             IL.RoR2.HoldoutZoneController.FocusConvergenceController.FixedUpdate += FoconUpdate;
+
+            LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_PICKUP", "Increase the speed Holdout Zones charge... <color=#FF7F7F>BUT reduce the size of the zone</color>.");
+            LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_DESC", 
+                $"Holdout Zones charge <style=cIsUtility>{Tools.ConvertDecimal(foconChargeBonus)} " +
+                $"<style=cStack>(+{Tools.ConvertDecimal(foconChargeBonus)} per stack)</style> faster</style>, " +
+                $"but the size of the Teleporter zone is <style=cIsHealth>{Tools.ConvertDecimal(1-foconChargeBonus)}</style> " +
+                $"<style=cStack>(-{Tools.ConvertDecimal(1 - foconChargeBonus)} per stack)</style> smaller. " +
+                $"Max of {foconMaxStack}.");
         }
 
         private void FoconUpdate(ILContext il)
@@ -747,9 +755,6 @@ namespace RiskierRain
             {
                 return foconMaxStack;
             });
-            return;
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, foconMaxStack);
         }
 
         private void FoconNewRadius(On.RoR2.HoldoutZoneController.FocusConvergenceController.orig_ApplyRadius orig, MonoBehaviour self, ref float radius)
@@ -798,9 +803,6 @@ namespace RiskierRain
             {
                 return foconChargeBonus;
             });
-            return;
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, foconChargeBonus);
         }
         #endregion
     }

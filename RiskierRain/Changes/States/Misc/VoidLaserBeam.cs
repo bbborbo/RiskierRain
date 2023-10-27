@@ -15,7 +15,7 @@ namespace RiskierRain.States
 
         public float procCoefficient = 1.0f;
 
-        public static float damageCoefficient = 28;
+        public static float damageCoefficient = 32;
 
         public float force = 1500f;
         public float selfForce = 1500f;

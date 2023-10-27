@@ -739,8 +739,8 @@ namespace RiskierRain
             LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_DESC", 
                 $"Holdout Zones charge <style=cIsUtility>{Tools.ConvertDecimal(foconChargeBonus)} " +
                 $"<style=cStack>(+{Tools.ConvertDecimal(foconChargeBonus)} per stack)</style> faster</style>, " +
-                $"but the size of the Teleporter zone is <style=cIsHealth>{Tools.ConvertDecimal(1 - foconRadiusMultiplier)}</style> " +
-                $"<style=cStack>(-{Tools.ConvertDecimal(1 - foconRadiusMultiplier)} per stack)</style> smaller. " +
+                $"but are <style=cIsHealth>{Tools.ConvertDecimal(1 - foconRadiusMultiplier)} smaller</style> " +
+                $"<style=cStack>(-{Tools.ConvertDecimal(1 - foconRadiusMultiplier)} per stack)</style>. " +
                 $"Max of {foconMaxStack}.");
         }
 

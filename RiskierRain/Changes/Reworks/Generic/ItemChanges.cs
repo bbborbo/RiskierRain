@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using static RoR2.HoldoutZoneController;
 
 namespace RiskierRain
 {
@@ -719,6 +720,87 @@ namespace RiskierRain
             }
             // this runs if only one of the other ifs are false
             return orig(self, cost, activator);
+        }
+        #endregion
+
+        #region
+        public static float foconMinRadius = 8f; //0
+        public static float foconRadiusMultiplier = 0.5f; //0.5f
+        public static float foconChargeBonus = 1f; //0.3f
+        public static int foconMaxStack = 5; //3
+        public void FocusedConvergenceChanges()
+        {
+            //IL.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRadius += FoconApplyRadius;
+            On.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRadius += FoconNewRadius;
+            IL.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRate += FoconApplyRate;
+            IL.RoR2.HoldoutZoneController.FocusConvergenceController.FixedUpdate += FoconUpdate;
+        }
+
+        private void FoconUpdate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>("cap")
+                );
+            c.EmitDelegate<Func<int, int>>((cap) =>
+            {
+                return foconMaxStack;
+            });
+            return;
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, foconMaxStack);
+        }
+
+        private void FoconNewRadius(On.RoR2.HoldoutZoneController.FocusConvergenceController.orig_ApplyRadius orig, MonoBehaviour self, ref float radius)
+        {
+            FocusConvergenceController controller = self as FocusConvergenceController;
+            if(controller.currentFocusConvergenceCount > 0)
+            {
+                radius -= foconMinRadius;
+                radius *= Mathf.Pow(foconRadiusMultiplier, (float)controller.currentFocusConvergenceCount);
+                radius += foconMinRadius;
+            }
+            //orig(self, ref radius);
+        }
+
+        private void FoconApplyRadius(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>(nameof(HoldoutZoneController.FocusConvergenceController.convergenceRadiusDivisor))
+                );
+            c.Emit(OpCodes.Ldc_R4, foconMinRadius);
+            c.Emit(OpCodes.Sub);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>(nameof(HoldoutZoneController.FocusConvergenceController.convergenceRadiusDivisor))
+                );
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, 2); //foconRadiusDivisor);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchStindR4()
+                );
+            c.Emit(OpCodes.Ldc_R4, foconMinRadius);
+            c.Emit(OpCodes.Add);
+        }
+
+        private void FoconApplyRate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>("convergenceChargeRateBonus")
+                );
+            c.EmitDelegate<Func<float, float>>((chargeBonus) =>
+            {
+                return foconChargeBonus;
+            });
+            return;
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, foconChargeBonus);
         }
         #endregion
     }

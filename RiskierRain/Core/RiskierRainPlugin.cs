@@ -422,6 +422,12 @@ namespace RiskierRain
                 {
                     RegeneratingScrapRework();
                 }
+
+                //focused convergence, focon
+                if(GetConfigBool(currentCategory, true, "Focused Convergence"))
+                {
+                    FocusedConvergenceChanges();
+                }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();
 

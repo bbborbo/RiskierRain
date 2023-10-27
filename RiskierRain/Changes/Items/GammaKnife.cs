@@ -17,8 +17,8 @@ namespace RiskierRain.Items
     {
         public static BuffDef gammaKnifeTemporaryBuff;
         public static int gammaKnifeMaxBuffs = 9;
-        public static float attackSpeedBonus = 0.04f;
-        public static float cdrBonus = 0.04f;
+        public static float attackSpeedBonus = 0.05f;
+        public static float cdrBonus = 0.05f;
         public static float luckBonusDuration = 9;
         public override string ItemName => "Gamma Knife";
 

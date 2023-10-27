@@ -735,7 +735,7 @@ namespace RiskierRain
             IL.RoR2.HoldoutZoneController.FocusConvergenceController.ApplyRate += FoconApplyRate;
             IL.RoR2.HoldoutZoneController.FocusConvergenceController.FixedUpdate += FoconUpdate;
 
-            LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_PICKUP", "Increase the speed Holdout Zones charge... <color=#FF7F7F>BUT reduce the size of the zone</color>.");
+            LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_PICKUP", $"Increase the speed Holdout Zones charge... <color=#FF7F7F>BUT reduce the size of the zone</color>. Max of {foconMaxStack}.");
             LanguageAPI.Add("ITEM_FOCUSEDCONVERGENCE_DESC", 
                 $"Holdout Zones charge <style=cIsUtility>{Tools.ConvertDecimal(foconChargeBonus)} " +
                 $"<style=cStack>(+{Tools.ConvertDecimal(foconChargeBonus)} per stack)</style> faster</style>, " +

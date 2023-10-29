@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRain.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ namespace RiskierRain.Items
 {
     class WickedBand : ItemBase<WickedBand>
     {
+        float cooldownTime = 1f;
+        public static BuffDef wickedCooldown;
         float damageCoefficientThreshold = 4f;
         float cooldownRefreshBase = 0f;
         float cooldownRefreshStack = 1f;
@@ -25,7 +28,7 @@ namespace RiskierRain.Items
 
         public override string ItemFullDescription => $"Hits that deal <style=cIsDamage>more than {Tools.ConvertDecimal(damageCoefficientThreshold)} damage</style> will also " +
             $"<style=cIsUtility>reduce ALL cooldowns by {cooldownRefreshBase + cooldownRefreshStack}s</style> <style=cStack>(+{cooldownRefreshStack} per stack)</style>. " +
-            $"<style=cIsHealth>Has no cooldown.</style>";
+            $"<style=cIsHealth>{cooldownTime} second cooldown.</style>";
 
         public override string ItemLore => "";
 
@@ -84,12 +87,13 @@ namespace RiskierRain.Items
 		    int wickedBandCount = GetCount(body);
 		    if(wickedBandCount > 0)
 		    {
-			    if ((damageInfo.damage / body.damage) >= damageCoefficientThreshold && !damageInfo.procChainMask.HasProc(ProcType.Rings))
-			    {
-				    float dt = (cooldownRefreshBase + cooldownRefreshStack * wickedBandCount) * damageInfo.procCoefficient;
+			    if ((damageInfo.damage / body.damage) >= damageCoefficientThreshold)
+                {
+                    body.AddTimedBuffAuthority(wickedCooldown.buffIndex, cooldownTime);
+                    float dt = (cooldownRefreshBase + cooldownRefreshStack * wickedBandCount) * damageInfo.procCoefficient;
 
 				    RoR2.Util.PlaySound("Play_item_proc_crit_cooldown", body.gameObject);
-				    damageInfo.procChainMask.AddProc(ProcType.Rings);
+				    //damageInfo.procChainMask.AddProc(ProcType.Rings);
 
                     if (NetworkServer.active)
                     {
@@ -114,6 +118,19 @@ namespace RiskierRain.Items
             CreateItem();
             CreateLang();
             Hooks();
+            CreateBuffs();
+        }
+        internal static void CreateBuffs()
+        {
+            wickedCooldown = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                wickedCooldown.name = "wickedBandCooldown";
+                wickedCooldown.buffColor = Color.gray;
+                wickedCooldown.canStack = false;
+                wickedCooldown.isDebuff = true;
+                wickedCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsReadyIcon");
+            };
+            Assets.buffDefs.Add(wickedCooldown);
         }
     }
 }

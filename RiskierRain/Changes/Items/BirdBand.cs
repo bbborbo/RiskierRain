@@ -89,15 +89,15 @@ namespace RiskierRain.Items
         {
             int bandCount = GetCount(body);
             float damageCoefficient = damageInfo.damage / body.damage;
-            if(bandCount > 0 && damageCoefficient >= 4 && body.HasBuff(birdBuff) && !damageInfo.procChainMask.HasProc(ProcType.Rings))
+            if(bandCount > 0 && damageCoefficient >= 4 && body.HasBuff(birdBuff))// && !damageInfo.procChainMask.HasProc(ProcType.Rings))
             {
                 body.RemoveBuff(birdBuff);
                 for(int i = 0; i < 5; i++)
                 {
                     body.AddTimedBuffAuthority(birdDebuff.buffIndex, i + 1);
                 }
-                ProcChainMask procChainMask = damageInfo.procChainMask;
-                procChainMask.AddProc(ProcType.Rings);
+                //ProcChainMask procChainMask = damageInfo.procChainMask;
+                //procChainMask.AddProc(ProcType.Rings);
                 body.AddTimedBuffAuthority(RoR2Content.Buffs.CrocoRegen.buffIndex, regenDurationBase + regenDurationStack * bandCount);
             }
         }

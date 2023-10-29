@@ -87,7 +87,7 @@ namespace RiskierRain.Items
 		    int wickedBandCount = GetCount(body);
 		    if(wickedBandCount > 0)
 		    {
-			    if ((damageInfo.damage / body.damage) >= damageCoefficientThreshold)
+			    if ((damageInfo.damage / body.damage) >= damageCoefficientThreshold && !body.HasBuff(wickedCooldown))
                 {
                     body.AddTimedBuffAuthority(wickedCooldown.buffIndex, cooldownTime);
                     float dt = (cooldownRefreshBase + cooldownRefreshStack * wickedBandCount) * damageInfo.procCoefficient;

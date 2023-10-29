@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1434802578
+CRC: 4145711997
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f42d28738fca7b03981154019eb1db49
+    Hash: 70fdf2f258c65f86d22780065922720d
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -42,11 +42,11 @@ Assets:
 - Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
 - Assets/Prefabs/mdlNinjaGear.prefab
 - Assets/Orange.mat
-- Assets/Prefabs/mdlLunarBrandMaker.prefab
 - Assets/Prefabs/coralite.prefab
 - Assets/ninjaGear.fbx
 - Assets/Prefabs/bottle.prefab
 - Assets/spine.fbx
+- Assets/spineCharger.fbx
 - Assets/frozenTurtleShell.fbx
 - Assets/Prefabs/eggPile.prefab
 - Assets/Red.mat
@@ -86,10 +86,10 @@ Assets:
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
 - Assets/Prefabs/lunarBrandMaker.prefab
+- Assets/sunAltar.fbx
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Prefabs/mdlChefStache.prefab
 - Assets/Icons/texEggIcon.png
-- Assets/Prefabs/mdlSpineCharger.prefab
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/enemyDamageUp.fbx
@@ -105,6 +105,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
 - Assets/starVeil.fbx
 - Assets/Icons/texIconPickupITEM_CHEFITEM.png
+- Assets/Prefabs/flameAltar.prefab
 - Assets/Prefabs/mdlZappinator.prefab
 - Assets/Prefabs/curseStatue.prefab
 - Assets/Prefabs/constructConstruct.prefab
@@ -137,6 +138,7 @@ Assets:
 - Assets/Prefabs/mdlAAAAAAA.prefab
 - Assets/Purble.mat
 - Assets/Prefabs/compressionLoop.prefab
+- Assets/lunarBrandMaker.fbx
 - Assets/Icons/texIconPickupITEM_VOIDSCUG.png
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab

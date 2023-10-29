@@ -10,7 +10,7 @@ namespace RiskierRain.Items
 {
     class FlameOrb : ItemBase<FlameOrb>
     {
-        public static GameObject flameNovaEffectPrefab = Resources.Load<GameObject>("RoR2/Base/IgniteOnKill/IgniteExplosionVFX.prefab");
+        public static GameObject flameNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");//change this later
         const int flameRadius = 25;
         const float durationBase = 5;
         const float durationStack = 5;

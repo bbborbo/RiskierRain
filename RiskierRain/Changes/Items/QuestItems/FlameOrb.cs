@@ -33,7 +33,7 @@ namespace RiskierRain.Items
 
         public override BalanceCategory Category => BalanceCategory.None;
 
-        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSpine.prefab");
+        public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarStar.prefab");
 
         public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texEggIcon.png");
 

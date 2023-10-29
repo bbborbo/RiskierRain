@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3979931663
+CRC: 1434802578
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 10f49addc8c60bec12b0e7a849af10b5
+    Hash: f42d28738fca7b03981154019eb1db49
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -42,6 +42,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
 - Assets/Prefabs/mdlNinjaGear.prefab
 - Assets/Orange.mat
+- Assets/Prefabs/mdlLunarBrandMaker.prefab
 - Assets/Prefabs/coralite.prefab
 - Assets/ninjaGear.fbx
 - Assets/Prefabs/bottle.prefab
@@ -60,6 +61,7 @@ Assets:
 - Assets/egg.fbx
 - Assets/scaleSpeedUp.fbx
 - Assets/Prefabs/mdlPermafrost.prefab
+- Assets/lunarBrand.fbx
 - Assets/fixedbird.fbx
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/Prefabs/mdlChargedSpine.prefab
@@ -69,10 +71,13 @@ Assets:
 - Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
 - Assets/Prefabs/mdlSlungus.prefab
 - Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
+- Assets/Prefabs/mdlLunarStar.prefab
 - Assets/Prefabs/mdlBirdBand.prefab
 - Assets/Prefabs/mdlFlowerCrown.prefab
 - Assets/aaaaaaa.fbx
+- Assets/lunarStar.fbx
 - Assets/Egg.mat
+- Assets/zappinator.fbx
 - Assets/Prefabs/mdlUtilityBelt.prefab
 - Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
 - Assets/Prefabs/enemyHealthUp.prefab
@@ -80,19 +85,23 @@ Assets:
 - Assets/enemyHealthUp.fbx
 - Assets/scalpelBroken.fbx
 - Assets/LunarGallery.mat
+- Assets/Prefabs/lunarBrandMaker.prefab
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Prefabs/mdlChefStache.prefab
 - Assets/Icons/texEggIcon.png
+- Assets/Prefabs/mdlSpineCharger.prefab
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/enemyDamageUp.fbx
 - Assets/Ice.mat
 - Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png
 - Assets/Prefabs/mdlNaturesGift.prefab
+- Assets/Prefabs/mdlLunarBrand.prefab
 - Assets/Prefabs/scaleSpeedUp.prefab
 - Assets/coralite.fbx
 - Assets/Prefabs/frozenTurtleShell.prefab
 - Assets/Prefabs/mdlPhrygianLily.prefab
+- Assets/Prefabs/spineCharger.prefab
 - Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
 - Assets/starVeil.fbx
 - Assets/Icons/texIconPickupITEM_CHEFITEM.png

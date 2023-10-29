@@ -21,7 +21,7 @@ namespace RiskierRain.Interactables
 
         public override string interactableLangToken => "LUNAR_GALLERY";
 
-        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarGallery.prefab");
+        public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarGallery.prefab");
 
         public override bool modelIsCloned => false;
 

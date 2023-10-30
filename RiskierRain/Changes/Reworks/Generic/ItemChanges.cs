@@ -5,6 +5,7 @@ using MonoMod.Cil;
 using On.RoR2.Items;
 using R2API;
 using RiskierRain.Changes.Components;
+using RiskierRain.Equipment;
 using RiskierRain.Items;
 using RoR2;
 using RoR2.Orbs;
@@ -723,7 +724,7 @@ namespace RiskierRain
         }
         #endregion
 
-        #region
+        #region focon
         public static float foconMinRadius = 8f; //0
         public static float foconRadiusMultiplier = 0.5f; //0.5f
         public static float foconChargeBonus = 1f; //0.3f
@@ -802,6 +803,33 @@ namespace RiskierRain
             c.EmitDelegate<Func<float, float>>((chargeBonus) =>
             {
                 return foconChargeBonus;
+            });
+        }
+        #endregion
+
+        #region lost seers lenses
+        void LostSeersFix()
+        {
+            IL.RoR2.HealthComponent.TakeDamage += FixLostSeersDamageImmunity;
+        }
+
+        private void FixLostSeersDamageImmunity(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "CritGlassesVoid"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                );
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, HealthComponent, int>>((lensCount, hc) => {
+                CharacterBody cb = hc.body;
+                if (cb.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToVoidDeath))
+                {
+                    return 0;
+                }
+                return lensCount;
             });
         }
         #endregion

@@ -571,6 +571,12 @@ namespace RiskierRain
                 {
                     this.ReworkShuriken();
                 }
+
+                // lost seers lenses
+                if (GetConfigBool(currentCategory, true, "Lost Seers Lenses Fix"))
+                {
+                    LostSeersFix();
+                }
                 #endregion
 
                 //this.DoSadistScavenger();

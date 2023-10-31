@@ -121,6 +121,10 @@ namespace RiskierRain.Equipment
                 {
                     if (attackerBody)
                     {
+                        if (UnityEngine.Random.RandomRangeInt(0, 2) < 1)//chance i tink
+                        {
+                            return;
+                        }
                         int duration = (int) ((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth)* 30);
                         CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, Math.Max(duration, minDuration));
                         CharacterMaster ghostMaster = ghost.master;

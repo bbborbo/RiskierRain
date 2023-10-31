@@ -121,7 +121,7 @@ namespace RiskierRain.Equipment
                 {
                     if (attackerBody)
                     {
-                        if (UnityEngine.Random.RandomRangeInt(0, 2) < 1)//chance i tink
+                        if (Util.CheckRoll(50))//chance i tink
                         {
                             return;
                         }

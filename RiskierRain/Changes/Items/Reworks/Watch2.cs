@@ -51,7 +51,7 @@ namespace RiskierRain.Items
         {
             GetStatCoefficients += WatchCritChance;
             GetHitBehavior += WatchGetHit;
-            On.RoR2.HealthComponent.UpdateLastHitTime += WatchBreak;
+            //On.RoR2.HealthComponent.UpdateLastHitTime += WatchBreak;
         }
 
         private void WatchBreak(On.RoR2.HealthComponent.orig_UpdateLastHitTime orig, HealthComponent self, float damageValue, Vector3 damagePosition, bool damageIsSilent, GameObject attacker)
@@ -84,11 +84,18 @@ namespace RiskierRain.Items
             if (damageInfo.procCoefficient > 0 && damageInfo.damage > 0 && !damageInfo.rejected)
             {
                 CharacterBody victimBody = victim.GetComponent<CharacterBody>();
-                int itemCount = GetCount(victimBody);
-                if(itemCount > 0)
+                if (victimBody)
                 {
-                    float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
-                    victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
+                    Inventory inv = victimBody.inventory;
+                    if (inv)
+                    {
+                        int itemCount = inv.GetItemCount(DLC1Content.Items.FragileDamageBonus);
+                        if (itemCount > 0)
+                        {
+                            float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
+                            victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
+                        }
+                    }
                 }
             }
         }
@@ -96,7 +103,7 @@ namespace RiskierRain.Items
         private void WatchCritChance(CharacterBody sender, StatHookEventArgs args)
         {
             int buffCount = sender.GetBuffCount(watchCritBuff);
-            int itemCount = GetCount(sender);
+            int itemCount = 1;// GetCount(sender);
             if(itemCount > 0 && buffCount > 0)
             {
                 args.critAdd += critChanceBonus;
@@ -105,11 +112,13 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
         {
-            RiskierRainPlugin.RetierItem(DLC1Content.Items.FragileDamageBonus);
+            //RiskierRainPlugin.RetierItem(DLC1Content.Items.FragileDamageBonus);
             CreateBuff();
-            CreateItem();
-            CreateLang();
+            //CreateItem();
+            //CreateLang();
             Hooks();
+            LanguageAPI.Add("ITEM_FRAGILEDAMAGEBONUS_PICKUP", ItemPickupDesc);
+            LanguageAPI.Add("ITEM_FRAGILEDAMAGEBONUS_DESC", ItemFullDescription);
         }
         private void CreateBuff()
         {

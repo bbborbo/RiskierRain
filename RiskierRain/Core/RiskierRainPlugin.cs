@@ -416,12 +416,6 @@ namespace RiskierRain
                     HappiestMaskRework();
                 }
 
-                //regenerating scrap
-                if (GetConfigBool(currentCategory, true, "Regenerating Scrap"))
-                {
-                    RegeneratingScrapRework();
-                }
-
                 //focused convergence, focon
                 if(GetConfigBool(currentCategory, true, "Focused Convergence"))
                 {

@@ -19,7 +19,8 @@ namespace RiskierRain.Items
         float freeCritDamage = 0.1f;
         int dangerCritChance = 50;
         float bonusCritDamageLowHealthBase = 0;
-        float bonusCritDamageLowHealthStack = 3;
+        float bonusCritDamageLowHealthStack = 2.5f;
+        public static float rampageExtendTime = 4;
 
         public static BuffDef dangerCritBuff;
 
@@ -33,7 +34,8 @@ namespace RiskierRain.Items
             $"Falling below <style=cIsHealth>{Tools.ConvertDecimal(maxHealthThreshold)} health</style> sends you into a rampage, increasing " +
             $"<style=cIsDamage>critical strike damage by {Tools.ConvertDecimal(bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(bonusCritDamageLowHealthStack)} per stack)</style>, and " +
-            $"<style=cIsDamage>critical strike chance by {dangerCritChance - freeCritChance}%</style>.";
+            $"<style=cIsDamage>critical strike chance by {dangerCritChance - freeCritChance}%</style>. " +
+            $"Killing enemies <style=cIsDamage>extends</style> the rampage for <style=cIsDamage>{rampageExtendTime} seconds</style>.";
 
         public override string ItemLore =>
 @"Name: [REDACTED]
@@ -69,22 +71,28 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
         public override void Hooks()
         {
+            On.RoR2.GlobalEventManager.OnCharacterDeath += ExtendRampage;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             GetStatCoefficients += this.GiveBonusCrit;
         }
 
+        private void ExtendRampage(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            throw new NotImplementedException();
+        }
+
         private void GiveBonusCrit(CharacterBody sender, StatHookEventArgs args)
         {
-            if(GetCount(sender) > 0)
+            int count = GetCount(sender);
+            if (count > 0)
             {
                 int critAdd = freeCritChance;
                 float critDmgAdd = 0;
 
-                int buffCount = sender.GetBuffCount(dangerCritBuff);
-                if (buffCount > 0)
+                if (sender.HasBuff(dangerCritBuff))
                 {
                     critAdd = dangerCritChance;
-                    critDmgAdd = bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack * buffCount;
+                    critDmgAdd = bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack * count;
                 }
                 args.critAdd += critAdd;
                 args.critDamageMultAdd += critDmgAdd;
@@ -117,7 +125,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
             dangerCritBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 dangerCritBuff.buffColor = Color.black;
-                dangerCritBuff.canStack = true;
+                dangerCritBuff.canStack = false;
                 dangerCritBuff.isDebuff = false;
                 dangerCritBuff.name = "NewLopperCritBonus";
                 dangerCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
@@ -128,42 +136,57 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
     public class NewLopperBehavior : RoR2.CharacterBody.ItemBehavior
     {
-        BuffIndex dangerCrit = NewLopper.dangerCritBuff.buffIndex;
-        bool isEnraged = false;
+        BuffIndex dangerCrit => NewLopper.dangerCritBuff.buffIndex;
+        bool isLowHealth = false;
+        void Start()
+        {
+            GlobalEventManager.onCharacterDeathGlobal += ExtendRampage;
+        }
+
+        private void ExtendRampage(DamageReport damageReport)
+        {
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if(attackerBody == this.body)
+            {
+                if(this.body.HasBuff(dangerCrit) && !isLowHealth)
+                {
+                    this.body.RemoveOldestTimedBuff(dangerCrit);
+                    this.body.AddTimedBuffAuthority(dangerCrit, NewLopper.rampageExtendTime);
+                }
+            }
+        }
+
         void FixedUpdate()
         {
             if(stack > 0)
             {
                 float combinedHealthFraction = this.body.healthComponent.combinedHealthFraction;
-                int buffCount = this.body.GetBuffCount(dangerCrit);
+                //int buffCount = this.body.GetBuffCount(dangerCrit);
 
 
-                if (combinedHealthFraction <= NewLopper.maxHealthThreshold)
+                if (combinedHealthFraction <= NewLopper.maxHealthThreshold && !isLowHealth)
                 {
-                    for (int i = 0; i < buffCount; i++)
+                    if (this.body.HasBuff(dangerCrit))
                     {
-                        this.body.RemoveBuff(dangerCrit);
+                        this.body.RemoveOldestTimedBuff(dangerCrit);
                     }
-                    for (int i = 0; i < stack; i++)
-                    {
-                        this.body.AddBuff(dangerCrit);
-                    }
-                    isEnraged = true;
+
+                    this.body.AddBuff(dangerCrit);
+                    isLowHealth = true;
                 }
-                else if (isEnraged)
+                else if (isLowHealth)
                 {
-                    isEnraged = false;
-                    for (int i = 0; i < buffCount; i++)
-                    {
-                        this.body.RemoveBuff(dangerCrit);
-                        this.body.AddTimedBuffAuthority(dangerCrit, 5f);
-                    }
+                    isLowHealth = false;
+                    this.body.RemoveBuff(dangerCrit);
+                    this.body.AddTimedBuffAuthority(dangerCrit, NewLopper.rampageExtendTime);
                 }
             }
         }
         void OnDestroy()
         {
-            if (isEnraged)
+            GlobalEventManager.onCharacterDeathGlobal -= ExtendRampage;
+
+            if (isLowHealth)
                 this.body.RemoveBuff(dangerCrit);
         }
     }

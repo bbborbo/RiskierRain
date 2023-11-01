@@ -154,9 +154,6 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
             #endregion
 
-            Debug.LogWarning("2r4r sticky bomb guh");
-            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
-
             RoR2Application.onLoad += InitializeEverything;
 
             //lol
@@ -444,7 +441,6 @@ namespace RiskierRain
 
                 // damage
                 this.NerfBands();
-                this.StickyRework();
                 BurnReworks();
 
                 if (AtgMissileMk3.instance.ItemsDef != null)

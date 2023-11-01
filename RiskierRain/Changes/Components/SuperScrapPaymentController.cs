@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using RiskierRain.Items;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace RiskierRain.Changes.Components
                 }
             }
 
-            if ((paymentCreditsRemaining < purchaseInteraction.cost && !RiskierRainPlugin.shouldSuperScrapOverBuy) 
+            if ((paymentCreditsRemaining < purchaseInteraction.cost && !ChimeraScrap.shouldSuperScrapOverBuy) 
                 || paymentCreditsRemaining <= 0)
             {
                 Destroy(this);

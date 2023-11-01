@@ -154,7 +154,6 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
             #endregion
 
-            RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
             Debug.LogWarning("2r4r sticky bomb guh");
             RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
             Debug.LogWarning("2r4r regen scrap guh");
@@ -656,12 +655,6 @@ namespace RiskierRain
                     BossesDropBossItems();
                     TricornRework();
                     DirectorAPI.InteractableActions += DeleteYellowPrinters;
-                }
-
-                // horde of many wake of vultures trophy
-                if (GetConfigBool(currentCategory, true, "Boss: Wake Of Vultures Horde Of Many Trophy"))
-                {
-                    HordeOfManyDropsWakeOfVultures();
                 }
 
                 //overloading elite

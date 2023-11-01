@@ -156,8 +156,6 @@ namespace RiskierRain
 
             Debug.LogWarning("2r4r sticky bomb guh");
             RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
-            Debug.LogWarning("2r4r regen scrap guh");
-            RetierItem(nameof(DLC1Content.Items.RegeneratingScrap), ItemTier.Tier3);
 
             RoR2Application.onLoad += InitializeEverything;
 

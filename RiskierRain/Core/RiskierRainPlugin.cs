@@ -608,6 +608,12 @@ namespace RiskierRain
                 {
                     AmbientLevelDifficulty();
                     FixMoneyAndExpRewards(); //related to ambient difficulty boost
+                    VoidFieldsStageType(); //related to ambient difficulty boost
+                }
+                //void fields time cost
+                if (GetConfigBool(currentCategory, true, "Difficulty: Void Fields Time Cost"))
+                {
+                    VoidFieldsTimeCost();
                 }
 
                 //elite stats

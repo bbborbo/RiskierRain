@@ -12,6 +12,7 @@ using EntityStates;
 using BepInEx;
 using R2API;
 using System.Collections.ObjectModel;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain
 {
@@ -24,7 +25,7 @@ namespace RiskierRain
 
         public static float timeDifficultyScaling = 1.5f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
-        public static float loopDifficultyScaling = 1.5f; //1.0f, exponential
+        public static float loopDifficultyScaling = 1.45f; //1.0f, exponential
 
         public static float easyTeleParticleRadius = 1f;
         public static float normalTeleParticleRadius = 0.8f;
@@ -192,6 +193,8 @@ namespace RiskierRain
 
             float stageFactor = Mathf.Pow(stageDifficultyScaling, (float)self.stageClearCount); //1^loops
             int totalLoops = Mathf.FloorToInt(self.stageClearCount / 5);
+            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)// && self.stageClearCount % 5 == 1)
+                totalLoops -= 1;
             float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops); //1.5^loops
             float difficultyCoefficient = (playerBaseFactor + playerScaleFactor * minutesFactor) * stageFactor * loopFactor;
 
@@ -236,11 +239,12 @@ namespace RiskierRain
             }
         }
         #endregion
+
         #region eclipse-exclusive
 
         public static DifficultyIndex eclipseLevelBossShield = DifficultyIndex.Eclipse1; //
         public static float eclipseBossShieldFraction = 0.1f;
-        public static string eclipseOneDesc = 
+        public static string eclipseOneDesc =
             $"\n<mspace=0.5em>(1)</mspace> Boss Shields: <style=cIsHealth>+{Tools.ConvertDecimal(eclipseBossShieldFraction)}</style>";
 
         public static DifficultyIndex eclipseLevelHoldoutLoss = DifficultyIndex.Eclipse2;
@@ -311,7 +315,7 @@ namespace RiskierRain
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseEnd);
             LanguageAPI.Add("ECLIPSE_7_DESCRIPTION", eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEnd);
-            LanguageAPI.Add("ECLIPSE_8_DESCRIPTION", eclipse8Prefix + eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc 
+            LanguageAPI.Add("ECLIPSE_8_DESCRIPTION", eclipse8Prefix + eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
         }
 
@@ -333,7 +337,7 @@ namespace RiskierRain
             RuleDef difficultyRuleDef = RuleCatalog.FindRuleDef("Difficulty");
             num = Math.Min(num, EclipseRun.maxEclipseLevel);
             DifficultyIndex eclipseDifficultyIndex = EclipseRun.GetEclipseDifficultyIndex(num);
-            
+
             foreach (RuleChoiceDef ruleChoice in difficultyRuleDef.choices)
             {
                 if (ruleChoice.excludeByDefault == true && ruleChoice.difficultyIndex <= eclipseDifficultyIndex)
@@ -458,7 +462,7 @@ namespace RiskierRain
 
         private void EclipseSpiteArtifact(On.RoR2.RunArtifactManager.orig_SetArtifactEnabled orig, RunArtifactManager self, ArtifactDef artifactDef, bool newEnabled)
         {
-            if(Run.instance.selectedDifficulty >= eclipseLevelSpiteArtifact)
+            if (Run.instance.selectedDifficulty >= eclipseLevelSpiteArtifact)
             {
                 if (artifactDef == RoR2Content.Artifacts.bombArtifactDef)
                     newEnabled = true;
@@ -504,6 +508,24 @@ namespace RiskierRain
                     args.baseRegenAdd -= (sender.baseRegen + (sender.levelRegen * sender.level)) * (eclipsePlayerDegen * sender.level);
                 }
             }
+        }
+        #endregion
+
+        #region void fields
+        public static float voidFieldsTimeCost = 120; //0
+        void VoidFieldsStageType()
+        {
+            SceneDef voidFieldsScene = Addressables.LoadAssetAsync<SceneDef>("RoR2/Base/arena/arena.asset").WaitForCompletion();
+            voidFieldsScene.sceneType = SceneType.Intermission;
+        }
+        void VoidFieldsTimeCost()
+        {
+            On.EntityStates.Missions.Arena.NullWard.WardOnAndReady.OnExit += AddVoidFieldsTimeCost;
+        }
+        private void AddVoidFieldsTimeCost(On.EntityStates.Missions.Arena.NullWard.WardOnAndReady.orig_OnExit orig, EntityStates.Missions.Arena.NullWard.WardOnAndReady self)
+        {
+            orig(self);
+            Run.instance.SetRunStopwatch(Run.instance.GetRunStopwatch() + voidFieldsTimeCost);
         }
         #endregion
     }

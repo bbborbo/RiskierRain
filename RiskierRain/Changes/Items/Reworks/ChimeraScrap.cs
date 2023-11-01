@@ -98,15 +98,15 @@ namespace RiskierRain.Items
                 Inventory activatorInventory = activatorBody.inventory;
                 if (activatorInventory)
                 {
-                    int regenScrapCount = activatorInventory.GetItemCount(ItemsDef.itemIndex);
+                    int regenScrapCount = activatorInventory.GetItemCount(ChimeraScrap.instance.ItemsDef.itemIndex);
                     if (regenScrapCount > 0)
                     {
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
-                        activatorInventory.RemoveItem(ItemsDef.itemIndex, 1);
+                        activatorInventory.RemoveItem(ChimeraScrap.instance.ItemsDef.itemIndex, 1);
                         activatorInventory.GiveItem(DLC1Content.Items.RegeneratingScrapConsumed, 1);
                         CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
-                            ItemsDef.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex,
+                            ChimeraScrap.instance.ItemsDef.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex,
                             CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
 
                         int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
@@ -124,7 +124,7 @@ namespace RiskierRain.Items
                         int n = Mathf.Min(cost, printerCredit);
                         for (int i = 0; i < n; i++)
                         {
-                            payCostResults.itemsTaken.Add(ItemsDef.itemIndex);
+                            payCostResults.itemsTaken.Add(ChimeraScrap.instance.ItemsDef.itemIndex);
                         }
 
                         return payCostResults;
@@ -143,7 +143,7 @@ namespace RiskierRain.Items
                 Inventory activatorInventory = activatorBody.inventory;
                 if (activatorInventory)
                 {
-                    int regenScrapCount = activatorInventory.GetItemCount(ItemsDef.itemIndex);
+                    int regenScrapCount = activatorInventory.GetItemCount(ChimeraScrap.instance.ItemsDef.itemIndex);
                     if (regenScrapCount > 0)
                     {
                         int printerCredits = GetSuperScrapPrinterCredit(self.itemTier) * regenScrapCount;

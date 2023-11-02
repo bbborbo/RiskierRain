@@ -15,9 +15,11 @@ namespace RiskierRain.Items
     class Watch2 : ItemBase<Watch2>
     {
         public static BuffDef watchCritBuff;
-        public static int critChanceBonus = 24;
-        public static float buffDurationBase = 3f;
-        public static float buffDurationStack = 1.5f;
+        public static float critChanceBonus = 24;
+        public static float critChancePerBuff => critChanceBonus / buffTotal;
+        public static float buffTotal = 6;
+        public static float buffDurationBase = 6f;
+        public static float buffDurationStack = 3f;
         public override string ItemName => "Delicate Watch";
 
         public override string ItemLangTokenName => "WATCH2";
@@ -25,7 +27,7 @@ namespace RiskierRain.Items
         public override string ItemPickupDesc => "Increase critical strike chance for a short time after being hit. Breaks on low health.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsDamage>{critChanceBonus}%</style> chance " +
-            $"to <style=cIsDamage>Critically Strike</style> for " +
+            $"to <style=cIsDamage>Critically Strike</style>, fading over " +
             $"<style=cIsDamage>{buffDurationBase} seconds</style> <style=cStack>(+{buffDurationStack} per stack)</style> " +
             $"after getting hit. " +
             $"Taking damage to below <style=cIsHealth>25% health</style> <style=cIsUtility>breaks</style> this item.";
@@ -92,8 +94,13 @@ namespace RiskierRain.Items
                         int itemCount = inv.GetItemCount(DLC1Content.Items.FragileDamageBonus);
                         if (itemCount > 0)
                         {
+                            victimBody.ClearTimedBuffs(watchCritBuff);
                             float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
-                            victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
+                            for (int i = 0; i < buffTotal; i++)
+                            {
+                                victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)buffTotal);
+                            }
+                            //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
                         }
                     }
                 }
@@ -103,11 +110,10 @@ namespace RiskierRain.Items
         private void WatchCritChance(CharacterBody sender, StatHookEventArgs args)
         {
             int buffCount = sender.GetBuffCount(watchCritBuff);
-            int itemCount = 1;// GetCount(sender);
-            if(itemCount > 0 && buffCount > 0)
-            {
-                args.critAdd += critChanceBonus;
-            }
+            args.critAdd += critChancePerBuff * buffCount;
+
+            if (sender.inventory?.GetItemCount(DLC1Content.Items.FragileDamageBonusConsumed) > 0)
+                args.critAdd += 2;
         }
 
         public override void Init(ConfigFile config)
@@ -125,7 +131,7 @@ namespace RiskierRain.Items
             watchCritBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 watchCritBuff.buffColor = Color.yellow;
-                watchCritBuff.canStack = false;
+                watchCritBuff.canStack = true;
                 watchCritBuff.isDebuff = false;
                 watchCritBuff.name = "DelicateWatchCritChance";
                 watchCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");

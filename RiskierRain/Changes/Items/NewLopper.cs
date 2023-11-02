@@ -71,14 +71,8 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnCharacterDeath += ExtendRampage;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             GetStatCoefficients += this.GiveBonusCrit;
-        }
-
-        private void ExtendRampage(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            throw new NotImplementedException();
         }
 
         private void GiveBonusCrit(CharacterBody sender, StatHookEventArgs args)

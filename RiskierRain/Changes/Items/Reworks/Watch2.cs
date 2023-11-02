@@ -16,9 +16,9 @@ namespace RiskierRain.Items
     {
         public static BuffDef watchCritBuff;
         public static int critChanceBonus = 24;
-        public static float buffDurationBase = 2f;
-        public static float buffDurationStack = 0.5f;
-        public override string ItemName => "Delicate Wristwatch";
+        public static float buffDurationBase = 3f;
+        public static float buffDurationStack = 1.5f;
+        public override string ItemName => "Delicate Watch";
 
         public override string ItemLangTokenName => "WATCH2";
 

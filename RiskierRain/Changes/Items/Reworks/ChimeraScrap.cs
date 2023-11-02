@@ -56,7 +56,7 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
         {
-            RiskierRainPlugin.RetierItem(DLC1Content.Items.RegeneratingScrap);
+            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.RegeneratingScrap));
             CreateItem();
             CreateLang();
         }

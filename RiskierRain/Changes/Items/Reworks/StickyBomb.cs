@@ -46,7 +46,7 @@ namespace RiskierRain.Items
         {
             //ItemDef stickybomb = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/StickyBomb/StickyBomb.asset").WaitForCompletion();
             //stickybomb._itemTierDef = ItemTierCatalog.GetItemTierDef(ItemTier.Tier2);
-            RiskierRainPlugin.RetierItem(RoR2Content.Items.StickyBomb, ItemTier.Tier2);
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
 
             IL.RoR2.GlobalEventManager.OnHitEnemy += StickyBombRework;
             LanguageAPI.Add("ITEM_STICKYBOMB_DESC",

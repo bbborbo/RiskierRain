@@ -83,7 +83,7 @@ namespace RiskierRain.Interactables
         public override void Init(ConfigFile config)
         {
             hasAddedInteractable = false;
-            On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
+            //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
             On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
             On.RoR2.PurchaseInteraction.OnInteractionBegin += LunarBrandMakerBehavior;
             On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;

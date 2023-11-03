@@ -412,9 +412,15 @@ namespace RiskierRain
                 }
 
                 //focused convergence, focon
-                if(GetConfigBool(currentCategory, true, "Focused Convergence"))
+                if (GetConfigBool(currentCategory, true, "Focused Convergence"))
                 {
                     FocusedConvergenceChanges();
+                }
+
+                //goobo jr
+                if (GetConfigBool(currentCategory, true, "Goobo Jr."))
+                {
+                    GooboJrChanges();
                 }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();

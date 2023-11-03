@@ -7,7 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using RoR2.Projectile;
+using MonoMod.Cil;
+using UnityEngine.Events;
+using Mono.Cecil.Cil;
+using RiskierRain.Components;
 
 namespace RiskierRain
 {
@@ -157,6 +163,55 @@ namespace RiskierRain
             {
                 body.equipmentSlot.OnEquipmentExecuted();
             }
+        }
+        #endregion
+
+        #region goobo jr
+        public Func<ItemIndex, bool> gooboItemCopyFilter = new Func<ItemIndex, bool>(Inventory.defaultItemCopyFilterDelegate);
+
+        float gummyLifetime = 30;//30
+        int gummyDamage = 7;
+        int gummyHealth = 7;
+        public void GooboJrChanges()
+        {
+            GameObject turretMaster = Addressables.LoadAssetAsync<GameObject>("RoR2/RoR2/Engi/EngiTurretMaster.prefab").WaitForCompletion();
+            MasterSummon turretMasterSummon = turretMaster?.GetComponent<MasterSummon>();
+            if (turretMasterSummon != null)
+                gooboItemCopyFilter = turretMasterSummon.inventoryItemCopyFilter;
+
+            GameObject gummyCloneProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GummyClone/GummyCloneProjectile.prefab").WaitForCompletion();
+            GummyCloneProjectile gummyCloneProjectile = gummyCloneProjectilePrefab.GetComponent<GummyCloneProjectile>();
+            if (gummyCloneProjectile)
+            {
+                gummyCloneProjectile.damageBoostCount = gummyDamage;
+                gummyCloneProjectile.hpBoostCount = gummyHealth;
+                gummyCloneProjectile.maxLifetime = gummyLifetime;
+            }
+
+            IL.RoR2.Projectile.GummyCloneProjectile.SpawnGummyClone += GummyInheritItems;
+        }
+
+        private void GummyInheritItems(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int n = 5;
+            c.GotoNext(MoveType.After,
+                x => x.MatchNewobj<DirectorSpawnRequest>(),
+                x => x.MatchStloc(out n)
+                );
+
+            c.Emit(OpCodes.Ldloc, n);
+            c.EmitDelegate<Action<DirectorSpawnRequest>>((spawnRequest) =>
+            {
+                spawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(spawnRequest.onSpawnedServer, 
+                    new Action<SpawnCard.SpawnResult>(delegate (SpawnCard.SpawnResult spawnResult)
+                {
+                    CopyInventoryFromOwner cico = spawnResult.spawnedInstance.AddComponent<CopyInventoryFromOwner>();
+                    cico.inventoryItemCopyFilter = gooboItemCopyFilter;
+                    cico.copyEquipment = false;
+                }));
+            });
         }
         #endregion
     }

@@ -14,6 +14,7 @@ using MonoMod.Cil;
 using UnityEngine.Events;
 using Mono.Cecil.Cil;
 using RiskierRain.Components;
+using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain
 {
@@ -170,8 +171,10 @@ namespace RiskierRain
         public Func<ItemIndex, bool> gooboItemCopyFilter = new Func<ItemIndex, bool>(Inventory.defaultItemCopyFilterDelegate);
 
         float gummyLifetime = 30;//30
-        int gummyDamage = 7;
-        int gummyHealth = 7;
+        int gummyDamage = 0; //20
+        float gummyDamageMultiplier = 0.7f;
+        int gummyHealth = 20; //20
+        float gummyHealthMultiplier = 1f;
         public void GooboJrChanges()
         {
             GameObject turretMaster = Addressables.LoadAssetAsync<GameObject>("RoR2/RoR2/Engi/EngiTurretMaster.prefab").WaitForCompletion();
@@ -189,6 +192,21 @@ namespace RiskierRain
             }
 
             IL.RoR2.Projectile.GummyCloneProjectile.SpawnGummyClone += GummyInheritItems;
+            GetStatCoefficients += GummyStats;
+            LanguageAPI.Add("EQUIPMENT_GUMMYCLONE_DESC",
+                $"Spawn a gummy clone with <style=cIsDamage>all</style> of your items, that has " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal((1 + gummyDamage * 0.1f) * gummyDamageMultiplier)} damage</style> " +
+                $"and <style=cIsHealing>{Tools.ConvertDecimal((1 + gummyDamage * 0.1f) * gummyDamageMultiplier)} health</style>. " +
+                $"Expires in <style=cIsUtility>{gummyLifetime}</style> seconds.");
+        }
+
+        private void GummyStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            if(sender?.equipmentSlot?.equipmentIndex == DLC1Content.Equipment.GummyClone.equipmentIndex)
+            {
+                args.healthMultAdd -= 1 - gummyHealthMultiplier;
+                args.damageMultAdd -= 1 - gummyDamageMultiplier;
+            }
         }
 
         private void GummyInheritItems(ILContext il)

@@ -638,12 +638,12 @@ namespace RiskierRain
             SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
             SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 59, 286));//didnt spawn idk why
 
-            Vector3[] wispGraveyardSpots = new Vector3[4];
-            wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
-            wispGraveyardSpots[1] = new Vector3(-418, 6, -67);
-            wispGraveyardSpots[2] = new Vector3(-383, 6, -102);
-            wispGraveyardSpots[3] = new Vector3(-421, 6, -39);
-            SpawnSemiRandom("wispgraveyard", doubleChestSpawnCard, wispGraveyardSpots);
+            //Vector3[] wispGraveyardSpots = new Vector3[4];
+            //wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
+            //wispGraveyardSpots[1] = new Vector3(-418, 6, -67);
+            //wispGraveyardSpots[2] = new Vector3(-383, 6, -102);
+            //wispGraveyardSpots[3] = new Vector3(-421, 6, -39);
+            //SpawnSemiRandom("wispgraveyard", doubleChestSpawnCard, wispGraveyardSpots);
 
             //frozenwall
             SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(87, 82, -250), 0.5f);

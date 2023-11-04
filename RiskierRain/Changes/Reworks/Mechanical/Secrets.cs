@@ -26,7 +26,7 @@ namespace RiskierRain
             InteractableSpawnCard greenPrinterSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/DuplicatorLarge/iscDuplicatorLarge.asset").WaitForCompletion();
             InteractableSpawnCard bigChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/Chest2/iscChest2.asset").WaitForCompletion();
             InteractableSpawnCard lunarPodSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/LunarChest/iscLunarChest.asset").WaitForCompletion();
-            
+            InteractableSpawnCard flameAltarSpawnCard = FlameAltar.instance.customInteractable.spawnCard;
 
             //ancient loft
             SpawnSecret("ancientloft", greenPrinterSpawnCard, new Vector3(-86, 29, 34));
@@ -46,7 +46,13 @@ namespace RiskierRain
             SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(351, -78, 108));
             SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(118, -91, -7));
             SpawnSecret("goolake", bigChestSpawnCard, new Vector3(174, -11, -252));
-
+            //wispgraveyard
+            Vector3[] wispGraveyardSpots = new Vector3[4];
+            wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
+            wispGraveyardSpots[1] = new Vector3(-418, 6, -67);
+            wispGraveyardSpots[2] = new Vector3(-383, 6, -102);
+            wispGraveyardSpots[3] = new Vector3(-421, 6, -39);
+            SpawnSemiRandom("wispgraveyard", flameAltarSpawnCard, wispGraveyardSpots);
         }
         #endregion
 

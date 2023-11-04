@@ -25,13 +25,13 @@ namespace RiskierRain.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 0;
+        public override int normalWeight => 30;
 
         public override int favoredWeight => 0;
 
         public override int category => 4;
 
-        public override int spawnCost => 1;
+        public override int spawnCost => 10;
 
         public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
 
@@ -53,31 +53,31 @@ namespace RiskierRain.Interactables
 
         public override float weightScalarWhenSacrificeArtifactEnabled => 1;
 
-        public override int maxSpawnsPerStage => 20;
+        public override int maxSpawnsPerStage => 2;
 
         public string[] validScenes = {
-            "golemplains",
-            "golemplains2",
-            "blackbeach",
-            "blackbeach2",
-            "snowyforest",
-            "foggyswamp",
-            "goolake",
-            "frozenwall",
-            "wispgraveyard",
-            "dampcavesimple",
-            "shipgraveyard",
-            "arena",
-            "skymeadow",
-            "artifactworld",
-            "rootjungle",
-            "ancientloft",
-            "sulfurpools",
+            //"golemplains",
+            //"golemplains2",
+            //"blackbeach",
+            //"blackbeach2",
+            //"snowyforest",
+            //"foggyswamp",
+            //"goolake",
+            //"frozenwall",
+            //"wispgraveyard",
+            //"dampcavesimple",
+            //"shipgraveyard",
+            //"arena",
+            //"skymeadow",
+            //"artifactworld",
+            //"rootjungle",
+            //"ancientloft",
+            //"sulfurpools",
 			//modded stages
-			"slumberingsatellite",
-            "forgottenhaven",
+			//"slumberingsatellite",
+            //"forgottenhaven",
             "drybasin",
-            "FBLScene"
+            //"FBLScene"
         };
 
         public override void Init(ConfigFile config)

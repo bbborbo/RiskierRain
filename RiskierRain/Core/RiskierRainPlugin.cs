@@ -154,12 +154,6 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
             #endregion
 
-            RetierItem(nameof(RoR2Content.Items.HeadHunter), ItemTier.Boss);
-            Debug.LogWarning("2r4r sticky bomb guh");
-            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
-            Debug.LogWarning("2r4r regen scrap guh");
-            RetierItem(nameof(DLC1Content.Items.RegeneratingScrap), ItemTier.Tier3);
-
             RoR2Application.onLoad += InitializeEverything;
 
             //lol
@@ -417,16 +411,16 @@ namespace RiskierRain
                     HappiestMaskRework();
                 }
 
-                //regenerating scrap
-                if (GetConfigBool(currentCategory, true, "Regenerating Scrap"))
-                {
-                    RegeneratingScrapRework();
-                }
-
                 //focused convergence, focon
-                if(GetConfigBool(currentCategory, true, "Focused Convergence"))
+                if (GetConfigBool(currentCategory, true, "Focused Convergence"))
                 {
                     FocusedConvergenceChanges();
+                }
+
+                //goobo jr
+                if (GetConfigBool(currentCategory, true, "Goobo Jr."))
+                {
+                    GooboJrChanges();
                 }
                 #endregion
                 //this.MakeMinionsInheritOnKillEffects();
@@ -453,7 +447,6 @@ namespace RiskierRain
 
                 // damage
                 this.NerfBands();
-                this.StickyRework();
                 BurnReworks();
 
                 if (AtgMissileMk3.instance.ItemsDef != null)
@@ -608,6 +601,12 @@ namespace RiskierRain
                 {
                     AmbientLevelDifficulty();
                     FixMoneyAndExpRewards(); //related to ambient difficulty boost
+                    VoidFieldsStageType(); //related to ambient difficulty boost
+                }
+                //void fields time cost
+                if (GetConfigBool(currentCategory, true, "Difficulty: Void Fields Time Cost"))
+                {
+                    VoidFieldsTimeCost();
                 }
 
                 //elite stats
@@ -650,12 +649,6 @@ namespace RiskierRain
                     BossesDropBossItems();
                     TricornRework();
                     DirectorAPI.InteractableActions += DeleteYellowPrinters;
-                }
-
-                // horde of many wake of vultures trophy
-                if (GetConfigBool(currentCategory, true, "Boss: Wake Of Vultures Horde Of Many Trophy"))
-                {
-                    HordeOfManyDropsWakeOfVultures();
                 }
 
                 //overloading elite

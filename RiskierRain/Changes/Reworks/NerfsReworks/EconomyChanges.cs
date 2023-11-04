@@ -305,7 +305,7 @@ namespace RiskierRain
         }
         #endregion
 
-        #region void 
+        #region void cradles
         GameObject voidCradlePrefab;
         public static float cradleHealthCost = 0.2f; //50
         static float _cradleHealthCost;

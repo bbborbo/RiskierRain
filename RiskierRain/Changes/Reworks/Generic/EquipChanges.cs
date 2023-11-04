@@ -7,7 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using RoR2.Projectile;
+using MonoMod.Cil;
+using UnityEngine.Events;
+using Mono.Cecil.Cil;
+using RiskierRain.Components;
+using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain
 {
@@ -157,6 +164,72 @@ namespace RiskierRain
             {
                 body.equipmentSlot.OnEquipmentExecuted();
             }
+        }
+        #endregion
+
+        #region goobo jr
+        public Func<ItemIndex, bool> gooboItemCopyFilter = new Func<ItemIndex, bool>(Inventory.defaultItemCopyFilterDelegate);
+
+        float gummyLifetime = 30;//30
+        int gummyDamage = 0; //20
+        float gummyDamageMultiplier = 0.7f;
+        int gummyHealth = 20; //20
+        float gummyHealthMultiplier = 1f;
+        public void GooboJrChanges()
+        {
+            GameObject turretMaster = Addressables.LoadAssetAsync<GameObject>("RoR2/RoR2/Engi/EngiTurretMaster.prefab").WaitForCompletion();
+            MasterSummon turretMasterSummon = turretMaster?.GetComponent<MasterSummon>();
+            if (turretMasterSummon != null)
+                gooboItemCopyFilter = turretMasterSummon.inventoryItemCopyFilter;
+
+            GameObject gummyCloneProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GummyClone/GummyCloneProjectile.prefab").WaitForCompletion();
+            GummyCloneProjectile gummyCloneProjectile = gummyCloneProjectilePrefab.GetComponent<GummyCloneProjectile>();
+            if (gummyCloneProjectile)
+            {
+                gummyCloneProjectile.damageBoostCount = gummyDamage;
+                gummyCloneProjectile.hpBoostCount = gummyHealth;
+                gummyCloneProjectile.maxLifetime = gummyLifetime;
+            }
+
+            IL.RoR2.Projectile.GummyCloneProjectile.SpawnGummyClone += GummyInheritItems;
+            GetStatCoefficients += GummyStats;
+            LanguageAPI.Add("EQUIPMENT_GUMMYCLONE_DESC",
+                $"Spawn a gummy clone with <style=cIsDamage>all</style> of your items, that has " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal((1 + gummyDamage * 0.1f) * gummyDamageMultiplier)} damage</style> " +
+                $"and <style=cIsHealing>{Tools.ConvertDecimal((1 + gummyDamage * 0.1f) * gummyDamageMultiplier)} health</style>. " +
+                $"Expires in <style=cIsUtility>{gummyLifetime}</style> seconds.");
+        }
+
+        private void GummyStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            if(sender?.equipmentSlot?.equipmentIndex == DLC1Content.Equipment.GummyClone.equipmentIndex)
+            {
+                args.healthMultAdd -= 1 - gummyHealthMultiplier;
+                args.damageMultAdd -= 1 - gummyDamageMultiplier;
+            }
+        }
+
+        private void GummyInheritItems(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int n = 5;
+            c.GotoNext(MoveType.After,
+                x => x.MatchNewobj<DirectorSpawnRequest>(),
+                x => x.MatchStloc(out n)
+                );
+
+            c.Emit(OpCodes.Ldloc, n);
+            c.EmitDelegate<Action<DirectorSpawnRequest>>((spawnRequest) =>
+            {
+                spawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(spawnRequest.onSpawnedServer, 
+                    new Action<SpawnCard.SpawnResult>(delegate (SpawnCard.SpawnResult spawnResult)
+                {
+                    CopyInventoryFromOwner cico = spawnResult.spawnedInstance.AddComponent<CopyInventoryFromOwner>();
+                    cico.inventoryItemCopyFilter = gooboItemCopyFilter;
+                    cico.copyEquipment = false;
+                }));
+            });
         }
         #endregion
     }

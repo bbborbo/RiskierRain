@@ -18,7 +18,7 @@ namespace RiskierRain.Items
 	{
 		public static int opalArmorBase = 10;
 		public static float opalRegenBase = 1f;
-		public static int opalArmorPerBuff = 8;
+		public static int opalArmorPerBuff = 5;
 		public static float opalRegenPerBuff = 0.5f;
 		public static int opalMaxBuff = 5;
 		public static float opalAreaRadius = 20;

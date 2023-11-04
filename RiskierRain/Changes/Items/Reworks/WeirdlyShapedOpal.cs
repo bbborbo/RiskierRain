@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -49,8 +50,9 @@ namespace RiskierRain.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/pickupmodels/PickupOddlyShapedOpal");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/itemicons/texOddlyShapedOpalIcon");
+		public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
-        public override ItemDisplayRuleDict CreateItemDisplayRules()
+		public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
 			return IDR;
         }
@@ -64,7 +66,7 @@ namespace RiskierRain.Items
 
         public override void Init(ConfigFile config)
 		{
-			Debug.LogError("Opal rework needs to depend on SOTV!");
+			//Debug.LogError("Opal rework needs to depend on SOTV!");
 			CreateAssets();
 			CreateItem();
 			CreateLang();

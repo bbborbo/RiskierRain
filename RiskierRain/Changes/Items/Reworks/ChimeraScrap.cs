@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRain.Changes.Components;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -41,6 +42,7 @@ namespace RiskierRain.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -59,6 +61,7 @@ namespace RiskierRain.Items
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.RegeneratingScrap));
             CreateItem();
             CreateLang();
+            Hooks();
         }
 
         private void SuperScrapRegenerate(On.RoR2.CharacterMaster.orig_TryRegenerateScrap orig, CharacterMaster self)

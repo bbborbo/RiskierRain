@@ -232,5 +232,26 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region blast shower
+        public int blastShowerBuffCount = 3; //0
+        public void BlastShowerBuff()
+        {
+            On.RoR2.EquipmentSlot.FireCleanse += BlastShowerProtectionBuffs;
+        }
+
+        private bool BlastShowerProtectionBuffs(On.RoR2.EquipmentSlot.orig_FireCleanse orig, EquipmentSlot self)
+        {
+            if (orig(self))
+            {
+                for(int i = 0; i < blastShowerBuffCount; i++)
+                {
+                    self.characterBody.AddBuff(DLC1Content.Buffs.ImmuneToDebuffReady);
+                }
+                return true;
+            }
+            return false;
+        }
+        #endregion
     }
 }

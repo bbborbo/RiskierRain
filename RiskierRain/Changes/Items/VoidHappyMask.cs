@@ -2,6 +2,7 @@
 using HarmonyLib;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,6 +40,7 @@ namespace RiskierRain.Items
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlTragicFacade.prefab");
 
         public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png");
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -87,7 +89,7 @@ namespace RiskierRain.Items
         }
         public override void Init(ConfigFile config)
         {
-            Debug.LogError("Void Happy Mask should require SOTV but it doesnt! dont forget to fix!");
+            //Debug.LogError("Void Happy Mask should require SOTV but it doesnt! dont forget to fix!");
             CreateItem();
             CreateLang();
             Hooks();

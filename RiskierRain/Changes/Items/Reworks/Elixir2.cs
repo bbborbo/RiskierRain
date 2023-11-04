@@ -2,10 +2,12 @@
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 
@@ -53,12 +55,12 @@ namespace RiskierRain.Items
 
         public override ItemTier Tier => ItemTier.Tier2;
 
-        public override GameObject ItemModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel"); 
-
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/HealingPotion/PickupHealingPotion.prefab").WaitForCompletion(); 
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/HealingPotion/texHealingPotion.png").WaitForCompletion();
         public override ItemTag[] ItemTags { get; } = new ItemTag[] { ItemTag.Healing, ItemTag.LowHealth, ItemTag.OnStageBeginEffect };
 
         public override BalanceCategory Category => BalanceCategory.StateOfDefenseAndHealing;
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

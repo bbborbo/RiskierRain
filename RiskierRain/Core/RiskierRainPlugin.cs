@@ -740,7 +740,7 @@ namespace RiskierRain
                     BloodShrineRewardRework();
                 }
 
-                //void cradle
+                //void cradle, cradle curse
                 if (GetConfigBool(currentCategory, true, "Economy: Void Cradle"))
                 {
                     VoidCradleRework();

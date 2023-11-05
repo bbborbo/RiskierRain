@@ -47,6 +47,7 @@ namespace RiskierRain.Items
 
         public virtual bool CanRemove { get; } = false;
         public virtual bool IsHidden { get; } = false;
+        public virtual ExpansionDef RequiredExpansion { get; } = null;
 
         internal static bool CheckDLC1Entitlement()
         {
@@ -125,6 +126,7 @@ namespace RiskierRain.Items
                 ItemsDef.pickupIconSprite = ItemIcon;
                 ItemsDef.tier = Tier;
                 ItemsDef.deprecatedTier = Tier;
+                ItemsDef.requiredExpansion = RequiredExpansion;
             }
             if (ItemTags.Length > 0) { ItemsDef.tags = ItemTags; }
 
@@ -191,6 +193,10 @@ namespace RiskierRain.Items
         {
             Sprite icon = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
             return icon;
+        }
+        public static ExpansionDef SotvExpansionDef()
+        {
+            return Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
         }
     }
 }

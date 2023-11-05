@@ -59,7 +59,7 @@ namespace RiskierRain.Equipment
             commandCube.GetComponent<PickupIndexNetworker>().NetworkpickupIndex = pickupIndex;
             commandCube.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(commandCube);
-            slot.inventory.SetEquipmentIndex(DLC1Content.Equipment.BossHunterConsumed.equipmentIndex);
+            slot.inventory.SetEquipmentIndex(EquipmentIndex.None);
             return true;
         }
     }

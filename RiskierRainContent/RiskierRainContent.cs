@@ -98,27 +98,7 @@ namespace RiskierRain
             //InitializeEverything();
             Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
-            #region rework pending / priority removal
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.StunChanceOnHit)); //stun grenade
-            RiskierRainContent.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
-
-            //RiskierRainContent.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
-            RiskierRainContent.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.TreasureCache)); //ghor's tome
-
-            RiskierRainContent.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
-            RiskierRainContent.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
-            RiskierRainContent.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
-            #endregion
-
             RoR2Application.onLoad += InitializeEverything;
-
-            //lol
-            LanguageAPI.Add("ITEM_SHOCKNEARBY_PICKUP", "lol");
-            LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", "lol");
-            LanguageAPI.Add("ITEM_EXECUTELOWHEALTHELITE_PICKUP", "lol");
-
 
             new ContentPacks().Initialize();
         }
@@ -128,24 +108,24 @@ namespace RiskierRain
             JumpReworks();
             BurnReworks();
             MakePillarsFun();
-            if (GetConfigBool(true, "Laser Scope Rework (Combat Telescope)"))
+            if (GetConfigBool(true, "Core: Laser Scope Rework (Combat Telescope)"))
             {
                 ReworkLaserScope();
             }
             // boss item drop
-            if (GetConfigBool(true, "Boss: Boss Item Drops"))
+            if (GetConfigBool(true, "Core: Boss Item Drops"))
             {
                 BossesDropBossItems();
                 TricornRework();
                 DirectorAPI.InteractableActions += DeleteYellowPrinters;
             }
             //happiest mask
-            if (GetConfigBool(true, "Happiest Mask"))
+            if (GetConfigBool(true, "Core: Happiest Mask"))
             {
                 HappiestMaskRework();
             }
             //focused convergence, focon
-            if (GetConfigBool(true, "Focused Convergence"))
+            if (GetConfigBool(true, "Core: Focused Convergence"))
             {
                 FocusedConvergenceChanges();
             }

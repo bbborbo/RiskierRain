@@ -119,11 +119,6 @@ namespace RiskierRain
 
             RoR2Application.onLoad += InitializeEverything;
 
-            //lol
-            LanguageAPI.Add("ITEM_SHOCKNEARBY_PICKUP", "lol");
-            LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", "lol");
-            LanguageAPI.Add("ITEM_EXECUTELOWHEALTHELITE_PICKUP", "lol");
-
             
             new ContentPacks().Initialize();
         }

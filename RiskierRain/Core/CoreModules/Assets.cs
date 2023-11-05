@@ -18,6 +18,57 @@ namespace RiskierRain.CoreModules
 {
     public partial class Assets : CoreModule
     {
+        #region AssetBundles
+        public static string GetAssetBundlePath(string bundleName)
+        {
+            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(RiskierRainContent.PInfo.Location), bundleName);
+        }
+
+        private static AssetBundle _mainAssetBundle;
+        public static AssetBundle mainAssetBundle
+        {
+            get
+            {
+                if (_mainAssetBundle == null)
+                    _mainAssetBundle = AssetBundle.LoadFromFile(GetAssetBundlePath("itmightbebad"));
+                return _mainAssetBundle;
+            }
+            set
+            {
+                _mainAssetBundle = value;
+            }
+        }
+        private static AssetBundle _orangeAssetBundle;
+        public static AssetBundle orangeAssetBundle
+        {
+            get
+            {
+                if (_orangeAssetBundle == null)
+                    _orangeAssetBundle = AssetBundle.LoadFromFile(GetAssetBundlePath("orangecontent"));
+                return _orangeAssetBundle;
+            }
+            set
+            {
+                _orangeAssetBundle = value;
+            }
+        }
+        public static string dropPrefabsPath = "Assets/Models/DropPrefabs";
+        public static string iconsPath = "Assets/Textures/Icons/";
+        public static string eliteMaterialsPath = "Assets/Textures/Materials/Elite/";
+        #endregion
+        public static bool RegisterEntityState(Type entityState)
+        {
+            //Check if the entity state has already been registered, is abstract, or is not a subclass of the base EntityState
+            if (entityStates.Contains(entityState) || !entityState.IsSubclassOf(typeof(EntityStates.EntityState)) || entityState.IsAbstract)
+            {
+                //LogCore.LogE(entityState.AssemblyQualifiedName + " is either abstract, not a subclass of an entity state, or has already been registered.");
+                //LogCore.LogI("Is Abstract: " + entityState.IsAbstract + " Is not Subclass: " + !entityState.IsSubclassOf(typeof(EntityState)) + " Is already added: " + EntityStateDefinitions.Contains(entityState));
+                return false;
+            }
+            //If not, add it to our EntityStateDefinitions
+            entityStates.Add(entityState);
+            return true;
+        }
         public static EffectDef CreateEffect(GameObject effect)
         {
 
@@ -260,7 +311,7 @@ namespace RiskierRain.CoreModules
                 shockMarker.canStack = false;
                 shockMarker.isDebuff = true;
                 shockMarker.isHidden = true;
-                shockMarker.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+                shockMarker.iconSprite = null;// RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockMarker);
 
@@ -278,7 +329,7 @@ namespace RiskierRain.CoreModules
                 shockHealCooldown.canStack = true;
                 shockHealCooldown.isDebuff = false;
                 shockHealCooldown.isCooldown = true;
-                shockHealCooldown.iconSprite = RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+                shockHealCooldown.iconSprite = null;// RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockHealCooldown);
 

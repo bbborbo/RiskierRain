@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using R2API;
 using R2API.Utils;
-using RiskierRain.Equipment;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.CharacterAI;
@@ -47,7 +46,7 @@ namespace RiskierRain
             {
                 orig(self);
                 self.duration = EntityStates.VagrantMonster.ChargeMegaNova.baseDuration;
-                if (self.characterBody.HasBuff(FrenziedAspect.instance.EliteBuffDef))
+                if (self.characterBody.attackSpeed > 1.5f)
                 {
                     self.duration = 2;
                 }

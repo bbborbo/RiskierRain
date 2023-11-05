@@ -5,18 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="AssetBundles\orangecontent" />
-    <None Remove="borboitemicons" />
-    <None Remove="itmightbebad" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="AssetBundles\orangecontent" />
-    <EmbeddedResource Include="borboitemicons" />
-    <EmbeddedResource Include="itmightbebad" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
@@ -99,12 +87,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Changes\States\Misc\NewFolder\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BorboStatUtils\BorboStatUtils.csproj" />
     <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
     <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
+    <ProjectReference Include="..\RiskierRainContent\RiskierRainContent.csproj" />
   </ItemGroup>
 </Project>

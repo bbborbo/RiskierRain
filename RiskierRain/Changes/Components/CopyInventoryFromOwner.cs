@@ -23,8 +23,10 @@ namespace RiskierRain.Components
                 Inventory ownerInventory = minionOwnership.ownerMaster?.inventory;
                 if (ownerInventory)
                 {
-                    master.inventory.CopyEquipmentFrom(ownerInventory);
-                    master.inventory.CopyItemsFrom(ownerInventory);
+                    if(copyEquipment)
+                        master.inventory.CopyEquipmentFrom(ownerInventory);
+                    if(copyInventory)
+                        master.inventory.CopyItemsFrom(ownerInventory, inventoryItemCopyFilter);
                 }
             }
         }

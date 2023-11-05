@@ -1,6 +1,4 @@
 ﻿using RiskierRain.CoreModules;
-using RiskierRain.Equipment;
-using RiskierRain.Items;
 using RoR2;
 using RoR2.ContentManagement;
 using RoR2.Skills;

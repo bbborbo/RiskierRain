@@ -59,35 +59,5 @@ namespace RiskierRain.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] borboitemicons {
-            get {
-                object obj = ResourceManager.GetObject("borboitemicons", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] itmightbebad {
-            get {
-                object obj = ResourceManager.GetObject("itmightbebad", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] orangecontent {
-            get {
-                object obj = ResourceManager.GetObject("orangecontent", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

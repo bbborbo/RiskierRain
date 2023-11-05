@@ -1,8 +1,8 @@
 ﻿using EntityStates;
 using EntityStates.VoidSurvivor.Weapon;
 using R2API;
+using RiskierRain.CoreModules;
 using RiskierRain.EntityState.VoidFiend;
-using RiskierRain.Skills;
 using RoR2;
 using RoR2.Skills;
 using System;
@@ -38,6 +38,7 @@ namespace RiskierRain.SurvivorTweaks
         public override string survivorName => "Void Fiend";
         public override string bodyName => "VoidSurvivorBody";
 
+
         public override void Init()
         {
             GetBodyObject();
@@ -52,7 +53,7 @@ namespace RiskierRain.SurvivorTweaks
 
             #region primary
             SkillDef viendPrimary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireHandBeam.asset").WaitForCompletion();
-            SkillBase.RegisterEntityState(typeof(FireHandBeamNew));
+            Assets.RegisterEntityState(typeof(FireHandBeamNew));
             SerializableEntityStateType newViendPrimaryCharge = new SerializableEntityStateType(typeof(FireHandBeamNew));
             viendPrimary.activationState = newViendPrimaryCharge;
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION", 

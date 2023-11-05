@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RiskierRain", "RiskierRain\RiskierRain.csproj", "{1CADEA57-5686-4068-94A8-0402C13A28FF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8EF62317-2F3A-4AF5-98DE-6CF766BB529A} = {8EF62317-2F3A-4AF5-98DE-6CF766BB529A}
+		{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE} = {BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}
 		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5} = {41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}
 	EndProjectSection
 EndProject
@@ -14,11 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChillRework", "ChillRework\ChillRework.csproj", "{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChillRework", "ChillRework\ChillRework.csproj", "{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BorboStatUtils", "BorboStatUtils\BorboStatUtils.csproj", "{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BorboStatUtils", "BorboStatUtils\BorboStatUtils.csproj", "{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NegativeRegenFix", "NegativeRegenFix\NegativeRegenFix.csproj", "{08B8379B-E045-4F59-B9F7-18D66AE32433}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NegativeRegenFix", "NegativeRegenFix\NegativeRegenFix.csproj", "{08B8379B-E045-4F59-B9F7-18D66AE32433}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskierRainContent", "RiskierRainContent\RiskierRainContent.csproj", "{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +45,10 @@ Global
 		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08B8379B-E045-4F59-B9F7-18D66AE32433}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

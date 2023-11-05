@@ -67,6 +67,8 @@ namespace RiskierRain.Items
         public override void Init(ConfigFile config)
 		{
 			//Debug.LogError("Opal rework needs to depend on SOTV!");
+			ItemDef ooca = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/OutOfCombatArmor/OutOfCombatArmor.asset").WaitForCompletion();
+			RiskierRainPlugin.RetierItem(ooca); //weirdly shaped opal
 			CreateAssets();
 			CreateItem();
 			CreateLang();

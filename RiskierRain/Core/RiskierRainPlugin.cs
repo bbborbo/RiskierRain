@@ -140,14 +140,13 @@ namespace RiskierRain
             Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
             #region rework pending / priority removal
-            ItemDef ooca = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/OutOfCombatArmor/OutOfCombatArmor.asset").WaitForCompletion();
-            RiskierRainPlugin.RetierItem(ooca); //weirdly shaped opal
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.StunChanceOnHit)); //stun grenade
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.TreasureCache)); //ghor's tome
 
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion

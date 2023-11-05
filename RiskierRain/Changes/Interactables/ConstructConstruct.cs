@@ -7,6 +7,7 @@ using System.Text;
 using UnityEngine;
 using RiskierRain;
 using static RiskierRain.Secrets;
+using R2API;
 
 namespace RiskierRain.Interactables
 {
@@ -16,7 +17,7 @@ namespace RiskierRain.Interactables
 
         public override string interactableContext => "Kick the Construct";
 
-        public override string interactableLangToken => "CONSTRUCT_CONSTRUCT";
+        public override string interactableLangToken => "CONSTRUCTCONSTRUCT";
 
         public override GameObject interactableModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/constructConstruct.prefab");
 
@@ -32,7 +33,7 @@ namespace RiskierRain.Interactables
 
         public override int favoredWeight => 0;
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int spawnCost => 15;
 
@@ -64,7 +65,6 @@ namespace RiskierRain.Interactables
             "sulfurpools",
 			//modded stages
             "drybasin"
-            //"FBLScene"
         };
 
         public override void Init(ConfigFile config)

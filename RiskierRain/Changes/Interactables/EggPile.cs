@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RiskierRain.Items;
+using R2API;
 
 namespace RiskierRain.Interactables
 {
@@ -24,13 +25,13 @@ namespace RiskierRain.Interactables
 
         public override bool modelIsCloned => false;
 
-        public override float voidSeedWeight => 0.1f;
+        public override float voidSeedWeight => 0.2f;
 
         public override int normalWeight => 100;
 
         public override int favoredWeight => 0;
 
-        public override int category => 7;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Barrels;
 
         public override int spawnCost => 1;
 

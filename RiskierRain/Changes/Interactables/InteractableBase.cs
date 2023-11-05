@@ -237,7 +237,7 @@ namespace RiskierRain.Interactables
 		public abstract float voidSeedWeight { get; }
 		public abstract int normalWeight { get; }
 		public abstract int favoredWeight { get; }
-		public abstract int category { get; }
+		public abstract DirectorAPI.InteractableCategory category { get; }
 		public abstract int spawnCost { get; }
 		public static GameObject interactableBodyModelPrefab;
 		public static InteractableSpawnCard interactableSpawnCard;
@@ -283,7 +283,7 @@ namespace RiskierRain.Interactables
 			{
 				for (int i = deck.Count - 1; i >= 0; i--)
 				{
-					bool flag2 = deck.GetChoice(i).value.spawnCard.name == "iscVoidPortalInteractable";
+					bool flag2 = deck.GetChoice(i).value.spawnCard.name == this.customInteractable.spawnCard.name;
 					if (flag2)
 					{
 						this.hasAddedInteractable = true;
@@ -304,13 +304,13 @@ namespace RiskierRain.Interactables
 			orig(self);
 			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
 			{
-				self.interactableCategories.AddCard(category, customInteractable.directorCard);
+				self.interactableCategories.AddCard((int)category, customInteractable.directorCard);
 			}
 			if (customInteractable.HasFavoredStages())
             {
 				if (customInteractable.favoredScenes.ToList().Contains(SceneManager.GetActiveScene().name))
 				{
-					self.interactableCategories.AddCard(category, customInteractable.directorCardFavored);
+					self.interactableCategories.AddCard((int)category, customInteractable.directorCardFavored);
 				}
 			}
 		}

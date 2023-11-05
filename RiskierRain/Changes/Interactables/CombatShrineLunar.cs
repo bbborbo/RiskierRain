@@ -57,7 +57,7 @@ namespace RiskierRain.Interactables
 
         public override string prefabName => "lunarGallery";
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int favoredWeight => 25;
 

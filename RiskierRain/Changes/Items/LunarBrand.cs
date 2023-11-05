@@ -10,7 +10,7 @@ using UnityEngine;
 using static RiskierRain.BurnStatHook;
 using static RiskierRain.Tools;
 
-namespace RiskierRain.Changes.Items
+namespace RiskierRain.Items
 {
     class LunarBrand : ItemBase<LunarBrand>
     {
@@ -48,7 +48,8 @@ namespace RiskierRain.Changes.Items
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarBrand.prefab");
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_LUNARBRAND.png");
+
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

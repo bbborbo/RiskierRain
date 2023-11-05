@@ -11,7 +11,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
 
-namespace RiskierRain.Changes.Items
+namespace RiskierRain.Items
 {
     class LunarHealthDegen : ItemBase<LunarHealthDegen>
     {

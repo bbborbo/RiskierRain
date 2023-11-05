@@ -35,7 +35,7 @@ namespace RiskierRain.Items
 
         public override GameObject ItemModel => RiskierRainPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarStar.prefab");
 
-        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texEggIcon.png");
+        public override Sprite ItemIcon => RiskierRainPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -53,7 +53,10 @@ namespace RiskierRain.Items
             int itemCount = GetCount(body);
             if (itemCount > 0 && self.combinedHealth >= self.fullCombinedHealth)
             {
-                FlameOrbFlameOn(body, itemCount);
+                if(damageInfo.procCoefficient > 0)
+                {
+                    FlameOrbFlameOn(body, itemCount);
+                }
             }
             orig(self, damageInfo);
         }
@@ -77,6 +80,7 @@ namespace RiskierRain.Items
                 damageType = DamageType.Generic,
                 teamIndex = TeamIndex.Neutral
             };
+            //flameBoom.Fire();
         }
         static void ApplyFlameSphere(CharacterBody body, int itemCount)
         {
@@ -85,7 +89,7 @@ namespace RiskierRain.Items
             flameSphereSearch.mask = LayerIndex.entityPrecise.mask;
             flameSphereSearch.radius = flameRadius;
             flameSphereSearch.RefreshCandidates();
-            flameSphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex));
+            //flameSphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex));
             flameSphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
             flameSphereSearch.OrderCandidatesByDistance();
             flameSphereSearch.GetHurtBoxes(flameOnKillHurtBoxBuffer);
@@ -96,7 +100,18 @@ namespace RiskierRain.Items
                 HurtBox hurtBox = flameOnKillHurtBoxBuffer[i];
                 if (hurtBox.healthComponent)
                 {
-                    hurtBox.healthComponent.body.AddTimedBuff(RoR2Content.Buffs.OnFire, durationBase + durationStack * itemCount);
+                    //hurtBox.healthComponent.body.AddTimedBuff(RoR2Content.Buffs.OnFire, durationBase + durationStack * itemCount);
+                    InflictDotInfo inflictDotInfo = new InflictDotInfo
+                    {
+                        attackerObject = body.gameObject,
+                        victimObject = hurtBox.healthComponent.body.gameObject,
+                        totalDamage = new float?(body.damage * 5f),
+                        damageMultiplier = 1f,
+                        duration = durationBase + (durationStack * (itemCount - 1)),
+                        dotIndex = DotController.DotIndex.Burn
+                    };
+                    StrengthenBurnUtils.CheckDotForUpgrade(body.inventory, ref inflictDotInfo);
+                    DotController.InflictDot(ref inflictDotInfo);
                 }
             }
             flameOnKillHurtBoxBuffer.Clear();

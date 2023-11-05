@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace RiskierRain.Interactables
 
         public override int favoredWeight => 0;
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int spawnCost => 1;
 
@@ -102,6 +103,7 @@ namespace RiskierRain.Interactables
 
                 dropletOrigin = self.gameObject.transform;
                 PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
+                GameObject.Destroy(self.gameObject);
             }
         }
         public Transform dropletOrigin;

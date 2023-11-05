@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace RiskierRain.Interactables
 {
     class LunarBrandMaker : InteractableBase<LunarBrandMaker>
     {
-        public override string interactableName => "???";
+        public override string interactableName => "Strange Object";
 
         public override string interactableContext => "yea";
 
@@ -25,15 +26,15 @@ namespace RiskierRain.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 50;
+        public override int normalWeight => 500;
 
         public override int favoredWeight => 0;
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int spawnCost => 1;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
+        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment);
 
         public override int costTypeIndex => 0;
 
@@ -53,31 +54,14 @@ namespace RiskierRain.Interactables
 
         public override float weightScalarWhenSacrificeArtifactEnabled => 1;
 
-        public override int maxSpawnsPerStage => 2;
+        public override int maxSpawnsPerStage => 10;
 
         public string[] validScenes = {
-            //"golemplains",
-            //"golemplains2",
-            //"blackbeach",
-            //"blackbeach2",
-            //"snowyforest",
-            //"foggyswamp",
-            //"goolake",
-            //"frozenwall",
             "wispgraveyard",
             "dampcavesimple",
-            //"shipgraveyard",
-            //"arena",
-            //"skymeadow",
-            //"artifactworld",
-            //"rootjungle",
-            //"ancientloft",
             "sulfurpools",
 			//modded stages
-			//"slumberingsatellite",
-            //"forgottenhaven",
-            "drybasin",
-            //"FBLScene"
+            "drybasin"
         };
 
         public override void Init(ConfigFile config)
@@ -91,6 +75,34 @@ namespace RiskierRain.Interactables
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+
+            On.RoR2.CostTypeDef.PayCost += LunarBrandMakerPayCostHook;
+
+        }
+
+        private CostTypeDef.PayCostResults LunarBrandMakerPayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
+        {
+            CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
+            if (purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" && activatorBody != null)
+            {
+                cost = 0;
+                Inventory  activatorInventory = activatorBody.inventory;
+                if (activatorInventory == null)
+                {
+                    return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
+                }
+                int flameOrbCount = activatorInventory.GetItemCount(Items.FlameOrb.instance.ItemsDef);
+                if (flameOrbCount == 0)
+                {
+                    return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
+                }
+                activatorInventory.RemoveItem(Items.FlameOrb.instance.ItemsDef);
+                activatorInventory.GiveItem(Items.LunarBrand.instance.ItemsDef);
+                //CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
+                //            Items.FlameOrb.instance.ItemsDef.itemIndex, Items.LunarBrand.instance.ItemsDef.itemIndex,
+                //            CharacterMasterNotificationQueue.TransformationType.Default);
+            }
+            return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
         }
 
         private void LunarBrandMakerBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
@@ -98,12 +110,10 @@ namespace RiskierRain.Interactables
             orig(self, activator);
             if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
             {
-                PickupIndex pickupIndex = PickupCatalog.FindPickupIndex(Items.MalachiteSpine.instance.ItemsDef.itemIndex);
-
-                dropletOrigin = self.gameObject.transform;
-                PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
+                Debug.Log("uhhh yeag");
+                GameObject.Destroy(self.gameObject);
             }
         }
-        public Transform dropletOrigin;
+        //public Transform dropletOrigin;
     }
 }

@@ -12,7 +12,7 @@ namespace RiskierRain.Items
     {
         public override string ItemName => "Malachite Spine";
 
-        public override string ItemLangTokenName => "MALACHITESPINE";
+        public override string ItemLangTokenName => "UNCHARGEDMALACHITESPINE";
 
         public override string ItemPickupDesc => "You feel a presence watching you...";
 

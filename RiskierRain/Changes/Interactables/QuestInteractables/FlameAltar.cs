@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace RiskierRain.Interactables
 
         public override int favoredWeight => 0;
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int spawnCost => 10;
 
@@ -56,28 +57,7 @@ namespace RiskierRain.Interactables
         public override int maxSpawnsPerStage => 2;
 
         public string[] validScenes = {
-            //"golemplains",
-            //"golemplains2",
-            //"blackbeach",
-            //"blackbeach2",
-            //"snowyforest",
-            //"foggyswamp",
-            //"goolake",
-            //"frozenwall",
-            //"wispgraveyard",
-            //"dampcavesimple",
-            //"shipgraveyard",
-            //"arena",
-            //"skymeadow",
-            //"artifactworld",
-            //"rootjungle",
-            //"ancientloft",
-            //"sulfurpools",
-			//modded stages
-			//"slumberingsatellite",
-            //"forgottenhaven",
-            "drybasin",
-            //"FBLScene"
+            "drybasin"
         };
 
         public override void Init(ConfigFile config)

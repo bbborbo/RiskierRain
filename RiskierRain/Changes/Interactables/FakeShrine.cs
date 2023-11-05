@@ -52,9 +52,9 @@ namespace RiskierRain.Interactables
 
         public override string prefabName => "ShrineChance";
 
-        public override int category => 4;
+		public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
-        public override int favoredWeight => 0;
+		public override int favoredWeight => 0;
 
         public string[] validScenes = {
 			"golemplains",

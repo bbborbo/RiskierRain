@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4145711997
+CRC: 3174901270
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 70fdf2f258c65f86d22780065922720d
+    Hash: 1d5535224600e70ec87c8c6ad5e0c203
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -90,6 +90,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
 - Assets/Prefabs/mdlChefStache.prefab
 - Assets/Icons/texEggIcon.png
+- Assets/Icons/texIconPickupITEM_FLAMEORB.png
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/enemyDamageUp.fbx
@@ -142,6 +143,7 @@ Assets:
 - Assets/Icons/texIconPickupITEM_VOIDSCUG.png
 - Assets/Prefabs/egg.prefab
 - Assets/Prefabs/goldenegg.prefab
+- Assets/Icons/texIconPickupITEM_LUNARBRAND.png
 - Assets/Prefabs/mdlGreedyRing.prefab
 - Assets/Prefabs/mdlLunarGallery.prefab
 Dependencies: []

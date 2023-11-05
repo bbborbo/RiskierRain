@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RiskierRain.Items;
-
+using R2API;
 
 namespace RiskierRain.Interactables
 {
@@ -30,7 +30,7 @@ namespace RiskierRain.Interactables
 
         public override int favoredWeight => 0;
 
-        public override int category => 4;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
 
         public override int spawnCost => 0;
 

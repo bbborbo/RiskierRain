@@ -3,6 +3,7 @@ using R2API;
 using RiskierRain.CoreModules;
 using RiskierRain.Items;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,7 @@ namespace RiskierRain.Items
 {
     class GoldenEgg : ItemBase<GoldenEgg>
     {
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Golden Egg";
 
         public override string ItemLangTokenName => "GOLDEN_EGG";

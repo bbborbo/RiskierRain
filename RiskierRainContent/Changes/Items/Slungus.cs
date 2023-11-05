@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -25,6 +26,7 @@ namespace RiskierRain.Items
         public static float radiusStack = 0f;
         public float projectileSlowCoefficient = 0.2f; //0.1f
 
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
         public override string ItemName => "Slumbering Spores";
 
         public override string ItemLangTokenName => "SLUNGUS";

@@ -4,6 +4,7 @@ using EntityStates.Bandit2;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -42,6 +43,7 @@ namespace RiskierRain.Equipment
         public override bool CanDrop { get; } = true;
 
         public override float Cooldown { get; } = 7f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

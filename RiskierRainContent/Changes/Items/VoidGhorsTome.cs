@@ -2,6 +2,7 @@
 using HarmonyLib;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace RiskierRain.Items
 		public static BasicPickupDropTable voidT2DropTable;
 		public static BasicPickupDropTable voidT3DropTable;
 		public static BasicPickupDropTable voidBossDropTable;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Quantum Codex";
 
         public override string ItemLangTokenName => "VOIDGHORS";

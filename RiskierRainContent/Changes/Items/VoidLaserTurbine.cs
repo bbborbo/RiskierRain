@@ -5,6 +5,7 @@ using RiskierRain.CoreModules;
 using RiskierRain.Skills;
 using RiskierRain.States;
 using RoR2;
+using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace RiskierRain.Items
         public static BuffDef turbineChargeBuff;
         public static BuffDef turbineReadyBuff;
         public static float secondsOfChargeRequired = 90;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Super Solenoid Engine"; //Super Solonoid Organ
 
         public override string ItemLangTokenName => "VOIDLASERTURBINE";

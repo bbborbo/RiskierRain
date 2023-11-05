@@ -22,15 +22,10 @@ namespace RiskierRain.CoreModules
             public int lysateCap;
         }
 
-        private static List<AllyCap> caps;
+        private static List<AllyCap> caps = new List<AllyCap>();
 
         public static void RegisterAllyCap(GameObject prefab, int max = 1, int maxWithLysate = 2)
         {
-            if (caps == null)
-            {
-                caps = new List<AllyCap>();
-            }
-
             caps.Add(new AllyCap
             {
                 prefab = prefab,

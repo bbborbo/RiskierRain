@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static RiskierRain.CoreModules.StatHooks;
 using System.Linq;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.CoreModules
 {
@@ -114,6 +115,7 @@ namespace RiskierRain.CoreModules
         public static List<GameObject> projectilePrefabs = new List<GameObject>();
         public static List<GameObject> networkedObjectPrefabs = new List<GameObject>();
         public static List<Type> entityStates = new List<Type>();
+        public static List<ExpansionDef> expansionDefs = new List<ExpansionDef>();
 
         public static List<ItemDef> itemDefs = new List<ItemDef>();
         public static List<EquipmentDef> equipDefs = new List<EquipmentDef>();

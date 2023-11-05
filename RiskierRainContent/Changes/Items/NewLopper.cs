@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -24,6 +25,7 @@ namespace RiskierRain.Items
 
         public static BuffDef dangerCritBuff;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "The New Lopper";
 
         public override string ItemLangTokenName => "DANGERCRIT";

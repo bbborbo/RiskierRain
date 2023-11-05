@@ -24,6 +24,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using BorboStatUtils;
 using ChillRework;
+using RoR2.ExpansionManagement;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -63,8 +64,11 @@ namespace RiskierRain
         public const string teamName = "HouseOfFruits";
         public const string modName = "SwanSong02";
         public const string version = "1.0.0";
+        public const string expansionName = "Swan Song";
+        public const string expansionToken = "EXPANSION2R4R";
         public static PluginInfo PInfo { get; private set; }
 
+        public static ExpansionDef expansionDef;
         public static AssetBundle mainAssetBundle => Assets.mainAssetBundle;
         public static AssetBundle orangeAssetBundle => Assets.orangeAssetBundle;
         public static string dropPrefabsPath => Assets.dropPrefabsPath;
@@ -85,6 +89,7 @@ namespace RiskierRain
         {
             PInfo = Info;
 
+            CreateExpansionDef();
             InitializeCoreModules();
 
             InitializeConfig();
@@ -101,6 +106,16 @@ namespace RiskierRain
             RoR2Application.onLoad += InitializeEverything;
 
             new ContentPacks().Initialize();
+        }
+
+        private void CreateExpansionDef()
+        {
+            expansionDef = ScriptableObject.CreateInstance<ExpansionDef>();
+            expansionDef.nameToken = expansionToken + "_NAME";
+            expansionDef.descriptionToken = expansionToken + "_DESCRIPTION";
+            LanguageAPI.Add(expansionToken + "_NAME", expansionName);
+            LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
+            Assets.expansionDefs.Add(expansionDef);
         }
 
         private void InitializeEverything()

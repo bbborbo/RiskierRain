@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
 using RiskierRain.CoreModules;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Equipment
 {
@@ -44,6 +45,7 @@ namespace RiskierRain.Equipment
         int multiShotBonus = 3;
 
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string EquipmentName => "Orange Zapinator";
 
         public override string EquipmentLangTokenName => "BROKENZAPINATOR";

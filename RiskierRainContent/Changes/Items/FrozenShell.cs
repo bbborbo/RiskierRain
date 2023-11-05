@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -18,6 +19,7 @@ namespace RiskierRain.Items
         internal static int maxBonusArmor = 50; //(100 / 3)
         public static int maxBuffCount = 10;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Frozen Turtle Shell";
 
         public override string ItemLangTokenName => "FROZENSHELL";

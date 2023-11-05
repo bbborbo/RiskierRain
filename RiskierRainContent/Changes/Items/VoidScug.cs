@@ -3,6 +3,7 @@ using HarmonyLib;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace RiskierRain.Items
         public static float radiusBase = 16;
         public static float radiusStack = 4;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Cautious scug";
 
         public override string ItemLangTokenName => "VOIDSCUG";

@@ -11,6 +11,7 @@ using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using HarmonyLib;
 using On.RoR2.Items;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -21,6 +22,7 @@ namespace RiskierRain.Items
         public float eggDamage = 0.1f;
 
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Egg";
 
         public override string ItemLangTokenName => "EGG";

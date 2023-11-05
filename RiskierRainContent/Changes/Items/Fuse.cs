@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -22,6 +23,7 @@ namespace RiskierRain.Items
 
         public static float minStunDuration = 0.5f;
         public static float maxStunDuration = 4f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override string ItemName => "Volatile Fuse";
 

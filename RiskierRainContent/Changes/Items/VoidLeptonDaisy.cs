@@ -19,7 +19,6 @@ namespace RiskierRain.Changes.Items
 {
     class VoidLeptonDaisy : ItemBase<VoidLeptonDaisy>
     {
-        public ExpansionDef SOTVExpansionDef;//move this to a better place
         public static BuffDef lilyRageBuff;
         public static int duration = 20;
 
@@ -29,6 +28,7 @@ namespace RiskierRain.Changes.Items
         float cdrStack = 1 - aspdBoostStack;
         //public static float mspdBoostBase = 0.25f;
         //public static float mspdBoostStack = 0.25f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Phrygian Lily";
 
         public override string ItemLangTokenName => "PHRYGIANLILY";

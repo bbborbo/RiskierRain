@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +20,7 @@ namespace RiskierRain.Items
         static int stormWavesBase = 3;
         static int stormWavesStack = 2;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Star Veil";
 
         public override string ItemLangTokenName => "STARVEIL";

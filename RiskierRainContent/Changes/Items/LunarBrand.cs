@@ -3,6 +3,7 @@ using R2API;
 using RiskierRain.CoreModules;
 using RiskierRain.Items;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,6 +25,7 @@ namespace RiskierRain.Items
         public static float cauterizeProcCoef = 0f;
         public static int burnThreshold = 5;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Starfire Brand";
 
         public override string ItemLangTokenName => "LUNARBRAND";

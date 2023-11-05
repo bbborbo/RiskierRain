@@ -41,6 +41,7 @@ namespace RiskierRain.CoreModules
             contentPack.bodyPrefabs.Add(Assets.bodyPrefabs.ToArray());
             contentPack.masterPrefabs.Add(Assets.masterPrefabs.ToArray());
             contentPack.entityStateTypes.Add(Assets.entityStates.ToArray());
+            contentPack.expansionDefs.Add(Assets.expansionDefs.ToArray());
 
             //contentPack.eliteDefs.Add(Assets.eliteDefs.ToArray());
             //contentPack.unlockableDefs.Add(Unlockables.unlockableDefs.ToArray());

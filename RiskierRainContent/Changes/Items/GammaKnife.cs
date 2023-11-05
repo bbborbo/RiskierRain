@@ -10,6 +10,7 @@ using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using static BorboStatUtils.BorboStatUtils;
 using static RiskierRain.CoreModules.StatHooks;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -20,6 +21,7 @@ namespace RiskierRain.Items
         public static float attackSpeedBonus = 0.04f;
         public static float cdrBonus = 0.04f;
         public static float luckBonusDuration = 9;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Gamma Knife";
 
         public override string ItemLangTokenName => "GAMMAKNIFE";

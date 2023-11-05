@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -35,6 +36,7 @@ namespace RiskierRain.Items
 
         string damageBoostPerChestPerStack = Tools.ConvertDecimal(bonusDamagePerChunk);
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Coin Gun";
 
         public override string ItemLangTokenName => "ECONOMYWEAPON";

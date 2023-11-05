@@ -5,6 +5,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Equipment
 {
@@ -56,6 +57,7 @@ namespace RiskierRain.Equipment
 
         public EquipmentDef EquipDef;
         public virtual string OptionalDefString { get; set; } = "";
+        public virtual ExpansionDef RequiredExpansion { get; } = null;
 
 
         internal static void CloneVanillaDisplayRules(UnityEngine.Object newDef, UnityEngine.Object vanillaDef)
@@ -114,6 +116,7 @@ namespace RiskierRain.Equipment
                 EquipDef.isBoss = IsBoss;
                 EquipDef.isLunar = IsLunar;
                 EquipDef.colorIndex = ColorIndex;
+                EquipDef.requiredExpansion = RequiredExpansion;
             }
             var itemDisplayRules = CreateItemDisplayRules();
             if (itemDisplayRules == null)

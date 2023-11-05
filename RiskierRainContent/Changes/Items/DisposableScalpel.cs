@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,7 @@ namespace RiskierRain.Items
     class DisposableScalpel : ItemBase<DisposableScalpel>
     {
         public static int bonusDropChance = 50;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Obsidian Scalpel";
 
         public override string ItemLangTokenName => "BOSSITEMCONSUMABLE";

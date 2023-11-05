@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace RiskierRain.Items
 {
     class BrokenScalpel : ItemBase<BrokenScalpel>
     {
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Broken Scalpel";
 
         public override string ItemLangTokenName => "BROKENSCALPEL";

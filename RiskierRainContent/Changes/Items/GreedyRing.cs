@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using On.RoR2.Items;
 using RoR2.Orbs;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
@@ -20,6 +21,7 @@ namespace RiskierRain.Items
         int discountAmountBase = 8;
         int discountAmountStack = 2;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Greedy Ring";
 
         public override string ItemLangTokenName => "BORBODISCOUNT";

@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using static RiskierRain.CoreModules.EliteModule;
 using static RoR2.CombatDirector;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Equipment
 {
@@ -107,6 +108,7 @@ namespace RiskierRain.Equipment
         public virtual float DropOnDeathChance { get; set; } = 1/4000;
 
         public EliteDef EliteDef;
+        public virtual ExpansionDef RequiredExpansion { get; } = null;
 
         public abstract void Init(ConfigFile config);
 
@@ -183,6 +185,7 @@ namespace RiskierRain.Equipment
             EliteEquipmentDef.isBoss = IsBoss;
             EliteEquipmentDef.isLunar = IsLunar;
             EliteEquipmentDef.dropOnDeathChance = DropOnDeathChance;
+            EliteEquipmentDef.requiredExpansion = RequiredExpansion;
 
             //cross references
             EliteDef.eliteEquipmentDef = EliteEquipmentDef;

@@ -14,11 +14,13 @@ using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 using UnityEngine.Networking;
 using RiskierRain.CoreModules;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
     class BottleFart : ItemBase<BottleFart>
     {
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Sealed Pestilence";
 
         public override string ItemLangTokenName => "FARTBOTTLE";

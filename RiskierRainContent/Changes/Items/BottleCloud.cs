@@ -10,11 +10,13 @@ using static RiskierRain.JumpStatHook;
 using EntityStates.Bandit2;
 using UnityEngine.Networking;
 using RiskierRain.CoreModules;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRain.Items
 {
     class BottleCloud : ItemBase<BottleCloud>
     {
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Cloud In A Bottle";
 
         public override string ItemLangTokenName => "CLOUDBOTTLE";

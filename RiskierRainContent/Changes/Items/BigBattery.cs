@@ -4,6 +4,7 @@ using MonoMod.Cil;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +20,7 @@ namespace RiskierRain.Items
         public static float rechargeRateIncrease = 0.15f;
         public static float aspdIncrease = 0.2f;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "AAAAAAA Battery";
 
         public override string ItemLangTokenName => "BORBOBIGBATTERY";

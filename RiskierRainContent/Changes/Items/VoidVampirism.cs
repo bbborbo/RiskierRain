@@ -3,6 +3,7 @@ using HarmonyLib;
 using R2API;
 using RiskierRain.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,6 +16,7 @@ namespace RiskierRain.Items
         int maxHeal = 3;
         int bleedPerHeal = 5;
         int vampireBleedChance = 10;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override string ItemName => "Bloodsucking Coralite";
 

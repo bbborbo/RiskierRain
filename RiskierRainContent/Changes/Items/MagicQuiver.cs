@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace RiskierRain.Items
         float refundChanceCourtesy = 5;
         float endChanceMultiplier = 0.5f;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Magic Quiver";
 
         public override string ItemLangTokenName => "MAGICQUIVER";

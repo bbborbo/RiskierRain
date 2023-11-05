@@ -55,6 +55,7 @@ namespace RiskierRain.Skills
 
         public override void Init(ConfigFile config)
         {
+            return;
             CreateSkill();
             CreateLang();
             Hooks();

@@ -44,26 +44,29 @@ namespace RiskierRain.CoreModules
             orig(self);
             if (NetworkServer.active)
             {
-                foreach (AllyCap cap in caps)
+                if (caps.Count > 0 && caps != null)
                 {
-                    if (self.master && self.master.minionOwnership && self.master.minionOwnership.ownerMaster)
+                    foreach (AllyCap cap in caps)
                     {
-                        BodyIndex index = BodyCatalog.FindBodyIndex(cap.prefab);
-                        if (self.bodyIndex == index)
+                        if (self.master?.minionOwnership?.ownerMaster)
                         {
-                            MinionOwnership[] minions = GameObject.FindObjectsOfType<MinionOwnership>().Where(
-                                x => x.ownerMaster && x.ownerMaster == self.master.minionOwnership.ownerMaster && x.GetComponent<CharacterMaster>()
-                                && x.GetComponent<CharacterMaster>().GetBody() && x.GetComponent<CharacterMaster>().GetBody().bodyIndex == index
-                            ).ToArray();
-
-                            int total = 0;
-                            bool hasLysate = self.master.minionOwnership.ownerMaster.inventory.GetItemCount(DLC1Content.Items.EquipmentMagazineVoid) > 1;
-                            int max = hasLysate ? cap.lysateCap : cap.cap;
-
-                            foreach (MinionOwnership minion in minions)
+                            BodyIndex index = BodyCatalog.FindBodyIndex(cap.prefab);
+                            if (self.bodyIndex == index)
                             {
-                                total += 1;
-                                if (total > max) minion.GetComponent<CharacterMaster>().TrueKill();
+                                MinionOwnership[] minions = GameObject.FindObjectsOfType<MinionOwnership>().Where(
+                                    x => x.ownerMaster && x.ownerMaster == self.master.minionOwnership.ownerMaster && x.GetComponent<CharacterMaster>()
+                                    && x.GetComponent<CharacterMaster>().GetBody() && x.GetComponent<CharacterMaster>().GetBody().bodyIndex == index
+                                ).ToArray();
+
+                                int total = 0;
+                                bool hasLysate = self.master.minionOwnership.ownerMaster.inventory.GetItemCount(DLC1Content.Items.EquipmentMagazineVoid) > 1;
+                                int max = hasLysate ? cap.lysateCap : cap.cap;
+
+                                foreach (MinionOwnership minion in minions)
+                                {
+                                    total += 1;
+                                    if (total > max) minion.GetComponent<CharacterMaster>().TrueKill();
+                                }
                             }
                         }
                     }

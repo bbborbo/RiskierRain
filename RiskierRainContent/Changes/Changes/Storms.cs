@@ -26,13 +26,30 @@ namespace RiskierRainContent
         }
         StageStormController StormControllerInstance; //this probably sucks but im just tryna see if itll work lol
 
+        private bool ShouldDoStorm()
+        {
+            bool output = true;
+            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
+            {
+                output = false;
+            }
+            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().blockOrbitalSkills)
+            {
+                output = false;
+            }
+            return output;
+        }
+
         private void CreateNewStormController()
         {
             if (StormControllerInstance != null)
             {
                 Destroy(StormControllerInstance.gameObject);
             }
-
+            if (!ShouldDoStorm())
+            {
+                return;
+            }
             GameObject go = new GameObject();
             StormControllerInstance = go.AddComponent<StageStormController>();
         }

@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using static RoR2.GivePickupsOnStart;
 
-namespace RiskierRain.Scavengers
+namespace RiskierRainContent.Scavengers
 {
     public abstract class TwistedScavengerBase<T> : TwistedScavengerBase where T : TwistedScavengerBase<T>
     {

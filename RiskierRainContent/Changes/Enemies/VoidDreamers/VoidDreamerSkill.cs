@@ -1,16 +1,16 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2.Projectile;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
     class VoidDreamerSkill : SkillBase
     {

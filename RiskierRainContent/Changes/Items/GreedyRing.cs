@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -11,7 +11,7 @@ using On.RoR2.Items;
 using RoR2.Orbs;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class GreedyRing : ItemBase<GreedyRing>
     {

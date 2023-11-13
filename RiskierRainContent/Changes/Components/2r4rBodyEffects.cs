@@ -1,11 +1,11 @@
-﻿using RiskierRain.CoreModules;
+﻿using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Changes.Components
+namespace RiskierRainContent.Changes.Components
 {
     public class _2r4rBodyEffects : MonoBehaviour
     {

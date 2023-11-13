@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 using static RoR2.CombatDirector;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     public abstract class EliteEquipmentBase<T> : EliteEquipmentBase where T : EliteEquipmentBase<T>
     {

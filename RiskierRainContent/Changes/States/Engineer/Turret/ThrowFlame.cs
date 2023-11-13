@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.States
+namespace RiskierRainContent.States
 {
     class ThrowFlame : BaseState
     {

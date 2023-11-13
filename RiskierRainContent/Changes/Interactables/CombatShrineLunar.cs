@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Interactables;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Interactables;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
     class CombatShrineLunar : InteractableBase<CombatShrineLunar>
     {

@@ -1,12 +1,12 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.EntityState.Bandit;
+using RiskierRainContent.EntityState.Bandit;
 using EntityStates;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class MinigunSkill : SkillBase
     {

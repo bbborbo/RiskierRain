@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     public class StatHooks : CoreModule
     {

@@ -1,4 +1,4 @@
-﻿using RiskierRain.CoreModules;
+﻿using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Components
+namespace RiskierRainContent.Components
 {
     internal class InteractableCurseController : InteractableBuffController
     {

@@ -1,14 +1,14 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static RiskierRain.BurnStatHook;
+using static RiskierRainContent.BurnStatHook;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class ChefReference : ItemBase<ChefReference>
     {

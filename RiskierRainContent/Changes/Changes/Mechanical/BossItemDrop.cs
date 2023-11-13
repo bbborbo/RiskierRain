@@ -1,6 +1,6 @@
 ﻿using BepInEx;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using R2API;
 using RoR2;
 using RoR2.UI;
@@ -11,7 +11,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {

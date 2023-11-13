@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using RoR2.Skills;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class UtilityBelt : ItemBase<UtilityBelt>
     {

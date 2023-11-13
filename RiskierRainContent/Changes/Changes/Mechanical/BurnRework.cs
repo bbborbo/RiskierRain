@@ -5,7 +5,7 @@ using EntityStates.Headstompers;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -14,9 +14,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static RiskierRain.BurnStatHook;
+using static RiskierRainContent.BurnStatHook;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {

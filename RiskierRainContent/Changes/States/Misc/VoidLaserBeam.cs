@@ -1,13 +1,13 @@
 ﻿using EntityStates;
 using EntityStates.Mage.Weapon;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.States
+namespace RiskierRainContent.States
 {
     class VoidLaserBeam : BaseSkillState
     {

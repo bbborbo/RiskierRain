@@ -1,5 +1,5 @@
 ﻿using EntityStates;
-using RiskierRain.Equipment;
+using RiskierRainContent.Equipment;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
 	class DreamersSimulateState : BaseState
 	{

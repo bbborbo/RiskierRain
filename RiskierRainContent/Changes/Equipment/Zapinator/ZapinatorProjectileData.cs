@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Equipment.Zapinator
+namespace RiskierRainContent.Equipment.Zapinator
 {
     public struct ZapinatorProjectileData
     {

@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.Changes.Components;
+using RiskierRainContent.Changes.Components;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class ChimeraScrap : ItemBase<ChimeraScrap>
     {

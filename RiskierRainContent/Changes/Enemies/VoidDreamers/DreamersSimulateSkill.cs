@@ -1,11 +1,11 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
     class DreamersSimulateSkill : SkillBase
     {

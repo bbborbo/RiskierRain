@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using static RiskierRain.CoreModules.StatHooks;
+using RiskierRainContent.CoreModules;
+using static RiskierRainContent.CoreModules.StatHooks;
 using R2API;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -15,7 +15,7 @@ using EntityStates;
 using static R2API.RecalculateStatsAPI;
 using HarmonyLib;
 
-namespace RiskierRain.Changes.Items
+namespace RiskierRainContent.Changes.Items
 {
     class VoidLeptonDaisy : ItemBase<VoidLeptonDaisy>
     {

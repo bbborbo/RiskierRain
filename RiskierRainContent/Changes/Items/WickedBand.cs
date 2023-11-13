@@ -1,15 +1,15 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static RiskierRain.CoreModules.StatHooks;
+using static RiskierRainContent.CoreModules.StatHooks;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class WickedBand : ItemBase<WickedBand>
     {

@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     public class Slungus : ItemBase<Slungus>
     {

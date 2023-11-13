@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class MassAnomaly : ItemBase<MassAnomaly>
     {

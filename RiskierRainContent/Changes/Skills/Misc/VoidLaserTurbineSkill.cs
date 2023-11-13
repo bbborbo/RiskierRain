@@ -1,15 +1,15 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.States;
-using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Huntress;
+using RiskierRainContent.States;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.EntityState.Huntress;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class VoidLaserTurbineSkill : SkillBase<VoidLaserTurbineSkill>
     {

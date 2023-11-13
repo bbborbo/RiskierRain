@@ -21,7 +21,7 @@ namespace RiskierRain.CoreModules
         #region AssetBundles
         public static string GetAssetBundlePath(string bundleName)
         {
-            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(RiskierRainContent.PInfo.Location), bundleName);
+            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(RiskierRainContent.RiskierRainContent.PInfo.Location), bundleName);
         }
 
         private static AssetBundle _mainAssetBundle;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Components
+namespace RiskierRainContent.Components
 {
     class CopyInventoryFromOwner : MonoBehaviour
     {

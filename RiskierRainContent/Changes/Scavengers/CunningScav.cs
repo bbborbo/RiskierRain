@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Scavengers
+namespace RiskierRainContent.Scavengers
 {
     class CunningScav : TwistedScavengerBase<CunningScav>
     {

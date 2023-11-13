@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class VoidGhorsTome : ItemBase<VoidGhorsTome>
     {

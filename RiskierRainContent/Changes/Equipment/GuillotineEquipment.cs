@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {

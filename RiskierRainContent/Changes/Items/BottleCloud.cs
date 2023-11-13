@@ -5,14 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static RiskierRain.RiskierRainContent;
-using static RiskierRain.JumpStatHook;
+using static RiskierRainContent.RiskierRainContent;
+using static RiskierRainContent.JumpStatHook;
 using EntityStates.Bandit2;
 using UnityEngine.Networking;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class BottleCloud : ItemBase<BottleCloud>
     {

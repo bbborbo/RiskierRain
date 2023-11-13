@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -11,7 +11,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class Elixir2 : ItemBase<Elixir2>
     {

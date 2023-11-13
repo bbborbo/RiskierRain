@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
     class DreamersFlamePillarsState : BaseSkillState
     {

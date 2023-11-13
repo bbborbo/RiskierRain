@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     class ExploderDirectorModule : CoreModule
     {

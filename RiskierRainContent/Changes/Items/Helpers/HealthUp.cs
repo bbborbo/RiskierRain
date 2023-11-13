@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using R2API;
 
-namespace RiskierRain.Items.Helpers
+namespace RiskierRainContent.Items.Helpers
 {
     class HealthUp : ItemBase<HealthUp>
     {

@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.EntityState.Captain;
+using RiskierRainContent.EntityState.Captain;
 using EntityStates;
 using RoR2;
 using RoR2.Skills;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class PocketWormholeSkill : SkillBase
     {

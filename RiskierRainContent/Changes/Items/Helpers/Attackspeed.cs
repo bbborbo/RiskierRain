@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Items.Helpers
+namespace RiskierRainContent.Items.Helpers
 {
     class Attackspeed : ItemBase<Attackspeed>
     {

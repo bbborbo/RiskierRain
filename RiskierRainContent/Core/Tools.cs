@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using RoR2;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public static class Tools
     {

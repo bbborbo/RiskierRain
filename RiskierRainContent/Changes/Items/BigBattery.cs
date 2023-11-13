@@ -2,7 +2,7 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -11,7 +11,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class BigBattery : ItemBase<BigBattery>
     {

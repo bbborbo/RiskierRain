@@ -1,10 +1,10 @@
 ﻿using EntityStates.Engi.EngiWeapon;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.States
+namespace RiskierRainContent.States
 {
     class PlaceFlamer : PlaceTurret
     {

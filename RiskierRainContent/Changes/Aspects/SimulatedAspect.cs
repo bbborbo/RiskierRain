@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using static RoR2.CombatDirector;
 using static R2API.RecalculateStatsAPI;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 using UnityEngine.AddressableAssets;
 using System.Linq;
 using RoR2.Projectile;
@@ -15,7 +15,7 @@ using MonoMod.Cil;
 using Mono.Cecil.Cil;
 using System.Collections.ObjectModel;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class SimulatedAspect : EliteEquipmentBase<SimulatedAspect>
     {

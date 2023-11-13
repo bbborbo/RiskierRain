@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class FlowerCrown : ItemBase<FlowerCrown>
     {

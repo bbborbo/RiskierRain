@@ -1,12 +1,12 @@
 ﻿using BepInEx;
 using EntityStates.MoonElevator;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
 	public partial class RiskierRainContent : BaseUnityPlugin
     {

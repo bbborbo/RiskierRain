@@ -1,10 +1,10 @@
-﻿using RiskierRain.Skills;
+﻿using RiskierRainContent.Skills;
 using EntityStates;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.EntityState.Bandit
+namespace RiskierRainContent.EntityState.Bandit
 {
     class ThrowNailBomb : GenericProjectileBaseState
     {

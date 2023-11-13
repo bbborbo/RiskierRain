@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Skills;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Skills;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -11,7 +11,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
     class DreamersATFieldSkill : SkillBase
     {

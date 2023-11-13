@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using static RiskierRain.CoreModules.CoreModule;
+using static RiskierRainContent.CoreModules.CoreModule;
 using R2API;
 //using On.RoR2;
 using RoR2;
@@ -15,7 +15,7 @@ using System.Linq;
 using RoR2.Hologram;
 using UnityEngine.SceneManagement;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
 	public abstract class InteractableBase<T> : InteractableBase where T : InteractableBase<T>
 	{
@@ -58,122 +58,122 @@ namespace RiskierRain.Interactables
 				return;
 			}
 			bool hajabaja = modelName == prefabName;
-				if (!modelIsCloned)
+			if (!modelIsCloned)
+            {
+				model = interactableModel;
+            }
+            else
+            {
+				model = interactableModel.InstantiateClone("model", true); 
+            }
+			interactableBodyModelPrefab = this.model;
+			interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
+			PurchaseInteraction oldPurchaseInteraction = interactableBodyModelPrefab.GetComponent<PurchaseInteraction>();
+			if (oldPurchaseInteraction != null)
+            {
+				GameObject.Destroy(oldPurchaseInteraction);
+            }
+			PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
+
+			purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			purchaseInteraction.contextToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT";
+			purchaseInteraction.costType = (CostTypeIndex)costTypeIndex;
+			purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
+			purchaseInteraction.cost = costAmount;
+			purchaseInteraction.available = true;
+			purchaseInteraction.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
+			purchaseInteraction.isShrine = isShrine;
+			purchaseInteraction.isGoldShrine = false;
+
+			PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
+			pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
+			GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
+			genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
+
+			if (childCollider == null)
+            {
+				Debug.Log("child null");
+				return;
+            }
+			GameObject childGameObject = childCollider.gameObject;
+			if (childGameObject == null)
+            {
+				Debug.Log("childobject null");
+				return;
+            }
+			EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
+			if (entityLocator == null)
+			{
+				Debug.Log("entitylocator null, adding component");
+				entityLocator = childGameObject.AddComponent<EntityLocator>();
+			}
+			if (entityLocator != null)
+			{
+				entityLocator.entity = interactableBodyModelPrefab;
+				ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
+				if (modelLocator == null)
                 {
-					model = interactableModel;
+					Debug.Log("modellocator null, adding component");
+					modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
                 }
-                else
+				if (modelLocator != null)
                 {
-					model = interactableModel.InstantiateClone("model", true); 
-                }
-				interactableBodyModelPrefab = this.model;
-				interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
-				PurchaseInteraction oldPurchaseInteraction = interactableBodyModelPrefab.GetComponent<PurchaseInteraction>();
-				if (oldPurchaseInteraction != null)
-                {
-					GameObject.Destroy(oldPurchaseInteraction);
-                }
-				PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
+					modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
+					modelLocator.modelBaseTransform = modelLocator.modelTransform;
+					modelLocator.dontDetatchFromParent = true;
+					modelLocator.autoUpdateModelTransform = true;
 
-				purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
-				purchaseInteraction.contextToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT";
-				purchaseInteraction.costType = (CostTypeIndex)costTypeIndex;
-				purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
-				purchaseInteraction.cost = costAmount;
-				purchaseInteraction.available = true;
-				purchaseInteraction.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
-				purchaseInteraction.isShrine = isShrine;
-				purchaseInteraction.isGoldShrine = false;
+					Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
+					if (component == null)
+					{
+						Debug.Log("highlight null, adding component");
+						component = interactableBodyModelPrefab.AddComponent<Highlight>();
+					}
+					if (component != null)
+					{
 
-				PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
-				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
-				GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
-				genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
-				Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
+					component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+													where x.gameObject.name.Contains(modelName)
+													select x).First<MeshRenderer>();
 
-				if (childCollider == null)
-                {
-					Debug.Log("child null");
-					return;
-                }
-				GameObject childGameObject = childCollider.gameObject;
-				if (childGameObject == null)
-                {
-					Debug.Log("childobject null");
-					return;
-                }
-				EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
-				if (entityLocator == null)
-				{
-					Debug.Log("entitylocator null, adding component");
-					entityLocator = childGameObject.AddComponent<EntityLocator>();
-				}
-				if (entityLocator != null)
-				{
-					entityLocator.entity = interactableBodyModelPrefab;
-					ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
-					if (modelLocator == null)
-                    {
-						Debug.Log("modellocator null, adding component");
-						modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
-                    }
-					if (modelLocator != null)
-                    {
-						modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
-						modelLocator.modelBaseTransform = modelLocator.modelTransform;
-						modelLocator.dontDetatchFromParent = true;
-						modelLocator.autoUpdateModelTransform = true;
-
-						Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
-						if (component == null)
-						{
-							Debug.Log("highlight null, adding component");
-							component = interactableBodyModelPrefab.AddComponent<Highlight>();
-						}
-						if (component != null)
-						{
-
-						component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
-														where x.gameObject.name.Contains(modelName)
-														select x).First<MeshRenderer>();
-
-						component.strength = 1f;
-							component.highlightColor = Highlight.HighlightColor.interactive;
-						}
-						HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
-						if (hologramProjector == null)
-                              {
-							Debug.Log("hologramProjector null, adding component");
-							hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
-                              }
-						if (hologramProjector != null)
-						{
-							hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
-							hologramProjector.displayDistance = 10f;
-							hologramProjector.disableHologramRotation = false;
-						}
-						ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
+					component.strength = 1f;
+						component.highlightColor = Highlight.HighlightColor.interactive;
+					}
+					HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
+					if (hologramProjector == null)
+                            {
+						Debug.Log("hologramProjector null, adding component");
+						hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
+                            }
+					if (hologramProjector != null)
+					{
+						hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
+						hologramProjector.displayDistance = 10f;
+						hologramProjector.disableHologramRotation = false;
+					}
+					ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
 						
-						if (childLocator == null)
-                              {
-							Debug.Log("childLocator null, adding component");
-							childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
-						}
-						if (childLocator != null)
-                              {
-							childLocator.transformPairs = new ChildLocator.NameTransformPair[]
+					if (childLocator == null)
+                            {
+						Debug.Log("childLocator null, adding component");
+						childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
+					}
+					if (childLocator != null)
+                            {
+						childLocator.transformPairs = new ChildLocator.NameTransformPair[]
+						{
+							new ChildLocator.NameTransformPair
 							{
-								new ChildLocator.NameTransformPair
-								{
-									name = "FireworkOrigin",
-									transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
-								}
-							};
-							PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
-							Debug.Log("interactable registered");
-						}								
-					}							
-				}
+								name = "FireworkOrigin",
+								transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
+							}
+						};
+						PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+						Debug.Log("interactable registered");
+					}								
+				}							
+			}
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard()
         {
@@ -324,6 +324,7 @@ namespace RiskierRain.Interactables
 		public string[] validScenes;
 		public string[] favoredScenes;
 		public bool hasFavoredStages = false;
+		public ExpansionDef requiredExpansionDef = null;
 
 		public CustomInteractable CreateCustomInteractable(InteractableSpawnCard spawnCard, DirectorCard directorCard, string[] validScenes)
         {

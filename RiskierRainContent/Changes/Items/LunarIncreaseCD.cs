@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using static EntityStates.BrotherMonster.Weapon.FireLunarShards;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -10,9 +10,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static RiskierRain.CoreModules.StatHooks;
+using static RiskierRainContent.CoreModules.StatHooks;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class LunarIncreaseCD : ItemBase<LunarIncreaseCD>
     {

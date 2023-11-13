@@ -1,11 +1,11 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Scavengers
+namespace RiskierRainContent.Scavengers
 {
     class GreedyScav : TwistedScavengerBase<GreedyScav>
     {

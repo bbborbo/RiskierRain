@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using EntityStates.Huntress.HuntressWeapon;
 using EntityStates.Huntress.Weapon;
 using EntityStates.Mage.Weapon;
@@ -10,7 +10,7 @@ using RoR2.Projectile;
 using UnityEngine;
 using EntityStates;
 
-namespace RiskierRain.EntityState.Huntress
+namespace RiskierRainContent.EntityState.Huntress
 {
     class FireExplosiveArrow : BaseThrowBombState
     {

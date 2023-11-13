@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class GoldenEgg : ItemBase<GoldenEgg>
     {

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.EntityState.Huntress
+namespace RiskierRainContent.EntityState.Huntress
 {
     class ChargeExplosiveArrow : BaseChargeBombState
     {

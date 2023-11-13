@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Equipment.Zapinator;
+using RiskierRainContent.Equipment.Zapinator;
 using EntityStates.Captain.Weapon;
 using R2API;
 using RoR2;
@@ -9,11 +9,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static RiskierRain.CoreModules.StatHooks;
-using RiskierRain.CoreModules;
+using static RiskierRainContent.CoreModules.StatHooks;
+using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class BrokenZapinator : EquipmentBase
     {

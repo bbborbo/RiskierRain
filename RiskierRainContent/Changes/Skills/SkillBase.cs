@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     public abstract class SkillBase<T> : SkillBase where T : SkillBase<T>
     {

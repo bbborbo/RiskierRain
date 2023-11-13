@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -9,7 +9,7 @@ using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;
 using RoR2.EntitlementManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     // The directly below is entirely from TILER2 API (by ThinkInvis) specifically the Item module. Utilized to keep instance checking functionality as I migrate off TILER2.
     // TILER2 API can be found at the following places:

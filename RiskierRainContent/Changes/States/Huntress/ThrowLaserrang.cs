@@ -1,4 +1,4 @@
-﻿using RiskierRain.Skills;
+﻿using RiskierRainContent.Skills;
 using EntityStates;
 using EntityStates.Huntress.HuntressWeapon;
 using RoR2;
@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.EntityState.Huntress
+namespace RiskierRainContent.EntityState.Huntress
 {
     class ThrowLaserrang : BaseState
 	{

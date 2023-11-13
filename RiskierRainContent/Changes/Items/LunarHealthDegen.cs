@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class LunarHealthDegen : ItemBase<LunarHealthDegen>
     {

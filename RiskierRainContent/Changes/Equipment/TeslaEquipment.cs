@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class TeslaEquipment : EquipmentBase<TeslaEquipment>
     {

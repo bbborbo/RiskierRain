@@ -26,7 +26,7 @@ namespace RiskierRainContent.Interactables
 
         public override bool modelIsCloned => false;
 
-        public override float voidSeedWeight => 0.2f;
+        public override float voidSeedWeight => 0.05f;
 
         public override int normalWeight => 100;
 

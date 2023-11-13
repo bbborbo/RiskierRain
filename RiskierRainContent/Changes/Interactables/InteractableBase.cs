@@ -199,7 +199,8 @@ namespace RiskierRainContent.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard.spawnCard.name + ", " + interactableSpawnCard.name);
+
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard) CreateInteractableSpawnCard(bool isFavored)
@@ -277,6 +278,11 @@ namespace RiskierRainContent.Interactables
 
 		public DirectorCard VoidCampAddInteractable(On.RoR2.CampDirector.orig_SelectCard orig, CampDirector self, WeightedSelection<DirectorCard> deck, int maxCost)
 		{
+			if (this.voidSeedWeight <= 0)
+            {
+				Debug.LogWarning($"weight was 0; {customInteractable.spawnCard.name}");
+				return orig.Invoke(self, deck, maxCost);
+            }
 			this.hasAddedInteractable = false;
 			bool flag = self.name == "Camp 1 - Void Monsters & Interactables";
 			if (flag)
@@ -293,7 +299,8 @@ namespace RiskierRainContent.Interactables
 				bool flag3 = !this.hasAddedInteractable;
 				if (flag3)
 				{
-					deck.AddChoice(interactableDirectorCard, this.voidSeedWeight);
+					Debug.LogWarning($"added {interactableDirectorCard.spawnCard.name}/{customInteractable.directorCard} to void seed");
+					deck.AddChoice(customInteractable.directorCard, this.voidSeedWeight);
 				}
 			}
 			return orig.Invoke(self, deck, maxCost);

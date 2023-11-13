@@ -26,6 +26,7 @@ namespace RiskierRainContent
             InteractableSpawnCard greenPrinterSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/DuplicatorLarge/iscDuplicatorLarge.asset").WaitForCompletion();
             InteractableSpawnCard bigChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/Chest2/iscChest2.asset").WaitForCompletion();
             InteractableSpawnCard lunarPodSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/LunarChest/iscLunarChest.asset").WaitForCompletion();
+            InteractableSpawnCard constructConstructSpawnCard = ConstructConstruct.instance.customInteractable.spawnCard;
             InteractableSpawnCard flameAltarSpawnCard = FlameAltar.instance.customInteractable.spawnCard;
             InteractableSpawnCard lunarBrandMakerSpawnCard = LunarBrandMaker.instance.customInteractable.spawnCard;
             InteractableSpawnCard spineSpawnCard = SpineAltar.instance.customInteractable.spawnCard;
@@ -42,6 +43,8 @@ namespace RiskierRainContent
             SpawnSecret("foggyswamp", greenPrinterSpawnCard, new Vector3(-86, 29, 34));
             SpawnSecret("foggyswamp", bigChestSpawnCard, new Vector3(-128, -127, 98));
             SpawnSecret("foggyswamp", lunarPodSpawnCard, new Vector3(-7 - 130, -356));
+            SpawnSecret("foggyswamp", constructConstructSpawnCard, new Vector3(258, -150, -170), 0.3f);
+
             //goolake
             SpawnSecret("goolake", bigChestSpawnCard, new Vector3(22, -158, -371));
             SpawnSecret("goolake", greenPrinterSpawnCard, new Vector3(-7, -81, -174));
@@ -60,9 +63,9 @@ namespace RiskierRainContent
             SpawnSecret("wispgraveyard", lunarBrandMakerSpawnCard, new Vector3(46, 29, -62));
             //frozenWall
             Vector3[] frozenWallCliffSpots = new Vector3[3];
-            frozenWallCliffSpots[0] = new Vector3(69, 115, 153);
-            frozenWallCliffSpots[1] = new Vector3(66, 115, 98);
-            frozenWallCliffSpots[2] = new Vector3(56, 111, 55);
+            frozenWallCliffSpots[0] = new Vector3(74, 121, 147);
+            frozenWallCliffSpots[1] = new Vector3(66, 115, 109);
+            frozenWallCliffSpots[2] = new Vector3(54, 111, 72);
             SpawnSemiRandom("frozenwall", spineSpawnCard, frozenWallCliffSpots);
 
             SpawnSecret("frozenwall", spineChargerCard, new Vector3(0, 34, 5));
@@ -71,6 +74,17 @@ namespace RiskierRainContent
             SpawnSecret("sulfurpools", lunarBrandMakerSpawnCard, new Vector3(-155, 27, 46), 0.5f);
             SpawnSecret("sulfurpools", lunarBrandMakerSpawnCard, new Vector3(176, 28, 45), 0.5f);
             SpawnSecret("sulfurpools", lunarBrandMakerSpawnCard, new Vector3(94, 22, -133), 0.5f);
+
+            Vector3[] caveSpots = new Vector3[3];
+            caveSpots[0] = new Vector3(23, -35, 65);
+            caveSpots[1] = new Vector3(26, -34, 99);
+            caveSpots[2] = new Vector3(28, -34, 36);
+            SpawnSemiRandom("sulfurpools", constructConstructSpawnCard, caveSpots);
+            Vector3[] wallSpots = new Vector3[2];
+            wallSpots[0] = new Vector3(173, 2, -154);
+            wallSpots[1] = new Vector3(128, 0, -194);
+            SpawnSemiRandom("sulfurpools", constructConstructSpawnCard, wallSpots, 0.5f);
+
 
         }
         #endregion

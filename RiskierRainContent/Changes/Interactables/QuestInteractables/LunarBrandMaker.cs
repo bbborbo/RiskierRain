@@ -27,7 +27,7 @@ namespace RiskierRainContent.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 500;
+        public override int normalWeight => 50;
 
         public override int favoredWeight => 0;
 
@@ -55,7 +55,7 @@ namespace RiskierRainContent.Interactables
 
         public override float weightScalarWhenSacrificeArtifactEnabled => 1;
 
-        public override int maxSpawnsPerStage => 10;
+        public override int maxSpawnsPerStage => 2;
 
         public string[] validScenes = {
             "wispgraveyard",

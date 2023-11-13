@@ -57,7 +57,7 @@ namespace RiskierRain
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250
-        int casinoChestTypeCost = 25; //50; first interact is free, cost is incurred on second interract
+        int casinoChestTypeCost = 30; //50; cost is incurred twice
         int chanceShrineTypeCost = 15; //17
 
         void FixMoneyScaling()

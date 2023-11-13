@@ -314,7 +314,7 @@ namespace RiskierRain.CoreModules
                 shockMarker.canStack = false;
                 shockMarker.isDebuff = true;
                 shockMarker.isHidden = true;
-                shockMarker.iconSprite = mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+                shockMarker.iconSprite = null;//mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockMarker);
 
@@ -332,7 +332,7 @@ namespace RiskierRain.CoreModules
                 shockHealCooldown.canStack = true;
                 shockHealCooldown.isDebuff = false;
                 shockHealCooldown.isCooldown = true;
-                shockHealCooldown.iconSprite = mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
+                shockHealCooldown.iconSprite = null;// mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
             Assets.buffDefs.Add(shockHealCooldown);
 

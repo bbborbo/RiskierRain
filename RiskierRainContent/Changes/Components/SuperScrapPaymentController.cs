@@ -1,4 +1,4 @@
-﻿using RiskierRain.Items;
+﻿using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Changes.Components
+namespace RiskierRainContent.Changes.Components
 {
     public class SuperScrapPaymentController : MonoBehaviour
     {

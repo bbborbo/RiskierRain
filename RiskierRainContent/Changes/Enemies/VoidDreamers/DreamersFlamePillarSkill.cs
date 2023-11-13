@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.Skills;
+using RiskierRainContent.Skills;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -8,10 +8,10 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using UnityEngine.Events;
 
-namespace RiskierRain.Enemies.VoidDreamers
+namespace RiskierRainContent.Enemies.VoidDreamers
 {
     class DreamersFlamePillarSkill : SkillBase
     {

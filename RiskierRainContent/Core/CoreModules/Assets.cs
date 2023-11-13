@@ -11,11 +11,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static RiskierRain.CoreModules.StatHooks;
+using static RiskierRainContent.CoreModules.StatHooks;
 using System.Linq;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     public partial class Assets : CoreModule
     {

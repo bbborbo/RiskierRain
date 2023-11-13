@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using AncientScepter;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     public abstract class ScepterSkillBase<T> : ScepterSkillBase where T : ScepterSkillBase<T>
     {

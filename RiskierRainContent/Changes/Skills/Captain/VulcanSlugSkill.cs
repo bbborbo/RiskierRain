@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Captain;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.EntityState.Captain;
 using EntityStates;
 using R2API;
 using RoR2;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class VulcanSlugSkill : SkillBase
     {

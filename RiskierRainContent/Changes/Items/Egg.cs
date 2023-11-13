@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using RiskierRain.Interactables;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Interactables;
+using RiskierRainContent.Items;
 using R2API;
 using RoR2;
 using System;
@@ -13,7 +13,7 @@ using HarmonyLib;
 using On.RoR2.Items;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class Egg : ItemBase<Egg>
     {

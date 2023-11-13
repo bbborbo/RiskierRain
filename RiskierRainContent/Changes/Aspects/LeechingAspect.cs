@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Components;
-using RiskierRain.CoreModules;
+using RiskierRainContent.Components;
+using RiskierRainContent.CoreModules;
 using EntityStates.TeleporterHealNovaController;
 using MonoMod.Cil;
 using R2API;
@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 using static EntityStates.TeleporterHealNovaController.TeleporterHealNovaPulse;
 using static RoR2.CombatDirector;
-using RiskierRain.States.LeechingHealNovaController;
+using RiskierRainContent.States.LeechingHealNovaController;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class LeechingAspect : EliteEquipmentBase<LeechingAspect>
     {

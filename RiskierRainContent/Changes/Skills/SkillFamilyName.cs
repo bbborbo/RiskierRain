@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     public enum SkillFamilyName
     {

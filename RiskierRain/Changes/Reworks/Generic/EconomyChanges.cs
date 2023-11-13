@@ -17,6 +17,7 @@ using R2API;
 using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
+using RiskierRainContent;
 
 namespace RiskierRain
 {

@@ -1,9 +1,9 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Skills;
-using RiskierRain.States;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Skills;
+using RiskierRainContent.States;
 using RoR2;
 using RoR2.ExpansionManagement;
 using RoR2.Skills;
@@ -13,7 +13,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class VoidLaserTurbine : ItemBase<VoidLaserTurbine>
     {

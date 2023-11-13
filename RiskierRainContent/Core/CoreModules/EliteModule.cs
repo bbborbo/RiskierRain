@@ -1,4 +1,4 @@
-﻿using RiskierRain;
+﻿using RiskierRainContent;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     public class EliteModule : CoreModule
     {

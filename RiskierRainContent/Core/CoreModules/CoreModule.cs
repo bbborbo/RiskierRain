@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     public abstract class CoreModule
     {

@@ -1,13 +1,13 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Items.Helpers
+namespace RiskierRainContent.Items.Helpers
 {
     class GalleryItemDrop : ItemBase<GalleryItemDrop>
     {

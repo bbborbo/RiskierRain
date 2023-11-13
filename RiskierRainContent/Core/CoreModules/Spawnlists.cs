@@ -6,9 +6,9 @@ using R2API;
 using static R2API.DirectorAPI;
 using RoR2;
 using UnityEngine.AddressableAssets;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     public class Spawnlists : CoreModule
     {

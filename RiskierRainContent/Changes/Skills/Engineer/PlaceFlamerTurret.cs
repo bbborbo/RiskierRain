@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using EntityStates;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.States;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.States;
 using RoR2;
 using RoR2.CharacterAI;
 using RoR2.Skills;
@@ -12,7 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class PlaceFlamerTurret : SkillBase<PlaceFlamerTurret>
     {

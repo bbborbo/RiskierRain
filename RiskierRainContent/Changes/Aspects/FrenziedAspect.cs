@@ -7,10 +7,10 @@ using System.Text;
 using UnityEngine;
 using static RoR2.CombatDirector;
 using static R2API.RecalculateStatsAPI;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class FrenziedAspect : EliteEquipmentBase<FrenziedAspect>
     {

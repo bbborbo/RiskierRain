@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Huntress;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.EntityState.Huntress;
 using EntityStates.Huntress.HuntressWeapon;
 using R2API;
 using RoR2;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class ExplosiveArrowSkill : SkillBase
     {

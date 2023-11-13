@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
     static class CombatEncounterHelper
     {

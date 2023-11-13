@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Huntress;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.EntityState.Huntress;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class LaserrangSkill : SkillBase
     {

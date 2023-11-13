@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using System;
@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class CobaltShield : ItemBase
     {

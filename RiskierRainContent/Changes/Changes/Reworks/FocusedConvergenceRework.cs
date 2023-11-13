@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using static RoR2.HoldoutZoneController;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public partial class RiskierRainContent
     {

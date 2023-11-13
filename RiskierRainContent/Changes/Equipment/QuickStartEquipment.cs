@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class QuickStartEquipment : EquipmentBase<QuickStartEquipment>
     {

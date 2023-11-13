@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Bandit;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.EntityState.Bandit;
 using EntityStates;
 using R2API;
 using RoR2;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class NailBombSkill : SkillBase
     {

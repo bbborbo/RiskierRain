@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using R2API;
 using RoR2;
 using RoR2.Orbs;
@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class BloodAnomaly : ItemBase<BloodAnomaly>
     {

@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     //ill be real i basically stole this from chaotic skills 
     class AllyCaps : CoreModule

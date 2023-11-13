@@ -2,13 +2,13 @@
 using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
-using RiskierRain.Artifacts;
-using RiskierRain.CoreModules;
-using RiskierRain.Equipment;
-using RiskierRain.Interactables;
-using RiskierRain.Items;
-using RiskierRain.Scavengers;
-using RiskierRain.Skills;
+using RiskierRainContent.Artifacts;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Equipment;
+using RiskierRainContent.Interactables;
+using RiskierRainContent.Items;
+using RiskierRainContent.Scavengers;
+using RiskierRainContent.Skills;
 using RoR2;
 using RoR2.Projectile;
 using System;
@@ -31,7 +31,7 @@ using RoR2.ExpansionManagement;
 #pragma warning restore CS0618 // Type or member is obsolete
 [module: UnverifiableCode]
 #pragma warning disable 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]

@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.Equipment;
+using RiskierRainContent.Equipment;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 
-namespace RiskierRain.Changes.Aspects
+namespace RiskierRainContent.Changes.Aspects
 {
     class DeuteriumAspect : EliteEquipmentBase<DeuteriumAspect>
     {

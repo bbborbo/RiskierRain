@@ -6,7 +6,7 @@ using EntityStates.Bandit2.Weapon;
 using RoR2;
 using UnityEngine;
 
-namespace RiskierRain.EntityState.Bandit
+namespace RiskierRainContent.EntityState.Bandit
 {
     class FireMinigun : GenericBulletBaseState
     {

@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class Elixir2Consumed : ItemBase<Elixir2Consumed>
     {

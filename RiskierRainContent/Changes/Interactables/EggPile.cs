@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using RiskierRain.Items;
+using RiskierRainContent.Items;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
     class EggPile : InteractableBase<EggPile>
     {

@@ -1,17 +1,17 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static RiskierRain.BurnStatHook;
-using static RiskierRain.Tools;
+using static RiskierRainContent.BurnStatHook;
+using static RiskierRainContent.Tools;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class LunarBrand : ItemBase<LunarBrand>
     {

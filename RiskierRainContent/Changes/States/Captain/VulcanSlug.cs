@@ -1,4 +1,4 @@
-﻿using RiskierRain.Skills;
+﻿using RiskierRainContent.Skills;
 using EntityStates;
 using EntityStates.Captain.Weapon;
 using RoR2;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace RiskierRain.EntityState.Captain
+namespace RiskierRainContent.EntityState.Captain
 {
     class VulcanSlug : BaseSkillState
     {

@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class VoidVampirism : ItemBase<VoidVampirism>
     {

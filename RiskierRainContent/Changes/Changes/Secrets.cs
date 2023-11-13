@@ -8,10 +8,10 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using R2API;
 using UnityEngine.Networking;
-using RiskierRain.Interactables;
-using RiskierRain;
+using RiskierRainContent.Interactables;
+using RiskierRainContent;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public static class Secrets 
     {

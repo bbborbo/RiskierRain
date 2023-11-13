@@ -1,16 +1,16 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Interactables;
+using RiskierRainContent.Interactables;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using RiskierRain;
-using static RiskierRain.Secrets;
+using RiskierRainContent;
+using static RiskierRainContent.Secrets;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
     class ConstructConstruct : InteractableBase<ConstructConstruct>
     {

@@ -1,13 +1,13 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
     class SpineAltar : InteractableBase<SpineAltar>
     {

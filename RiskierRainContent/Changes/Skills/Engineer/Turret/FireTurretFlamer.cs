@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using EntityStates;
-using RiskierRain.States;
+using RiskierRainContent.States;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class FireTurretFlamer : SkillBase<FireTurretFlamer>
     {

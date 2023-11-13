@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.Components
+namespace RiskierRainContent.Components
 {
     internal class InteractableBuffController : MonoBehaviour
     {

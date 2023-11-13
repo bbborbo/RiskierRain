@@ -1,12 +1,12 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.Equipment;
+using RiskierRainContent.Equipment;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.Artifacts
+namespace RiskierRainContent.Artifacts
 {
     class QuickStartArtifact : ArtifactBase<QuickStartArtifact>
     {

@@ -4,7 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using On.RoR2.Items;
 using R2API;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.Orbs;
 using RoR2.Projectile;
@@ -17,7 +17,7 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static BorboStatUtils.BorboStatUtils;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public partial class RiskierRainContent
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.Equipment.Zapinator
+namespace RiskierRainContent.Equipment.Zapinator
 {
     public enum ZapinatorModifiers
     {

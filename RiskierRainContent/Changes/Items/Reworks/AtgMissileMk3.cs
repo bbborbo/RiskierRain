@@ -12,7 +12,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class AtgMissileMk3 : ItemBase<AtgMissileMk3>
     {

@@ -4,9 +4,9 @@ using System.Text;
 using UnityEngine;
 using RoR2;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain;
-using RiskierRain.Interactables;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent;
+using RiskierRainContent.Interactables;
 using BepInEx.Configuration;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
@@ -14,7 +14,7 @@ using System.Linq;
 //using UnityEngine.SceneManagement;
 using static RoR2.PickupDropTable;
 
-namespace RiskierRain.Interactables
+namespace RiskierRainContent.Interactables
 {
 	class FakeShrine : InteractableBase<FakeShrine>
 	{

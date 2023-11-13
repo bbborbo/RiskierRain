@@ -5,18 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static RiskierRain.RiskierRainContent;
-using static RiskierRain.JumpStatHook;
+using static RiskierRainContent.RiskierRainContent;
+using static RiskierRainContent.JumpStatHook;
 using On.RoR2.Items;
 using HarmonyLib;
 using EntityStates.Bandit2;
 using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 using UnityEngine.Networking;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class BottleFart : ItemBase<BottleFart>
     {

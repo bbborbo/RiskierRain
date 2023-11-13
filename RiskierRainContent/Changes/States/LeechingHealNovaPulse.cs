@@ -1,5 +1,5 @@
-﻿using RiskierRain.Components;
-using RiskierRain.Equipment;
+﻿using RiskierRainContent.Components;
+using RiskierRainContent.Equipment;
 using EntityStates;
 using EntityStates.TeleporterHealNovaController;
 using RoR2;
@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.States.LeechingHealNovaController
+namespace RiskierRainContent.States.LeechingHealNovaController
 {
     public class LeechingHealNovaPulse : BaseState
 	{

@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using EntityStates;
 
-namespace RiskierRain
+namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {

@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using EntityStates.Toolbot;
 using R2API;
 using RoR2;
@@ -10,10 +10,10 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static RiskierRain.CoreModules.EliteModule;
+using static RiskierRainContent.CoreModules.EliteModule;
 using UnityEngine.AddressableAssets;
 
-namespace RiskierRain.Equipment
+namespace RiskierRainContent.Equipment
 {
     class VolatileAspect : EliteEquipmentBase
     {

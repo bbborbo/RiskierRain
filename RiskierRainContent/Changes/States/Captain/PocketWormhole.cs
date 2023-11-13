@@ -1,4 +1,4 @@
-﻿using RiskierRain.Skills;
+﻿using RiskierRainContent.Skills;
 using EntityStates;
 using EntityStates.Captain.Weapon;
 using RoR2;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRain.EntityState.Captain
+namespace RiskierRainContent.EntityState.Captain
 {
     class PocketWormhole : BaseSkillState
 	{

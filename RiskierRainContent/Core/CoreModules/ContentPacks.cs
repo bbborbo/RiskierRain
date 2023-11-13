@@ -1,6 +1,6 @@
-﻿using RiskierRain.CoreModules;
-using RiskierRain.Equipment;
-using RiskierRain.Items;
+﻿using RiskierRainContent.CoreModules;
+using RiskierRainContent.Equipment;
+using RiskierRainContent.Items;
 using RoR2;
 using RoR2.ContentManagement;
 using RoR2.Skills;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.CoreModules
+namespace RiskierRainContent.CoreModules
 {
     internal class ContentPacks : IContentPackProvider
     {

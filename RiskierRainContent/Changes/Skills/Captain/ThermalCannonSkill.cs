@@ -1,15 +1,15 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.EntityState;
-using RiskierRain.EntityState.Captain;
+using RiskierRainContent.EntityState;
+using RiskierRainContent.EntityState.Captain;
 using EntityStates;
 using RoR2;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 
-namespace RiskierRain.Skills
+namespace RiskierRainContent.Skills
 {
     class ThermalCannonSkill : SkillBase
     {

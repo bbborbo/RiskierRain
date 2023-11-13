@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using RiskierRain.CoreModules;
+using RiskierRainContent.CoreModules;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
@@ -13,7 +13,7 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 
-namespace RiskierRain.Items
+namespace RiskierRainContent.Items
 {
     class CoinGun : ItemBase<CoinGun>
     {

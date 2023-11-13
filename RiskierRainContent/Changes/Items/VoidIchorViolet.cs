@@ -13,8 +13,8 @@ namespace RiskierRainContent.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
-        float xpFraction = 0.01f;
-        int xpFlat = 5;
+        int xpDivisor = 100;
+        int xpFlat = 1;
         public override string ItemName => "Ichor (violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
@@ -57,12 +57,12 @@ namespace RiskierRainContent.Items
             }
             CharacterMaster xpRecipient = damageReport.attackerMaster;
 
-            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex) * (ulong)xpFraction;
-            ulong xpToGive = percentXP + ((ulong)xpFlat * (ulong)(itemCount - 1));
+            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
+            percentXP /= (ulong)xpDivisor;
+            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) + ((ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount - 1));
             xpRecipient.GiveExperience(xpToGive);
             Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }
-
         public override void Init(ConfigFile config)
         {
             CreateItem();

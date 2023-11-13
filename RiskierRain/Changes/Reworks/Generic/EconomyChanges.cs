@@ -39,6 +39,8 @@ namespace RiskierRain
         PurchaseInteraction bigChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction casinoChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CasinoChest/CasinoChest.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction chanceShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction chanceShrineSnowy = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction chanceShrineSandy = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSandy Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         //big category chest is 'categorychest2healing' and such
 
 
@@ -275,6 +277,8 @@ namespace RiskierRain
             if (chanceShrine != null)
             {
                 chanceShrine.cost = chanceShrineTypeCost;
+                chanceShrineSandy.cost = chanceShrineTypeCost;
+                chanceShrineSnowy.cost = chanceShrineTypeCost;
             }
 
         }

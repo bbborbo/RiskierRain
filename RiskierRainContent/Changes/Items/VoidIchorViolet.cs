@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace RiskierRainContent.Items
 
         public override string ItemLangTokenName => "ICHORVIOLET";
 
-        public override string ItemPickupDesc => "Gain flat health. Corrupts all Soldier's Syringes.";
+        public override string ItemPickupDesc => "Gain bonus experience on kill. Corrupts all Monster Teeth.";
 
         public override string ItemFullDescription => "";
 
@@ -60,7 +60,7 @@ namespace RiskierRainContent.Items
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex) * (ulong)xpFraction;
             ulong xpToGive = percentXP + ((ulong)xpFlat * (ulong)(itemCount - 1));
             xpRecipient.GiveExperience(xpToGive);
-            Debug.Log($"gave {xpToGive} xp!!");
+            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }
 
         public override void Init(ConfigFile config)

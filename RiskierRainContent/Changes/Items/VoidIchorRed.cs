@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 using HarmonyLib;
 using R2API;
-using RiskierRain.CoreModules;
-using RiskierRain.Items;
+using RiskierRainContent.CoreModules;
+using RiskierRainContent.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;

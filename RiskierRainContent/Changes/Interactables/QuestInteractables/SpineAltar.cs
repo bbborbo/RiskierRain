@@ -58,28 +58,28 @@ namespace RiskierRainContent.Interactables
         public override int maxSpawnsPerStage => 20;
 
         public string[] validScenes = {
-            "golemplains",
-            "golemplains2",
-            "blackbeach",
-            "blackbeach2",
-            "snowyforest",
-            "foggyswamp",
-            "goolake",
-            "frozenwall",
-            "wispgraveyard",
-            "dampcavesimple",
-            "shipgraveyard",
-            "arena",
-            "skymeadow",
-            "artifactworld",
-            "rootjungle",
-            "ancientloft",
-            "sulfurpools",
-			//modded stages
-			"slumberingsatellite",
-            "forgottenhaven",
-            "drybasin",
-            "FBLScene"
+            //"golemplains",
+            //"golemplains2",
+            //"blackbeach",
+            //"blackbeach2",
+            //"snowyforest",
+            //"foggyswamp",
+            //"goolake",
+            //"frozenwall",
+            //"wispgraveyard",
+            //"dampcavesimple",
+            //"shipgraveyard",
+            //"arena",
+            //"skymeadow",
+            //"artifactworld",
+            //"rootjungle",
+            //"ancientloft",
+            //"sulfurpools",
+			////modded stages
+			//"slumberingsatellite",
+            //"forgottenhaven",
+            //"drybasin",
+            //"FBLScene"
         };
 
         public override void Init(ConfigFile config)

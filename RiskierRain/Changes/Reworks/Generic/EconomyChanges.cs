@@ -39,6 +39,8 @@ namespace RiskierRain
         PurchaseInteraction bigChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction casinoChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CasinoChest/CasinoChest.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction chanceShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction chanceShrineSnowy = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction chanceShrineSandy = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSandy Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         //big category chest is 'categorychest2healing' and such
 
 
@@ -55,7 +57,7 @@ namespace RiskierRain
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250
-        int casinoChestTypeCost = 25; //50; first interact is free, cost is incurred on second interract
+        int casinoChestTypeCost = 30; //50; cost is incurred twice
         int chanceShrineTypeCost = 15; //17
 
         void FixMoneyScaling()
@@ -275,6 +277,8 @@ namespace RiskierRain
             if (chanceShrine != null)
             {
                 chanceShrine.cost = chanceShrineTypeCost;
+                chanceShrineSandy.cost = chanceShrineTypeCost;
+                chanceShrineSnowy.cost = chanceShrineTypeCost;
             }
 
         }

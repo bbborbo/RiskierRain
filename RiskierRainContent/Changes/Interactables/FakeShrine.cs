@@ -18,7 +18,7 @@ namespace RiskierRainContent.Interactables
 {
 	class FakeShrine : InteractableBase<FakeShrine>
 	{
-		public override float voidSeedWeight => 0.2f;
+		public override float voidSeedWeight => 0.3f;
 		public override int normalWeight => 15;
 		public override int spawnCost => 20;
 		public override int costAmount => 1;

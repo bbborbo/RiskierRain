@@ -488,7 +488,7 @@ namespace RiskierRain
             //enemies use equipment
             MakeEnemiesuseEquipment();
             //spawnlists
-            //ChangeSpawnlists();
+            ChangeSpawnlists();
             //double chest
             DoubleChestHook();
 

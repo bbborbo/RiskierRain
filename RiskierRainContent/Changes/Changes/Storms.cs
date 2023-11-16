@@ -7,105 +7,140 @@ using RoR2;
 using System.Linq;
 using UnityEngine.AddressableAssets;
 using EntityStates;
+using R2API;
+using RoR2.ExpansionManagement;
+using RiskierRainContent.CoreModules;
 
 namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {
-        public static float drizzleStormDelay = 10;
-        public static float rainstormStormDelay = 5;
-        public static float monsoonStormDelay = 3;
-
-        //this might suck
-        GameObject teleporter;
+        public static GameObject StormsRunBehaviorPrefab;
 
         void InitializeStorms()
         {
-            On.RoR2.Run.EndStage += StormsEndStage;
-            On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
-        }
-        StageStormController StormControllerInstance; //this probably sucks but im just tryna see if itll work lol
-
-        private bool ShouldDoStorm()
-        {
-            bool output = true;
-            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
-            {
-                output = false;
-            }
-            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().blockOrbitalSkills)
-            {
-                output = false;
-            }
-            return output;
+            CreateStormsRunBehaviorPrefab();
         }
 
-        private void CreateNewStormController()
+        private static void CreateStormsRunBehaviorPrefab()
         {
-            if (StormControllerInstance != null)
-            {
-                Destroy(StormControllerInstance.gameObject);
-            }
-            if (!ShouldDoStorm())
-            {
-                return;
-            }
-            GameObject go = new GameObject();
-            StormControllerInstance = go.AddComponent<StageStormController>();
-        }
+            StormsRunBehaviorPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Common/DLC1RunBehavior.prefab").WaitForCompletion().InstantiateClone("2R4RExpansionRunBehavior", true);
 
-        private void StormsEndStage(On.RoR2.Run.orig_EndStage orig, RoR2.Run self)
-        {
-            orig(self);
-            if (StormControllerInstance == null)
-                return;
-           StormControllerInstance.RemoveStormController();
-        }
-        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
-        {
-            orig(self, sceneDirector, teleporter);
+            ExpansionRequirementComponent erc = StormsRunBehaviorPrefab.GetComponent<ExpansionRequirementComponent>();
+            erc.requiredExpansion = RiskierRainContent.expansionDef;
 
-            CreateNewStormController();
-            if (StormControllerInstance != null && teleporter != null)
-            {
-                Debug.Log("woag00");
-                StormControllerInstance.teleporter = teleporter;
-            }
+            StormsRunBehaviorPrefab.AddComponent<StormDirector>();
+
+            RiskierRainContent.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
+            Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
         }
     }
 
-    public class StageStormController : MonoBehaviour
+    public class StormDirector : MonoBehaviour
     {
+        public static float GetStormStartDelay()
+        {
+            if (instance != null && instance.stormStartDelay != -1)
+                return instance.stormStartDelay;
+
+            float delay = 0;
+            switch (Run.instance.selectedDifficulty)
+            {
+                default:
+                    delay = monsoonStormDelay;
+                    break;
+                case RoR2.DifficultyIndex.Normal:
+                    delay = rainstormStormDelay;
+                    break;
+                case RoR2.DifficultyIndex.Easy:
+                    delay = drizzleStormDelay;
+                    break;
+            }
+            float random = Run.instance.stageRng.RangeFloat(0, 1); // up to 1 minute of additional delay
+            return (delay + random) * 60;
+        }
+        public static StormType GetStormType()
+        {
+            SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
+            StormType st = StormType.None;
+            if (currentScene.sceneType == SceneType.Stage)
+            {
+                switch (currentScene.baseSceneName)
+                {
+                    default:
+                        st = StormType.MeteorDefault;
+                        break;
+                }
+            }
+
+            return st;
+        }
+
+        public const float drizzleStormDelay = 10;
+        public const float rainstormStormDelay = 5;
+        public const float monsoonStormDelay = 3;
         public enum StormType
         {
+            None,
             MeteorDefault,
             Lightning,
             Fire,
             Cold
         }
 
+        public static StormDirector instance;
+        StormType stormType = StormType.None;
+
         float stageBeginTime;
-        float stormStartDelay;
-        float stormStartTime;
-        StormType stormType;
-        bool hasSentStormWarning = false;
+        public float stormStartDelay = -1;
+        public float stormEarlyWarningTime => stormStartTime - 30;
+        bool hasSentStormEarlyWarning = false;
+        public float stormStartTime => stageBeginTime + stormStartDelay;
         bool hasBegunStorm = false;
-        bool teleporterActive = false;
 
-        public GameObject teleporter;
-        private TeleporterInteraction teleporterInteraction;
-
+        internal bool teleporterActive = false;
+        internal TeleporterInteraction teleporter;
 
         public void Start()
         {
-            stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
-            CalculateStormStartDelay();
-            DetermineStormType();
-            stormStartTime = stageBeginTime + stormStartDelay;
+            Debug.LogError("ASHDAJHSDHASDHJKASHJKDKSJSD STORMS DIRECTOR");
 
-            On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
+            if (instance != null)
+                Destroy(this);
+            instance = this;
+
+
+            On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage += StormsEndStage;
+
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
+        }
+
+        public void OnDestroy()
+        {
+            On.RoR2.Run.OnServerTeleporterPlaced -= Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage -= StormsEndStage;
+
+            On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
+            On.RoR2.TeleporterInteraction.ChargedState.OnEnter -= TeleporterInteraction_ChargedState_OnEnter;
+        }
+        public void RemoveStormController()
+        {
+            Destroy(this.gameObject);
+        }
+
+        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        {
+            stormType = GetStormType();
+            stormStartDelay = GetStormStartDelay();
+            stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
+        }
+
+        private void StormsEndStage(On.RoR2.Run.orig_EndStage orig, Run self)
+        {
+            stormType = StormType.None;
+            stormStartDelay = -1;
         }
 
         private void TeleporterInteraction_ChargedState_OnEnter(On.RoR2.TeleporterInteraction.ChargedState.orig_OnEnter orig, BaseState self)
@@ -114,48 +149,11 @@ namespace RiskierRainContent
             teleporterActive = false;
         }
 
-        public void OnDestroy()
-        {
-            On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor -= MeteorWave_GetNextMeteor;
-            On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
-        }
-        public void RemoveStormController()
-        {
-            Destroy(this.gameObject);
-        }
-
         private void TeleporterInteraction_OnInteractionBegin(On.RoR2.TeleporterInteraction.orig_OnInteractionBegin orig, TeleporterInteraction self, Interactor activator)
         {
             orig.Invoke(self, activator);
-            this.teleporterInteraction = self;
+            this.teleporter = self;
             this.teleporterActive = true;
-        }
-
-        void CalculateStormStartDelay()
-        {
-            float delay = 0;
-            switch (Run.instance.selectedDifficulty)
-            {
-                default:
-                    delay = RiskierRainContent.monsoonStormDelay;
-                    break;
-                case RoR2.DifficultyIndex.Normal:
-                    delay = RiskierRainContent.rainstormStormDelay;
-                    break;
-                case RoR2.DifficultyIndex.Easy:
-                    delay = RiskierRainContent.drizzleStormDelay;
-                    break;
-            }
-            float random = Run.instance.stageRng.RangeFloat(0, 1);
-            stormStartDelay = (delay + random) * 60;
-        }
-        void DetermineStormType()
-        {
-            stormType = StormType.MeteorDefault;
-            /*switch (RoR2.Run.instance)
-            {
-
-            }*/
         }
 
         void FixedUpdate()
@@ -163,67 +161,128 @@ namespace RiskierRainContent
             if (Run.instance == null)
             {
                 RemoveStormController();
+                return;
             }
+            if (stormType == StormType.None)
+                return;
+
             float currentTime = RoR2.Run.instance.GetRunStopwatch();
-            if (!hasSentStormWarning && currentTime > stormStartTime - 30)
+            if (!hasSentStormEarlyWarning && currentTime > stormEarlyWarningTime)
             {
-                string warningMessage = "";
-                switch (stormType)
-                {
-                    case StormType.MeteorDefault:
-                        warningMessage = "<style=cIsUtility>A meteor storm is approaching...</style>";
-                        break;
-                    case StormType.Lightning:
-                        warningMessage = "A storm approaches...";
-                        break;
-                    case StormType.Fire:
-                        warningMessage = "A meteor storm is approaching...";
-                        break;
-                    case StormType.Cold:
-                        warningMessage = "The air around you begins to freeze...";
-                        break;
-                }
-
-                //the message thing. make its own method mebbe
-                RoR2.Chat.AddMessage(warningMessage);
-
-
-                hasSentStormWarning = true;
+                hasSentStormEarlyWarning = true;
+                SendStormEarlyWarning();
             }
             if (!hasBegunStorm && currentTime > stormStartTime)
             {
-                string warningMessage = "";
-                switch (stormType)
-                {
-                    case StormType.MeteorDefault:
-                        warningMessage = "<style=cIsUtility>A shower of meteors begins to fall...</style>";
-                        break;
-                    case StormType.Lightning:
-                        warningMessage = "A meteor storm is approaching...";
-                        break;
-                    case StormType.Fire:
-                        warningMessage = "A meteor storm is approaching...";
-                        break;
-                    case StormType.Cold:
-                        warningMessage = "A meteor storm is approaching...";
-                        break;
-                }
-
-                RoR2.Chat.AddMessage(warningMessage);
-                ActivateStorm();
-            }
-            if (teleporter == null) 
-            {
-                Debug.Log("oh god oh fuck");
+                hasBegunStorm = true;
+                SendStormWarning();
+                BeginStorm();
             }
             if (hasBegunStorm)
             {
-                StormBehavior();
+                //StormBehavior();
             }
         }
 
-        void StormBehavior()
+        private void SendStormEarlyWarning()
         {
+            string warningMessage = "";
+            switch (stormType)
+            {
+                case StormType.MeteorDefault:
+                    warningMessage = "<style=cIsUtility>A meteor storm is approaching...</style>";
+                    break;
+                case StormType.Lightning:
+                    warningMessage = "A storm approaches...";
+                    break;
+                case StormType.Fire:
+                    warningMessage = "A meteor storm is approaching...";
+                    break;
+                case StormType.Cold:
+                    warningMessage = "The air around you begins to freeze...";
+                    break;
+            }
+
+            //the message thing. make its own method mebbe
+            RoR2.Chat.AddMessage(warningMessage);
+        }
+
+        private void SendStormWarning()
+        {
+            string warningMessage = "";
+            switch (stormType)
+            {
+                case StormType.MeteorDefault:
+                    warningMessage = "<style=cIsUtility>A shower of meteors begins to fall...</style>";
+                    break;
+                case StormType.Lightning:
+                    warningMessage = "A meteor storm is approaching...";
+                    break;
+                case StormType.Fire:
+                    warningMessage = "A meteor storm is approaching...";
+                    break;
+                case StormType.Cold:
+                    warningMessage = "A meteor storm is approaching...";
+                    break;
+            }
+
+            RoR2.Chat.AddMessage(warningMessage);
+        }
+
+        private void BeginStorm()
+        {
+            GameObject go = new GameObject();
+            go.AddComponent<StormHazardController>();
+            //go.AddComponent<CombatDirector>();
+        }
+    }
+
+    public class StormHazardController : MonoBehaviour
+    {
+        bool teleporterActive => StormDirector.instance.teleporterActive;
+        private TeleporterInteraction teleporter => StormDirector.instance?.teleporter;
+
+        //all the projectile/prefab stuff
+        public float waveMinInterval = 1f;
+        public float waveMaxInterval = 2f;
+
+        private List<MeteorStormController.Meteor> meteorList;
+        private List<MeteorStormController.MeteorWave> waveList;
+        private float waveTimer;
+
+        //meteors:
+        GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
+        GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
+        public float meteorTravelEffectDuration = 2;
+        public float meteorImpactDelay = 2.5f;
+        public float meteorBlastDamageCoefficient = 10;
+        public float meteorBlastRadius = 14;
+        public float meteorBlastForce = 0;
+
+        public void Start()
+        {
+            this.meteorList = new List<MeteorStormController.Meteor>();
+            this.waveList = new List<MeteorStormController.MeteorWave>();
+
+            On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
+        }
+        public void OnDestroy()
+        {
+            On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor -= MeteorWave_GetNextMeteor;
+        }
+        public void RemoveStormController()
+        {
+            Destroy(this.gameObject);
+        }
+
+        void FixedUpdate()
+        {
+            if (Run.instance == null)
+            {
+                RemoveStormController();
+                return;
+            }
+
             //thisa is just for meteor stuff; we can make it work for the other storsm when they start existing lol.
             this.waveTimer -= Time.fixedDeltaTime;
             if (this.waveTimer <= 0f)
@@ -270,14 +329,6 @@ namespace RiskierRainContent
             }
         }
 
-        void ActivateStorm()
-        {
-            hasBegunStorm = true;
-
-            this.meteorList = new List<MeteorStormController.Meteor>();
-            this.waveList = new List<MeteorStormController.MeteorWave>();
-        }
-
         private void DetonateMeteor(MeteorStormController.Meteor meteor)
         {
             EffectData effectData = new EffectData
@@ -312,12 +363,12 @@ namespace RiskierRainContent
             {
                 if (teleporterActive)
                 {
-                    if (teleporterInteraction == null)
+                    if (teleporter == null)
                     {
                         Debug.LogError("tp interaction null?");
                         return meteor;
                     }
-                    if (teleporterInteraction.holdoutZoneController == null)
+                    if (teleporter.holdoutZoneController == null)
                     {
                         Debug.LogError("holdout zone null???");
                         return meteor;
@@ -327,7 +378,7 @@ namespace RiskierRainContent
                     Vector3 impactPosition = (Vector3)meteor.GetType()
                         .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor); 
 
-                    if (this.IsInRange(impactPosition, this.teleporter.transform.position, teleporterInteraction.holdoutZoneController.currentRadius + meteorBlastRadius))
+                    if (this.IsInRange(impactPosition, this.teleporter.transform.position, teleporter.holdoutZoneController.currentRadius + meteorBlastRadius))
                     {
                         meteor = null;
                     }
@@ -343,23 +394,5 @@ namespace RiskierRainContent
         {
             return (a - b).sqrMagnitude <= dist * dist;
         }
-
-        //all the projectile/prefab stuff
-        public float waveMinInterval = 1f;
-        public float waveMaxInterval = 2f;
-
-        private List<MeteorStormController.Meteor> meteorList;
-        private List<MeteorStormController.MeteorWave> waveList;
-        private float waveTimer;
-
-        //meteors:
-        GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
-        GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
-        public float meteorTravelEffectDuration = 2;
-        public float meteorImpactDelay = 2.5f;
-        public float meteorBlastDamageCoefficient = 10;
-        public float meteorBlastRadius = 14;
-        public float meteorBlastForce = 0;
-
     }
 }

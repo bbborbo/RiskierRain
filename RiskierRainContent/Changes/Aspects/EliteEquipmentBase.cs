@@ -30,7 +30,7 @@ namespace RiskierRainContent.Equipment
         {
             List<EliteTierDef> etd = new List<EliteTierDef>();
 
-            foreach (CombatDirector.EliteTierDef tier in EliteAPI.GetCombatDirectorEliteTiers())
+            foreach (CombatDirector.EliteTierDef tier in EliteAPI.VanillaEliteTiers)//EliteAPI.GetCombatDirectorEliteTiers())
             {
                 if (tier.eliteTypes.Contains(RoR2Content.Elites.Fire))
                 {
@@ -43,8 +43,9 @@ namespace RiskierRainContent.Equipment
         public EliteTierDef[] VanillaTier2()
         {
             List<EliteTierDef> etd = new List<EliteTierDef>();
+            
 
-            foreach (CombatDirector.EliteTierDef tier in EliteAPI.GetCombatDirectorEliteTiers())
+            foreach (CombatDirector.EliteTierDef tier in EliteAPI.VanillaEliteTiers)//EliteAPI.GetCombatDirectorEliteTiers())
             {
                 EliteDef[] eliteTypes = new EliteDef[2] { RoR2Content.Elites.Poison, RoR2Content.Elites.Haunted };
 
@@ -127,7 +128,7 @@ namespace RiskierRainContent.Equipment
         protected void CreateEliteEquipment()
         {
             #region add custom elite tier if applicable
-            var baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
+            /*var baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
             if (CanAppearInEliteTiers != null)
             {
                 var distinctEliteTierDefs = CanAppearInEliteTiers.Except(baseEliteTierDefs);
@@ -145,7 +146,7 @@ namespace RiskierRainContent.Equipment
                     }
                     baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
                 }
-            }
+            }*/
             #endregion
 
             //elite buff

@@ -10,16 +10,42 @@ using EntityStates;
 using R2API;
 using RoR2.ExpansionManagement;
 using RiskierRainContent.CoreModules;
+using RiskierRainContent.Changes.Aspects;
+using static RoR2.CombatDirector;
 
 namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {
         public static GameObject StormsRunBehaviorPrefab;
+        public static EliteTierDef StormT1;
+        public static EliteTierDef StormT2;
 
         void InitializeStorms()
         {
+            CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
+        }
+
+        private void CreateStormEliteTiers()
+        {
+            StormT1 = new EliteTierDef();
+            StormT1.costMultiplier = 2;
+            StormT1.canSelectWithoutAvailableEliteDef = false;
+            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => StormDirector.instance && StormDirector.instance.hasBegunStorm);
+            //EliteAPI.AddCustomEliteTier(StormT1);
+
+            StormT2 = new EliteTierDef();
+            StormT2.costMultiplier = 2;
+            StormT2.canSelectWithoutAvailableEliteDef = false;
+            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => StormDirector.instance && StormDirector.instance.hasBegunStorm && 
+                    !RiskierRainContent.is2R4RLoaded ? (Run.instance.loopClearCount > 0) :
+                    ((Run.instance.stageClearCount >= 10 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
+                    || (Run.instance.stageClearCount >= 5 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)
+                    || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Hard)
+                    || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard)));
+            //EliteAPI.AddCustomEliteTier(StormT2);
+            return;
         }
 
         private static void CreateStormsRunBehaviorPrefab()
@@ -96,7 +122,7 @@ namespace RiskierRainContent
         public float stormEarlyWarningTime => stormStartTime - 30;
         bool hasSentStormEarlyWarning = false;
         public float stormStartTime => stageBeginTime + stormStartDelay;
-        bool hasBegunStorm = false;
+        public bool hasBegunStorm = false;
 
         internal bool teleporterActive = false;
         internal TeleporterInteraction teleporter;
@@ -105,13 +131,15 @@ namespace RiskierRainContent
         {
             Debug.LogError("ASHDAJHSDHASDHJKASHJKDKSJSD STORMS DIRECTOR");
 
-            if (instance != null)
+            if (instance != null && instance != this)
+            {
                 Destroy(this);
+                return;
+            }
             instance = this;
 
 
             On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
-            On.RoR2.Run.EndStage += StormsEndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
@@ -120,7 +148,6 @@ namespace RiskierRainContent
         public void OnDestroy()
         {
             On.RoR2.Run.OnServerTeleporterPlaced -= Run_OnServerTeleporterPlaced;
-            On.RoR2.Run.EndStage -= StormsEndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter -= TeleporterInteraction_ChargedState_OnEnter;
@@ -132,15 +159,17 @@ namespace RiskierRainContent
 
         private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
         {
+            stormType = StormType.None;
+            stormStartDelay = -1;
+            hasSentStormEarlyWarning = false;
+            hasBegunStorm = false;
+            teleporterActive = false;
+
             stormType = GetStormType();
             stormStartDelay = GetStormStartDelay();
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
-        }
-
-        private void StormsEndStage(On.RoR2.Run.orig_EndStage orig, Run self)
-        {
-            stormType = StormType.None;
-            stormStartDelay = -1;
+            Debug.LogWarning(stormType + ", " + stageBeginTime + " - " + stormStartTime);
+            orig(self, sceneDirector, teleporter);
         }
 
         private void TeleporterInteraction_ChargedState_OnEnter(On.RoR2.TeleporterInteraction.ChargedState.orig_OnEnter orig, BaseState self)
@@ -158,12 +187,7 @@ namespace RiskierRainContent
 
         void FixedUpdate()
         {
-            if (Run.instance == null)
-            {
-                RemoveStormController();
-                return;
-            }
-            if (stormType == StormType.None)
+            if (stormType == StormType.None || !Run.instance)
                 return;
 
             float currentTime = RoR2.Run.instance.GetRunStopwatch();
@@ -233,7 +257,37 @@ namespace RiskierRainContent
         {
             GameObject go = new GameObject();
             go.AddComponent<StormHazardController>();
-            //go.AddComponent<CombatDirector>();
+            //CombatDirector cd = go.AddComponent<CombatDirector>();
+            //cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+        }
+
+        private void OnStormDirectorSpawnServer(GameObject masterObject)
+        {
+            EliteDef eliteDef = WhirlwindAspect.instance.EliteDef;
+            EquipmentIndex? equipmentIndex;
+            if (eliteDef == null)
+            {
+                equipmentIndex = null;
+            }
+            else
+            {
+                EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
+                equipmentIndex = ((eliteEquipmentDef != null) ? new EquipmentIndex?(eliteEquipmentDef.equipmentIndex) : null);
+            }
+            EquipmentIndex equipmentIndex2 = equipmentIndex ?? EquipmentIndex.None;
+            CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
+            GameObject bodyObject = component.GetBodyObject();
+            if (bodyObject)
+            {
+                foreach (EntityStateMachine entityStateMachine in bodyObject.GetComponents<EntityStateMachine>())
+                {
+                    entityStateMachine.initialStateType = entityStateMachine.mainStateType;
+                }
+            }
+            if (equipmentIndex2 != EquipmentIndex.None)
+            {
+                component.inventory.SetEquipmentIndex(equipmentIndex2);
+            }
         }
     }
 

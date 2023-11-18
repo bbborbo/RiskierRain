@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
+using System.Linq;
 
 namespace RiskierRainContent.Equipment
 {
@@ -80,11 +81,101 @@ namespace RiskierRainContent.Equipment
 
         public override void Hooks()
         {
-            IL.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
+            On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
             On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             GetExecutionThreshold += GuillotineExecutionThreshold;
             ModifyLuckStat += GuillotineLuckBuff;
+        }
+
+        private void GuillotineTargeting(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
+        {
+            bool isGuillotine = targetingEquipmentIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex;
+            if (!isGuillotine)
+            {
+                orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
+                return;
+            }
+
+            if (userShouldAnticipateTarget)
+            {
+                self.ConfigureTargetFinderForEnemies();
+            }
+            HurtBox source = null;
+
+            //i think this makes it prioritize elites
+            using (IEnumerator<HurtBox> enumerator = self.targetFinder.GetResults().GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    HurtBox hurtBox = enumerator.Current;
+                    if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.body)
+                    {
+                        bool isElite = hurtBox.healthComponent.body.gameObject.GetComponent<DeathRewards>();
+                        if (isElite && !hurtBox.healthComponent.body.HasBuff(RoR2Content.Buffs.Immune))
+                        {
+                            source = hurtBox;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(source == null)
+                source = self.targetFinder.GetResults().FirstOrDefault<HurtBox>();
+
+            self.currentTarget = new EquipmentSlot.UserTargetInfo(source);
+
+            bool targetHasTransform = self.currentTarget.transformToIndicateAt;
+            if (targetHasTransform)
+            {
+                self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/LightningIndicator");
+            }
+            self.targetIndicator.active = targetHasTransform;
+            self.targetIndicator.targetTransform = (targetHasTransform ? self.currentTarget.transformToIndicateAt : null);
+        }
+
+        private void GuillotineTargetingOld(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int itemCountLocation = 51;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Equipment", "BossHunter"),
+                x => x.MatchCallOrCallvirt<EquipmentDef>(nameof(EquipmentDef.equipmentIndex)),
+                x => x.MatchCeq()
+                );
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<int, EquipmentIndex, int>>((oneIfTrue, currentEquipIndex) =>
+            {
+                if (currentEquipIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex)
+                    oneIfTrue = 1;
+
+                return oneIfTrue;
+            });
+
+            /*ILCursor c = new ILCursor(il);
+
+            int num = 2;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchStloc(num)
+                );
+
+            c.Emit(OpCodes.Ldarg, 0);
+            c.Emit(OpCodes.Ldloc, num);
+            c.EmitDelegate<Func<EquipmentSlot, bool, bool>>((equipSlot, canTarget) =>
+            {
+                bool b = canTarget;
+
+                if (equipSlot.stock > 0 && equipSlot.equipmentIndex == this.EquipDef.equipmentIndex)
+                {
+                    b = true;
+                }
+
+                return b;
+            });
+            c.Emit(OpCodes.Stloc, num);*/
         }
 
         private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
@@ -181,32 +272,6 @@ namespace RiskierRainContent.Equipment
 
 
             orig(self, damageReport);
-        }
-
-        private void GuillotineTargeting(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int num = 2;
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchStloc(num)
-                );
-
-            c.Emit(OpCodes.Ldarg, 0);
-            c.Emit(OpCodes.Ldloc, num);
-            c.EmitDelegate<Func<EquipmentSlot, bool, bool>>((equipSlot, canTarget) =>
-            {
-                bool b = canTarget;
-
-                if(equipSlot.stock > 0 && equipSlot.equipmentIndex == this.EquipDef.equipmentIndex)
-                {
-                    b = true;
-                }
-
-                return b;
-            });
-            c.Emit(OpCodes.Stloc, num);
         }
 
         public override void Init(ConfigFile config)

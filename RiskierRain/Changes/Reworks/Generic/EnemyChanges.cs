@@ -110,7 +110,7 @@ namespace RiskierRain
 
             }
             Debug.LogError(EntityStates.BeetleQueenMonster.FireSpit.damageCoefficient);
-            EntityStates.BeetleQueenMonster.FireSpit.damageCoefficient = spikeDamageCoefficient;
+            EntityStates.BeetleQueenMonster.FireSpit.damageCoefficient = spitDamageCoefficient;
 
             queenAcidPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/BeetleQueenAcid.prefab").WaitForCompletion();
             if (queenAcidPrefab)

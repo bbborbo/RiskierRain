@@ -46,7 +46,7 @@ namespace RiskierRainContent.Items
         private void IchorTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
             orig(self, damageInfo);
-            if (self.body == null)
+            if (self.body == null || damageInfo.attacker == null)
             {
                 return;
             }
@@ -64,7 +64,7 @@ namespace RiskierRainContent.Items
             DamageInfo retaliateHit = new DamageInfo
             {
                 attacker = self.body.gameObject,
-                crit = damageInfo.crit, //i think this means that if something crits you you crit it back lol
+                crit = false,
                 damage = damageBase + (damageStack * (itemCount -1)),
                 damageType = DamageType.Generic,
                 damageColorIndex = DamageColorIndex.Item,

@@ -159,7 +159,7 @@ namespace RiskierRain
                 float maxMulti = moneyTotal / teamMaxHealth; //express target money as a fraction of the max health of the team
 
                 if (maxMulti > 0)//0.5f)
-                    instance.goldToPaidHpRatio = maxMulti;
+                    instance.goldToPaidHpRatio = maxMulti / totalHealthFraction; //
             }
         }
         #endregion

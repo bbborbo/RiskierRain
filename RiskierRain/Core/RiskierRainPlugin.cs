@@ -636,6 +636,12 @@ namespace RiskierRain
                 CrowdfunderFunny();
             }
 
+            //void cradle
+            if (GetConfigBool(true, "Economy: Gold/Legendary Chest Hacking Blacklist"))
+            {
+                ChangeHackingCriteria();
+            }
+
             //wandering vagrant
             if (GetConfigBool(true, "Enemy: Wandering Vagrant"))
             {

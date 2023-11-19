@@ -18,6 +18,7 @@ using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
 using RiskierRainContent;
+using On.EntityStates.CaptainSupplyDrop;
 
 namespace RiskierRain
 {
@@ -741,6 +742,20 @@ namespace RiskierRain
         }
 
 
+        #endregion
+
+        #region hacking criteria
+        void ChangeHackingCriteria()
+        {
+            On.EntityStates.CaptainSupplyDrop.HackingMainState.PurchaseInteractionIsValidTarget += BlacklistGoldChest;
+        }
+
+        private bool BlacklistGoldChest(HackingMainState.orig_PurchaseInteractionIsValidTarget orig, PurchaseInteraction purchaseInteraction)
+        {
+            if (purchaseInteraction.displayNameToken == "GOLDCHEST_NAME")
+                return false;
+            return orig(purchaseInteraction);
+        }
         #endregion
     }
 }

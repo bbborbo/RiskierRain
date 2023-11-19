@@ -62,10 +62,13 @@ namespace RiskierRainContent.Equipment
             Ray aim = CameraRigController.ModifyAimRayIfApplicable(self.GetAimRay(), self.characterBody.gameObject, out camAdjust);
             Collider[] results = Physics.OverlapSphere(aim.origin, maxDistance + camAdjust, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
-            if (!currentTargetValid
-                || (currentTargetObject.transform.position - self.gameObject.transform.position).sqrMagnitude > maxDistance * maxDistance
-                || Vector3.Dot(aim.direction, (currentTargetObject.transform.position - aim.origin).normalized) < minDot)
-                self.InvalidateCurrentTarget();
+            if(currentTargetObject != null)
+            {
+                if (!currentTargetValid
+                    || (currentTargetObject.transform.position - self.gameObject.transform.position).sqrMagnitude > maxDistance * maxDistance
+                    || Vector3.Dot(aim.direction, (currentTargetObject.transform.position - aim.origin).normalized) < minDot)
+                    self.InvalidateCurrentTarget();
+            }
 
             bool validTarget = false;
             PurchaseInteraction targetPurchase = null;

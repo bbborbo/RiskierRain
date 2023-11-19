@@ -282,13 +282,6 @@ namespace RiskierRain
         public static float medkitFlatHeal = 25;
         public static float medkitPercentHeal = 0.08f;
 
-        private void MeatBuff()
-        {
-            On.RoR2.GlobalEventManager.OnCharacterDeath += MeatRegen;
-            LanguageAPI.Add("ITEM_FLATHEALTH_PICKUP", "Regenerate health after killing an enemy.");
-            LanguageAPI.Add("ITEM_FLATHEALTH_DESC", "Increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
-                "for <style=cIsUtility>3s</style> <style=cStack>(+3s per stack)</style> after killing an enemy.");
-        }
 
         private void ScytheNerf()
         {
@@ -407,21 +400,6 @@ namespace RiskierRain
 
                 return newHealAmt;
             });
-        }
-
-        private void MeatRegen(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            CharacterBody attackerBody = damageReport.attackerBody;
-            if (attackerBody != null && attackerBody.inventory != null)
-            {
-                Inventory inv = attackerBody.inventory;
-                int meatCount = inv.GetItemCount(RoR2Content.Items.FlatHealth);
-                if (meatCount > 0)
-                {
-                    attackerBody.AddTimedBuffAuthority(JunkContent.Buffs.MeatRegenBoost.buffIndex, 3 * meatCount);
-                }
-            }
-            orig(self, damageReport);
         }
         #endregion
 

@@ -17,17 +17,7 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         #region buffs
-
-
         float deathMarkBonusDamage = 0.3f;
-
-
-        
-        private void FreshMeatStackingFix()
-        {
-            ChangeBuffStacking(nameof(JunkContent.Buffs.MeatRegenBoost), true);
-            GetStatCoefficients += LetMeatActuallyStack;
-        }
 
         float elephantBuffDuration = 10;
         int elephantArmor = 200;
@@ -54,16 +44,6 @@ namespace RiskierRain
         {
             self.characterBody.AddTimedBuff(RoR2Content.Buffs.ElephantArmorBoost, elephantBuffDuration);
             return true;
-        }
-
-        private void LetMeatActuallyStack(CharacterBody sender, StatHookEventArgs args)
-        {
-            int meatBuffCount = sender.GetBuffCount(JunkContent.Buffs.MeatRegenBoost);
-     
-            if (meatBuffCount > 1)
-            {
-                args.baseRegenAdd += 2 * (1 + 0.2f * (sender.level - 1)) * (meatBuffCount - 1);
-            }
         }
 
         

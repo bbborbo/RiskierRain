@@ -1,4 +1,6 @@
 ﻿using BepInEx;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
@@ -27,11 +29,40 @@ namespace ChillRework
         /// <summary>
         /// damageInfo, victim
         /// </summary>
-        public static event Action<DamageInfo, GameObject> OnMaxChill;
+        public static event Action<DamageInfo, CharacterBody> OnMaxChill;
         public void ChillHooks()
         {
             On.RoR2.GlobalEventManager.OnHitEnemy += ChillOnHitHook;
-            On.RoR2.CharacterBody.AddBuff_BuffIndex += MaxChillStacks;
+            On.RoR2.CharacterBody.AddBuff_BuffIndex += CapChillStacks;
+            IL.RoR2.GlobalEventManager.OnHitEnemy += IceRingMultiChill;
+        }
+
+        private void IceRingMultiChill(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int itemCountLocation = 51;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchStloc(out itemCountLocation)
+                );
+
+            int victimBodyLocation = 2;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdloc(out victimBodyLocation),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Buffs", "Slow80")
+                );
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
+                );
+            c.Remove();
+            c.EmitDelegate<Action<CharacterBody, BuffDef, float>>((victimBody, buffDef, duration) =>
+            {
+                ApplyChillStacks(victimBody, 100, 3, duration);
+            });
         }
 
         private void ChillOnHitHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
@@ -51,49 +82,72 @@ namespace ChillRework
                 CharacterBody vBody = victim?.GetComponent<CharacterBody>();
                 if (vBody != null)
                 {
-                    if (damageInfo.procCoefficient != 0 && !damageInfo.rejected)
+                    float procCoefficient = damageInfo.procCoefficient;
+                    if (procCoefficient != 0 && !damageInfo.rejected)
                     {
+                        bool hasChilled = false;
                         if (damageInfo.damageType.HasFlag(DamageType.Freeze2s))
                         {
+                            hasChilled = true;
                             this.frozenBy[victim] = damageInfo.attacker;
                             float chillCount = chillStacksOnFreeze;
                             if (damageInfo.damageType.HasFlag(DamageType.AOE))
                             {
                                 chillCount -= 1;
                             }
-                            for (int i = 0; i < chillCount; i++)
-                            {
-                                if (Util.CheckRoll(damageInfo.procCoefficient * 100, attackerMaster))
-                                {
-                                    vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
-                                }
-                            }
+                            ApplyChillStacks(attackerMaster, vBody, procCoefficient * 100, chillCount);
                         }
                         else if (damageInfo.HasModdedDamageType(ChillOnHit))//(damageInfo.damageType.HasFlag(DamageType.SlowOnHit))
                         {
+                            hasChilled = true;
                             damageInfo.RemoveModdedDamageType(ChillOnHit);
-                            float procChance = Mathf.Min(1, chillProcChance * damageInfo.procCoefficient * damageInfo.procCoefficient) * 100;
+                            float procChance = chillProcChance * procCoefficient * 100;
 
-                            if (Util.CheckRoll(procChance, attackerMaster))
+                            ApplyChillStacks(attackerMaster, vBody, procChance);
+                        }
+
+                        //arctic blast
+                        if (hasChilled)
+                        {
+                            int chillDebuffCount = vBody.GetBuffCount(RoR2Content.Buffs.Slow80);
+                            if (chillDebuffCount >= chillStacksMax)
                             {
-                                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillProcDuration);
+                                OnMaxChill?.Invoke(damageInfo, vBody);
+                                /*vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80);
+                                AltArtiPassive.DoNova(aBody, icePower, damageInfo.position, AltArtiPassive.novaDebuffThreshold);*/
                             }
                         }
-                    }
-
-                    int chillDebuffCount = vBody.GetBuffCount(RoR2Content.Buffs.Slow80);
-                    if (chillDebuffCount >= chillStacksMax) //Arctic Blast
-                    {
-                        OnMaxChill?.Invoke(damageInfo, victim);
-                        /*vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80);
-                        AltArtiPassive.DoNova(aBody, icePower, damageInfo.position, AltArtiPassive.novaDebuffThreshold);*/
                     }
                 }
             }
             orig(self, damageInfo, victim);
         }
 
-        private void MaxChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
+        public static void ApplyChillStacks(CharacterMaster attackerMaster, CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration)
+        {
+            ApplyChillStacks(vBody, procChance, chillCount, chillDuration, attackerMaster ? attackerMaster.luck : 1);
+        }
+        public static void ApplyChillStacks(CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration, float luck = 1)
+        {
+            //i made this super unreadable because its funny
+            for (int i = 0; i < chillCount; i++)
+            {
+                if (Util.CheckRoll(procChance, luck))
+                {
+                    vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
+                }
+            }
+
+            /*if (chillCount <= 0)
+                return;
+            if (Util.CheckRoll(procChance, attackerMaster))
+            {
+                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
+            }
+            ApplyChillStacks(attackerMaster, vBody, procChance, chillCount--, chillDuration);*/
+        }
+
+        private void CapChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
         {
             if (buffType == RoR2Content.Buffs.Slow80.buffIndex && self.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax)
             {

@@ -168,14 +168,6 @@ namespace RiskierRain
                 IL.RoR2.CharacterMotor.PreMove += DynamicJump;
             }
 
-            // steak
-            if (GetConfigBool(true, "Bison Steak"))
-            {
-                GetStatCoefficients += MeatReduceHealth;
-                FreshMeatStackingFix();
-                MeatBuff();
-            }
-
             // nkuhana D+H
             if (GetConfigBool(true, "(D+H) NKuhanas Opinion"))
             {
@@ -562,8 +554,6 @@ namespace RiskierRain
                 NerfBazaarStuff();
             }
 
-            On.RoR2.Run.BeginStage += GetChestCostForStage;
-
             //gold gain and chest scaling
             if (GetConfigBool(true, "Economy: Gold Gain and Chest Scaling"))
             {
@@ -634,6 +624,12 @@ namespace RiskierRain
             if (GetConfigBool(true, "Economy: Crowdfunder Funny Money"))
             {
                 CrowdfunderFunny();
+            }
+
+            //void cradle
+            if (GetConfigBool(true, "Economy: Gold/Legendary Chest Hacking Blacklist"))
+            {
+                ChangeHackingCriteria();
             }
 
             //wandering vagrant

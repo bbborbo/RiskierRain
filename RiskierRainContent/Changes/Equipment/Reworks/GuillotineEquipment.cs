@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
+using System.Linq;
 
 namespace RiskierRainContent.Equipment
 {
@@ -78,20 +79,7 @@ namespace RiskierRainContent.Equipment
             CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
         }
 
-        public override void Hooks()
-        {
-            IL.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
-            GetExecutionThreshold += GuillotineExecutionThreshold;
-            ModifyLuckStat += GuillotineLuckBuff;
-        }
-
-        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
-        {
-            luck += sender.GetBuffCount(luckBuffIndex);
-        }
-
+        #region assets
         private void AddExecutionDebuff()
         {
             executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
@@ -116,6 +104,13 @@ namespace RiskierRainContent.Equipment
 
             Assets.buffDefs.Add(luckBuffIndex);
         }
+        #endregion
+
+        #region stats
+        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
+        {
+            luck += sender.GetBuffCount(luckBuffIndex);
+        }
 
         private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
         {
@@ -130,14 +125,14 @@ namespace RiskierRainContent.Equipment
             CharacterBody attackerBody = damageReport.attackerBody;
             CharacterBody victimBody = damageReport.victimBody;
 
-            if(attackerBody && victimBody)
+            if (attackerBody && victimBody)
             {
                 SkillLocator skillLocator = attackerBody.skillLocator;
-                if(victimBody.HasBuff(executionDebuffIndex))
+                if (victimBody.HasBuff(executionDebuffIndex))
                 {
                     attackerBody.AddTimedBuffAuthority(luckBuffIndex.buffIndex, luckDuration);
 
-                    if(skillLocator != null)
+                    if (skillLocator != null)
                     {
                         //apply skill reset
                         if (NetworkServer.active && !skillLocator.networkIdentity.hasAuthority)
@@ -182,32 +177,7 @@ namespace RiskierRainContent.Equipment
 
             orig(self, damageReport);
         }
-
-        private void GuillotineTargeting(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int num = 2;
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchStloc(num)
-                );
-
-            c.Emit(OpCodes.Ldarg, 0);
-            c.Emit(OpCodes.Ldloc, num);
-            c.EmitDelegate<Func<EquipmentSlot, bool, bool>>((equipSlot, canTarget) =>
-            {
-                bool b = canTarget;
-
-                if(equipSlot.stock > 0 && equipSlot.equipmentIndex == this.EquipDef.equipmentIndex)
-                {
-                    b = true;
-                }
-
-                return b;
-            });
-            c.Emit(OpCodes.Stloc, num);
-        }
+        #endregion
 
         public override void Init(ConfigFile config)
         {
@@ -221,9 +191,107 @@ namespace RiskierRainContent.Equipment
             Hooks();
         }
 
+        public override void Hooks()
+        {
+            On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
+            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            GetExecutionThreshold += GuillotineExecutionThreshold;
+            ModifyLuckStat += GuillotineLuckBuff;
+        }
+
+        private void GuillotineTargetingOld(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int itemCountLocation = 51;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Equipment", "BossHunter"),
+                x => x.MatchCallOrCallvirt<EquipmentDef>(nameof(EquipmentDef.equipmentIndex)),
+                x => x.MatchCeq()
+                );
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<int, EquipmentIndex, int>>((oneIfTrue, currentEquipIndex) =>
+            {
+                if (currentEquipIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex)
+                    oneIfTrue = 1;
+
+                return oneIfTrue;
+            });
+
+            /*ILCursor c = new ILCursor(il);
+
+            int num = 2;
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchStloc(num)
+                );
+
+            c.Emit(OpCodes.Ldarg, 0);
+            c.Emit(OpCodes.Ldloc, num);
+            c.EmitDelegate<Func<EquipmentSlot, bool, bool>>((equipSlot, canTarget) =>
+            {
+                bool b = canTarget;
+
+                if (equipSlot.stock > 0 && equipSlot.equipmentIndex == this.EquipDef.equipmentIndex)
+                {
+                    b = true;
+                }
+
+                return b;
+            });
+            c.Emit(OpCodes.Stloc, num);*/
+        }
+
+        private void GuillotineTargeting(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
+        {
+            bool isGuillotine = targetingEquipmentIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex;
+            if (!isGuillotine)
+            {
+                orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
+                return;
+            }
+
+            if (userShouldAnticipateTarget)
+            {
+                self.ConfigureTargetFinderForEnemies();
+            }
+            HurtBox source = null;
+
+            //i think this makes it prioritize elites
+            using (IEnumerator<HurtBox> enumerator = self.targetFinder.GetResults().GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    HurtBox hurtBox = enumerator.Current;
+                    if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.body)
+                    {
+                        bool isElite = hurtBox.healthComponent.body.isElite;
+                        if (isElite && !hurtBox.healthComponent.body.HasBuff(executionDebuffIndex))
+                        {
+                            source = hurtBox;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (source == null)
+                source = self.targetFinder.GetResults().FirstOrDefault<HurtBox>();
+
+            self.currentTarget = new EquipmentSlot.UserTargetInfo(source);
+
+            bool targetHasTransform = self.currentTarget.transformToIndicateAt;
+            if (targetHasTransform)
+            {
+                self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/LightningIndicator");
+            }
+            self.targetIndicator.active = targetHasTransform;
+            self.targetIndicator.targetTransform = (targetHasTransform ? self.currentTarget.transformToIndicateAt : null);
+        }
+
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
-            Debug.Log("sdhjfgbhjad");
             bool b = false;
 
             HurtBox hurtBox = slot.currentTarget.hurtBox;
@@ -233,50 +301,44 @@ namespace RiskierRainContent.Equipment
                 CharacterBody attackerBody = slot.characterBody;
                 if (targetBody)
                 {
-                    if (targetBody.HasBuff(executionDebuffIndex))
+                    float damage = 0;
+                    DamageType type = DamageType.Generic;
+                    if (targetBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                     {
-                        slot.InvalidateCurrentTarget();
+                        damage = newExecutionThresholdBase * targetBody.maxHealth;
+                        type |= DamageType.NonLethal;
                     }
                     else
                     {
-                        float damage = 0;
-                        DamageType type = DamageType.Generic;
-                        if (targetBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
+                        int executeCount = 1 + PowerStatusCheck(targetBody);
+
+                        for(int i = 0; i < executeCount; i++)
                         {
-                            damage = newExecutionThresholdBase * targetBody.maxHealth;
-                            type |= DamageType.NonLethal;
+                            targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
                         }
-                        else
-                        {
-                            int executeCount = 1 + PowerStatusCheck(targetBody);
-
-                            for(int i = 0; i < executeCount; i++)
-                            {
-                                targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
-                            }
-                            damage = attackerBody.damage * guillotineDamageCoefficient;
-                        }
-
-                        BlastAttack blastAttack = new BlastAttack()
-                        {
-                            radius = 10,
-                            procCoefficient = 0,
-                            position = targetBody.transform.position,
-                            attacker = slot.gameObject,
-                            crit = Util.CheckRoll(attackerBody.crit, attackerBody.master),
-                            baseDamage = damage,
-                            falloffModel = BlastAttack.FalloffModel.SweetSpot,
-                            damageType = type,
-                            baseForce = 0,
-                            teamIndex = TeamComponent.GetObjectTeam(attackerBody.gameObject)
-                        };
-                        blastAttack.Fire();
-
-                        slot.InvalidateCurrentTarget();
-
-                        b = true;
+                        damage = attackerBody.damage * guillotineDamageCoefficient;
                     }
+
+                    BlastAttack blastAttack = new BlastAttack()
+                    {
+                        radius = 10,
+                        procCoefficient = 0,
+                        position = targetBody.transform.position,
+                        attacker = slot.gameObject,
+                        crit = Util.CheckRoll(attackerBody.crit, attackerBody.master),
+                        baseDamage = damage,
+                        falloffModel = BlastAttack.FalloffModel.SweetSpot,
+                        damageType = type,
+                        baseForce = 0,
+                        teamIndex = TeamComponent.GetObjectTeam(attackerBody.gameObject)
+                    };
+                    blastAttack.Fire();
+
+                    slot.InvalidateCurrentTarget();
+
+                    b = true;
                 }
+                
             }
             return b;
         }

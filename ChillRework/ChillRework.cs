@@ -28,7 +28,7 @@ namespace ChillRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "HouseOfFruits";
         public const string modName = "ChillRework";
-        public const string version = "1.0.2";
+        public const string version = "1.1.0";
         #endregion
 
         public static BuffDef ChillBuff;

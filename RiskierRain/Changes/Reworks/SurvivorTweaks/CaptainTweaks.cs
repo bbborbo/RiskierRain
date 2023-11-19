@@ -54,7 +54,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public static GameObject hackBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Hacking");
         public static float hackRadius = 9;
-        public static float hackBaseDuration = 30; //15
+        public static float hackBaseDuration = 15; //15
 
         public static GameObject supplyBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, EquipmentRestock");
         public static GameObject supplyRadiusIndicator = healZone;

@@ -52,9 +52,13 @@ namespace RiskierRainContent.Items
             int itemCount = GetCount(body);
             if (itemCount > 0 && self.combinedHealth >= self.fullCombinedHealth)
             {
-                if(damageInfo.procCoefficient > 0)
+                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                if(damageInfo.procCoefficient > 0 && attackerBody!= null)
                 {
-                    FlameOrbFlameOn(body, itemCount);
+                    if(attackerBody.teamComponent.teamIndex != body.teamComponent.teamIndex)
+                    {
+                        FlameOrbFlameOn(body, itemCount);
+                    }                    
                 }
             }
             orig(self, damageInfo);

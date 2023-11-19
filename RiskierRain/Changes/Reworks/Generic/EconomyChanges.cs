@@ -18,6 +18,7 @@ using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
 using RiskierRainContent;
+using On.EntityStates.CaptainSupplyDrop;
 
 namespace RiskierRain
 {
@@ -123,6 +124,7 @@ namespace RiskierRain
 
         #region Blood Shrines
         private static int teamMaxHealth;
+        private static int totalBloodGoldValue = 45; // amount of gold awarded for using the shrine all times
         private const float totalHealthFraction = 2.18f; // health bars
         private static float chestsPerHealthBar = 2; // number of chest costs awarded per health bar
 
@@ -153,19 +155,12 @@ namespace RiskierRain
                     }
                 }
 
-                float baseCost = lastChestBaseCost; //cost of a small chest
-                float moneyTotal = baseCost * chestsPerHealthBar; //target money granted by the shrine
+                float moneyTotal = Run.instance.GetDifficultyScaledCost(totalBloodGoldValue, RoR2.Stage.instance.entryDifficultyCoefficient); //target money granted by the shrine
                 float maxMulti = moneyTotal / teamMaxHealth; //express target money as a fraction of the max health of the team
 
                 if (maxMulti > 0)//0.5f)
-                    instance.goldToPaidHpRatio = maxMulti;
+                    instance.goldToPaidHpRatio = maxMulti / totalHealthFraction; //
             }
-        }
-        public static int lastChestBaseCost = 20;
-        private void GetChestCostForStage(On.RoR2.Run.orig_BeginStage orig, Run self)
-        {
-            lastChestBaseCost = Run.instance.GetDifficultyScaledCost(smallChestTypeCost);
-            orig(self);
         }
         #endregion
 
@@ -741,6 +736,20 @@ namespace RiskierRain
         }
 
 
+        #endregion
+
+        #region hacking criteria
+        void ChangeHackingCriteria()
+        {
+            On.EntityStates.CaptainSupplyDrop.HackingMainState.PurchaseInteractionIsValidTarget += BlacklistGoldChest;
+        }
+
+        private bool BlacklistGoldChest(HackingMainState.orig_PurchaseInteractionIsValidTarget orig, PurchaseInteraction purchaseInteraction)
+        {
+            if (purchaseInteraction.displayNameToken == "GOLDCHEST_NAME")
+                return false;
+            return orig(purchaseInteraction);
+        }
         #endregion
     }
 }

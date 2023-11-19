@@ -22,13 +22,13 @@ namespace RiskierRainContent.Items
         public static BuffDef mochaBuffInactive;
         public static Sprite mochaCustomSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.png").WaitForCompletion(); //
 
-        public static int stageDuration = 80;
+        public static int stageDuration = 90;
         public static int pickupDuration = 20;
 
-        public static float aspdBoostBase = 0.20f;
-        public static float aspdBoostStack = 0.0f;
-        public static float mspdBoostBase = 0.25f;
-        public static float mspdBoostStack = 0.25f;
+        public static float spdBoostFree = 0.05f;
+        public static float spdBoostBuff = 0.20f;
+        public static float cdrBoostFree = 0.00f;
+        public static float cdrBoostBuff = 0.12f;
         public override string ItemName => "Morning Mocha";
 
         public override string ItemLangTokenName => "LEGALLYDISTINCTCOFFEE";
@@ -37,10 +37,11 @@ namespace RiskierRainContent.Items
 
         public override string ItemFullDescription => $"For <style=cIsUtility>{stageDuration}</style> seconds after entering any stage, " +
             $"or <style=cIsUtility>{pickupDuration}</style> seconds after picking up a new copy of the item, increase " +
-            $"<style=cIsDamage>attack speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(aspdBoostBase)}</style> and " +
-            $"<style=cIsDamage>movement speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(mspdBoostBase)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(mspdBoostStack)} per stack)</style>, " +
-            $"and reduce <style=cIsUtility>skill cooldowns</style> by <style=cIsUtility>{Tools.ConvertDecimal(aspdBoostBase)}</style>.";
+            $"<style=cIsDamage>attack speed</style> and " +
+            $"<style=cIsDamage>movement speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(spdBoostBuff)}</style>" +
+            $"<style=cStack>(+{Tools.ConvertDecimal(spdBoostBuff)} per stack)</style>, " +
+            $"and reduce <style=cIsUtility>skill cooldowns</style> by <style=cIsUtility>-{Tools.ConvertDecimal(cdrBoostBuff)}</style> " +
+            $"<style=cStack>(-{Tools.ConvertDecimal(cdrBoostBuff)} per stack)</style>.";
 
         public override string ItemLore => "Order: To-Go Coffee Cup, 16 ounces" +
             "\r\nTracking Number: 32******" +
@@ -112,8 +113,10 @@ namespace RiskierRainContent.Items
                 {
                     int itemCount = GetCount(self);
                     BorboMochaBehavior mochaBehavior = self.AddItemBehavior<BorboMochaBehavior>(itemCount);
-                    if (mochaBehavior && oldItemCount < itemCount)
-                        mochaBehavior.SetMochaBuff(30);
+                    if (mochaBehavior)
+                    {
+                        mochaBehavior.UpdateTime(pickupDuration);
+                    }
                 }
             }
         }
@@ -122,25 +125,25 @@ namespace RiskierRainContent.Items
         {
             //Debug.Log("dsfjhgbds");
             int mochaCount = GetCount(sender);
+            float spdBuff = spdBoostFree;
             if (mochaCount > 0 && sender.HasBuff(mochaBuffActive))
             {
-                args.moveSpeedMultAdd += mspdBoostBase + mspdBoostStack * (mochaCount - 1);
-
-                float aspdBoost = aspdBoostBase + aspdBoostStack * (mochaCount - 1);
-                args.attackSpeedMultAdd += aspdBoost;
+                spdBuff += spdBoostBuff;
             }
+            args.moveSpeedMultAdd += spdBuff * mochaCount;
+            args.attackSpeedMultAdd += spdBuff * mochaCount;
         }
 
         private void MochaCDR(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
             int mochaCount = GetCount(self);
-            if (mochaCount > 0 && self.HasBuff(mochaBuffActive))
+            if (mochaCount > 0)
             {
                 //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
-                float cdrBoost = 1 - aspdBoostBase;
-                if (mochaCount > 1)
-                    cdrBoost *= Mathf.Pow(1 - aspdBoostStack, mochaCount - 1);
+                float cdrBoost = Mathf.Pow(1 - cdrBoostFree, mochaCount);
+                if (self.HasBuff(mochaBuffActive))
+                    cdrBoost *= Mathf.Pow(1 - cdrBoostBuff, mochaCount);
 
                 SkillLocator skillLocator = self.skillLocator;
                 if (skillLocator != null)
@@ -187,22 +190,36 @@ namespace RiskierRainContent.Items
 
     public class BorboMochaBehavior : CharacterBody.ItemBehavior
     {
-        float remainingTime;
+        bool addingBuffs = false;
+        public int remainingTime = 0;
         float durationPerBuff = 1; //in seconds
 
         private void Start()
         {
-            remainingTime = Mocha2.stageDuration;
-            SetMochaBuff(Mocha2.stageDuration);
+            if(remainingTime < Mocha2.stageDuration)
+                remainingTime = Mocha2.stageDuration;
+            SetMochaTime(remainingTime);
+        }
+        
+        public void UpdateTime(int newTime)
+        {
+            remainingTime = newTime;
+            SetMochaTime(newTime);
         }
 
-        public void SetMochaBuff(int targetCount)
+        private void SetMochaTime(int targetCount)
         {
-            int currentBuffCount = body.GetBuffCount(Mocha2.mochaBuffActive);
-            float startingBuffCount = targetCount / durationPerBuff;
-            if (startingBuffCount > currentBuffCount)
+            int startingBuffCount = 0;
+
+            if (body.HasBuff(Mocha2.mochaBuffInactive))
+                body.RemoveBuff(Mocha2.mochaBuffInactive);
+            else
+                startingBuffCount = body.GetBuffCount(Mocha2.mochaBuffActive);
+
+            float endBuffCount = targetCount / durationPerBuff;
+            if (endBuffCount > startingBuffCount)
             {
-                for (int i = currentBuffCount; i < startingBuffCount; i++)
+                for (int i = startingBuffCount; i < endBuffCount; i++)
                     AddMochaBuff((i + 1) * durationPerBuff);
             }
         }

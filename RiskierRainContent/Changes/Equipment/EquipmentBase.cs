@@ -138,7 +138,7 @@ namespace RiskierRainContent.Equipment
             }
         }
 
-        private bool PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
+        internal bool PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
         {
             if (equipmentDef == EquipDef)
             {

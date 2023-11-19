@@ -41,7 +41,7 @@ namespace RiskierRainContent.CoreModules
             self.attackSpeed *= attackSpeedModifier;
         }
 
-        public delegate void HitHookEventHandler(CharacterBody body, DamageInfo damageInfo, GameObject victim);
+        public delegate void HitHookEventHandler(CharacterBody attackerBody, DamageInfo damageInfo, GameObject victim);
         public static event HitHookEventHandler GetHitBehavior;
         private void GlobalEventManager_OnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {

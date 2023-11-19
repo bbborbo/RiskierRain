@@ -13,7 +13,7 @@ namespace RiskierRainContent.Equipment
 {
     class ExeCardRework : EquipmentBase<ExeCardRework>
     {
-        public static float secondsPerCost = -0.5f;
+        public static float secondsPerCost = 0.5f;
 
         public override string EquipmentName => "Executive Card";
 
@@ -145,7 +145,7 @@ namespace RiskierRainContent.Equipment
             LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_PICKUP", "Hack a targeted interactable. Hacked Multishops remain open.");
             LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_DESC", $"Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
                 $"If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>. " +
-                $"Increases cooldown by <style=cIsUtility>{secondsPerCost}</style> seconds for every $1 saved, scaling over time.");
+                $"Increases cooldown by <style=cIsUtility>{secondsPerCost}</style> seconds for every <style=cIsUtility>$1</style> saved, scaling over time.");
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)

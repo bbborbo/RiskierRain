@@ -168,14 +168,6 @@ namespace RiskierRain
                 IL.RoR2.CharacterMotor.PreMove += DynamicJump;
             }
 
-            // steak
-            if (GetConfigBool(true, "Bison Steak"))
-            {
-                GetStatCoefficients += MeatReduceHealth;
-                FreshMeatStackingFix();
-                MeatBuff();
-            }
-
             // nkuhana D+H
             if (GetConfigBool(true, "(D+H) NKuhanas Opinion"))
             {

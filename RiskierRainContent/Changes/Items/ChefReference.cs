@@ -6,26 +6,37 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using static RiskierRainContent.BurnStatHook;
+using static RiskierRainContent.CoreModules.StatHooks;
 
 namespace RiskierRainContent.Items
 {
     class ChefReference : ItemBase<ChefReference>
     {
-        int maxBurnBonusBase = 1;
-        int maxBurnBonusStack = 4;
-        float bonusDamagePerBurn = 0.04f;
+        GameObject meatChunk;
+        int fruitChanceBase = 2;
+        int fruitChanceStack = 2;
+        int maxBurnStacksBase = 8;
+        int maxBurnStacksStack = 3;
+        int meatNuggets = 2;
+        float healFraction = 0.03f;
+        float healFlat = 12f;
 
         public override string ItemName => "Chef \u2019Stache";
 
         public override string ItemLangTokenName => "CHEFITEM";
 
-        public override string ItemPickupDesc => "Ignites on hit. Enemies take more damage from you while they burn.";
+        public override string ItemPickupDesc => "Burning enemies drop chunks of healing meat.";
 
         public override string ItemFullDescription => 
-            $"<style=cIsDamage>{RiskierRainContent.ignitionTankBurnChance}%</style> chance to ignite on hit. " +
-            $"Deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamagePerBurn)}</style> more damage to enemies <style=cIsDamage>per instance of burn,</style> " +
-            $"for up to a maximum of <style=cIsUtility>{maxBurnBonusBase + maxBurnBonusStack} debuffs</style> <style=cStack>(+{maxBurnBonusStack} per stack)</style>.";
+            $"Gain <style=cIsDamage>{RiskierRainContent.stacheBurnChance}% ignite chance</style>. " +
+            $"Hitting burning enemies has a <style=cIsDamage>{fruitChanceBase}%</style> chance " +
+            $"<style=cStack>(+{fruitChanceStack}% per stack)</style> to create {meatNuggets} " +
+            $"<style=cIsHealing>healing nuggets</style> that restore <style=cIsHealing>{healFlat}</style> plus <style=cIsHealing>{healFraction * 100}% HP</style>. " +
+            $"Nugget chance increases <style=cIsDamage>per stack of burn</style>, " +
+            $"up to <style=cIsDamage>{maxBurnStacksBase}</style> times.";
 
         public override string ItemLore => "";
 
@@ -44,7 +55,46 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             BurnStatCoefficient += AddBurnChance;
-            On.RoR2.HealthComponent.TakeDamage += TakeMoreDamageWhileBurning;
+            GetHitBehavior += MeatOnHit;
+        }
+
+        private void MeatOnHit(CharacterBody aBody, DamageInfo damageInfo, GameObject victim)
+        {
+            CharacterBody vBody = victim.GetComponent<CharacterBody>();
+            if (vBody)
+            {
+                int itemCount = GetCount(aBody);
+                int burnCount = RiskierRainContent.GetBurnCount(vBody);
+                if(itemCount > 0 && burnCount > 0)
+                {
+                    float procChancePerBurn = fruitChanceBase + fruitChanceStack * (itemCount - 1);
+                    float totalProcChance = procChancePerBurn * Mathf.Min(burnCount, maxBurnStacksBase);
+                    float endProcChance = Util.ConvertAmplificationPercentageIntoReductionPercentage(totalProcChance) * damageInfo.procCoefficient;
+                    //Debug.LogWarning("Chef Meat Chance: " + endProcChance);
+
+                    if(Util.CheckRoll(endProcChance, aBody.master))
+                    {
+                        //this is literally just rex fruit code
+                        /*EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/TreebotFruitDeathEffect.prefab"), new EffectData
+                        {
+                            origin = vBody.transform.position,
+                            rotation = UnityEngine.Random.rotation
+                        }, true);*/
+                        for (int i = 0; i < meatNuggets; i++)
+                        {
+                            GameObject meatInstance = UnityEngine.Object.Instantiate<GameObject>(meatChunk, damageInfo.position + UnityEngine.Random.insideUnitSphere * vBody.radius * 0.5f, UnityEngine.Random.rotation);
+                            TeamFilter meatTeamFilter = meatInstance.GetComponent<TeamFilter>();
+                            if (meatTeamFilter)
+                            {
+                                meatTeamFilter.teamIndex = aBody.teamComponent.teamIndex;
+                            }
+                            meatInstance.GetComponentInChildren<HealthPickup>();
+                            meatInstance.transform.localScale = new Vector3(1f, 1f, 1f);
+                            NetworkServer.Spawn(meatInstance);
+                        }
+                    }
+                }
+            }
         }
 
         private void AddBurnChance(CharacterBody sender, BurnEventArgs args)
@@ -60,25 +110,21 @@ namespace RiskierRainContent.Items
             CreateItem();
             CreateLang();
             Hooks();
+            CreateMeatChunk();
         }
 
-        private void TakeMoreDamageWhileBurning(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void CreateMeatChunk()
         {
-            if(damageInfo.attacker != null)
+            meatChunk = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Treebot/TreebotFruitPack.prefab").WaitForCompletion().InstantiateClone("MeatChunk", true);
+
+            HealthPickup healthPickup = meatChunk.GetComponentInChildren<HealthPickup>();
+            if(healthPickup)
             {
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if (attackerBody != null)
-                {
-                    CharacterBody victimBody = self.body;
+                healthPickup.fractionalHealing = healFraction;
+                healthPickup.flatHealing = healFlat;
+            }    
 
-                    int currentBuffCount = RiskierRainContent.GetBurnCount(victimBody);
-                    int maxBuffCount = maxBurnBonusBase + maxBurnBonusStack * GetCount(attackerBody);
-
-                    damageInfo.damage *= 1 + bonusDamagePerBurn * Mathf.Min(currentBuffCount, maxBuffCount);
-                }
-            }
-
-            orig(self, damageInfo);
+            Assets.networkedObjectPrefabs.Add(meatChunk);
         }
     }
 }

@@ -98,7 +98,6 @@ namespace RiskierRainContent.Equipment
         /// <summary>
         /// If not overriden, the elite cannot spawn in any defined tier. Use EliteTier for vanilla elites.
         /// </summary>
-        public virtual EliteTierDef[] CanAppearInEliteTiers { get; set; } = null;
         public virtual EliteTiers EliteTier { get; set; } = EliteTiers.Other;
 
         /// <summary>
@@ -127,28 +126,6 @@ namespace RiskierRainContent.Equipment
 
         protected void CreateEliteEquipment()
         {
-            #region add custom elite tier if applicable
-            /*var baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
-            if (CanAppearInEliteTiers != null)
-            {
-                var distinctEliteTierDefs = CanAppearInEliteTiers.Except(baseEliteTierDefs);
-
-                foreach (EliteTierDef eliteTierDef in distinctEliteTierDefs)
-                {
-                    var indexToInsertAt = Array.FindIndex(baseEliteTierDefs, x => x.costMultiplier >= eliteTierDef.costMultiplier);
-                    if (indexToInsertAt >= 0)
-                    {
-                        EliteAPI.AddCustomEliteTier(eliteTierDef, indexToInsertAt);
-                    }
-                    else
-                    {
-                        EliteAPI.AddCustomEliteTier(eliteTierDef);
-                    }
-                    baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
-                }
-            }*/
-            #endregion
-
             //elite buff
             EliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
             EliteBuffDef.name = EliteAffixToken;
@@ -199,7 +176,7 @@ namespace RiskierRainContent.Equipment
             Assets.eliteDefs.Add(EliteDef);
             Assets.buffDefs.Add(EliteBuffDef);
             //Assets.equipDefs.Add(EliteEquipmentDef);
-            CustomElite customElite = new CustomElite(EliteDef, CanAppearInEliteTiers);
+            CustomElite customElite = new CustomElite(EliteDef, new EliteTierDef[0]);
 
 
             #region BorboEliteDef

@@ -36,7 +36,7 @@ namespace RiskierRainContent.Changes.Aspects
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         //public override string EliteRampTextureName { get; set; } = "texRampLeeching";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Other;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
         //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
 
         public override bool CanDrop { get; } = false;
@@ -56,9 +56,6 @@ namespace RiskierRainContent.Changes.Aspects
 
         public override void Init(ConfigFile config)
         {
-            //CanAppearInEliteTiers = VanillaTier2();
-            CanAppearInEliteTiers = new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
-
             CreateEliteEquipment();
             CreateLang();
             CreateElite();

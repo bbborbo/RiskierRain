@@ -198,7 +198,7 @@ namespace RiskierRainContent.Equipment
 
         public override void Init(ConfigFile config)
         {
-            CanAppearInEliteTiers = VanillaTier1();
+            //CanAppearInEliteTiers = VanillaTier1();
             CreateProjectile();
 
             CreateEliteEquipment();

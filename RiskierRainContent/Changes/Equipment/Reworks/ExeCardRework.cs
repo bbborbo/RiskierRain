@@ -25,6 +25,7 @@ namespace RiskierRainContent.Equipment
         public override GameObject EquipmentModel => throw new NotImplementedException();
 
         public override Sprite EquipmentIcon => throw new NotImplementedException();
+        public override float Cooldown { get; } = 75f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -108,12 +109,15 @@ namespace RiskierRainContent.Equipment
 
         private void FreezeCard(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
         {
-
+            // :)
         }
 
         public override void Init(ConfigFile config)
         {
-            EquipDef = DLC1Content.Equipment.MultiShopCard;
+            ExeCardRework.instance.EquipDef = DLC1Content.Equipment.MultiShopCard;
+            ExeCardRework.instance.EquipDef.cooldown = Cooldown;
+
+            On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
             Hooks();
         }
 

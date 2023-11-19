@@ -16,13 +16,13 @@ namespace RiskierRainContent.Items
     class ChefReference : ItemBase<ChefReference>
     {
         GameObject meatChunk;
-        int fruitChanceBase = 3;
+        int fruitChanceBase = 2;
         int fruitChanceStack = 2;
         int maxBurnStacksBase = 8;
         int maxBurnStacksStack = 3;
         int meatNuggets = 2;
-        float healFraction = 0.04f;
-        float healFlat = 15f;
+        float healFraction = 0.03f;
+        float healFlat = 12f;
 
         public override string ItemName => "Chef \u2019Stache";
 

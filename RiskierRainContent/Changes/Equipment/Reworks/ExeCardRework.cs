@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Equipment
 {
@@ -114,7 +115,7 @@ namespace RiskierRainContent.Equipment
 
         public override void Init(ConfigFile config)
         {
-            ExeCardRework.instance.EquipDef = DLC1Content.Equipment.MultiShopCard;
+            ExeCardRework.instance.EquipDef = Addressables.LoadAssetAsync<EquipmentDef>("RoR2/DLC1/MultiShopCard/MultiShopCard.asset").WaitForCompletion();
             ExeCardRework.instance.EquipDef.cooldown = Cooldown;
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;

@@ -562,8 +562,6 @@ namespace RiskierRain
                 NerfBazaarStuff();
             }
 
-            On.RoR2.Run.BeginStage += GetChestCostForStage;
-
             //gold gain and chest scaling
             if (GetConfigBool(true, "Economy: Gold Gain and Chest Scaling"))
             {

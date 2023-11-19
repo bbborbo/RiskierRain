@@ -124,6 +124,7 @@ namespace RiskierRain
 
         #region Blood Shrines
         private static int teamMaxHealth;
+        private static int totalBloodGoldValue = 45; // amount of gold awarded for using the shrine all times
         private const float totalHealthFraction = 2.18f; // health bars
         private static float chestsPerHealthBar = 2; // number of chest costs awarded per health bar
 
@@ -154,19 +155,12 @@ namespace RiskierRain
                     }
                 }
 
-                float baseCost = lastChestBaseCost; //cost of a small chest
-                float moneyTotal = baseCost * chestsPerHealthBar; //target money granted by the shrine
+                float moneyTotal = Run.instance.GetDifficultyScaledCost(totalBloodGoldValue, RoR2.Stage.instance.entryDifficultyCoefficient); //target money granted by the shrine
                 float maxMulti = moneyTotal / teamMaxHealth; //express target money as a fraction of the max health of the team
 
                 if (maxMulti > 0)//0.5f)
                     instance.goldToPaidHpRatio = maxMulti;
             }
-        }
-        public static int lastChestBaseCost = 20;
-        private void GetChestCostForStage(On.RoR2.Run.orig_BeginStage orig, Run self)
-        {
-            lastChestBaseCost = Run.instance.GetDifficultyScaledCost(smallChestTypeCost);
-            orig(self);
         }
         #endregion
 

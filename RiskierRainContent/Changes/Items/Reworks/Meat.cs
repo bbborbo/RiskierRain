@@ -21,7 +21,7 @@ namespace RiskierRainContent.Items
 
         public override string ItemLore => throw new NotImplementedException();
 
-        public override ItemTier Tier => throw new NotImplementedException();
+        public override ItemTier Tier => ItemTier.Tier1;
 
         public override ItemTag[] ItemTags => throw new NotImplementedException();
 

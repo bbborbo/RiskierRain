@@ -22,7 +22,7 @@ namespace RiskierRainContent.Items
 
         public override string ItemLangTokenName => "HEALFROMBLEEDINGENEMIES";
 
-        public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies. Corrupts all Leeching Seeds.";
+        public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies. Corrupts all Chef Staches.";
 
         public override string ItemFullDescription => "later";
 
@@ -91,7 +91,7 @@ namespace RiskierRainContent.Items
         {
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
-                itemDef1 = RoR2Content.Items.Seed, //consumes leeching seed
+                itemDef1 = ChefReference.instance.ItemsDef, //consumes leeching seed
                 itemDef2 = VoidVampirism.instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);

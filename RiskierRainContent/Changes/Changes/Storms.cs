@@ -32,19 +32,21 @@ namespace RiskierRainContent
             StormT1 = new EliteTierDef();
             StormT1.costMultiplier = 2;
             StormT1.canSelectWithoutAvailableEliteDef = false;
-            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => StormDirector.instance && StormDirector.instance.hasBegunStorm);
-            //EliteAPI.AddCustomEliteTier(StormT1);
+            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm);
+            StormT1.eliteTypes = new EliteDef[0];
+            EliteAPI.AddCustomEliteTier(StormT1);
 
             StormT2 = new EliteTierDef();
             StormT2.costMultiplier = 2;
             StormT2.canSelectWithoutAvailableEliteDef = false;
-            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => StormDirector.instance && StormDirector.instance.hasBegunStorm && 
+            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm && 
                     !RiskierRainContent.is2R4RLoaded ? (Run.instance.loopClearCount > 0) :
                     ((Run.instance.stageClearCount >= 10 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
                     || (Run.instance.stageClearCount >= 5 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Hard)
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard)));
-            //EliteAPI.AddCustomEliteTier(StormT2);
+            StormT2.eliteTypes = new EliteDef[0];
+            EliteAPI.AddCustomEliteTier(StormT2);
             return;
         }
 

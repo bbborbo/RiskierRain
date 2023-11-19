@@ -31,7 +31,7 @@ namespace RiskierRainContent.Items
             "<style=cIsVoid>Corrupts most edible and animal matter.</style>";
 
         public override string ItemFullDescription => $"Gain <style = cIsHealing>{eggHealth} max health, {eggRegen} hp/s regeneration,</style> and <style = cIsDamage>{eggDamage} damage</style>. <style = cIsUtility>Start an egg hunt.</style> " +
-            "<style = cIsVoid> Corrupts all Regenerating Scrap, Infusion, Bison Steak, and Alien Heads.</style>";
+            "<style = cIsVoid> Corrupts all Infusion, Bison Steak, and Alien Heads.</style>";
 
         public override string ItemLore => "this egg is so fuckign yummuy";
 
@@ -163,11 +163,6 @@ namespace RiskierRainContent.Items
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
         {
-            ItemDef.Pair transformation1 = new ItemDef.Pair()
-            {
-                itemDef1 = DLC1Content.Items.RegeneratingScrap, //consumes regen scrap
-                itemDef2 = Egg.instance.ItemsDef
-            };
             ItemDef.Pair transformation2 = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.Infusion, //consumes infusion
@@ -183,21 +178,19 @@ namespace RiskierRainContent.Items
                 itemDef1 = RoR2Content.Items.AlienHead, //consumes gah
                 itemDef2 = Egg.instance.ItemsDef
             };
-            ItemDef.Pair transformation5 = new ItemDef.Pair()
+            /*ItemDef.Pair transformation5 = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.Seed, //consumes gah
                 itemDef2 = Egg.instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation1);
+                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation5);*/
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation2);
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                  = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation3);
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                  = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation4);
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation5);
             orig();
         }
 

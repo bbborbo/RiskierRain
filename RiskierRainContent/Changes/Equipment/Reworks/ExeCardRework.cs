@@ -13,6 +13,7 @@ namespace RiskierRainContent.Equipment
 {
     class ExeCardRework : EquipmentBase<ExeCardRework>
     {
+        public static float secondsPerCost = -0.5f;
 
         public override string EquipmentName => "Executive Card";
 
@@ -27,7 +28,7 @@ namespace RiskierRainContent.Equipment
         public override GameObject EquipmentModel => throw new NotImplementedException();
 
         public override Sprite EquipmentIcon => throw new NotImplementedException();
-        public override float Cooldown { get; } = 80f;
+        public override float Cooldown { get; } = 50f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -52,18 +53,19 @@ namespace RiskierRainContent.Equipment
             float maxAngle = 4;
             var minDot = Mathf.Cos(Mathf.Clamp(maxAngle, 0f, 180f) * Mathf.PI / 180f);
 
-            bool currentTargetValid = false;
-            GameObject currentTargetObject = self.currentTarget.rootObject;
-            PurchaseInteraction currentTargetInteraction = currentTargetObject?.GetComponent<PurchaseInteraction>();
-            if (currentTargetInteraction != null)
-                currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
-
             float camAdjust;
             Ray aim = CameraRigController.ModifyAimRayIfApplicable(self.GetAimRay(), self.characterBody.gameObject, out camAdjust);
             Collider[] results = Physics.OverlapSphere(aim.origin, maxDistance + camAdjust, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
-            if(currentTargetObject != null)
+
+            bool currentTargetValid = false;
+            GameObject currentTargetObject = self.currentTarget.rootObject;
+            if (currentTargetObject != null)
             {
+                PurchaseInteraction currentTargetInteraction = currentTargetObject?.GetComponent<PurchaseInteraction>();
+                if (currentTargetInteraction != null)
+                    currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
+
                 if (!currentTargetValid
                     || (currentTargetObject.transform.position - self.gameObject.transform.position).sqrMagnitude > maxDistance * maxDistance
                     || Vector3.Dot(aim.direction, (currentTargetObject.transform.position - aim.origin).normalized) < minDot)
@@ -141,8 +143,9 @@ namespace RiskierRainContent.Equipment
             Hooks();
 
             LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_PICKUP", "Hack a targeted interactable. Hacked Multishops remain open.");
-            LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_DESC", "Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
-                "If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>.");
+            LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_DESC", $"Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
+                $"If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>. " +
+                $"Increases cooldown by <style=cIsUtility>{secondsPerCost}</style> seconds for every $1 saved, scaling over time.");
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
@@ -154,8 +157,10 @@ namespace RiskierRainContent.Equipment
                 PurchaseInteraction targetPurchase = targetObject.GetComponent<PurchaseInteraction>();
                 if (targetPurchase != null && HackingMainState.PurchaseInteractionIsValidTarget(targetPurchase))
                 {
-                    //int cost = targetPurchase.Networkcost;
-                    //slot.inventory?.DeductActiveEquipmentCooldown(-cost);
+                    int difficultyScaledCost = Run.instance.GetDifficultyScaledCost(HackingInProgressState.baseGoldForBaseDuration, Stage.instance.entryDifficultyCoefficient);
+                    float cost = (float)(targetPurchase.cost / difficultyScaledCost);
+                    slot.inventory?.DeductActiveEquipmentCooldown(-cost * secondsPerCost);
+
                     targetPurchase.Networkcost = 0;
 
                     ShopTerminalBehavior terminalBehavior = targetObject.GetComponent<ShopTerminalBehavior>();

@@ -94,6 +94,7 @@ namespace RiskierRainContent.Items
                             };
 
                             self.TakeDamage(freezeHit);
+                            GlobalEventManager.instance.OnHitEnemy(freezeHit, self.gameObject);
                         }
                     }
                 }

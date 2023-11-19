@@ -16,15 +16,20 @@ namespace RiskierRainContent.Items
         int maxHeal = 3;
         int bleedPerHeal = 5;
         int vampireBleedChance = 10;
+
+        int maxBurnBonusBase = 1;
+        int maxBurnBonusStack = 4;
+        float bonusDamagePerBurn = 0.04f;
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override string ItemName => "Bloodsucking Coralite";
 
         public override string ItemLangTokenName => "HEALFROMBLEEDINGENEMIES";
 
-        public override string ItemPickupDesc => "Chance to inflict bleed on hit. Heal when hitting bleeding enemies. Corrupts all Chef Staches.";
+        public override string ItemPickupDesc => "Deal more damage against bleeding enemies. Corrupts all Chef Staches.";
 
-        public override string ItemFullDescription => "later";
+        public override string ItemFullDescription => $"{vampireBleedChance}% chance to inflict bleed on hit. " +
+            $"Bleeding enemies take Y% more damage from your attacks, up to a maximum of Z times. Corrupts all Chef Staches.";
 
         public override string ItemLore => "";
 
@@ -44,7 +49,27 @@ namespace RiskierRainContent.Items
         {
             On.RoR2.GlobalEventManager.OnHitEnemy += VampireHit;
             On.RoR2.CharacterBody.RecalculateStats += VampireBleedChance;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;            
+            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
+            On.RoR2.HealthComponent.TakeDamage += TakeMoreDamageWhileBurning;
+        }
+
+        private void TakeMoreDamageWhileBurning(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        {
+            if (damageInfo.attacker != null)
+            {
+                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                if (attackerBody != null)
+                {
+                    CharacterBody victimBody = self.body;
+
+                    int currentBuffCount = RiskierRainContent.GetBurnCount(victimBody);
+                    int maxBuffCount = maxBurnBonusBase + maxBurnBonusStack * GetCount(attackerBody);
+
+                    damageInfo.damage *= 1 + bonusDamagePerBurn * Mathf.Min(currentBuffCount, maxBuffCount);
+                }
+            }
+
+            orig(self, damageInfo);
         }
 
         private void VampireBleedChance(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

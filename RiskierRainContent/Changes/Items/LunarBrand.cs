@@ -33,7 +33,7 @@ namespace RiskierRainContent.Items
         public override string ItemPickupDesc => "Cauterize burning enemies, inflicting heavy damage " +
             "<style=cIsHealth>AND increasing their armor, rendering them invulnerable to Bleed.</style>";
 
-        public override string ItemFullDescription => $"<style=cIsDamage>{RiskierRainContent.brandBurnChance}%</style> chance to ignite on hit. " + 
+        public override string ItemFullDescription => $"Gain <style=cIsDamage>{RiskierRainContent.brandBurnChance}% ignite chance</style>. " + 
             $"Inflicting <style=cIsDamage>{burnThreshold}</style> stacks of burn Cauterizes enemies " +
             $"for <style=cIsDamage>{duration}</style> seconds <style=cStack>(+{durationStack} per stack)</style>, " +
             $"dealing <style=cIsDamage>{Tools.ConvertDecimal(cauterizeDamageCoef)}</style> " +

@@ -55,15 +55,6 @@ namespace RiskierRain
             args.armorAdd += freeArmor;
         }
 
-        private void MeatReduceHealth(CharacterBody sender, StatHookEventArgs args)
-        {
-            Inventory inv = sender.inventory;
-            if (inv != null)
-            {
-                args.baseHealthAdd -= inv.GetItemCount(RoR2Content.Items.FlatHealth) * 25;
-            }
-        }
-
         private void TeddyChanges()
         {
             IL.RoR2.HealthComponent.TakeDamage += TeddyChanges;

@@ -45,6 +45,9 @@ namespace RiskierRainContent.Items
             ChangeBuffStacking(nameof(JunkContent.Buffs.MeatRegenBoost), true);
             GetStatCoefficients += LetMeatActuallyStack;
         }
+        private void MeatReduceHealth(CharacterBody sender, StatHookEventArgs args)
+        {
+        }
         private void MeatBuff()
         {
             On.RoR2.GlobalEventManager.OnCharacterDeath += MeatRegen;
@@ -73,6 +76,12 @@ namespace RiskierRainContent.Items
             if (meatBuffCount > 1)
             {
                 args.baseRegenAdd += 2 * (1 + 0.2f * (sender.level - 1)) * (meatBuffCount - 1);
+            }
+
+            Inventory inv = sender.inventory;
+            if (inv != null)
+            {
+                args.baseHealthAdd -= inv.GetItemCount(RoR2Content.Items.FlatHealth) * 25;
             }
         }
         public static void ChangeBuffStacking(string buffName, bool canStack)

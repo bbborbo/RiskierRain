@@ -13,6 +13,7 @@ namespace RiskierRainContent.Equipment
 {
     class ExeCardRework : EquipmentBase<ExeCardRework>
     {
+
         public override string EquipmentName => "Executive Card";
 
         public override string EquipmentLangTokenName => throw new NotImplementedException();
@@ -26,7 +27,7 @@ namespace RiskierRainContent.Equipment
         public override GameObject EquipmentModel => throw new NotImplementedException();
 
         public override Sprite EquipmentIcon => throw new NotImplementedException();
-        public override float Cooldown { get; } = 75f;
+        public override float Cooldown { get; } = 80f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -41,19 +42,30 @@ namespace RiskierRainContent.Equipment
 
         private void CardTargetInteractables(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
         {
-            bool isGuillotine = targetingEquipmentIndex == ExeCardRework.instance.EquipDef.equipmentIndex;
-            if (!isGuillotine)
+            bool isCard = targetingEquipmentIndex == ExeCardRework.instance.EquipDef.equipmentIndex;
+            if (!isCard || !userShouldAnticipateTarget)
             {
                 orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
                 return;
             }
+            float maxDistance = 150;
+            float maxAngle = 4;
+            var minDot = Mathf.Cos(Mathf.Clamp(maxAngle, 0f, 180f) * Mathf.PI / 180f);
 
-            float maxAngle = 15;
-            float maxDistance = 60;
+            bool currentTargetValid = false;
+            GameObject currentTargetObject = self.currentTarget.rootObject;
+            PurchaseInteraction currentTargetInteraction = currentTargetObject?.GetComponent<PurchaseInteraction>();
+            if (currentTargetInteraction != null)
+                currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
+
             float camAdjust;
             Ray aim = CameraRigController.ModifyAimRayIfApplicable(self.GetAimRay(), self.characterBody.gameObject, out camAdjust);
             Collider[] results = Physics.OverlapSphere(aim.origin, maxDistance + camAdjust, Physics.AllLayers, QueryTriggerInteraction.Collide);
-            var minDot = Mathf.Cos(Mathf.Clamp(maxAngle, 0f, 180f) * Mathf.PI / 180f);
+
+            if (!currentTargetValid
+                || (currentTargetObject.transform.position - self.gameObject.transform.position).sqrMagnitude > maxDistance * maxDistance
+                || Vector3.Dot(aim.direction, (currentTargetObject.transform.position - aim.origin).normalized) < minDot)
+                self.InvalidateCurrentTarget();
 
             bool validTarget = false;
             PurchaseInteraction targetPurchase = null;
@@ -63,7 +75,7 @@ namespace RiskierRainContent.Equipment
                 if (vdot < minDot) 
                     continue;
 
-                PurchaseInteraction component = collider.GetComponent<EntityLocator>().entity.GetComponent<PurchaseInteraction>();
+                PurchaseInteraction component = collider.GetComponent<EntityLocator>()?.entity.GetComponent<PurchaseInteraction>();
                 if (component)
                 {
                     //using hack beacon criteria
@@ -75,7 +87,7 @@ namespace RiskierRainContent.Equipment
                         targetPurchase = component;
                         break;
                     }
-                    else if (targetPurchase == null)
+                    else if (targetPurchase == null && component.available)
                     {
                         targetPurchase = component;
                     }
@@ -84,7 +96,7 @@ namespace RiskierRainContent.Equipment
 
             if(targetPurchase != null)
             {
-                if (validTarget)
+                if (validTarget && userShouldAnticipateTarget)
                 {
                     //valid indicator
                     self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/RecyclerIndicator");
@@ -105,7 +117,11 @@ namespace RiskierRainContent.Equipment
                 self.targetIndicator.active = true;
                 self.targetIndicator.targetTransform = self.currentTarget.transformToIndicateAt;
             }
-
+            else
+            {
+                self.InvalidateCurrentTarget();
+                self.targetIndicator.active = false;
+            }
         }
 
         private void FreezeCard(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
@@ -120,6 +136,10 @@ namespace RiskierRainContent.Equipment
 
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
             Hooks();
+
+            LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_PICKUP", "Hack a targeted interactable. Hacked Multishops remain open.");
+            LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_DESC", "Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
+                "If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>.");
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
@@ -131,6 +151,8 @@ namespace RiskierRainContent.Equipment
                 PurchaseInteraction targetPurchase = targetObject.GetComponent<PurchaseInteraction>();
                 if (targetPurchase != null && HackingMainState.PurchaseInteractionIsValidTarget(targetPurchase))
                 {
+                    //int cost = targetPurchase.Networkcost;
+                    //slot.inventory?.DeductActiveEquipmentCooldown(-cost);
                     targetPurchase.Networkcost = 0;
 
                     ShopTerminalBehavior terminalBehavior = targetObject.GetComponent<ShopTerminalBehavior>();
@@ -145,6 +167,7 @@ namespace RiskierRainContent.Equipment
                         interactor.AttemptInteraction(targetObject);
                     }
 
+                    slot.InvalidateCurrentTarget();
                     b = true;
                 }
             }

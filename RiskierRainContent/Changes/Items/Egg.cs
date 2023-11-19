@@ -183,6 +183,11 @@ namespace RiskierRainContent.Items
                 itemDef1 = RoR2Content.Items.AlienHead, //consumes gah
                 itemDef2 = Egg.instance.ItemsDef
             };
+            ItemDef.Pair transformation5 = new ItemDef.Pair()
+            {
+                itemDef1 = RoR2Content.Items.Seed, //consumes gah
+                itemDef2 = Egg.instance.ItemsDef
+            };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation1);
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
@@ -191,6 +196,8 @@ namespace RiskierRainContent.Items
                  = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation3);
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
                  = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation4);
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
+                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation5);
             orig();
         }
 

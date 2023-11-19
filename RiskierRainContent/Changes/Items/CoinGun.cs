@@ -101,7 +101,6 @@ What happened to all of our gold?";
             On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
             On.RoR2.HealthComponent.TakeDamage += GoldGunDamageBoost;
             GetStatCoefficients += this.GiveBonusDamage;
-            On.RoR2.Run.BeginStage += GetChestCostForStage;
         }
 
         private void GiveBonusDamage(CharacterBody sender, StatHookEventArgs args)
@@ -210,19 +209,12 @@ What happened to all of our gold?";
 
             return coinBuff;
         }
-
-        public static int lastChestBaseCost = 25;
-        private void GetChestCostForStage(On.RoR2.Run.orig_BeginStage orig, Run self)
-        {
-            lastChestBaseCost = Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk);
-            orig(self);
-        }
     }
     public class CoinGunBehavior : CharacterBody.ItemBehavior
     {
         public CharacterMaster master;
         public uint currentMoney = 0;
-        int fixedBaseChestCost = 0;
+        int fixedBaseChestCost => Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
         public int damageBoostCount = 0;
 
         private void FixedUpdate()
@@ -286,14 +278,8 @@ What happened to all of our gold?";
         private void Start()
         {
             master = body.master;
-            fixedBaseChestCost = Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk);
             damageBoostCount = 0;
             currentMoney = 0;
-            if(CoinGun.lastChestBaseCost < fixedBaseChestCost)
-            {
-                Debug.Log(CoinGun.lastChestBaseCost + " was less than Coin Gun's detected amount: " + fixedBaseChestCost);
-                fixedBaseChestCost = CoinGun.lastChestBaseCost;
-            }
         }
         void OnDestroy()
         {

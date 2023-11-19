@@ -79,6 +79,118 @@ namespace RiskierRainContent.Equipment
             CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
         }
 
+        #region assets
+        private void AddExecutionDebuff()
+        {
+            executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+
+            executionDebuffIndex.buffColor = Color.white;
+            executionDebuffIndex.canStack = true;
+            executionDebuffIndex.isDebuff = false;
+            executionDebuffIndex.name = "ExecutionDebuffStackable";
+            executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+
+            Assets.buffDefs.Add(executionDebuffIndex);
+        }
+        private void AddLuckBuff()
+        {
+            luckBuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+
+            luckBuffIndex.buffColor = Color.green;
+            luckBuffIndex.canStack = true;
+            luckBuffIndex.isDebuff = false;
+            luckBuffIndex.name = "LuckBuffStackable";
+            luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+
+            Assets.buffDefs.Add(luckBuffIndex);
+        }
+        #endregion
+
+        #region stats
+        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
+        {
+            luck += sender.GetBuffCount(luckBuffIndex);
+        }
+
+        private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
+        {
+            int executionBuffCount = sender.GetBuffCount(executionDebuffIndex);
+
+            float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, threshold, executionBuffCount > 0);
+        }
+
+        private void GuillotineExecuteBehavior(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            CharacterBody attackerBody = damageReport.attackerBody;
+            CharacterBody victimBody = damageReport.victimBody;
+
+            if (attackerBody && victimBody)
+            {
+                SkillLocator skillLocator = attackerBody.skillLocator;
+                if (victimBody.HasBuff(executionDebuffIndex))
+                {
+                    attackerBody.AddTimedBuffAuthority(luckBuffIndex.buffIndex, luckDuration);
+
+                    if (skillLocator != null)
+                    {
+                        //apply skill reset
+                        if (NetworkServer.active && !skillLocator.networkIdentity.hasAuthority)
+                        {
+                            NetworkWriter networkWriter = new NetworkWriter();
+                            networkWriter.StartMessage(63);
+                            networkWriter.Write(skillLocator.gameObject);
+                            networkWriter.FinishMessage();
+                            NetworkConnection clientAuthorityOwner = skillLocator.networkIdentity.clientAuthorityOwner;
+                            if (clientAuthorityOwner != null)
+                            {
+                                clientAuthorityOwner.SendWriter(networkWriter, QosChannelIndex.defaultReliable.intVal);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            GenericSkill[] array = new GenericSkill[]
+                            {
+                                skillLocator.primary,
+                                skillLocator.secondary,
+                                skillLocator.utility,
+                                skillLocator.special
+                            };
+                            Util.ShuffleArray<GenericSkill>(array);
+                            foreach (GenericSkill genericSkill in array)
+                            {
+                                if (genericSkill && genericSkill.CanApplyAmmoPack())
+                                {
+                                    Debug.LogFormat("Resetting skill {0}", new object[]
+                                    {
+                                    genericSkill.skillName
+                                    });
+                                    genericSkill.AddOneStock();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            orig(self, damageReport);
+        }
+        #endregion
+
+        public override void Init(ConfigFile config)
+        {
+            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
+            //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
+            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            AddExecutionDebuff();
+            AddLuckBuff();
+            CreateEquipment();
+            CreateLang();
+            Hooks();
+        }
+
         public override void Hooks()
         {
             On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
@@ -86,52 +198,6 @@ namespace RiskierRainContent.Equipment
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             GetExecutionThreshold += GuillotineExecutionThreshold;
             ModifyLuckStat += GuillotineLuckBuff;
-        }
-
-        private void GuillotineTargeting(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
-        {
-            bool isGuillotine = targetingEquipmentIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex;
-            if (!isGuillotine)
-            {
-                orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
-                return;
-            }
-
-            if (userShouldAnticipateTarget)
-            {
-                self.ConfigureTargetFinderForEnemies();
-            }
-            HurtBox source = null;
-
-            //i think this makes it prioritize elites
-            using (IEnumerator<HurtBox> enumerator = self.targetFinder.GetResults().GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    HurtBox hurtBox = enumerator.Current;
-                    if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.body)
-                    {
-                        bool isElite = hurtBox.healthComponent.body.gameObject.GetComponent<DeathRewards>();
-                        if (isElite && !hurtBox.healthComponent.body.HasBuff(RoR2Content.Buffs.Immune))
-                        {
-                            source = hurtBox;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(source == null)
-                source = self.targetFinder.GetResults().FirstOrDefault<HurtBox>();
-
-            self.currentTarget = new EquipmentSlot.UserTargetInfo(source);
-
-            bool targetHasTransform = self.currentTarget.transformToIndicateAt;
-            if (targetHasTransform)
-            {
-                self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/LightningIndicator");
-            }
-            self.targetIndicator.active = targetHasTransform;
-            self.targetIndicator.targetTransform = (targetHasTransform ? self.currentTarget.transformToIndicateAt : null);
         }
 
         private void GuillotineTargetingOld(ILContext il)
@@ -178,117 +244,54 @@ namespace RiskierRainContent.Equipment
             c.Emit(OpCodes.Stloc, num);*/
         }
 
-        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
+        private void GuillotineTargeting(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
         {
-            luck += sender.GetBuffCount(luckBuffIndex);
-        }
-
-        private void AddExecutionDebuff()
-        {
-            executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
-
-            executionDebuffIndex.buffColor = Color.white;
-            executionDebuffIndex.canStack = true;
-            executionDebuffIndex.isDebuff = false;
-            executionDebuffIndex.name = "ExecutionDebuffStackable";
-            executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
-
-            Assets.buffDefs.Add(executionDebuffIndex);
-        }
-        private void AddLuckBuff()
-        {
-            luckBuffIndex = ScriptableObject.CreateInstance<BuffDef>();
-
-            luckBuffIndex.buffColor = Color.green;
-            luckBuffIndex.canStack = true;
-            luckBuffIndex.isDebuff = false;
-            luckBuffIndex.name = "LuckBuffStackable";
-            luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
-
-            Assets.buffDefs.Add(luckBuffIndex);
-        }
-
-        private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
-        {
-            int executionBuffCount = sender.GetBuffCount(executionDebuffIndex);
-
-            float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, threshold, executionBuffCount > 0);
-        }
-
-        private void GuillotineExecuteBehavior(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            CharacterBody attackerBody = damageReport.attackerBody;
-            CharacterBody victimBody = damageReport.victimBody;
-
-            if(attackerBody && victimBody)
+            bool isGuillotine = targetingEquipmentIndex == GuillotineEquipment.instance.EquipDef.equipmentIndex;
+            if (!isGuillotine)
             {
-                SkillLocator skillLocator = attackerBody.skillLocator;
-                if(victimBody.HasBuff(executionDebuffIndex))
-                {
-                    attackerBody.AddTimedBuffAuthority(luckBuffIndex.buffIndex, luckDuration);
+                orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
+                return;
+            }
 
-                    if(skillLocator != null)
+            if (userShouldAnticipateTarget)
+            {
+                self.ConfigureTargetFinderForEnemies();
+            }
+            HurtBox source = null;
+
+            //i think this makes it prioritize elites
+            using (IEnumerator<HurtBox> enumerator = self.targetFinder.GetResults().GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    HurtBox hurtBox = enumerator.Current;
+                    if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.body)
                     {
-                        //apply skill reset
-                        if (NetworkServer.active && !skillLocator.networkIdentity.hasAuthority)
+                        bool isElite = hurtBox.healthComponent.body.isElite;
+                        if (isElite && !hurtBox.healthComponent.body.HasBuff(executionDebuffIndex))
                         {
-                            NetworkWriter networkWriter = new NetworkWriter();
-                            networkWriter.StartMessage(63);
-                            networkWriter.Write(skillLocator.gameObject);
-                            networkWriter.FinishMessage();
-                            NetworkConnection clientAuthorityOwner = skillLocator.networkIdentity.clientAuthorityOwner;
-                            if (clientAuthorityOwner != null)
-                            {
-                                clientAuthorityOwner.SendWriter(networkWriter, QosChannelIndex.defaultReliable.intVal);
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            GenericSkill[] array = new GenericSkill[]
-                            {
-                                skillLocator.primary,
-                                skillLocator.secondary,
-                                skillLocator.utility,
-                                skillLocator.special
-                            };
-                            Util.ShuffleArray<GenericSkill>(array);
-                            foreach (GenericSkill genericSkill in array)
-                            {
-                                if (genericSkill && genericSkill.CanApplyAmmoPack())
-                                {
-                                    Debug.LogFormat("Resetting skill {0}", new object[]
-                                    {
-                                    genericSkill.skillName
-                                    });
-                                    genericSkill.AddOneStock();
-                                }
-                            }
+                            source = hurtBox;
+                            break;
                         }
                     }
                 }
             }
+            if (source == null)
+                source = self.targetFinder.GetResults().FirstOrDefault<HurtBox>();
 
+            self.currentTarget = new EquipmentSlot.UserTargetInfo(source);
 
-            orig(self, damageReport);
-        }
-
-        public override void Init(ConfigFile config)
-        {
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
-            //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
-            AddExecutionDebuff();
-            AddLuckBuff();
-            CreateEquipment();
-            CreateLang();
-            Hooks();
+            bool targetHasTransform = self.currentTarget.transformToIndicateAt;
+            if (targetHasTransform)
+            {
+                self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/LightningIndicator");
+            }
+            self.targetIndicator.active = targetHasTransform;
+            self.targetIndicator.targetTransform = (targetHasTransform ? self.currentTarget.transformToIndicateAt : null);
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
-            Debug.Log("sdhjfgbhjad");
             bool b = false;
 
             HurtBox hurtBox = slot.currentTarget.hurtBox;
@@ -298,50 +301,44 @@ namespace RiskierRainContent.Equipment
                 CharacterBody attackerBody = slot.characterBody;
                 if (targetBody)
                 {
-                    if (targetBody.HasBuff(executionDebuffIndex))
+                    float damage = 0;
+                    DamageType type = DamageType.Generic;
+                    if (targetBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
                     {
-                        slot.InvalidateCurrentTarget();
+                        damage = newExecutionThresholdBase * targetBody.maxHealth;
+                        type |= DamageType.NonLethal;
                     }
                     else
                     {
-                        float damage = 0;
-                        DamageType type = DamageType.Generic;
-                        if (targetBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
+                        int executeCount = 1 + PowerStatusCheck(targetBody);
+
+                        for(int i = 0; i < executeCount; i++)
                         {
-                            damage = newExecutionThresholdBase * targetBody.maxHealth;
-                            type |= DamageType.NonLethal;
+                            targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
                         }
-                        else
-                        {
-                            int executeCount = 1 + PowerStatusCheck(targetBody);
-
-                            for(int i = 0; i < executeCount; i++)
-                            {
-                                targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
-                            }
-                            damage = attackerBody.damage * guillotineDamageCoefficient;
-                        }
-
-                        BlastAttack blastAttack = new BlastAttack()
-                        {
-                            radius = 10,
-                            procCoefficient = 0,
-                            position = targetBody.transform.position,
-                            attacker = slot.gameObject,
-                            crit = Util.CheckRoll(attackerBody.crit, attackerBody.master),
-                            baseDamage = damage,
-                            falloffModel = BlastAttack.FalloffModel.SweetSpot,
-                            damageType = type,
-                            baseForce = 0,
-                            teamIndex = TeamComponent.GetObjectTeam(attackerBody.gameObject)
-                        };
-                        blastAttack.Fire();
-
-                        slot.InvalidateCurrentTarget();
-
-                        b = true;
+                        damage = attackerBody.damage * guillotineDamageCoefficient;
                     }
+
+                    BlastAttack blastAttack = new BlastAttack()
+                    {
+                        radius = 10,
+                        procCoefficient = 0,
+                        position = targetBody.transform.position,
+                        attacker = slot.gameObject,
+                        crit = Util.CheckRoll(attackerBody.crit, attackerBody.master),
+                        baseDamage = damage,
+                        falloffModel = BlastAttack.FalloffModel.SweetSpot,
+                        damageType = type,
+                        baseForce = 0,
+                        teamIndex = TeamComponent.GetObjectTeam(attackerBody.gameObject)
+                    };
+                    blastAttack.Fire();
+
+                    slot.InvalidateCurrentTarget();
+
+                    b = true;
                 }
+                
             }
             return b;
         }

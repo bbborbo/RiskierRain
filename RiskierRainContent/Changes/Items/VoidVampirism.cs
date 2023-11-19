@@ -13,13 +13,11 @@ namespace RiskierRainContent.Items
 {
     class VoidVampirism : ItemBase<VoidVampirism>
     {
-        int maxHeal = 3;
-        int bleedPerHeal = 5;
         int vampireBleedChance = 10;
 
-        int maxBurnBonusBase = 1;
-        int maxBurnBonusStack = 4;
-        float bonusDamagePerBurn = 0.04f;
+        int maxBleedBonusBase = 9;
+        int maxBleedBonusStack = 5;
+        float bonusDamagePerBleed = 0.04f;
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override string ItemName => "Bloodsucking Coralite";
@@ -28,8 +26,11 @@ namespace RiskierRainContent.Items
 
         public override string ItemPickupDesc => "Deal more damage against bleeding enemies. Corrupts all Chef Staches.";
 
-        public override string ItemFullDescription => $"{vampireBleedChance}% chance to inflict bleed on hit. " +
-            $"Bleeding enemies take Y% more damage from your attacks, up to a maximum of Z times. Corrupts all Chef Staches.";
+        public override string ItemFullDescription => $"Gain <style=cIsHealth>{vampireBleedChance}% bleed chance</style>. " +
+            $"Bleeding enemies take <style=cIsDamage>+{bonusDamagePerBleed * 100}% more damage</style> from your attacks " +
+            $"<style=cIsHealth>per stack of bleed</style>, up to a maximum of " +
+            $"{maxBleedBonusBase} <style=cStack>(+{maxBleedBonusStack} per stack)</style> times. " +
+            $"<style=cIsVoid>Corrupts all Chef Staches.</style>";
 
         public override string ItemLore => "";
 
@@ -47,7 +48,6 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += VampireHit;
             On.RoR2.CharacterBody.RecalculateStats += VampireBleedChance;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             On.RoR2.HealthComponent.TakeDamage += TakeMoreDamageWhileBurning;
@@ -62,10 +62,10 @@ namespace RiskierRainContent.Items
                 {
                     CharacterBody victimBody = self.body;
 
-                    int currentBuffCount = RiskierRainContent.GetBurnCount(victimBody);
-                    int maxBuffCount = maxBurnBonusBase + maxBurnBonusStack * GetCount(attackerBody);
+                    int currentBuffCount = victimBody.GetBuffCount(RoR2Content.Buffs.Bleeding);
+                    int maxBuffCount = maxBleedBonusBase + maxBleedBonusStack * GetCount(attackerBody);
 
-                    damageInfo.damage *= 1 + bonusDamagePerBurn * Mathf.Min(currentBuffCount, maxBuffCount);
+                    damageInfo.damage *= 1 + bonusDamagePerBleed * Mathf.Min(currentBuffCount, maxBuffCount);
                 }
             }
 
@@ -78,30 +78,6 @@ namespace RiskierRainContent.Items
             if (GetCount(self) > 0)
             {
                 self.bleedChance += vampireBleedChance;
-            }
-        }
-
-        private void VampireHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
-        {
-            orig(self, damageInfo, victim);
-            GameObject attacker = damageInfo.attacker;
-            if(attacker != null)
-            {
-                CharacterBody victimBody = victim.GetComponent<CharacterBody>();
-                CharacterBody attackerBody = attacker.GetComponent<CharacterBody>();
-                if (victimBody != null && attackerBody != null)
-                {
-                    int bleedCount = victimBody.GetBuffCount(RoR2Content.Buffs.Bleeding);
-                    if (bleedCount > 0)
-                    {
-                        int itemCount = GetCount(attackerBody);
-                        if (itemCount > 0 && damageInfo.procCoefficient > 0)
-                        {
-                            int healAmount = Mathf.Clamp((bleedCount / bleedPerHeal) + 1, 0, maxHeal * itemCount);
-                            attackerBody.healthComponent.Heal(healAmount, new ProcChainMask());
-                        }
-                    }
-                }
             }
         }
 

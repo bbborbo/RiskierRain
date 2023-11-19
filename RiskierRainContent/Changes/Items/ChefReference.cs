@@ -64,11 +64,11 @@ namespace RiskierRainContent.Items
             if (vBody)
             {
                 int itemCount = GetCount(aBody);
-                int burnCount = vBody.GetBuffCount(RoR2Content.Buffs.OnFire) + vBody.GetBuffCount(DLC1Content.Buffs.StrongerBurn);
+                int burnCount = RiskierRainContent.GetBurnCount(vBody);
                 if(itemCount > 0 && burnCount > 0)
                 {
                     float procChancePerBurn = fruitChanceBase + fruitChanceStack * (itemCount - 1);
-                    float totalProcChance = procChancePerBurn * Mathf.Clamp(burnCount, 1, maxBurnStacksBase);
+                    float totalProcChance = procChancePerBurn * Mathf.Min(burnCount, maxBurnStacksBase);
                     float endProcChance = Util.ConvertAmplificationPercentageIntoReductionPercentage(totalProcChance) * damageInfo.procCoefficient;
                     //Debug.LogWarning("Chef Meat Chance: " + endProcChance);
 

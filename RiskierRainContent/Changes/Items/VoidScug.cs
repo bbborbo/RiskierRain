@@ -16,17 +16,21 @@ namespace RiskierRainContent.Items
     {
         public static GameObject scugNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");
         public static BuffDef scugBuff;
-        public static float radiusBase = 16;
-        public static float radiusStack = 4;
+        public static float radiusBase = 28;
+        public static float durationBase = 6;
+        public static float durationStack = 3;
 
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
-        public override string ItemName => "Cautious scug";
+        public override string ItemName => "Curious Scug";
 
         public override string ItemLangTokenName => "VOIDSCUG";
 
-        public override string ItemPickupDesc => "Chill enemies when hit. Recharges when out of danger.";
+        public override string ItemPickupDesc => "Chill nearby enemies when hit. Recharges outside of danger.";
 
-        public override string ItemFullDescription => "fucking     SCUUUUUUUUUUUUUGGGGG";
+        public override string ItemFullDescription => $"When hit, <style=cIsUtility>Chill</style> all enemies within " +
+            $"<style=cIsUtility>{radiusBase}m</style> for " +
+            $"<style=cIsUtility>{durationBase}</style> <style=cStack>(+{durationStack} per stack)</style> seconds. " +
+            $"Recharges outside of danger.";
 
         public override string ItemLore => "";
 
@@ -73,18 +77,17 @@ namespace RiskierRainContent.Items
         }
         void ScugBlast(CharacterBody body, int itemCount)
         {
-            float currentRadius = radiusBase + radiusStack * (itemCount - 1);
 
             EffectManager.SpawnEffect(scugNovaEffectPrefab, new EffectData
             {
                 origin = body.transform.position,
-                scale = currentRadius
+                scale = radiusBase
             }, true);
             ApplyChillSphere(body, itemCount);
             BlastAttack scugNova = new BlastAttack()
             {
                 baseDamage = body.damage,
-                radius = currentRadius,
+                radius = radiusBase,
                 procCoefficient = 0.5f,
                 position = body.transform.position,
                 attacker = body.gameObject,
@@ -121,20 +124,22 @@ namespace RiskierRainContent.Items
             Vector3 corePosition = body.corePosition;
             scugSphereSearch.origin = corePosition;
             scugSphereSearch.mask = LayerIndex.entityPrecise.mask;
-            scugSphereSearch.radius = radiusBase + radiusStack * (itemCount - 1);
+            scugSphereSearch.radius = radiusBase;
             scugSphereSearch.RefreshCandidates();
             scugSphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex));
             scugSphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
             scugSphereSearch.OrderCandidatesByDistance();
             scugSphereSearch.GetHurtBoxes(scugOnKillHurtBoxBuffer);
             scugSphereSearch.ClearCandidates();
-            
+
+            float currentDuration = durationBase + durationStack * (itemCount - 1);
             for (int i = 0; i < scugOnKillHurtBoxBuffer.Count; i++)
             {
                 HurtBox hurtBox = scugOnKillHurtBoxBuffer[i];
-                if (hurtBox.healthComponent)
+                CharacterBody vBody = hurtBox.healthComponent?.body;
+                if (vBody)
                 {
-                    hurtBox.healthComponent.body.AddTimedBuff(RoR2Content.Buffs.Slow80, 10);
+                    ChillRework.ChillRework.ApplyChillStacks(vBody, 100, 3, currentDuration);
                 }
             }
             scugOnKillHurtBoxBuffer.Clear();

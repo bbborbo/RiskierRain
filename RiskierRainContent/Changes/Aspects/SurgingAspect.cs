@@ -35,7 +35,7 @@ namespace RiskierRainContent.Changes.Aspects
         public override Color EliteBuffColor => Color.cyan;
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
-        //public override string EliteRampTextureName { get; set; } = "texRampLeeching";
+        public override string EliteRampTextureName { get; set; } = "texRampLeeching";
         public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
         //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
 

@@ -174,6 +174,7 @@ namespace RiskierRainContent
             hasSentStormEarlyWarning = false;
             hasBegunStorm = false;
             teleporterActive = false;
+            this.teleporter = null;
 
             stormType = GetStormType();
             stormStartDelay = GetStormStartDelay();
@@ -214,7 +215,7 @@ namespace RiskierRainContent
                 BeginStorm();
             }
 
-            if (hasSentStormEarlyWarning && !teleporterActive)
+            if (hasSentStormEarlyWarning && teleporter == null)
             {
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {

@@ -91,8 +91,7 @@ namespace RiskierRainContent
                     delay = drizzleStormDelay;
                     break;
             }
-            float random = Run.instance.stageRng.RangeFloat(0, 1); // up to 1 minute of additional delay
-            return (delay + random) * 60;
+            return delay * 60;
         }
         public static StormType GetStormType()
         {
@@ -128,10 +127,11 @@ namespace RiskierRainContent
 
         float stageBeginTime;
         public float stormStartDelay = -1;
-        public const float stormEarlyWarningDelay = 60;
-        public float stormEarlyWarningTime => stageBeginTime + (stormStartDelay * 0.83f);
+        public float stormStartRandomDelay = -1;
+        public float stormEarlyWarningDelay = 0;
+        public float stormEarlyWarningTime => stormStartTime - stormEarlyWarningDelay;
         bool hasSentStormEarlyWarning = false;
-        public float stormStartTime => stageBeginTime + stormStartDelay;
+        public float stormStartTime => stageBeginTime + stormStartDelay + stormStartRandomDelay;
         public bool hasBegunStorm = false;
 
         internal bool teleporterActive = false;
@@ -142,8 +142,6 @@ namespace RiskierRainContent
 
         public void Start()
         {
-            Debug.LogError("ASHDAJHSDHASDHJKASHJKDKSJSD STORMS DIRECTOR");
-
             if (instance != null && instance != this)
             {
                 Destroy(this);
@@ -177,9 +175,11 @@ namespace RiskierRainContent
             this.teleporter = null;
 
             stormType = GetStormType();
-            stormStartDelay = GetStormStartDelay();
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
-            Debug.LogWarning(stormType + ", " + stageBeginTime + " - " + stormStartTime);
+            stormStartDelay = GetStormStartDelay(); 
+            stormEarlyWarningDelay = stormStartDelay / 6;
+            stormStartRandomDelay = Run.instance.stageRng.RangeInt(0, 60); // up to 1 minute of additional delay
+
             orig(self, sceneDirector, teleporter);
         }
 

@@ -12,6 +12,7 @@ using RoR2.ExpansionManagement;
 using RiskierRainContent.CoreModules;
 using RiskierRainContent.Changes.Aspects;
 using static RoR2.CombatDirector;
+using RoR2.UI;
 
 namespace RiskierRainContent
 {
@@ -25,6 +26,12 @@ namespace RiskierRainContent
         {
             CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
+
+            LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "Meteor Storm Imminent");
+            LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
+            LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
+            LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
+            LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
         }
 
         private void CreateStormEliteTiers()
@@ -34,7 +41,7 @@ namespace RiskierRainContent
             StormT1.canSelectWithoutAvailableEliteDef = false;
             StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm);
             StormT1.eliteTypes = new EliteDef[0];
-            EliteAPI.AddCustomEliteTier(StormT1);
+            //EliteAPI.AddCustomEliteTier(StormT1);
 
             StormT2 = new EliteTierDef();
             StormT2.costMultiplier = 2;
@@ -46,7 +53,7 @@ namespace RiskierRainContent
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Hard)
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard)));
             StormT2.eliteTypes = new EliteDef[0];
-            EliteAPI.AddCustomEliteTier(StormT2);
+            //EliteAPI.AddCustomEliteTier(StormT2);
             return;
         }
 
@@ -121,13 +128,17 @@ namespace RiskierRainContent
 
         float stageBeginTime;
         public float stormStartDelay = -1;
-        public float stormEarlyWarningTime => stormStartTime - 30;
+        public const float stormEarlyWarningDelay = 60;
+        public float stormEarlyWarningTime => stageBeginTime + (stormStartDelay * 0.83f);
         bool hasSentStormEarlyWarning = false;
         public float stormStartTime => stageBeginTime + stormStartDelay;
         public bool hasBegunStorm = false;
 
         internal bool teleporterActive = false;
         internal TeleporterInteraction teleporter;
+
+
+        private Dictionary<HUD, GameObject> hudPanels;
 
         public void Start()
         {
@@ -140,11 +151,12 @@ namespace RiskierRainContent
             }
             instance = this;
 
-
             On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
+
+            hudPanels = new Dictionary<HUD, GameObject>();
         }
 
         public void OnDestroy()
@@ -154,11 +166,7 @@ namespace RiskierRainContent
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter -= TeleporterInteraction_ChargedState_OnEnter;
         }
-        public void RemoveStormController()
-        {
-            Destroy(this.gameObject);
-        }
-
+        #region hooks
         private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
         {
             stormType = StormType.None;
@@ -186,6 +194,7 @@ namespace RiskierRainContent
             this.teleporter = self;
             this.teleporterActive = true;
         }
+        #endregion
 
         void FixedUpdate()
         {
@@ -196,21 +205,33 @@ namespace RiskierRainContent
             if (!hasSentStormEarlyWarning && currentTime > stormEarlyWarningTime)
             {
                 hasSentStormEarlyWarning = true;
-                SendStormEarlyWarning();
+                DoStormEarlyWarning();
             }
             if (!hasBegunStorm && currentTime > stormStartTime)
             {
                 hasBegunStorm = true;
-                SendStormWarning();
+                DoStormWarning();
                 BeginStorm();
             }
-            if (hasBegunStorm)
+
+            if (hasSentStormEarlyWarning && !teleporterActive)
             {
-                //StormBehavior();
+                foreach (HUD hud in HUD.readOnlyInstanceList)
+                {
+                    SetHudCountdownEnabled(hud, hud.targetBodyObject);
+                }
+                SetCountdownTime(Mathf.Max(0, stormStartTime - currentTime));
+            }
+            else
+            {
+                foreach (HUD hud in HUD.readOnlyInstanceList)
+                {
+                    SetHudCountdownEnabled(hud, false);
+                }
             }
         }
-
-        private void SendStormEarlyWarning()
+        #region warning message
+        private void DoStormEarlyWarning()
         {
             string warningMessage = "";
             switch (stormType)
@@ -233,7 +254,7 @@ namespace RiskierRainContent
             RoR2.Chat.AddMessage(warningMessage);
         }
 
-        private void SendStormWarning()
+        private void DoStormWarning()
         {
             string warningMessage = "";
             switch (stormType)
@@ -254,7 +275,44 @@ namespace RiskierRainContent
 
             RoR2.Chat.AddMessage(warningMessage);
         }
+        #endregion
+        private void SetHudCountdownEnabled(HUD hud, bool shouldEnableCountdownPanel)
+        {
+            shouldEnableCountdownPanel &= base.enabled;
+            GameObject gameObject;
+            this.hudPanels.TryGetValue(hud, out gameObject);
+            if (gameObject != shouldEnableCountdownPanel)
+            {
+                if (shouldEnableCountdownPanel)
+                {
+                    RectTransform rectTransform = hud.GetComponent<ChildLocator>().FindChild("TopCenterCluster") as RectTransform;
+                    if (rectTransform)
+                    {
+                        GameObject value = UnityEngine.Object.Instantiate<GameObject>(LegacyResourcesAPI.Load<GameObject>("Prefabs/UI/HudModules/HudCountdownPanel"), rectTransform);
+                        LanguageTextMeshController ltmc = value.GetComponentInChildren<LanguageTextMeshController>();
+                        ltmc._token = $"OBJECTIVE_{stormType.ToString().ToUpper()}_2R4R";
+                        ltmc.token = $"OBJECTIVE_{stormType.ToString().ToUpper()}_2R4R";
+                        this.hudPanels[hud] = value;
+                        return;
+                    }
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(gameObject);
+                    this.hudPanels.Remove(hud);
+                }
+            }
+        }
+        private void SetCountdownTime(double secondsRemaining)
+        {
+            foreach (KeyValuePair<HUD, GameObject> keyValuePair in this.hudPanels)
+            {
+                keyValuePair.Value.GetComponent<TimerText>().seconds = secondsRemaining;
+            }
+            //AkSoundEngine.SetRTPCValue("EscapeTimer", Util.Remap((float)secondsRemaining, 0f, this.countdownDuration, 0f, 100f));
+        }
 
+        #region do storms
         private void BeginStorm()
         {
             GameObject go = new GameObject();
@@ -291,6 +349,7 @@ namespace RiskierRainContent
                 component.inventory.SetEquipmentIndex(equipmentIndex2);
             }
         }
+        #endregion
     }
 
     public class StormHazardController : MonoBehaviour

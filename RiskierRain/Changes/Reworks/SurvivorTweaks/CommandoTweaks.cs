@@ -27,7 +27,8 @@ namespace RiskierRain.SurvivorTweaks
         public static float rollDuration = 0.25f; //0.4f
         public static float slideCooldown = 5f; //4f
 
-        public static float soupDamageCoeff = 1.2f; //1f
+        public static int soupMaxTargets = 6;
+        public static float soupDamageCoeff = 0.8f; //1f
         public static float soupCooldown = 8f; //9f
 
         public override string survivorName => "Commando";
@@ -52,15 +53,18 @@ namespace RiskierRain.SurvivorTweaks
 
             //special
             SkillDef soupFire = special.variants[0].skillDef;
-            //Assets.RegisterEntityState(typeof(SoupTargeting));
-            //Assets.RegisterEntityState(typeof(SoupFire));
-            SerializableEntityStateType newSoupFireState = new SerializableEntityStateType(typeof(FireSweepBarrage));
+            Assets.RegisterEntityState(typeof(SoupTargeting));
+            Assets.RegisterEntityState(typeof(SoupFire));
+            SerializableEntityStateType newSoupFireState = new SerializableEntityStateType(typeof(SoupTargeting));
             soupFire.activationState = newSoupFireState;
             soupFire.baseRechargeInterval = soupCooldown;
+            soupFire.beginSkillCooldownOnSkillEnd = true;
+            soupFire.activationStateMachineName = "Weapon";
+            LanguageAPI.Add("COMMANDO_SPECIAL_NAME", $"Suppressive Barrage");
             LanguageAPI.Add("COMMANDO_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
-                $"Fire repeatedly for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage</style> per bullet. " +
-                $"The number of shots increases with attack speed.");
+                $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +
+                $"then fire a barrage of bullets at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
+                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage per shot</style>.");
         }
 
 

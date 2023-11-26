@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.States
+namespace RiskierRain.EntityState.Commando
 {
     class SoupTargeting
     {

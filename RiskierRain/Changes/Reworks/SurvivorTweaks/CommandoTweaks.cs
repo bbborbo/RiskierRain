@@ -1,5 +1,8 @@
-﻿using EntityStates.Commando.CommandoWeapon;
+﻿using EntityStates;
+using EntityStates.Commando.CommandoWeapon;
 using R2API;
+using RiskierRain.CoreModules;
+using RiskierRain.EntityState.Commando;
 using RoR2;
 using RoR2.Skills;
 using System;
@@ -47,8 +50,13 @@ namespace RiskierRain.SurvivorTweaks
             //slide
             utility.variants[1].skillDef.baseRechargeInterval = slideCooldown;
 
-            On.EntityStates.Commando.CommandoWeapon.FireBarrage.OnEnter += SoupBuff;
-            special.variants[0].skillDef.baseRechargeInterval = soupCooldown;
+            //special
+            SkillDef soupFire = special.variants[0].skillDef;
+            //Assets.RegisterEntityState(typeof(SoupTargeting));
+            //Assets.RegisterEntityState(typeof(SoupFire));
+            SerializableEntityStateType newSoupFireState = new SerializableEntityStateType(typeof(FireSweepBarrage));
+            soupFire.activationState = newSoupFireState;
+            soupFire.baseRechargeInterval = soupCooldown;
             LanguageAPI.Add("COMMANDO_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
                 $"Fire repeatedly for " +
                 $"<style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage</style> per bullet. " +

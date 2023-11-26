@@ -1,5 +1,8 @@
-﻿using EntityStates.Commando.CommandoWeapon;
+﻿using EntityStates;
+using EntityStates.Commando.CommandoWeapon;
 using R2API;
+using RiskierRain.CoreModules;
+using RiskierRain.EntityState.Commando;
 using RoR2;
 using RoR2.Skills;
 using System;
@@ -24,7 +27,8 @@ namespace RiskierRain.SurvivorTweaks
         public static float rollDuration = 0.25f; //0.4f
         public static float slideCooldown = 5f; //4f
 
-        public static float soupDamageCoeff = 1.2f; //1f
+        public static int soupMaxTargets = 6;
+        public static float soupDamageCoeff = 0.8f; //1f
         public static float soupCooldown = 8f; //9f
 
         public override string survivorName => "Commando";
@@ -47,12 +51,20 @@ namespace RiskierRain.SurvivorTweaks
             //slide
             utility.variants[1].skillDef.baseRechargeInterval = slideCooldown;
 
-            On.EntityStates.Commando.CommandoWeapon.FireBarrage.OnEnter += SoupBuff;
-            special.variants[0].skillDef.baseRechargeInterval = soupCooldown;
+            //special
+            SkillDef soupFire = special.variants[0].skillDef;
+            Assets.RegisterEntityState(typeof(SoupTargeting));
+            Assets.RegisterEntityState(typeof(SoupFire));
+            SerializableEntityStateType newSoupFireState = new SerializableEntityStateType(typeof(SoupTargeting));
+            soupFire.activationState = newSoupFireState;
+            soupFire.baseRechargeInterval = soupCooldown;
+            soupFire.beginSkillCooldownOnSkillEnd = true;
+            soupFire.activationStateMachineName = "Weapon";
+            LanguageAPI.Add("COMMANDO_SPECIAL_NAME", $"Suppressive Barrage");
             LanguageAPI.Add("COMMANDO_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
-                $"Fire repeatedly for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage</style> per bullet. " +
-                $"The number of shots increases with attack speed.");
+                $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +
+                $"then fire at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
+                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage per shot</style>.");
         }
 
 

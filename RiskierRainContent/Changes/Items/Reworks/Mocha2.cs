@@ -105,18 +105,19 @@ namespace RiskierRainContent.Items
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
         {
-            int oldItemCount = GetCount(self);
             orig(self);
             if (NetworkServer.active)
             {
                 if (self.master)
                 {
                     int itemCount = GetCount(self);
-                    BorboMochaBehavior mochaBehavior = self.AddItemBehavior<BorboMochaBehavior>(itemCount);
-                    if (mochaBehavior)
+                    
+                    BorboMochaBehavior mochaBehavior = self.GetComponent<BorboMochaBehavior>(); 
+                    if (mochaBehavior && mochaBehavior.stack < itemCount)
                     {
                         mochaBehavior.UpdateTime(pickupDuration);
                     }
+                    self.AddItemBehavior<BorboMochaBehavior>(itemCount);
                 }
             }
         }

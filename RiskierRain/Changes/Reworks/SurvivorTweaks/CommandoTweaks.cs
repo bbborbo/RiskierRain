@@ -15,7 +15,7 @@ namespace RiskierRain.SurvivorTweaks
     class CommandoTweaks : SurvivorTweakModule
     {
         public static float primaryDamageCoeff = 1.4f; //1.0f
-        public static float primaryDuration = 0.2f; //0.16f
+        public static float primaryDuration = 0.2f; //0.167f
 
         public static GameObject phaseRoundPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FMJ");
         public static float phaseRoundDamageCoeff = 5f; //3
@@ -46,6 +46,7 @@ namespace RiskierRain.SurvivorTweaks
 
             FirePistol2.baseDuration = primaryDuration;
             FirePistol2.damageCoefficient = primaryDamageCoeff;
+            LanguageAPI.Add("COMMANDO_PRIMARY_DESCRIPTION", $"Rapidly shoot an enemy for <style=cIsDamage>{Tools.ConvertDecimal(primaryDamageCoeff)} damage</style>.");
 
             ChangeSecondaries(secondary);
 
@@ -53,7 +54,7 @@ namespace RiskierRain.SurvivorTweaks
             utility.variants[0].skillDef.baseMaxStock = rollStock;
             utility.variants[0].skillDef.baseRechargeInterval = rollCooldown;
             On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
-            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", "<style=cIsUtility>Roll</style> a short distance. Has <style=cIsUtility>2</style> charges.");
+            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance. Has <style=cIsUtility>{rollStock}</style> charges.");
 
             //slide
             utility.variants[1].skillDef.baseRechargeInterval = slideCooldown;

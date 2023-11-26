@@ -21,7 +21,6 @@ namespace RiskierRainContent.Items
         public static bool includeDeploys = true;
 
         static float bonusDamageMin = 0.15f;
-        static float bonusDamageMax => bonusDamageMin + bonusDamagePerChunk * maxPlatinum;
 
         static float bonusDamagePerChunk = 0.03f;
         float bonusGold = 0.1f;
@@ -106,16 +105,18 @@ What happened to all of our gold?";
         private void GiveBonusDamage(CharacterBody sender, StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            int buffCount = sender.GetBuffCount(goldDamageBuff);
             if(itemCount > 0)
             {
                 CoinGunBehavior coinGun = sender.GetComponent<CoinGunBehavior>();
                 int damageBoostCount = coinGun.damageBoostCount;
 
                 //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
-                float damageMult = Mathf.Lerp(bonusDamageMin, bonusDamageMax, buffCount / damageBoostCount) * itemCount;
+                if(damageBoostCount > 0)
+                {
+                    float damageMult = bonusDamageMin + bonusDamagePerChunk * damageBoostCount;
 
-                args.damageMultAdd += damageMult;
+                    args.damageMultAdd += damageMult * itemCount;
+                }
             }
         }
 

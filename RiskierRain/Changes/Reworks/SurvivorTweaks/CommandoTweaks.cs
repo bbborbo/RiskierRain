@@ -14,23 +14,26 @@ namespace RiskierRain.SurvivorTweaks
 {
     class CommandoTweaks : SurvivorTweakModule
     {
+        public static float primaryDamageCoeff = 1.4f; //1.0f
+        public static float primaryDuration = 0.2f; //0.16f
+
         public static GameObject phaseRoundPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FMJ");
         public static float phaseRoundDamageCoeff = 5f; //3
-        public static float phaseRoundCooldown = 5f; //3
-        public static float phaseRoundDuration = 1f; //0.5
+        public static float phaseRoundCooldown = 4f; //3
+        public static float phaseRoundDuration = 1f; //0.5f
 
         public static float phaseBlastDamageCoeff = 2.5f; //2f
         public static float phaseBlastCooldown = 5; //3f
 
         public static int rollStock = 2; //1
         public static float rollCooldown = 4f; //4f
-        public static float rollDuration = 0.25f; //0.4f
+        public static float rollDuration = 0.3f; //0.4f
         public static float slideCooldown = 5f; //4f
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
         public static float soupDamageCoeff = 1.8f; //1f
-        public static float soupCooldown = 14f; //9f
+        public static float soupCooldown = 12f; //9f
 
         public override string survivorName => "Commando";
 
@@ -40,6 +43,9 @@ namespace RiskierRain.SurvivorTweaks
         {
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
+
+            FirePistol2.baseDuration = primaryDuration;
+            FirePistol2.damageCoefficient = primaryDamageCoeff;
 
             ChangeSecondaries(secondary);
 

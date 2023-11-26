@@ -63,7 +63,7 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("COMMANDO_SPECIAL_NAME", $"Suppressive Barrage");
             LanguageAPI.Add("COMMANDO_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
                 $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +
-                $"then fire a barrage of bullets at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
+                $"then fire at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage per shot</style>.");
         }
 

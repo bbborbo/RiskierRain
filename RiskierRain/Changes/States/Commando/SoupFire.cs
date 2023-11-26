@@ -51,10 +51,10 @@ namespace RiskierRain.EntityState.Commando
 						return;
 					}
 				}
-			}
-			if(fixedAge > baseDuration)
-			{
-				this.outer.SetNextState(new Idle());
+				if (targetsList.Count == 0)
+				{
+					this.outer.SetNextState(new Idle());
+				}
 			}
 		}
 
@@ -76,6 +76,12 @@ namespace RiskierRain.EntityState.Commando
 						this.FireBullet(hurtBox, "MuzzleRight");
 					}
 				}
+                else
+                {
+					targetsList.RemoveAt(fireIndex % targetsList.Count);
+					FireAtTarget();
+					return;
+                }
 			}
             this.fireIndex++;
         }
@@ -100,12 +106,13 @@ namespace RiskierRain.EntityState.Commando
 					minSpread = 0f,
 					maxSpread = base.characterBody.spreadBloomAngle,
 					damage = CommandoTweaks.soupDamageCoeff * this.damageStat,
+					procCoefficient = 1.0f,
 					force = SoupFire.force,
 					tracerEffectPrefab = FireBarrage.tracerEffectPrefab,
 					muzzleName = targetMuzzle,
 					hitEffectPrefab = FireBarrage.hitEffectPrefab,
 					isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
-					radius = 0.1f,
+					radius = 0f,
 					smartCollision = true,
 					damageType = DamageType.Stun1s
 				}.Fire();

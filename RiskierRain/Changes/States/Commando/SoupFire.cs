@@ -11,9 +11,8 @@ namespace RiskierRain.EntityState.Commando
 {
     class SoupFire : CommandoBaseSoupState
 	{
-		public static float force = 450f;
-		public static float baseDuration = 1.2f;
-		public static int baseShotsTotal = 12;
+		public static float force = 600f;
+		public static float baseDuration = 0.8f;
 		int shotsTotal;
 		float durationPerShot;
 		public static float damageCoefficient;
@@ -28,7 +27,7 @@ namespace RiskierRain.EntityState.Commando
 		{
 			base.OnEnter();
 			//crit = Util.CheckRoll(this.critStat, base.characterBody.master);
-			shotsTotal = Mathf.CeilToInt(baseShotsTotal * this.attackSpeedStat);
+			shotsTotal = Mathf.CeilToInt(CommandoTweaks.soupBaseShots * this.attackSpeedStat);
 			durationPerShot = SoupFire.baseDuration / shotsTotal;
 			aimRay = base.GetAimRay();
 			FireAtTarget();

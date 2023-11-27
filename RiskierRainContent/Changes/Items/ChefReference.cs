@@ -21,7 +21,7 @@ namespace RiskierRainContent.Items
         int maxBurnStacksBase = 8;
         int maxBurnStacksStack = 3;
         int meatNuggets = 2;
-        float healFraction = 0.03f;
+        float healFraction = 0.00f;
         float healFlat = 12f;
 
         public override string ItemName => "Chef \u2019Stache";
@@ -34,7 +34,7 @@ namespace RiskierRainContent.Items
             $"Gain <style=cIsDamage>{RiskierRainContent.stacheBurnChance}% ignite chance</style>. " +
             $"Hitting burning enemies has a <style=cIsDamage>{fruitChanceBase}%</style> chance " +
             $"<style=cStack>(+{fruitChanceStack}% per stack)</style> to create {meatNuggets} " +
-            $"<style=cIsHealing>healing nuggets</style> that restore <style=cIsHealing>{healFlat}</style> plus <style=cIsHealing>{healFraction * 100}% HP</style>. " +
+            $"<style=cIsHealing>healing nuggets</style> that restore <style=cIsHealing>{healFlat} HP</style>. " +
             $"Nugget chance increases <style=cIsDamage>per stack of burn</style>, " +
             $"up to <style=cIsDamage>{maxBurnStacksBase}</style> times.";
 

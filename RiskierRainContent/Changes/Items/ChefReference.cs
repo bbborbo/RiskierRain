@@ -22,7 +22,8 @@ namespace RiskierRainContent.Items
         int maxBurnStacksStack = 3;
         int meatNuggets = 2;
         float healFraction = 0.00f;
-        float healFlat = 12f;
+        float healFlat = 8f;
+        float chunkLifetime = 8f; //20
 
         public override string ItemName => "Chef \u2019Stache";
 
@@ -122,7 +123,10 @@ namespace RiskierRainContent.Items
             {
                 healthPickup.fractionalHealing = healFraction;
                 healthPickup.flatHealing = healFlat;
-            }    
+            }
+
+            DestroyOnTimer destroyTimer = meatChunk.GetComponentInChildren<DestroyOnTimer>();
+            destroyTimer.duration = chunkLifetime;
 
             Assets.networkedObjectPrefabs.Add(meatChunk);
         }

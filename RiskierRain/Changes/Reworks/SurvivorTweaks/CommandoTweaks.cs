@@ -22,8 +22,8 @@ namespace RiskierRain.SurvivorTweaks
         public static float phaseRoundCooldown = 4f; //3
         public static float phaseRoundDuration = 0.7f; //0.5f
 
-        public static float phaseBlastDamageCoeff = 2.5f; //2f
-        public static float phaseBlastCooldown = 5; //3f
+        public static float phaseBlastDamageCoeff = 3f; //2f
+        public static float phaseBlastCooldown = 7; //3f
 
         public static int rollStock = 2; //1
         public static float rollCooldown = 4f; //4f

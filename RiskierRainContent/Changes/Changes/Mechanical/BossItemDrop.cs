@@ -77,6 +77,8 @@ namespace RiskierRainContent
 
             if (deathRewards != null && deathRewards.bossDropTable)
             {
+                Debug.LogError(BodyCatalog.GetBodyName(enemyBodyIndex));
+
                 float dropChance = 0;
 
                 if (enemyBodyIndex == BodyCatalog.FindBodyIndex("TitanGoldBody"))
@@ -110,14 +112,14 @@ namespace RiskierRainContent
                     dropChance += DisposableScalpel.bonusDropChance;
                 }
 
-                if (Util.CheckRoll(dropChance, killerMaster))
+                PickupIndex drop = deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+
+                if (Util.CheckRoll(dropChance, killerMaster) && drop != PickupCatalog.FindPickupIndex("VoidCoin"))
                 {
                     if (isScalpel && !isTricorn)
                     {
                         DisposableScalpel.ConsumeScalpel(attackerBody);
                     }
-
-                    PickupIndex drop = deathRewards.bossDropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
 
                     int quantumCodexCount = VoidGhorsTome.instance.GetCount(attackerBody);
                     if(quantumCodexCount > 0)

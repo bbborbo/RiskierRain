@@ -32,7 +32,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
-        public static float soupDamageCoeff = 2.2f; //1f
+        public static float soupDamageCoeff = 1.8f; //1f
         public static float soupCooldown = 12f; //9f
 
         public override string survivorName => "Commando";

@@ -62,6 +62,7 @@ namespace RiskierRain.EntityState.Commando
 			if(targetsList.Count > 0)
 			{
 				HurtBox hurtBox = targetsList[fireIndex % targetsList.Count];
+				//HurtBox hurtBox = targetsList[Mathf.FloorToInt(targetsList.Count * fireIndex / shotsTotal)];
 				if (hurtBox.healthComponent && hurtBox.healthComponent.alive)
 				{
 					if (fireIndex % 2 == 0)
@@ -77,7 +78,7 @@ namespace RiskierRain.EntityState.Commando
 				}
                 else
                 {
-					targetsList.RemoveAt(fireIndex % targetsList.Count);
+					targetsList.Remove(hurtBox);
 					FireAtTarget();
 					return;
                 }
@@ -92,6 +93,7 @@ namespace RiskierRain.EntityState.Commando
 				EffectManager.SimpleMuzzleFlash(FirePistol2.muzzleEffectPrefab, base.gameObject, targetMuzzle, false);
 			}
 			base.AddRecoil(-0.4f * FirePistol2.recoilAmplitude, -0.8f * FirePistol2.recoilAmplitude, -0.3f * FirePistol2.recoilAmplitude, 0.3f * FirePistol2.recoilAmplitude);
+			aimRay = base.GetAimRay();
 			aimRay.direction = (target.transform.position - aimRay.origin).normalized;
 			StartAimMode(this.aimRay, 3f, true);
 			if (base.isAuthority)
@@ -123,7 +125,7 @@ namespace RiskierRain.EntityState.Commando
 		public override void OnExit()
 		{
 			base.OnExit();
-			aimRay.direction = base.inputBank.aimDirection;
+			aimRay = base.GetAimRay();
 			StartAimMode(this.aimRay, 3f, true);
 			//base.PlayCrossfade("Gesture, Additive", "ExitHarpoons", 0.1f);
 		}

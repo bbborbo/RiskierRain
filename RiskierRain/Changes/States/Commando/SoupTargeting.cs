@@ -245,12 +245,6 @@ namespace RiskierRain.EntityState.Commando
 			{
 				if (this.releasedKeyOnce)
 				{
-					//if no targets, cancel the state instead
-					if(targetsList.Count == 0)
-					{
-						this.outer.SetNextStateToMain();
-						return;
-					}
 					startFireMode = true;
 				}
 				this.releasedKeyOnce = true;
@@ -267,6 +261,12 @@ namespace RiskierRain.EntityState.Commando
 			//queue firing state if the target mode is ending
 			if (startFireMode)
 			{
+				//if no targets, cancel the state instead
+				if (targetsList.Count == 0)
+				{
+					this.outer.SetNextStateToMain();
+					return;
+				}
 				this.queuedFiringState = true;
 				this.outer.SetNextState(new SoupFire
 				{

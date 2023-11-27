@@ -20,19 +20,19 @@ namespace RiskierRain.SurvivorTweaks
         public static GameObject phaseRoundPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FMJ");
         public static float phaseRoundDamageCoeff = 5f; //3
         public static float phaseRoundCooldown = 4f; //3
-        public static float phaseRoundDuration = 1f; //0.5f
+        public static float phaseRoundDuration = 0.7f; //0.5f
 
         public static float phaseBlastDamageCoeff = 2.5f; //2f
         public static float phaseBlastCooldown = 5; //3f
 
         public static int rollStock = 2; //1
         public static float rollCooldown = 4f; //4f
-        public static float rollDuration = 0.3f; //0.4f
+        public static float rollDuration = 0.25f; //0.4f
         public static float slideCooldown = 5f; //4f
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
-        public static float soupDamageCoeff = 1.8f; //1f
+        public static float soupDamageCoeff = 2.2f; //1f
         public static float soupCooldown = 12f; //9f
 
         public override string survivorName => "Commando";
@@ -53,6 +53,8 @@ namespace RiskierRain.SurvivorTweaks
             //roll
             utility.variants[0].skillDef.baseMaxStock = rollStock;
             utility.variants[0].skillDef.baseRechargeInterval = rollCooldown;
+            utility.variants[0].skillDef.forceSprintDuringState = true;
+            utility.variants[0].skillDef.cancelSprintingOnActivation = false;
             On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
             LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance. Has <style=cIsUtility>{rollStock}</style> charges.");
 

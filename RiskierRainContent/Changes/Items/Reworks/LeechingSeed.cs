@@ -14,7 +14,8 @@ namespace RiskierRainContent.Items
 {
     class LeechingSeed : ItemBase<LeechingSeed>
     {
-        public static float regenDurationPerStack = 0.5f;
+        public static float regenDurationBase = 0.5f;
+        public static float regenDurationStack = 0.25f;
         public override string ItemName => "Leeching Seed";
 
         public override string ItemLangTokenName => throw new NotImplementedException();
@@ -44,7 +45,7 @@ namespace RiskierRainContent.Items
             GetHitBehavior += NewSeedBehavior;
             LanguageAPI.Add("ITEM_SEED_PICKUP", "Dealing damage heals you.");
             LanguageAPI.Add("ITEM_SEED_DESC", $"Dealing damage increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
-                $"for <style=cIsUtility>{regenDurationPerStack}s</style> <style=cStack>(+{regenDurationPerStack}s per stack)</style>.");
+                $"for <style=cIsUtility>{regenDurationBase}s</style> <style=cStack>(+{regenDurationStack}s per stack)</style>.");
         }
 
         private void NewSeedBehavior(CharacterBody body, DamageInfo damageInfo, GameObject victim)
@@ -56,7 +57,7 @@ namespace RiskierRainContent.Items
                 {
                     ProcChainMask procChainMask = damageInfo.procChainMask;
                     procChainMask.AddProc(ProcType.HealOnHit);
-                    body.AddTimedBuff(JunkContent.Buffs.MeatRegenBoost, regenDurationPerStack * seedCount * damageInfo.procCoefficient);
+                    body.AddTimedBuff(JunkContent.Buffs.MeatRegenBoost, (regenDurationBase + regenDurationStack * (seedCount - 1)) * damageInfo.procCoefficient);
                 }
             }
         }

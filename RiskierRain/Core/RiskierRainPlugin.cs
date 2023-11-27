@@ -110,8 +110,10 @@ namespace RiskierRain
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.TreasureCache)); //ghor's tome
+            ItemDef tome = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/TreasureCache/TreasureCache.asset").WaitForCompletion();
+            RiskierRainPlugin.RetierItem(tome); //ghor's tome
 
+            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Talisman)); //soulbound
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts

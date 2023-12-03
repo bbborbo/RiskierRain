@@ -12,12 +12,13 @@ namespace RiskierRainContent.Items
 {
     class UtilityBelt : ItemBase<UtilityBelt>
     {
+        public static List<string> blacklistedSkillNameTokens = new List<string>(1) { "MAGE_UTILITY_ICE_NAME", "ENGI_SKILL_HARPOON_NAME", "CAPTAIN_UTILITY_NAME", "CAPTAIN_UTILITY_ALT_NAME" };
         public static BuffDef utilityBeltCooldown;
         public static float idealBaseCooldown = 6f;
 
         public static float castBarrierBase = 0.15f;
         public static float castBarrierStack = 0.05f;
-        public override string ItemName => "Utility Belt";
+        public override string ItemName => "Utility Knife";
 
         public override string ItemLangTokenName => "BORBOBARRIERBELT";
 
@@ -45,79 +46,81 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnSkillActivated += UtilityBeltBarrierGrant;
-            On.RoR2.SkillLocator.ApplyAmmoPack += UtilityBeltBandolierSynergy;
-            On.RoR2.GenericSkill.Reset += UtilityBeltCooldownReset;
-        }
-
-        private void UtilityBeltCooldownReset(On.RoR2.GenericSkill.orig_Reset orig, GenericSkill self)
-        {
-            orig(self);
-            if(self.skillFamily == self.characterBody?.skillLocator?.utility?.skillFamily)
-            {
-                self.characterBody.ClearTimedBuffs(utilityBeltCooldown);
-            }
-        }
-
-        private void UtilityBeltBandolierSynergy(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)
-        {
-            orig(self);
-
-            if(self.utility)
-            {
-                CharacterBody body = self.utility.characterBody;
-                if(body && body.HasBuff(utilityBeltCooldown))
-                {
-                    body.ClearTimedBuffs(utilityBeltCooldown);
-                }
-            }
+            //hard compat
+            On.EntityStates.Mage.Weapon.PrepWall.OnExit += PrepWall_OnExit;
+            On.EntityStates.Captain.Weapon.CallAirstrikeBase.OnEnter += CallAirstrikeBase_OnEnter;
+            On.EntityStates.Engi.EngiMissilePainter.Fire.FireMissile += Fire_FireMissile;
         }
 
         private void UtilityBeltBarrierGrant(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
         {
             orig(self, skill);
 
-            if (self.healthComponent && skill == self.skillLocator.utility)
+            if (self.healthComponent && skill == self.skillLocator.utility && !blacklistedSkillNameTokens.Contains(skill.skillNameToken))
             {
-                float itemCount = GetCount(self);
-                int currentCooldownCount = self.GetBuffCount(utilityBeltCooldown);
-
-                if (itemCount > 0f && currentCooldownCount < skill.maxStock)
-                {
-                    float baseCooldown = skill.baseRechargeInterval;
-                    float endCooldown = Mathf.Max(baseCooldown * skill.cooldownScale - skill.flatCooldownReduction, 0.5f);
-
-                    float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
-                    float adjustedBarrier = (self.healthComponent.fullCombinedHealth * barrierFraction) * Mathf.Min(baseCooldown / idealBaseCooldown, 3);
-                    // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
-                    // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
-                    self.healthComponent.AddBarrier(adjustedBarrier);
-
-                    self.AddTimedBuffAuthority(utilityBeltCooldown.buffIndex, endCooldown * (currentCooldownCount + 1));
-                }
+                GiveUtilityBarrier(self, skill.baseRechargeInterval);
             }
         }
+
+        #region hard compat
+        private void Fire_FireMissile(On.EntityStates.Engi.EngiMissilePainter.Fire.orig_FireMissile orig, EntityStates.Engi.EngiMissilePainter.Fire self, HurtBox target, Vector3 position)
+        {
+            orig(self, target, position);
+            UtilityBelt.GiveUtilityBarrier(self.characterBody, self.activatorSkillSlot);
+        }
+
+        private void CallAirstrikeBase_OnEnter(On.EntityStates.Captain.Weapon.CallAirstrikeBase.orig_OnEnter orig, EntityStates.Captain.Weapon.CallAirstrikeBase self)
+        {
+            orig(self);
+            UtilityBelt.GiveUtilityBarrier(self.characterBody, self.activatorSkillSlot);
+        }
+
+        private void PrepWall_OnExit(On.EntityStates.Mage.Weapon.PrepWall.orig_OnExit orig, EntityStates.Mage.Weapon.PrepWall self)
+        {
+            if (!self.outer.destroying)
+            {
+                if (self.goodPlacement)
+                {
+                    SkillLocator skillLocator = self.GetComponent<SkillLocator>();
+                    if (skillLocator)
+                    {
+                        GiveUtilityBarrier(self.characterBody, skillLocator.utility);
+                    }
+                }
+            }
+            orig(self);
+        }
+        #endregion
+
+        #region grant barrier
+        public static void GiveUtilityBarrier(CharacterBody body, GenericSkill skill)
+        {
+            if (skill != null)
+            {
+                GiveUtilityBarrier(body, skill.baseRechargeInterval);
+            }
+        }
+        public static void GiveUtilityBarrier(CharacterBody body, float skillBaseCooldown)
+        {
+            //body is nullchecked by getcount automatically
+            float itemCount = UtilityBelt.instance.GetCount(body);
+
+            if (itemCount > 0f)
+            {
+                float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
+                float adjustedBarrier = (body.healthComponent.fullCombinedHealth * barrierFraction) * Mathf.Min(skillBaseCooldown / idealBaseCooldown, 3);
+                // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
+                // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
+                body.healthComponent.AddBarrier(adjustedBarrier);
+            }
+        }
+        #endregion
 
         public override void Init(ConfigFile config)
         {
             CreateItem();
             CreateLang();
-            CreateBuff();
             Hooks();
-        }
-
-        void CreateBuff()
-        {
-            utilityBeltCooldown = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                utilityBeltCooldown.name = "UtilityBeltCooldown";
-                utilityBeltCooldown.buffColor = Color.black;
-                utilityBeltCooldown.canStack = true;
-                utilityBeltCooldown.isDebuff = false;
-                utilityBeltCooldown.isHidden = true;
-                utilityBeltCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
-            };
-
-            Assets.buffDefs.Add(utilityBeltCooldown);
         }
     }
 }

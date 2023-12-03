@@ -62,7 +62,7 @@ namespace RiskierRainContent
     {
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "HouseOfFruits";
-        public const string modName = "SwanSong02";
+        public const string modName = "RiskierRainContent";
         public const string version = "1.0.0";
         public const string expansionName = "Swan Song";
         public const string expansionToken = "EXPANSION2R4R";

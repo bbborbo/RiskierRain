@@ -12,7 +12,7 @@ namespace RiskierRainContent.Items
 {
     class UtilityBelt : ItemBase<UtilityBelt>
     {
-        public static List<string> blacklistedSkillNameTokens = new List<string>(1) { "MAGE_UTILITY_ICE_NAME", "ENGI_SKILL_HARPOON_NAME", "CAPTAIN_UTILITY_NAME", "CAPTAIN_UTILITY_ALT_NAME" };
+        public static List<string> blacklistedSkillNameTokens = new List<string>(1) { "MAGE_UTILITY_ICE_NAME", "ENGI_SKILL_HARPOON_NAME" };
         public static BuffDef utilityBeltCooldown;
         public static float idealBaseCooldown = 6f;
 
@@ -48,7 +48,6 @@ namespace RiskierRainContent.Items
             On.RoR2.CharacterBody.OnSkillActivated += UtilityBeltBarrierGrant;
             //hard compat
             On.EntityStates.Mage.Weapon.PrepWall.OnExit += PrepWall_OnExit;
-            On.EntityStates.Captain.Weapon.CallAirstrikeBase.OnEnter += CallAirstrikeBase_OnEnter;
             On.EntityStates.Engi.EngiMissilePainter.Fire.FireMissile += Fire_FireMissile;
         }
 
@@ -56,9 +55,9 @@ namespace RiskierRainContent.Items
         {
             orig(self, skill);
 
-            if (self.healthComponent && skill == self.skillLocator.utility && !blacklistedSkillNameTokens.Contains(skill.skillNameToken))
+            if (!blacklistedSkillNameTokens.Contains(skill.skillNameToken) && skill == self.skillLocator.utility)
             {
-                GiveUtilityBarrier(self, skill.baseRechargeInterval);
+                UtilityBelt.GiveUtilityBarrier(self, skill);
             }
         }
 
@@ -66,12 +65,6 @@ namespace RiskierRainContent.Items
         private void Fire_FireMissile(On.EntityStates.Engi.EngiMissilePainter.Fire.orig_FireMissile orig, EntityStates.Engi.EngiMissilePainter.Fire self, HurtBox target, Vector3 position)
         {
             orig(self, target, position);
-            UtilityBelt.GiveUtilityBarrier(self.characterBody, self.activatorSkillSlot);
-        }
-
-        private void CallAirstrikeBase_OnEnter(On.EntityStates.Captain.Weapon.CallAirstrikeBase.orig_OnEnter orig, EntityStates.Captain.Weapon.CallAirstrikeBase self)
-        {
-            orig(self);
             UtilityBelt.GiveUtilityBarrier(self.characterBody, self.activatorSkillSlot);
         }
 
@@ -95,23 +88,19 @@ namespace RiskierRainContent.Items
         #region grant barrier
         public static void GiveUtilityBarrier(CharacterBody body, GenericSkill skill)
         {
-            if (skill != null)
+            if (body.healthComponent)
             {
-                GiveUtilityBarrier(body, skill.baseRechargeInterval);
-            }
-        }
-        public static void GiveUtilityBarrier(CharacterBody body, float skillBaseCooldown)
-        {
-            //body is nullchecked by getcount automatically
-            float itemCount = UtilityBelt.instance.GetCount(body);
+                //body is nullchecked by getcount automatically
+                float itemCount = UtilityBelt.instance.GetCount(body);
 
-            if (itemCount > 0f)
-            {
-                float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
-                float adjustedBarrier = (body.healthComponent.fullCombinedHealth * barrierFraction) * Mathf.Min(skillBaseCooldown / idealBaseCooldown, 3);
-                // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
-                // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
-                body.healthComponent.AddBarrier(adjustedBarrier);
+                if (itemCount > 0f)
+                {
+                    float barrierFraction = castBarrierBase + castBarrierStack * (itemCount - 1);
+                    float adjustedBarrier = (body.healthComponent.fullCombinedHealth * barrierFraction) * Mathf.Min(skill.baseRechargeInterval / idealBaseCooldown, 3);
+                    // float barrier = castBarrierBase + castBarrierStack * (itemCount - 1);
+                    // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
+                    body.healthComponent.AddBarrier(adjustedBarrier);
+                }
             }
         }
         #endregion

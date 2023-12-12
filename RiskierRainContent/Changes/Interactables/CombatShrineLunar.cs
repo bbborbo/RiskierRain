@@ -113,7 +113,36 @@ namespace RiskierRainContent.Interactables
             var cards = CreateInteractableSpawnCard();
             var favored = CreateInteractableSpawnCard(true);
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes, favored.interactableSpawnCard, favored.directorCard, favoredStages);
-            ConstructItemPool();
+            On.RoR2.Run.BuildDropTable += GalleryItemPool;
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.GoldOnHit));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.RepeatHeal));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.AutoCastEquipment));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarPrimaryReplacement));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarUtilityReplacement));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarSpecialReplacement));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.FocusConvergence));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(DLC1Content.Items.LunarSun));
+            RiskierRainContent.AIBlacklistSingleItem(nameof(DLC1Content.Items.RandomlyLunar));
+        }
+
+        private void GalleryItemPool(On.RoR2.Run.orig_BuildDropTable orig, Run self)
+        {
+            orig(self);
+            List<ItemIndex> list = new List<ItemIndex>();
+            ItemIndex itemIndex = (ItemIndex)0;
+            ItemIndex itemCount = (ItemIndex)ItemCatalog.itemCount;
+            while (itemIndex < itemCount)
+            {
+                ItemDef itemDef = ItemCatalog.GetItemDef(itemIndex);
+                if (itemDef.tier == ItemTier.Lunar && !itemDef.ContainsTag(ItemTag.AIBlacklist))
+                {
+                    list.Add(itemIndex);
+                }
+                itemIndex++;
+            }
+            itemPool = list.ToArray();
         }
 
         private void GalleryShrineActivation(On.RoR2.CombatDirector.orig_CombatShrineActivation orig, CombatDirector self, Interactor interactor, float monsterCredit, DirectorCard chosenDirectorCard)
@@ -141,6 +170,7 @@ namespace RiskierRainContent.Interactables
                 CharacterBody component2 = component.bodyPrefab.GetComponent<CharacterBody>();
                 if (component2)
                 {
+                    string nameToken = ItemCatalog.GetItemDef(itemToGive)?.nameToken;
                     Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                     {
                         subjectAsCharacterBody = interactor.GetComponent<CharacterBody>(),
@@ -148,7 +178,7 @@ namespace RiskierRainContent.Interactables
                         paramTokens = new string[]
                         {
                             component2.baseNameToken,
-                            itemToGive.nameToken
+                            nameToken
                         }
                     });
                 }                
@@ -198,22 +228,8 @@ namespace RiskierRainContent.Interactables
             self.available = false;
         }
         GameObject enemySpawned;
-        ItemDef[] itemPool = new ItemDef[8];
-        ItemDef itemToGive;
-
-        void ConstructItemPool()//probably this sucks fix later
-        {
-            itemPool[0] = LunarIncreaseCD.instance.ItemsDef;
-            //itemPool[1] = StarVeil.instance.ItemsDef;//busted
-            //itemPool[2] = RoR2Content.Items.LunarPrimaryReplacement;//pretty busted
-            itemPool[1] = RoR2Content.Items.LunarSecondaryReplacement;//untested
-            itemPool[2] = RoR2Content.Items.RandomDamageZone;
-            itemPool[3] = RoR2Content.Items.LunarBadLuck;
-            itemPool[4] = RoR2Content.Items.LunarDagger;
-            itemPool[5] = DLC1Content.Items.HalfAttackSpeedHalfCooldowns;
-            itemPool[6] = DLC1Content.Items.HalfSpeedDoubleHealth;
-            itemPool[7] = DLC1Content.Items.LunarSun;//UNTESTED LMAOOOOOO
-        }
+        ItemIndex[] itemPool;
+        ItemIndex itemToGive;
         public void ChooseItem()
         {
             int i = UnityEngine.Random.RandomRangeInt(0, itemPool.Length - 1);

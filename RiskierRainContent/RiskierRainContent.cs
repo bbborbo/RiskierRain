@@ -635,5 +635,13 @@ namespace RiskierRainContent
             return enabled;
         }
         #endregion
+        internal static void AIBlacklistSingleItem(string name)
+        {
+            ItemDef itemDef = LoadItemDef(name);
+            List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
+            itemTags.Add(ItemTag.AIBlacklist);
+
+            itemDef.tags = itemTags.ToArray();
+        }
     }
 }

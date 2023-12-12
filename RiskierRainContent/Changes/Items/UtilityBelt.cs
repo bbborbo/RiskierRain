@@ -15,7 +15,7 @@ namespace RiskierRainContent.Items
         public static List<string> blacklistedSkillNameTokens = new List<string>(1) { "MAGE_UTILITY_ICE_NAME", "ENGI_SKILL_HARPOON_NAME", "CAPTAIN_UTILITY_NAME", "CAPTAIN_UTILITY_ALT_NAME" };
         public static BuffDef utilityBeltCooldown;
         static float minBaseCooldown = 2f;
-        static float maxBaseCooldown = 15f;
+        static float maxBaseCooldown = 20f;
 
         public static float castBarrierBase = 0.02f;
         public static float castBarrierStack = 0.005f;
@@ -73,28 +73,28 @@ namespace RiskierRainContent.Items
         private void CallAirstrikeBase_OnEnter(On.EntityStates.Captain.Weapon.CallAirstrikeBase.orig_OnEnter orig, EntityStates.Captain.Weapon.CallAirstrikeBase self)
         {
             orig(self);
-            SkillLocator skillLocator = self.GetComponent<SkillLocator>();
+            SkillLocator skillLocator = self.skillLocator;
             if (skillLocator)
             {
                 GiveUtilityBarrier(self.characterBody, skillLocator.utility.baseRechargeInterval / 3);
             }
         }
 
-        private void PrepWall_OnExit(On.EntityStates.Mage.Weapon.PrepWall.orig_OnExit orig, EntityStates.Mage.Weapon.PrepWall self)
+    private void PrepWall_OnExit(On.EntityStates.Mage.Weapon.PrepWall.orig_OnExit orig, EntityStates.Mage.Weapon.PrepWall self)
+    {
+        if (!self.outer.destroying)
         {
-            if (!self.outer.destroying)
+            if (self.goodPlacement)
             {
-                if (self.goodPlacement)
+                SkillLocator skillLocator = self.skillLocator;
+                if (skillLocator)
                 {
-                    SkillLocator skillLocator = self.GetComponent<SkillLocator>();
-                    if (skillLocator)
-                    {
-                        GiveUtilityBarrier(self.characterBody, skillLocator.utility);
-                    }
+                    GiveUtilityBarrier(self.characterBody, skillLocator.utility);
                 }
             }
-            orig(self);
         }
+        orig(self);
+    }
         #endregion
 
         #region grant barrier

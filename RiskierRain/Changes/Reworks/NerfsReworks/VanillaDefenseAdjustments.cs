@@ -17,7 +17,7 @@ namespace RiskierRain
 {
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
-        #region defensepublic static float bucklerFreeArmor = 10;
+        #region defense
         public static int rapFreeArmor = 2;
         public static int knurlFreeArmor = 15;
         public static int bucklerFreeArmor = 10;
@@ -112,8 +112,6 @@ namespace RiskierRain
         #endregion
 
         #region mobility
-
-
         public static float hoofSpeedBonusBase = 0.1f; //0.14
         public static float hoofSpeedBonusStack = 0.1f; //0.14
         private void GoatHoofNerf()
@@ -268,10 +266,10 @@ namespace RiskierRain
         public static float scytheStackHeal = 3f; //4
 
         public static float monsterToothFlatHeal = 8;
-        public static float monsterToothPercentHeal = 0.03f;
+        public static float monsterToothPercentHeal = 0.00f;
 
         public static float medkitFlatHeal = 25;
-        public static float medkitPercentHeal = 0.08f;
+        public static float medkitPercentHeal = 0.00f;
 
 
         private void ScytheNerf()
@@ -288,8 +286,7 @@ namespace RiskierRain
             IL.RoR2.CharacterBody.RemoveBuff_BuffIndex += MedkitHealChange;
             LanguageAPI.Add("ITEM_MEDKIT_DESC",
                 $"2 seconds after getting hurt, <style=cIsHealing>heal</style> for " +
-                $"<style=cIsHealing>{Tools.ConvertDecimal(medkitPercentHeal)}</style> of <style=cIsHealing>maximum health</style> " +
-                $"plus an additional <style=cIsHealing>{0} health</style> <style=cStack>(+{medkitFlatHeal} FLAT per stack)</style>.");
+                $" <style=cIsHealing>{medkitFlatHeal} health</style> <style=cStack>(+{medkitFlatHeal} per stack)</style>.");
         }
 
         private void MonsterToothNerf()
@@ -297,8 +294,7 @@ namespace RiskierRain
             IL.RoR2.GlobalEventManager.OnCharacterDeath += MonsterToothHealChange;
             LanguageAPI.Add("ITEM_TOOTH_DESC",
             $"Killing an enemy spawns a <style=cIsHealing>healing orb</style> that heals for " +
-            $"<style=cIsHealing>{Tools.ConvertDecimal(monsterToothPercentHeal)}</style> of <style=cIsHealing>maximum health</style> " +
-            $"plus an additional <style=cIsHealing>{0} health</style> <style=cStack>(+{monsterToothFlatHeal} FLAT per stack)</style>.");
+            $"<style=cIsHealing>{monsterToothFlatHeal} health</style> <style=cStack>(+{monsterToothFlatHeal} per stack)</style>.");
         }
 
         private void MonsterToothHealChange(ILContext il)

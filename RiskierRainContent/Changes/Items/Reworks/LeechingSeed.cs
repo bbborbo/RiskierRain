@@ -14,7 +14,7 @@ namespace RiskierRainContent.Items
 {
     class LeechingSeed : ItemBase<LeechingSeed>
     {
-        public static float regenDurationBase = 0.5f;
+        public static float regenDurationBase = 0.25f;
         public static float regenDurationStack = 0.25f;
         public override string ItemName => "Leeching Seed";
 

@@ -45,9 +45,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable, ItemTag.LowHealth, ItemTag.Utility };
 
-        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/LunarPortalOnUse/PickupLunarPortalOnUse.prefab").WaitForCompletion();
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/RepeatHeal/PickupCorpseflower.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/LunarPortalOnUse/texLunarPortalOnUseIcon.png").WaitForCompletion();
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/RepeatHeal/texCorpseflowerIcon.png").WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -57,11 +57,12 @@ namespace RiskierRainContent.Items
         public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
+            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
         }
 
         public override void Hooks()
         {
+            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
             On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s

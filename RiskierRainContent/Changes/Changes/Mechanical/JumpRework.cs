@@ -54,7 +54,7 @@ namespace RiskierRainContent
         public float superJumpStrengthFirst = 1.2f; //2
         public float superJumpStrengthLast = 2f; //2
 
-        public static int featherJumpCount = 2;
+        public static int featherJumpCount = 1;
         public float hopooDamageBuffDuration = 0.5f;
         public static float hopooDamageIncreasePerBuff = 0.1f;
 
@@ -86,7 +86,7 @@ namespace RiskierRainContent
             OnJumpEvent += FeatherOnJump;
             //On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
             //GetStatCoefficients += FeatherDamageBoost;
-            LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Triple jump. Jumping gives you a boost of movement speed.");
+            LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Double jump. Jumping gives you a boost of movement speed.");
             LanguageAPI.Add("ITEM_FEATHER_DESC",
                 $"Gain <style=cIsUtility>{featherJumpCount}</style> jumps. " +
                 $"<style=cIsUtility>On jump</style>, increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>125%</style>, " +

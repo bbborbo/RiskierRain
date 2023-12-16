@@ -78,12 +78,13 @@ namespace RiskierRainContent
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> EnableConfig { get; set; }
 
-        public static bool isAELoaded = Tools.isLoaded("com.Borbo.ArtificerExtended");
-        public static bool isHBULoaded = Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
-        public static bool isScepterLoaded = Tools.isLoaded("com.DestroyedClone.AncientScepter");
-        public static bool autosprintLoaded = Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
-        public static bool acridLungeLoaded = Tools.isLoaded("Withor.AcridBiteLunge");
-        public static bool ucrLoaded = Tools.isLoaded("HIFU.UltimateCustomRun");
+        public static bool isAELoaded => Tools.isLoaded("com.Borbo.ArtificerExtended");
+        public static bool is2R4RLoaded => Tools.isLoaded("com.HouseOfFruits.RiskierRain");
+        public static bool isHBULoaded => Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
+        public static bool isScepterLoaded => Tools.isLoaded("com.DestroyedClone.AncientScepter");
+        public static bool autosprintLoaded => Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
+        public static bool acridLungeLoaded => Tools.isLoaded("Withor.AcridBiteLunge");
+        public static bool ucrLoaded => Tools.isLoaded("HIFU.UltimateCustomRun");
 
         public void Awake()
         {
@@ -91,6 +92,7 @@ namespace RiskierRainContent
 
             CreateExpansionDef();
             InitializeCoreModules();
+            InitializeStorms();
 
             InitializeConfig();
             InitializeItems();
@@ -99,7 +101,6 @@ namespace RiskierRainContent
             InitializeEliteEquipment();
             InitializeArtifacts();
             InitializeScavengers();
-            InitializeStorms();
             //InitializeEverything();
             Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 

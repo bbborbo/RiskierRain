@@ -80,7 +80,7 @@ namespace RiskierRainContent.Equipment
             mat.color = Color.magenta;
             EliteMaterial = mat;*/
 
-            CanAppearInEliteTiers = VanillaTier2();
+            //CanAppearInEliteTiers = VanillaTier2();
 
             CreatePulsePrefab();
             CreateEliteEquipment();
@@ -227,7 +227,7 @@ namespace RiskierRainContent.Equipment
 
                 if (etd.eliteTypes == eliteTypes)
                 {
-                    CanAppearInEliteTiers = new EliteTierDef[1] { etd };
+                    //CanAppearInEliteTiers = new EliteTierDef[1] { etd };
                 }
             }
         }

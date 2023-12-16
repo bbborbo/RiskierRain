@@ -30,7 +30,7 @@ namespace RiskierRainContent.Equipment
         {
             List<EliteTierDef> etd = new List<EliteTierDef>();
 
-            foreach (CombatDirector.EliteTierDef tier in EliteAPI.GetCombatDirectorEliteTiers())
+            foreach (CombatDirector.EliteTierDef tier in EliteAPI.VanillaEliteTiers)//EliteAPI.GetCombatDirectorEliteTiers())
             {
                 if (tier.eliteTypes.Contains(RoR2Content.Elites.Fire))
                 {
@@ -43,8 +43,9 @@ namespace RiskierRainContent.Equipment
         public EliteTierDef[] VanillaTier2()
         {
             List<EliteTierDef> etd = new List<EliteTierDef>();
+            
 
-            foreach (CombatDirector.EliteTierDef tier in EliteAPI.GetCombatDirectorEliteTiers())
+            foreach (CombatDirector.EliteTierDef tier in EliteAPI.VanillaEliteTiers)//EliteAPI.GetCombatDirectorEliteTiers())
             {
                 EliteDef[] eliteTypes = new EliteDef[2] { RoR2Content.Elites.Poison, RoR2Content.Elites.Haunted };
 
@@ -97,7 +98,6 @@ namespace RiskierRainContent.Equipment
         /// <summary>
         /// If not overriden, the elite cannot spawn in any defined tier. Use EliteTier for vanilla elites.
         /// </summary>
-        public virtual EliteTierDef[] CanAppearInEliteTiers { get; set; } = null;
         public virtual EliteTiers EliteTier { get; set; } = EliteTiers.Other;
 
         /// <summary>
@@ -126,28 +126,6 @@ namespace RiskierRainContent.Equipment
 
         protected void CreateEliteEquipment()
         {
-            #region add custom elite tier if applicable
-            var baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
-            if (CanAppearInEliteTiers != null)
-            {
-                var distinctEliteTierDefs = CanAppearInEliteTiers.Except(baseEliteTierDefs);
-
-                foreach (EliteTierDef eliteTierDef in distinctEliteTierDefs)
-                {
-                    var indexToInsertAt = Array.FindIndex(baseEliteTierDefs, x => x.costMultiplier >= eliteTierDef.costMultiplier);
-                    if (indexToInsertAt >= 0)
-                    {
-                        EliteAPI.AddCustomEliteTier(eliteTierDef, indexToInsertAt);
-                    }
-                    else
-                    {
-                        EliteAPI.AddCustomEliteTier(eliteTierDef);
-                    }
-                    baseEliteTierDefs = EliteAPI.GetCombatDirectorEliteTiers();
-                }
-            }
-            #endregion
-
             //elite buff
             EliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
             EliteBuffDef.name = EliteAffixToken;
@@ -198,7 +176,7 @@ namespace RiskierRainContent.Equipment
             Assets.eliteDefs.Add(EliteDef);
             Assets.buffDefs.Add(EliteBuffDef);
             //Assets.equipDefs.Add(EliteEquipmentDef);
-            CustomElite customElite = new CustomElite(EliteDef, CanAppearInEliteTiers);
+            CustomElite customElite = new CustomElite(EliteDef, new EliteTierDef[0]);
 
 
             #region BorboEliteDef

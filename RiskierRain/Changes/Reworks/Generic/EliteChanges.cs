@@ -25,7 +25,7 @@ namespace RiskierRain
         public static int Tier2EliteMinimumStageDrizzle = 10;
         public static int Tier2EliteMinimumStageRainstorm = 5;
         public static int Tier2EliteMinimumStageMonsoon = 3;
-        public static int Tier2EliteMinimumStageEclipse = 0;
+        public static int Tier2EliteMinimumStageEclipse = 3;
 
         static string Tier2EliteName = "Tier 2";
 
@@ -65,7 +65,7 @@ namespace RiskierRain
             DLC1Content.Elites.EarthHonor.damageBoostCoefficient = baseEliteDamageBoostCoefficient;
             DLC1Content.Elites.EarthHonor.healthBoostCoefficient = softEliteHealthBoostCoefficient / 2;
 
-            foreach (CombatDirector.EliteTierDef etd in CombatDirector.eliteTiers)
+            foreach (CombatDirector.EliteTierDef etd in EliteAPI.VanillaEliteTiers)//CombatDirector.eliteTiers)
             {
                 //Debug.Log(etd.eliteTypes[0].name);
                 if (etd.eliteTypes[0] == RoR2Content.Elites.Poison || etd.eliteTypes[0] == RoR2Content.Elites.Haunted)

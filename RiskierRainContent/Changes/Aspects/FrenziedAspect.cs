@@ -94,7 +94,7 @@ namespace RiskierRainContent.Equipment
             mat.color = Color.yellow;
             EliteMaterial = mat;*/
 
-            CanAppearInEliteTiers = VanillaTier1();
+            //CanAppearInEliteTiers = VanillaTier1();
 
             CreateEliteEquipment();
             CreateLang();

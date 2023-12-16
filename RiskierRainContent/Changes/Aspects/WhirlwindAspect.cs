@@ -32,11 +32,12 @@ namespace RiskierRainContent.Changes.Aspects
 
 
         public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteHaunted/texBuffAffixLightning.png").WaitForCompletion();
-        public override Color EliteBuffColor => Color.cyan;
+        public override Color EliteBuffColor => Color.gray;
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
-        //public override string EliteRampTextureName { get; set; } = "texRampLeeching";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
+        public override string EliteRampTextureName { get; set; } = "texRampLeeching";
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
+        //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
 
         public override bool CanDrop { get; } = false;
 
@@ -55,7 +56,10 @@ namespace RiskierRainContent.Changes.Aspects
 
         public override void Init(ConfigFile config)
         {
-
+            CreateEliteEquipment();
+            CreateLang();
+            CreateElite();
+            Hooks();
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)

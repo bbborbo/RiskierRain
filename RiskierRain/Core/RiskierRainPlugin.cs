@@ -19,6 +19,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using BorboStatUtils;
 using ChillRework;
+using MonoMod.RuntimeDetour;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -130,11 +131,10 @@ namespace RiskierRain
         {
             IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
 
-            On.RoR2.CharacterBody.RecalculateStats += (orig, self) =>
-            {
-                orig(self);
-                self.oneShotProtectionFraction = -1;
-            };
+            Hook ospHook = new Hook(
+              typeof(CharacterBody).GetMethod("get_hasOneShotProtection", (BindingFlags)(-1)),
+              typeof(RiskierRainPlugin).GetMethod(nameof(FuckOsp), (BindingFlags)(-1))
+            );
 
             ///summary
             ///- nerfs healing
@@ -718,6 +718,12 @@ namespace RiskierRain
 
             #endregion
         }
+
+        public static bool FuckOsp(orig_getHasOneShotProtection orig, CharacterBody self)
+        {
+            return false;
+        }
+        public delegate bool orig_getHasOneShotProtection(CharacterBody self);
 
         #region modify items and equips
         static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)

@@ -77,20 +77,20 @@ namespace RiskierRainContent.Items
         }
         void ScugBlast(CharacterBody body, int itemCount)
         {
-
             EffectManager.SpawnEffect(scugNovaEffectPrefab, new EffectData
             {
                 origin = body.transform.position,
                 scale = radiusBase
             }, true);
-            ApplyChillSphere(body, itemCount);
+            ChillRework.ChillRework.ApplyChillSphere(body.corePosition, radiusBase, body.teamComponent.teamIndex, durationBase + durationStack * (itemCount - 1));
             BlastAttack scugNova = new BlastAttack()
             {
                 baseDamage = body.damage,
                 radius = radiusBase,
-                procCoefficient = 0.5f,
+                procCoefficient = 0f,
                 position = body.transform.position,
                 attacker = body.gameObject,
+                baseForce = 900,
                 crit = Util.CheckRoll(body.crit, body.master),
                 falloffModel = BlastAttack.FalloffModel.None,
                 damageType = DamageType.Generic,
@@ -117,32 +117,6 @@ namespace RiskierRainContent.Items
                 scugBuff.isHidden = true;
             };
             Assets.buffDefs.Add(scugBuff);
-        }
-
-        static void ApplyChillSphere(CharacterBody body, int itemCount)
-        {
-            Vector3 corePosition = body.corePosition;
-            scugSphereSearch.origin = corePosition;
-            scugSphereSearch.mask = LayerIndex.entityPrecise.mask;
-            scugSphereSearch.radius = radiusBase;
-            scugSphereSearch.RefreshCandidates();
-            scugSphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(body.teamComponent.teamIndex));
-            scugSphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
-            scugSphereSearch.OrderCandidatesByDistance();
-            scugSphereSearch.GetHurtBoxes(scugOnKillHurtBoxBuffer);
-            scugSphereSearch.ClearCandidates();
-
-            float currentDuration = durationBase + durationStack * (itemCount - 1);
-            for (int i = 0; i < scugOnKillHurtBoxBuffer.Count; i++)
-            {
-                HurtBox hurtBox = scugOnKillHurtBoxBuffer[i];
-                CharacterBody vBody = hurtBox.healthComponent?.body;
-                if (vBody)
-                {
-                    ChillRework.ChillRework.ApplyChillStacks(vBody, 100, 3, currentDuration);
-                }
-            }
-            scugOnKillHurtBoxBuffer.Clear();
         }
 
 

@@ -3,6 +3,7 @@ using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
 using RoR2;
+using System.Collections.Generic;
 using System.Security.Permissions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -33,6 +34,7 @@ namespace ChillRework
 
         public static BuffDef ChillBuff;
         public static ModdedDamageType ChillOnHit;
+        public static ModdedDamageType MultiChillOnHit;
         public const string chillKeywordToken = "2R4R_KEYWORD_CHILL";
         public const int chillStacksMax = 10;
         public const int chillStacksOnFreeze = 3;
@@ -52,6 +54,7 @@ namespace ChillRework
             ChillBuff = Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Common/bdSlow80.asset").WaitForCompletion();
             ChillBuff.canStack = true;
             ChillOnHit = ReserveDamageType();
+            MultiChillOnHit = ReserveDamageType();
             ChillHooks();
         }
         public void LangFixes()
@@ -84,5 +87,57 @@ namespace ChillRework
                 "<style=cIsUtility>Freezing</style>. Create a barrier that hurts enemies for " +
                 "up to <style=cIsDamage>12x100% damage</style>.");
         }
+
+        #region interface
+        public static void ApplyChillStacks(CharacterMaster attackerMaster, CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration)
+        {
+            ApplyChillStacks(vBody, procChance, chillCount, chillDuration, attackerMaster ? attackerMaster.luck : 1);
+        }
+        public static void ApplyChillStacks(CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration, float luck = 1)
+        {
+            for (int i = 0; i < chillCount; i++)
+            {
+                if (Util.CheckRoll(procChance, luck))
+                {
+                    vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
+                }
+            }
+
+            //i made this super unreadable because its funny
+            /*if (chillCount <= 0)
+                return;
+            if (Util.CheckRoll(procChance, attackerMaster))
+            {
+                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
+            }
+            ApplyChillStacks(attackerMaster, vBody, procChance, chillCount--, chillDuration);*/
+        }
+
+        public static void ApplyChillSphere(Vector3 origin, float radius, TeamIndex teamIndex, float duration = chillProcDuration)
+        {
+            SphereSearch chillSphere = new SphereSearch();
+            chillSphere.origin = origin;
+            chillSphere.mask = LayerIndex.entityPrecise.mask;
+            chillSphere.radius = radius;
+            chillSphere.RefreshCandidates();
+            chillSphere.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(teamIndex));
+            chillSphere.FilterCandidatesByDistinctHurtBoxEntities();
+            chillSphere.OrderCandidatesByDistance();
+            List<HurtBox> hurtboxBuffer = new List<HurtBox>();
+            chillSphere.GetHurtBoxes(hurtboxBuffer);
+            chillSphere.ClearCandidates();
+
+            for (int i = 0; i < hurtboxBuffer.Count; i++)
+            {
+                HurtBox hurtBox = hurtboxBuffer[i];
+                CharacterBody vBody = hurtBox.healthComponent?.body;
+                if (vBody)
+                {
+                    ApplyChillStacks(vBody, 100, 3, duration);
+                }
+            }
+            hurtboxBuffer.Clear();
+        }
+        #endregion
     }
 }

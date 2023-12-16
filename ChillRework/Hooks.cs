@@ -123,30 +123,6 @@ namespace ChillRework
             orig(self, damageInfo, victim);
         }
 
-        public static void ApplyChillStacks(CharacterMaster attackerMaster, CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration)
-        {
-            ApplyChillStacks(vBody, procChance, chillCount, chillDuration, attackerMaster ? attackerMaster.luck : 1);
-        }
-        public static void ApplyChillStacks(CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration, float luck = 1)
-        {
-            //i made this super unreadable because its funny
-            for (int i = 0; i < chillCount; i++)
-            {
-                if (Util.CheckRoll(procChance, luck))
-                {
-                    vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
-                }
-            }
-
-            /*if (chillCount <= 0)
-                return;
-            if (Util.CheckRoll(procChance, attackerMaster))
-            {
-                vBody.AddTimedBuffAuthority(RoR2Content.Buffs.Slow80.buffIndex, chillDuration);
-            }
-            ApplyChillStacks(attackerMaster, vBody, procChance, chillCount--, chillDuration);*/
-        }
-
         private void CapChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
         {
             if (buffType == RoR2Content.Buffs.Slow80.buffIndex && self.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax)

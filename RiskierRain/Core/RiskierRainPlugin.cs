@@ -130,6 +130,12 @@ namespace RiskierRain
         {
             IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
 
+            On.RoR2.CharacterBody.RecalculateStats += (orig, self) =>
+            {
+                orig(self);
+                self.oneShotProtectionFraction = -1;
+            };
+
             ///summary
             ///- nerfs healing
             ///- nerfs mobility

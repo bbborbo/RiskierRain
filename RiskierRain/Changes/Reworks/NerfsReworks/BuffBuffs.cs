@@ -11,6 +11,7 @@ using static RiskierRain.CoreModules.StatHooks;
 using static R2API.RecalculateStatsAPI;
 using EntityStates;
 using RiskierRain.CoreModules;
+using System.Runtime.CompilerServices;
 
 namespace RiskierRain
 {
@@ -155,13 +156,33 @@ namespace RiskierRain
 
         void BuffSlows()
         {
-            BorboStatCoefficients += AttackSpeedSlows;
+            //BorboStatCoefficients += AttackSpeedSlows;
+            GetStatCoefficients += AttackSpeedSlowCoefficient;
             LanguageAPI.Add("ITEM_SLOWONHIT_DESC",
                 "<style=cIsUtility>Slow</style> enemies on hit for <style=cIsUtility>-60% movement speed and attack speed</style> " +
                 "for <style=cIsUtility>2s</style> <style=cStack>(+2s per stack)</style>.");
 
             //this.templarPrefab.GetComponent<CharacterBody>().baseAttackSpeed *= 1 + kitSlowAspdReduction;
             this.chimeraWispPrefab.GetComponent<CharacterBody>().baseAttackSpeed = 0.7f;
+        }
+
+        private void AttackSpeedSlowCoefficient(CharacterBody sender, StatHookEventArgs args)
+        {
+            float aspdSlowCoefficient = 0;
+
+            if (sender.HasBuff(RoR2Content.Buffs.ClayGoo)) //tar
+                aspdSlowCoefficient += tarSlowAspdReduction;
+            if (sender.HasBuff(RoR2Content.Buffs.Slow50)) //kit
+                aspdSlowCoefficient += kitSlowAspdReduction;
+            if (sender.HasBuff(RoR2Content.Buffs.Slow60)) //chronobauble
+                aspdSlowCoefficient += chronoSlowAspdReduction;
+            int chillCount = sender.GetBuffCount(RoR2Content.Buffs.Slow80);
+            if (chillCount > 0) //cold
+            {
+                aspdSlowCoefficient += GetChillAspdSlowCoefficient(chillCount);
+            }
+
+            args.attackSpeedReductionMultAdd += aspdSlowCoefficient;
         }
 
         private void AttackSpeedSlows(CharacterBody sender, BorboStatHookEventArgs args)
@@ -174,10 +195,24 @@ namespace RiskierRain
                 aspdDecreaseAmt += kitSlowAspdReduction;
             if (sender.HasBuff(RoR2Content.Buffs.Slow60)) //chronobauble
                 aspdDecreaseAmt += chronoSlowAspdReduction;
-            if (sender.HasBuff(RoR2Content.Buffs.Slow80)) //cold
-                aspdDecreaseAmt += chillSlowAspdReduction;
+            int chillCount = sender.GetBuffCount(RoR2Content.Buffs.Slow80);
+            if (chillCount > 0) //cold
+            {
+                aspdDecreaseAmt += GetChillAspdSlowCoefficient(chillCount);
+            }
 
             args.attackSpeedDivAdd += aspdDecreaseAmt;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static float GetChillAspdSlowCoefficient(int chillCount)
+        {
+            float slowCoefficient = chillSlowAspdReduction;
+            if (Tools.isLoaded("com.HouseOfFruits.ChillRework"))
+            {
+                slowCoefficient = ChillRework.ChillRework.CalculateChillSlowCoefficient(chillCount, slowCoefficient);
+            }
+            return slowCoefficient;
         }
         #endregion
 

@@ -113,7 +113,7 @@ namespace ChillRework
             ApplyChillStacks(attackerMaster, vBody, procChance, chillCount--, chillDuration);*/
         }
 
-        public static void ApplyChillSphere(Vector3 origin, float radius, TeamIndex teamIndex, float duration = chillProcDuration)
+        public static void ApplyChillSphere(Vector3 origin, float radius, TeamIndex teamIndex, float duration = chillProcDuration, float chillCount = 3)
         {
             SphereSearch chillSphere = new SphereSearch();
             chillSphere.origin = origin;
@@ -133,10 +133,15 @@ namespace ChillRework
                 CharacterBody vBody = hurtBox.healthComponent?.body;
                 if (vBody)
                 {
-                    ApplyChillStacks(vBody, 100, 3, duration);
+                    ApplyChillStacks(vBody, 100, chillCount, duration);
                 }
             }
             hurtboxBuffer.Clear();
+        }
+
+        public static float CalculateChillSlowCoefficient(int chillStacks, float baseSlowCoefficient = 0.8f)
+        {
+            return Mathf.Lerp(0, baseSlowCoefficient * 2, chillStacks / chillStacksMax);
         }
         #endregion
     }

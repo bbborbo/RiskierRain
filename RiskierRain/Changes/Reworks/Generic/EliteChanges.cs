@@ -18,7 +18,9 @@ namespace RiskierRain
     {
         float softEliteHealthBoostCoefficient = 2f; //3
         float baseEliteHealthBoostCoefficient = 3f; //4
+        float T2EliteHealthBoostCoefficient = 9; //18
         float baseEliteDamageBoostCoefficient = 1.5f; //2
+        float T2EliteDamageBoostCoefficient = 4.5f; //6
         public static float overloadingBombDamage = 1.5f; //0.5f
 
         public static int Tier2EliteMinimumStageDefault = 5;

@@ -25,6 +25,9 @@ namespace RiskierRainContent.Changes.Aspects
         public override string EliteEquipmentFullDescription => "";
 
         public override string EliteEquipmentLore => "";
+        public override float EliteHealthModifier => 9f;
+
+        public override float EliteDamageModifier => 4.5f;
 
         public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

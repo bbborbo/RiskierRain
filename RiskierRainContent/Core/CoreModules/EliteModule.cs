@@ -29,7 +29,7 @@ namespace RiskierRainContent.CoreModules
                 {
                     case EliteTiers.Tier1:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
                         break;
                     case EliteTiers.Tier2:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.eliteDef);
@@ -50,6 +50,7 @@ namespace RiskierRainContent.CoreModules
         public class CustomEliteDef : ScriptableObject
         {
             public EliteDef eliteDef;
+            public EliteDef honorEliteDef;
             public EliteTiers eliteTier;
             public Color lightColor = Color.clear;
             public Texture eliteRamp;

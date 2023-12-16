@@ -36,6 +36,9 @@ namespace RiskierRainContent.Equipment
         public override string EliteEquipmentLore => "";
 
         public override string EliteModifier => "Serpentine";
+        public override float EliteHealthModifier => 9f;
+
+        public override float EliteDamageModifier => 4.5f;
 
         public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

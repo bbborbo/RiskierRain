@@ -12,7 +12,7 @@ using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Equipment
 {
-    class FrenziedAspect : EliteEquipmentBase<FrenziedAspect>
+    class FrenziedAspect : T1EliteEquipmentBase<FrenziedAspect>
     {
         public override string EliteEquipmentName => "Chir\u2019s Tempo"; //momentum, tempo, alacrity, velocity
 
@@ -25,6 +25,7 @@ namespace RiskierRainContent.Equipment
         public override string EliteEquipmentFullDescription => "Increase movement, attack, and ability recharge speed.";
 
         public override string EliteEquipmentLore => "";
+        public override float EliteHealthModifier => 2f; //soft elite health modifier, as opposed to 3f
 
         public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
@@ -33,7 +34,6 @@ namespace RiskierRainContent.Equipment
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matFrenzied.mat");
         public override string EliteRampTextureName { get; set; } = "texRampFrenzied";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
 
         public override bool CanDrop { get; } = false;
 

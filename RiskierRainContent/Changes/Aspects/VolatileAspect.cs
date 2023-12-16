@@ -15,7 +15,7 @@ using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Equipment
 {
-    class VolatileAspect : EliteEquipmentBase
+    class VolatileAspect : T1EliteEquipmentBase<VolatileAspect>
     {
         public override string EliteEquipmentName => "Bava\u2019s Refrain";
 
@@ -35,7 +35,6 @@ namespace RiskierRainContent.Equipment
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
         public override string EliteRampTextureName { get; set; } = "texRampVolatile";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
 
         public override bool CanDrop { get; } = false;
 

@@ -12,8 +12,11 @@ using static RiskierRainContent.CoreModules.EliteModule;
 
 namespace RiskierRainContent.Changes.Aspects
 {
-    class SurgingAspect : EliteEquipmentBase<SurgingAspect>
+    class SurgingAspect : T1EliteEquipmentBase<SurgingAspect>
     {
+        //VERY important
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
+
         public override string EliteAffixToken => "AFFIX_SURGE";
 
         public override string EliteModifier => "Surging";
@@ -36,7 +39,6 @@ namespace RiskierRainContent.Changes.Aspects
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         public override string EliteRampTextureName { get; set; } = "texRampLeeching";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
         //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
 
         public override bool CanDrop { get; } = false;

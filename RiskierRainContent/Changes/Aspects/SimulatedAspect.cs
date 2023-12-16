@@ -30,6 +30,9 @@ namespace RiskierRainContent.Equipment
         public override string EliteEquipmentLore => "";
 
         public override string EliteModifier => "Simulated";
+        public override float EliteHealthModifier => 0.7f; //voidtouched 1.5f
+
+        public override float EliteDamageModifier => 2f; //voidtouched 0.7f, t1 1.5f/2f
 
         public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 

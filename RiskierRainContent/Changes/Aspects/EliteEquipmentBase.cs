@@ -66,6 +66,8 @@ namespace RiskierRainContent.Equipment
         public abstract string EliteEquipmentFullDescription { get; }
         public abstract string EliteEquipmentLore { get; }
         public abstract string EliteModifier { get; }
+        public abstract float EliteHealthModifier { get; }
+        public abstract float EliteDamageModifier { get; }
 
         public virtual bool AppearsInSinglePlayer { get; } = true;
 
@@ -124,7 +126,7 @@ namespace RiskierRainContent.Equipment
 
         }
 
-        protected void CreateEliteEquipment()
+        protected virtual void CreateEliteEquipment()
         {
             //elite buff
             EliteBuffDef = ScriptableObject.CreateInstance<BuffDef>();
@@ -180,12 +182,7 @@ namespace RiskierRainContent.Equipment
 
 
             #region BorboEliteDef
-            CustomEliteDef BED = ScriptableObject.CreateInstance<CustomEliteDef>();
-            BED.eliteDef = EliteDef;
-            BED.eliteTier = EliteTier;
-            BED.eliteRamp = Assets.mainAssetBundle.LoadAsset<Texture>(Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
-            BED.overlayMaterial = EliteOverlayMaterial;
-            BED.spawnEffect = null;
+            CustomEliteDef BED = GetCustomElite();
             EliteModule.Elites.Add(BED);
 
             //CustomElite customElite = new CustomElite(EliteModifier, EliteEquipmentDef, EliteBuffColor, EliteAffixToken, EliteAPI.GetCombatDirectorEliteTiers());
@@ -203,6 +200,17 @@ namespace RiskierRainContent.Equipment
             {
                 On.RoR2.CharacterBody.FixedUpdate += OverlayManager;
             }
+        }
+
+        protected virtual CustomEliteDef GetCustomElite()
+        {
+            CustomEliteDef customElite = ScriptableObject.CreateInstance<CustomEliteDef>();
+            customElite.eliteDef = EliteDef;
+            customElite.eliteTier = EliteTier;
+            customElite.eliteRamp = Assets.mainAssetBundle.LoadAsset<Texture>(Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
+            customElite.overlayMaterial = EliteOverlayMaterial;
+            customElite.spawnEffect = null;
+            return customElite;
         }
 
         private void OverlayManager(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)

@@ -16,6 +16,7 @@ namespace RiskierRainContent.Items
 {
     class BottleCloud : ItemBase<BottleCloud>
     {
+        public static float verticalBonusOnCloudJump = 0.15f;
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Cloud In A Bottle";
 
@@ -131,7 +132,7 @@ namespace RiskierRainContent.Items
             OnJumpEvent -= CloudBottleJump;
         }
 
-        private void CloudBottleJump(CharacterMotor motor)
+        private void CloudBottleJump(CharacterMotor motor, ref float verticalBonus)
         {
             if (cooldownTimer > 0)
                 return;
@@ -172,6 +173,7 @@ namespace RiskierRainContent.Items
             {
                 cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
                 BottleCloud.CreateNinjaSmokeBomb(motor.body);
+                verticalBonus += BottleCloud.verticalBonusOnCloudJump;
             }
             else if (IsLastJump(motor, body))
             {

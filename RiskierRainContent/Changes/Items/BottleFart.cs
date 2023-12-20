@@ -25,7 +25,7 @@ namespace RiskierRainContent.Items
 
         public override string ItemLangTokenName => "FARTBOTTLE";
 
-        public override string ItemPickupDesc => "Gain an extra jump. Jumping near enemies produces a toxic gas that deals damage over time. " +
+        public override string ItemPickupDesc => "Gain an extra jump. Jumping near enemies cripples and damages them. " +
             "<style=cIsVoid>Corrupts all Cloud In A Bottles.</style>";
 
         public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
@@ -155,7 +155,7 @@ namespace RiskierRainContent.Items
             OnJumpEvent -= CloudBottleJump;
         }
 
-        private void CloudBottleJump(CharacterMotor motor)
+        private void CloudBottleJump(CharacterMotor motor, ref float verticalBonus)
         {
             if (cooldownTimer > 0)
                 return;
@@ -192,6 +192,7 @@ namespace RiskierRainContent.Items
             if (num > 0)
             {
                 BottleFart.CreateFartCloud(motor.body, stack);
+                verticalBonus += BottleCloud.verticalBonusOnCloudJump;
                 cooldownTimer = cooldownDuration;// * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
             }
         }

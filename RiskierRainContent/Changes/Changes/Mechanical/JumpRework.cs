@@ -67,7 +67,7 @@ namespace RiskierRainContent
 
         public static int jarJumpCount = 1;
 
-        public static event Action<CharacterMotor> OnJumpEvent;
+
         void JumpReworks()
         {
             IL.RoR2.CharacterBody.RecalculateStats += JumpReworkJumpCount;
@@ -83,7 +83,7 @@ namespace RiskierRainContent
         float featherStackDuration = 0.5f;
         private void FeatherRework()
         {
-            OnJumpEvent += FeatherOnJump;
+            JumpStatHook.OnJumpEvent += FeatherOnJump;
             //On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
             //GetStatCoefficients += FeatherDamageBoost;
             LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Double jump. Jumping gives you a boost of movement speed.");
@@ -115,7 +115,7 @@ namespace RiskierRainContent
             }
         }
 
-        private void FeatherOnJump(CharacterMotor motor)
+        private void FeatherOnJump(CharacterMotor motor, ref float verticalBonus)
         {
             CharacterBody body = motor.body;
             if (body)
@@ -234,7 +234,7 @@ namespace RiskierRainContent
         #region mired urn
         private void MiredUrnRework()
         {
-            OnJumpEvent += UrnOnJump;
+            JumpStatHook.OnJumpEvent += UrnOnJump;
             On.RoR2.Items.SiphonOnLowHealthItemBodyBehavior.OnEnable += VoidVanillaUrnBehavior;
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_PICKUP", "Triple jump. Jumping fires tar balls in front of you.");
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_DESC",
@@ -251,7 +251,7 @@ namespace RiskierRainContent
             Destroy(self);
         }
 
-        private void UrnOnJump(CharacterMotor motor)
+        private void UrnOnJump(CharacterMotor motor, ref float verticalBonus)
         {
             CharacterBody body = motor.body;
             if (body.outOfDanger)
@@ -355,21 +355,30 @@ namespace RiskierRainContent
         private void DoJumpEvent(On.EntityStates.GenericCharacterMain.orig_ApplyJumpVelocity orig, 
             CharacterMotor characterMotor, CharacterBody characterBody, float horizontalBonus, float verticalBonus, bool vault)
         {
-            OnJumpEvent?.Invoke(characterMotor);
+            //OnJumpEvent?.Invoke(characterMotor, ref verticalBonus);
+            JumpStatHook.InvokeJumpHook(characterMotor, ref verticalBonus);
             orig(characterMotor, characterBody, horizontalBonus, verticalBonus, vault);
         }
     }
 
     public class JumpStatHook
     {
-        public delegate void StatHookEventHandler(CharacterBody sender, ref int jumpCount);
-        public static event StatHookEventHandler JumpStatCoefficient;
+        public delegate void JumpStatHandler(CharacterBody sender, ref int jumpCount);
+        public static event JumpStatHandler JumpStatCoefficient;
 
         public static int InvokeStatHook(CharacterBody self)
         {
             int jumpCount = 0;
             JumpStatCoefficient?.Invoke(self, ref jumpCount);
             return jumpCount;
+        }
+
+        public delegate void OnJumpHandler(CharacterMotor sender, ref float verticalBonus);
+        public static event OnJumpHandler OnJumpEvent;
+        public static float InvokeJumpHook(CharacterMotor self, ref float verticalBonus)
+        {
+            OnJumpEvent?.Invoke(self, ref verticalBonus);
+            return verticalBonus;
         }
     }
 }

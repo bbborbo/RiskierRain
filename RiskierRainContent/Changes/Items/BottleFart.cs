@@ -30,8 +30,8 @@ namespace RiskierRainContent.Items
 
         public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
             $"produces a <style=cIsDamage>toxic gas</style>, " +
-            $"dealing <style=cIsDamage>{Tools.ConvertDecimal(fartBaseDamageCoefficient * damageCoefficientPerSecond)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient * damageCoefficientPerSecond)} per stack)</style> damage per second. " +
+            $"dealing <style=cIsDamage>{Tools.ConvertDecimal(fartBaseDamageCoefficient * resetFrequency)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient * resetFrequency)} per stack)</style> damage per second. " +
             $"Cannot be reactivated for <style=cIsUtility>{FartBottleBehavior.cooldownDuration}</style> seconds. " +
             $"<style=cIsVoid>Corrupts all Cloud In A Bottles.</style>";
 
@@ -99,7 +99,6 @@ namespace RiskierRainContent.Items
 
         static GameObject fartZone;
         static float resetFrequency = 3f;
-        static float damageCoefficientPerSecond = 1f;
         private void CreateProjectile()
         {
             GameObject mushroomGas = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MiniMushroom/SporeGrenadeProjectileDotZone.prefab").WaitForCompletion();
@@ -114,12 +113,14 @@ namespace RiskierRainContent.Items
             if (pdz)
             {
                 pdz.resetFrequency = resetFrequency;
-                pdz.damageCoefficient = 1;
+                pdz.damageCoefficient = 1 / resetFrequency;
+                pdz.overlapProcCoefficient = (1 / resetFrequency) / (3);
+                pdz.projectileDamage.damageType = DamageType.CrippleOnHit;
             }
         }
 
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
-        internal static float smokeBombRadius = 8f;
+        internal static float smokeBombRadius = 9f;
         static float fartBaseDamageCoefficient = 3f;
         static float fartStackDamageCoefficient = 2f;
         static float smokeBombProcCoefficient = 1f;

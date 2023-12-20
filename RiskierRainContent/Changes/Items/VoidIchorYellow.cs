@@ -13,13 +13,13 @@ namespace RiskierRainContent.Items
 {
     class VoidIchorYellow : ItemBase<VoidIchorYellow>
     {
-        int healthBase = 25;
-        int healthStack = 25;
+        float regenBase = .6f;
+        float regenStack = .6f;
         public override string ItemName => "Ichor (yellow)";
 
         public override string ItemLangTokenName => "ICHORYELLOW";
 
-        public override string ItemPickupDesc => "Gain flat health. Corrupts all Soldier's Syringes.";
+        public override string ItemPickupDesc => "Gain health regeneration. Corrupts all Soldier's Syringes.";
 
         public override string ItemFullDescription => "";
 
@@ -40,13 +40,13 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            RecalculateStatsAPI.GetStatCoefficients += IchorHealthBoost;
+            RecalculateStatsAPI.GetStatCoefficients += IchorRegenBoost;
         }
 
-        private void IchorHealthBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+        private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            args.baseHealthAdd += healthBase + (healthStack * (itemCount - 1));
+            args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1));
         }
 
         public override void Init(ConfigFile config)

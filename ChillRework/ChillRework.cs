@@ -21,7 +21,7 @@ namespace ChillRework
     [BepInDependency(R2API.DamageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInPlugin(guid, modName, version)]
-    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]
+    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI), nameof(RecalculateStatsAPI))]
     public partial class ChillRework : BaseUnityPlugin
     {
         #region plugin info
@@ -29,7 +29,7 @@ namespace ChillRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "HouseOfFruits";
         public const string modName = "ChillRework";
-        public const string version = "1.1.0";
+        public const string version = "1.2.1";
         #endregion
 
         public static BuffDef ChillBuff;

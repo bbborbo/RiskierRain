@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.DamageAPI;
+using static R2API.RecalculateStatsAPI;
 
 namespace ChillRework
 {
@@ -35,7 +36,18 @@ namespace ChillRework
             On.RoR2.GlobalEventManager.OnHitEnemy += ChillOnHitHook;
             On.RoR2.CharacterBody.AddBuff_BuffIndex += CapChillStacks;
             IL.RoR2.GlobalEventManager.OnHitEnemy += IceRingMultiChill;
-            IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
+            //IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
+            GetStatCoefficients += ChillStats;
+        }
+
+        private void ChillStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            int chillCount = sender.GetBuffCount(RoR2Content.Buffs.Slow80);
+            if(chillCount > 0)
+            {
+                args.moveSpeedReductionMultAdd -= 0.8f;
+                args.moveSpeedReductionMultAdd += CalculateChillSlowCoefficient(chillCount);
+            }
         }
 
         private void ChillStatRework(ILContext il)
@@ -43,13 +55,11 @@ namespace ChillRework
             ILCursor c = new ILCursor(il);
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2Content/Buffs", "Slow80"),
-                x => x.MatchCallOrCallvirt<RoR2.CharacterBody>(nameof(CharacterBody.HasBuff))
+                x => x.MatchLdsfld("RoR.RoR2Content/Buffs", "Slow80")
                 );
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdloc(out _),
-                x => x.MatchLdcR4(out _)
+                x => x.MatchLdcR4(out _) //0.8, chill slow coefficient
                 );
             c.Emit(OpCodes.Ldarg_0);//CharacterBody self
             c.EmitDelegate<Func<float, CharacterBody, float>>((baseSlowCoefficient, body) =>

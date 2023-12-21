@@ -20,6 +20,13 @@ namespace RiskierRainContent.Items
 {
     class BottleFart : ItemBase<BottleFart>
     {
+        static GameObject fartZone;
+        static float resetFrequency = 3f;
+        static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
+        internal static float smokeBombRadius = 9f;
+        static float fartBaseDamageCoefficient = 2f;
+        static float fartStackDamageCoefficient = 2f;
+
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Sealed Pestilence";
 
@@ -31,7 +38,8 @@ namespace RiskierRainContent.Items
         public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
             $"produces a <style=cIsDamage>toxic gas</style>, " +
             $"dealing <style=cIsDamage>{Tools.ConvertDecimal(fartBaseDamageCoefficient * resetFrequency)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient * resetFrequency)} per stack)</style> damage per second. " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient * resetFrequency)} per stack)</style> damage per second " +
+            $"and Crippling enemies inside. " +
             $"Cannot be reactivated for <style=cIsUtility>{FartBottleBehavior.cooldownDuration}</style> seconds. " +
             $"<style=cIsVoid>Corrupts all Cloud In A Bottles.</style>";
 
@@ -96,9 +104,6 @@ namespace RiskierRainContent.Items
             //CreateBuff();
             Hooks();
         }
-
-        static GameObject fartZone;
-        static float resetFrequency = 3f;
         private void CreateProjectile()
         {
             GameObject mushroomGas = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MiniMushroom/SporeGrenadeProjectileDotZone.prefab").WaitForCompletion();
@@ -122,11 +127,7 @@ namespace RiskierRainContent.Items
                 dmg.damageType = DamageType.CrippleOnHit;
         }
 
-        static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
-        internal static float smokeBombRadius = 9f;
-        static float fartBaseDamageCoefficient = 3f;
-        static float fartStackDamageCoefficient = 2f;
-        static float smokeBombProcCoefficient = 1f;
+
         internal static void CreateFartCloud(CharacterBody self, int stack)
         {
             if (fartZone == null)
@@ -144,7 +145,7 @@ namespace RiskierRainContent.Items
 
     public class FartBottleBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 3;
+        public static float cooldownDuration = 5;
         public static float cooldownReductionPerStack = 0.2f;
         float cooldownTimer = 0;
         float bombRadiusSqr;

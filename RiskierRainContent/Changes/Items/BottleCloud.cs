@@ -17,6 +17,10 @@ namespace RiskierRainContent.Items
     class BottleCloud : ItemBase<BottleCloud>
     {
         public static float verticalBonusOnCloudJump = 0.15f;
+        static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
+        internal static float smokeBombRadius = 13f;
+        static float smokeBombDamageCoefficient = 1f;
+        static float smokeBombProcCoefficient = 1f;
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Cloud In A Bottle";
 
@@ -78,10 +82,6 @@ namespace RiskierRainContent.Items
             Hooks();
         }
 
-        static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
-        internal static float smokeBombRadius = 13f;
-        static float smokeBombDamageCoefficient = 1f;
-        static float smokeBombProcCoefficient = 1f;
         internal static void CreateNinjaSmokeBomb(CharacterBody self)
         {
             BlastAttack blastAttack = new BlastAttack();
@@ -117,8 +117,8 @@ namespace RiskierRainContent.Items
 
     public class CloudBottleBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 7;
-        public static float cooldownReductionPerStack = 0.2f;
+        public static float cooldownDuration = 15;
+        public static float cooldownReductionPerStack = 0.1f;
         float cooldownTimer = 0;
         float bombRadiusSqr;
 

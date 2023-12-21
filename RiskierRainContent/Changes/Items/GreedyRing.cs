@@ -70,7 +70,7 @@ Of course, you can always buy the premium version for unlimited discounts~
         {
             orig(context);
             CharacterMaster activatorMaster = context.activatorMaster;
-            if (activatorMaster && activatorMaster.hasBody)
+            if (activatorMaster && activatorMaster.hasBody && context.cost != 0)
             {
                 CharacterBody body = activatorMaster.GetBody();
                 int stack = GetCount(body);

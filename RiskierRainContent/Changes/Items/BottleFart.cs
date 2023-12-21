@@ -102,10 +102,10 @@ namespace RiskierRainContent.Items
         private void CreateProjectile()
         {
             GameObject mushroomGas = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MiniMushroom/SporeGrenadeProjectileDotZone.prefab").WaitForCompletion();
-            fartZone = mushroomGas.InstantiateClone("FartJarGas", true);
-
             if (mushroomGas == null)
                 return;
+
+            fartZone = mushroomGas.InstantiateClone("FartJarGas", true);
 
             fartZone.transform.localScale = Vector3.one * smokeBombRadius / 6;
 
@@ -115,8 +115,11 @@ namespace RiskierRainContent.Items
                 pdz.resetFrequency = resetFrequency;
                 pdz.damageCoefficient = 1 / resetFrequency;
                 pdz.overlapProcCoefficient = (1 / resetFrequency) / (3);
-                pdz.projectileDamage.damageType = DamageType.CrippleOnHit;
             }
+
+            ProjectileDamage dmg = fartZone.GetComponent<ProjectileDamage>();
+            if(dmg != null)
+                dmg.damageType = DamageType.CrippleOnHit;
         }
 
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");

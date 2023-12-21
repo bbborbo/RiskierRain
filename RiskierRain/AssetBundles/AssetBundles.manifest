@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 215759040
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: orangecontent
+      Dependencies: {}

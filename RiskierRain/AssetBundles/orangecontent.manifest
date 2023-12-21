@@ -1,0 +1,155 @@
+ManifestFileVersion: 0
+CRC: 2851797027
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 82aeaa1e1333d6eaf9d6482911949db3
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: baf34b70b1930327c83ade3f7445d6e3
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Prefabs/starVeil.prefab
+- Assets/stache.fbx
+- Assets/lunarGallery.fbx
+- Assets/Prefabs/enemyDamageUp.prefab
+- Assets/Icons/texIconPickupITEM_CLOUDBOTTLE.png
+- Assets/Prefabs/mdlNinjaGear.prefab
+- Assets/Orange.mat
+- Assets/Prefabs/coralite.prefab
+- Assets/ninjaGear.fbx
+- Assets/Prefabs/bottle.prefab
+- Assets/spine.fbx
+- Assets/spineCharger.fbx
+- Assets/frozenTurtleShell.fbx
+- Assets/Prefabs/eggPile.prefab
+- Assets/Red.mat
+- Assets/Icons/texIconPickupITEM_BIRDBAND.png
+- Assets/Prefabs/mdlScalpel.prefab
+- Assets/ichorY.fbx
+- Assets/chargedSpine.fbx
+- Assets/Prefabs/mdlIchorY.prefab
+- Assets/Prefabs/mdlScug.prefab
+- Assets/Icons/texIconPickupITEM_GOODEXECUTIONITEM.png
+- Assets/Prefabs/mdlConstructConstruct.prefab
+- Assets/Icons/texFrozenShellIcon.png
+- Assets/curseStatue.fbx
+- Assets/egg.fbx
+- Assets/scaleSpeedUp.fbx
+- Assets/Prefabs/mdlPermafrost.prefab
+- Assets/lunarBrand.fbx
+- Assets/fixedbird.fbx
+- Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
+- Assets/ichorV.fbx
+- Assets/Prefabs/mdlChargedSpine.prefab
+- Assets/scug.fbx
+- Assets/Prefabs/lunarGallery.prefab
+- Assets/Prefabs/mdlScalpelBroken.prefab
+- Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
+- Assets/Prefabs/mdlSlungus.prefab
+- Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
+- Assets/Prefabs/mdlLunarStar.prefab
+- Assets/Prefabs/mdlBirdBand.prefab
+- Assets/Prefabs/mdlFlowerCrown.prefab
+- Assets/aaaaaaa.fbx
+- Assets/lunarStar.fbx
+- Assets/Egg.mat
+- Assets/zappinator.fbx
+- Assets/Prefabs/mdlUtilityBelt.prefab
+- Assets/Icons/texIconPickupITEM_BOSSITEMCONSUMABLE.png
+- Assets/Prefabs/enemyHealthUp.prefab
+- Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png
+- Assets/enemyHealthUp.fbx
+- Assets/scalpelBroken.fbx
+- Assets/LunarGallery.mat
+- Assets/Prefabs/lunarBrandMaker.prefab
+- Assets/sunAltar.fbx
+- Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png
+- Assets/Prefabs/mdlChefStache.prefab
+- Assets/Icons/texEggIcon.png
+- Assets/Icons/texIconPickupITEM_FLAMEORB.png
+- Assets/bottleSmall.fbx
+- Assets/scalpel.fbx
+- Assets/enemyDamageUp.fbx
+- Assets/Ice.mat
+- Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png
+- Assets/Prefabs/mdlNaturesGift.prefab
+- Assets/Prefabs/mdlLunarBrand.prefab
+- Assets/Prefabs/scaleSpeedUp.prefab
+- Assets/coralite.fbx
+- Assets/Prefabs/frozenTurtleShell.prefab
+- Assets/Prefabs/mdlPhrygianLily.prefab
+- Assets/Prefabs/spineCharger.prefab
+- Assets/Icons/texIconPickupITEM_BORBOBARRIERBELT.png
+- Assets/starVeil.fbx
+- Assets/ichorR.fbx
+- Assets/Icons/texIconPickupITEM_CHEFITEM.png
+- Assets/Prefabs/flameAltar.prefab
+- Assets/Prefabs/mdlZappinator.prefab
+- Assets/Prefabs/curseStatue.prefab
+- Assets/Prefabs/constructConstruct.prefab
+- Assets/Icons/texIconPickupITEM_SLUNGUS.png
+- Assets/Blue.mat
+- Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
+- Assets/bottle.fbx
+- Assets/Prefabs/voidBottle.prefab
+- Assets/ring.fbx
+- Assets/Black.mat
+- Assets/Icons/texIconPickupITEM_BORBOMANAFLOWER.png
+- Assets/Icons/texIconPickupITEM_STARVEIL.png
+- Assets/Icons/texIconPickupITEM_BORBOBIGBATTERY.png
+- Assets/Prefabs/spineInteractable.prefab
+- Assets/Icons/texIconPickupITEM_CHARGED_MALACHITE_SPINE.png
+- Assets/constructConstruct.fbx
+- Assets/Flower.fbx
+- Assets/Prefabs/mdlSpine.prefab
+- Assets/Prefabs/mdlTragicFacade.prefab
+- Assets/Prefabs/mdlIchorR.prefab
+- Assets/Green.mat
+- Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png
+- Assets/Prefabs/mdlbottle.prefab
+- Assets/Icons/texGoldenEggIcon.png
+- Assets/Prefabs/mdlIchorV.prefab
+- Assets/compressionLoop.fbx
+- Assets/Icons/texIconPickupITEM_LUNARINCREASECD.png
+- Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png
+- Assets/Prefabs/mdlS2Engine.prefab
+- Assets/EggGold.mat
+- Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png
+- Assets/Prefabs/mdlAAAAAAA.prefab
+- Assets/Purble.mat
+- Assets/Prefabs/compressionLoop.prefab
+- Assets/lunarBrandMaker.fbx
+- Assets/Icons/texIconPickupITEM_VOIDSCUG.png
+- Assets/Prefabs/egg.prefab
+- Assets/Prefabs/goldenegg.prefab
+- Assets/Icons/texIconPickupITEM_LUNARBRAND.png
+- Assets/Prefabs/mdlGreedyRing.prefab
+- Assets/Prefabs/mdlLunarGallery.prefab
+Dependencies: []

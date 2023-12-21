@@ -15,7 +15,7 @@ namespace RiskierRainContent.Items
     {
         int damageBase = 5;
         int damageStack = 5;
-        public override string ItemName => "Ichor (red)";
+        public override string ItemName => "Metamorphic Ichor (red)";
 
         public override string ItemLangTokenName => "ICHORRED";
 
@@ -29,9 +29,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist, ItemTag.Damage, ItemTag.AIBlacklist };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
+        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlIchorR.prefab");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ICHORRED.png");
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

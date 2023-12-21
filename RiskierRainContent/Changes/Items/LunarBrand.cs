@@ -21,7 +21,7 @@ namespace RiskierRainContent.Items
         public static int cauterizeArmor = 20;
 
         public static float cauterizeDamageCoef = 4f;
-        public static float cauterizeDamageStack = 4f;
+        public static float cauterizeDamageStack = 2f;
         public static float cauterizeProcCoef = 0f;
         public static int burnThreshold = 5;
 

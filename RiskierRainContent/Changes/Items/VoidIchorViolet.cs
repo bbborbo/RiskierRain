@@ -13,13 +13,13 @@ namespace RiskierRainContent.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
-        int xpDivisor = 100;
+        int xpDivisor = 10;
         int xpFlat = 1;
-        public override string ItemName => "Ichor (violet)";
+        public override string ItemName => "Metamorphic Ichor (violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
 
-        public override string ItemPickupDesc => "Gain bonus experience on kill. Corrupts all Monster Teeth.";
+        public override string ItemPickupDesc => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
 
         public override string ItemFullDescription => "";
 
@@ -29,9 +29,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.OnKillEffect};
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
+        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlIchorV.prefab");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ICHORVIOLET.png");
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -41,6 +41,20 @@ namespace RiskierRainContent.Items
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             On.RoR2.GlobalEventManager.OnCharacterDeath += IchorXPGain;
+            On.RoR2.CharacterBody.OnInventoryChanged += IchorPickup;
+        }
+
+        private void IchorPickup(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
+        {
+            orig(self);
+            int itemCount = GetCount(self);
+            if (itemCount <= 0) return;
+            CharacterMaster xpRecipient = self.master;
+            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
+            percentXP /= (ulong)xpDivisor;
+            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(itemCount - 1);
+            xpRecipient.GiveExperience(xpToGive);
+            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }
 
         private void IchorXPGain(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)

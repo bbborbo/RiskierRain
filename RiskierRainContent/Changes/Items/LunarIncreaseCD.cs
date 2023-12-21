@@ -129,9 +129,9 @@ namespace RiskierRainContent.Items
                 {
                     for (int i = 0; i < shardCount; i++)
                     {
-                        float bonusYaw = UnityEngine.Random.Range(-3f, 3f);
-                        float bonusPitch = UnityEngine.Random.Range(-2f, 3f);
-                        float projectileSpeed = 200 * 0.3f * (i + 1);
+                        float bonusYaw = UnityEngine.Random.Range(-1f, 1f);
+                        float bonusPitch = UnityEngine.Random.Range(-1f, 1f);
+                        float projectileSpeed = 200 * (0.3f * (i + 1));
 
                         Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw * shardCount, bonusPitch * i);
                         ProjectileManager.instance.FireProjectile(lunarShardProjectile, aimRay.origin,

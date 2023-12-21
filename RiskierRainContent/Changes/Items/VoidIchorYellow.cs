@@ -15,7 +15,7 @@ namespace RiskierRainContent.Items
     {
         float regenBase = .6f;
         float regenStack = .6f;
-        public override string ItemName => "Ichor (yellow)";
+        public override string ItemName => "Metamorphic Ichor (yellow)";
 
         public override string ItemLangTokenName => "ICHORYELLOW";
 
@@ -29,9 +29,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing};
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
+        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlIchorY.prefab");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ICHORYELLOW.png");
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

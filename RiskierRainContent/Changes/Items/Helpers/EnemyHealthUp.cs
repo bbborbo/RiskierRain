@@ -27,7 +27,7 @@ namespace RiskierRainContent.Items.Helpers
 
         public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyHealthUp.prefab");
 
-        public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ENEMYHEALTHUP.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

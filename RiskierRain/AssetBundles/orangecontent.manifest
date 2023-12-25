@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2851797027
+CRC: 3014520634
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 82aeaa1e1333d6eaf9d6482911949db3
+    Hash: 26779548b416b18d7b1158042ccb110e
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -44,6 +44,7 @@ Assets:
 - Assets/Orange.mat
 - Assets/Prefabs/coralite.prefab
 - Assets/ninjaGear.fbx
+- Assets/Prefabs/Kaleidoskull.prefab
 - Assets/Prefabs/bottle.prefab
 - Assets/spine.fbx
 - Assets/spineCharger.fbx
@@ -64,21 +65,27 @@ Assets:
 - Assets/scaleSpeedUp.fbx
 - Assets/Prefabs/mdlPermafrost.prefab
 - Assets/lunarBrand.fbx
+- Assets/Icons/texIconPickupITEM_ICHORRED.png
 - Assets/fixedbird.fbx
+- Assets/Icons/texIconPickupITEM_ICHORVIOLET.png
 - Assets/Icons/texIconPickupITEM_FARTBOTTLE.png
 - Assets/ichorV.fbx
 - Assets/Prefabs/mdlChargedSpine.prefab
+- Assets/Icons/texIconPickupITEM_ENEMYHEALTHUP.png
 - Assets/scug.fbx
+- Assets/Icons/texIconPickupITEM_ICHORYELLOW.png
 - Assets/Prefabs/lunarGallery.prefab
 - Assets/Prefabs/mdlScalpelBroken.prefab
 - Assets/Icons/texIconPickupITEM_VOIDHAPPIESTMASK.png
 - Assets/Prefabs/mdlSlungus.prefab
+- Assets/voidHusk.fbx
 - Assets/Icons/texIconPickupITEM_FLOWERCROWN.png
 - Assets/Prefabs/mdlLunarStar.prefab
 - Assets/Prefabs/mdlBirdBand.prefab
 - Assets/Prefabs/mdlFlowerCrown.prefab
 - Assets/aaaaaaa.fbx
 - Assets/lunarStar.fbx
+- Assets/energyCrystal.fbx
 - Assets/Egg.mat
 - Assets/zappinator.fbx
 - Assets/Prefabs/mdlUtilityBelt.prefab
@@ -94,6 +101,7 @@ Assets:
 - Assets/Prefabs/mdlChefStache.prefab
 - Assets/Icons/texEggIcon.png
 - Assets/Icons/texIconPickupITEM_FLAMEORB.png
+- Assets/Prefabs/VoidHusk.prefab
 - Assets/bottleSmall.fbx
 - Assets/scalpel.fbx
 - Assets/enemyDamageUp.fbx
@@ -116,6 +124,7 @@ Assets:
 - Assets/Prefabs/constructConstruct.prefab
 - Assets/Icons/texIconPickupITEM_SLUNGUS.png
 - Assets/Blue.mat
+- Assets/Prefabs/mdlenergyCrystal.prefab
 - Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png
 - Assets/bottle.fbx
 - Assets/Prefabs/voidBottle.prefab
@@ -146,8 +155,10 @@ Assets:
 - Assets/Purble.mat
 - Assets/Prefabs/compressionLoop.prefab
 - Assets/lunarBrandMaker.fbx
+- Assets/Prefabs/mdlCurseStatue.prefab
 - Assets/Icons/texIconPickupITEM_VOIDSCUG.png
 - Assets/Prefabs/egg.prefab
+- Assets/Prefabs/CrystalInteractable.prefab
 - Assets/Prefabs/goldenegg.prefab
 - Assets/Icons/texIconPickupITEM_LUNARBRAND.png
 - Assets/Prefabs/mdlGreedyRing.prefab

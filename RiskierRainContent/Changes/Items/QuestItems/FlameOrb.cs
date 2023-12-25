@@ -43,6 +43,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
+            
             On.RoR2.HealthComponent.TakeDamage += FlameOrbTakeDamage;
         }
 

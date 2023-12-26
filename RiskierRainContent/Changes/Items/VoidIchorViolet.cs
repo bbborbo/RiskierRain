@@ -73,7 +73,7 @@ namespace RiskierRainContent.Items
 
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
             percentXP /= (ulong)xpDivisor;
-            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) + ((ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount - 1));
+            ulong xpToGive = (ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount - 1);
             xpRecipient.GiveExperience(xpToGive);
             Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }

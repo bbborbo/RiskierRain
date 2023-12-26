@@ -42,18 +42,43 @@ namespace RiskierRainContent.Items
         int durationBase = 2;
         int durationStack = 1;
 
+        public static BuffDef energyBuff;
 
         public override void Hooks()
         {
-            GetStatCoefficients += CrystalCritAdd;
+            GetStatCoefficients += CrystalStats;
             On.RoR2.GlobalEventManager.OnCrit += EnergyCrystalCrit;
+            On.RoR2.GlobalEventManager.OnHitAll += EnergyCrystalHit;
         }
 
-        private void CrystalCritAdd(CharacterBody sender, StatHookEventArgs args)
+        private void EnergyCrystalHit(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
+        {
+            orig(self, damageInfo, hitObject);
+            if (!damageInfo.crit) return;
+
+            Debug.Log("thatsacrit baby");
+            CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+            if (attackerBody == null) return;
+
+            int itemCount = GetCount(attackerBody);
+            if (itemCount <= 0) return;
+
+            CharacterBody victimBody = hitObject.GetComponent<CharacterBody>();
+            if (victimBody == null) return;
+
+            int duration = durationBase + (durationStack * (itemCount - 1));
+            victimBody.AddTimedBuffAuthority(energyBuff.buffIndex, duration);
+        }
+
+        private void CrystalStats(CharacterBody sender, StatHookEventArgs args)
         {
             if (GetCount(sender) > 0)
             {
                 args.critAdd += critChance;
+            }
+            if (sender.HasBuff(energyBuff))
+            {
+                args.moveSpeedMultAdd += speedBoost;
             }
         }
 
@@ -66,11 +91,23 @@ namespace RiskierRainContent.Items
             body.healthComponent.AddBarrierAuthority(barrierToAdd);          
             
         }
-
+        void CreateBuff()
+        {
+            energyBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                energyBuff.name = "energyBuff";
+                energyBuff.buffColor = new Color(0.9f, 0.9f, 1f);
+                energyBuff.canStack = false;
+                energyBuff.isDebuff = false;
+                energyBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+            };
+            Assets.buffDefs.Add(energyBuff);
+        }
         public override void Init(ConfigFile config)
         {
             CreateItem();
             CreateLang();
+            CreateBuff();
             Hooks();
         }
     }

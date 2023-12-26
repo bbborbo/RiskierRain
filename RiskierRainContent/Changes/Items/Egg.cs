@@ -17,9 +17,9 @@ namespace RiskierRainContent.Items
 {
     class Egg : ItemBase<Egg>
     {
-        public int eggHealth = 2;
-        public float eggRegen = 0.1f;
-        public float eggDamage = 0.1f;
+        public int eggHealth = 4;
+        public float eggRegen = 0.2f;
+        public float eggDamage = 0.2f;
 
 
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;

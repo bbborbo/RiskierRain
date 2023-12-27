@@ -14,7 +14,7 @@ namespace RiskierRainContent.Items
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
         int xpDivisor = 10;
-        int xpFlat = 1;
+        int xpFlat = 5;
         public override string ItemName => "Metamorphic Ichor (violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
@@ -52,7 +52,7 @@ namespace RiskierRainContent.Items
             CharacterMaster xpRecipient = self.master;
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
             percentXP /= (ulong)xpDivisor;
-            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(itemCount - 1);
+            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(itemCount);
             xpRecipient.GiveExperience(xpToGive);
             Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }
@@ -73,7 +73,7 @@ namespace RiskierRainContent.Items
 
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
             percentXP /= (ulong)xpDivisor;
-            ulong xpToGive = (ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount - 1);
+            ulong xpToGive = (ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount);
             xpRecipient.GiveExperience(xpToGive);
             Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }

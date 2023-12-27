@@ -96,7 +96,7 @@ namespace RiskierRainContent.Items
             energyBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 energyBuff.name = "energyBuff";
-                energyBuff.buffColor = new Color(0.9f, 0.9f, 1f);
+                energyBuff.buffColor = new Color(1f, 0.9f, .7f);
                 energyBuff.canStack = false;
                 energyBuff.isDebuff = false;
                 energyBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");

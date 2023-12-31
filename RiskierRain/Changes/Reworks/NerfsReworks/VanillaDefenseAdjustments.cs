@@ -60,8 +60,8 @@ namespace RiskierRain
             IL.RoR2.HealthComponent.TakeDamage += TeddyChanges;
             IL.RoR2.HealthComponent.TakeDamage += VoidBearChanges;
             LanguageAPI.Add("ITEM_BEAR_DESC",
-                $"<style=cIsHealing>{15}%</style> " +
-                $"<style=cStack>(+{15}% per stack)</style> " +
+                $"<style=cIsHealing>{15 / teddyNewMaxValue}%</style> " +
+                $"<style=cStack>(+{15 / teddyNewMaxValue}% per stack)</style> " +
                 $"chance to <style=cIsHealing>block</style> incoming damage, " +
                 $"up to a maximum of <style=cIsHealing>{Tools.ConvertDecimal(teddyNewMaxValue)}%</style>. " +
                 $"<style=cIsUtility>Unaffected by luck</style>.");
@@ -391,27 +391,16 @@ namespace RiskierRain
         #endregion
 
         #region barrier
-        private float barrierDecayRate = 6f;
-        private float aegisDecayIncrease = 3f;
+        private float barrierDecayRate = 0.33f;
         void BuffBarrier()
         {
             On.RoR2.CharacterBody.FixedUpdate += this.BarrierBuff;
-            LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_PICKUP", "Reduces barrier decay rate. Healing past full grants you a temporary barrier.");
-            LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_DESC",
-                "<style=cIsHealing>Reduces barrier decay rate by 33%</style> <style=cStack>(-33% per stack).</style> " +
-                "Healing past full grants you a <style=cIsHealing>temporary barrier</style> for " +
-                "<style=cIsHealing>50% <style=cStack>(+50% per stack)</style></style> of the amount you <style=cIsHealing>healed</style>."
-                );
         }
         private void BarrierBuff(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
         {
-            float num = 0f;
-            if (self.inventory)
-            {
-                num = self.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal);
-            }
+            if(self.barrierDecayRate > 0)
+                self.barrierDecayRate = Mathf.Max(1f, self.healthComponent.barrier * this.barrierDecayRate);
 
-            self.barrierDecayRate = Mathf.Max(1f, self.healthComponent.barrier / (this.barrierDecayRate + this.aegisDecayIncrease * num));
             orig(self);
         }
         #endregion

@@ -146,6 +146,7 @@ namespace RiskierRainContent.CoreModules
             AddShockCooldown();
             AddPlanulaChargeBuff();
             AddMaskHauntAssets();
+            AddHarpoonAssets();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
 
@@ -163,7 +164,7 @@ namespace RiskierRainContent.CoreModules
             {
                 hauntDebuff.buffColor = new Color(0.9f, 0.7f, 1.0f);
                 hauntDebuff.canStack = false;
-                hauntDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                hauntDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(); //replace me
                 hauntDebuff.isDebuff = true;
                 hauntDebuff.name = "HappiestMaskHauntDebuff";
             }
@@ -171,6 +172,26 @@ namespace RiskierRainContent.CoreModules
 
             GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
             hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
+        }
+        #endregion
+
+        #region hunters harpoon
+        public static BuffDef harpoonDebuff;
+        public static GameObject harpoonEffectPrefab;
+        private void AddHarpoonAssets()
+        {
+            harpoonDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                harpoonDebuff.buffColor = new Color(0.9f, 0.7f, 0.1f);
+                harpoonDebuff.canStack = false;
+                harpoonDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion();
+                harpoonDebuff.isDebuff = true;
+                harpoonDebuff.name = "HarpoonTargetDebuff";
+            }
+            Assets.buffDefs.Add(harpoonDebuff);
+
+            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
+            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
         }
         #endregion
 

@@ -140,6 +140,11 @@ namespace RiskierRainContent
             {
                 HappiestMaskRework();
             }
+            //happiest mask
+            if (GetConfigBool(true, "Core: Hunters Harpoon"))
+            {
+                HuntersHarpoonRework();
+            }
             //focused convergence, focon
             if (GetConfigBool(true, "Core: Focused Convergence"))
             {

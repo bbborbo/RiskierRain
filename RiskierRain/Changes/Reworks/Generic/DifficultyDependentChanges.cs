@@ -23,9 +23,9 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 9;
 
-        public static float timeDifficultyScaling = 1.4f; //1f, linear
+        public static float timeDifficultyScaling = 1.5f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
-        public static float loopDifficultyScaling = 1.40f; //1.0f, exponential
+        public static float loopDifficultyScaling = 1.35f; //1.0f, exponential
 
         public static float easyTeleParticleRadius = 1f;
         public static float normalTeleParticleRadius = 0.8f;

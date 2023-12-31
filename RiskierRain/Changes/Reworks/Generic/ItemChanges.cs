@@ -517,5 +517,77 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region fuel cell
+        public const float fuelCellCooldownMultiplier = 0.67f;
+        public static string fuelCellEquipCdr = Tools.ConvertDecimal(1 - fuelCellCooldownMultiplier);
+        public static int fuelCellStock = 2;
+        void ReworkFuelCell()
+        {
+            RetierItem(nameof(RoR2Content.Items.EquipmentMagazine));
+            IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
+            IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
+            IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;
+
+            LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_DESC",
+                $"Hold {fuelCellStock} <style=cIsUtility>additional equipment charges</style> <style=cStack>(+{fuelCellStock} per stack)</style>. " +
+                $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
+                $"<style=cIsUtility>{fuelCellEquipCdr}</style> <style=cStack>(+{fuelCellEquipCdr} per stack)</style>.");
+        }
+
+        private void FuelCellStock(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                );
+            c.Emit(OpCodes.Ldc_I4, fuelCellStock);
+            c.Emit(OpCodes.Mul);
+        }
+
+        private void FuelCellCdr(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int fuelCell = 0;
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchStloc(out fuelCell)
+                );
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdloc(fuelCell)
+                );
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, fuelCellCooldownMultiplier);
+        }
+        #endregion
+
+        #region bottled chaos
+
+        public const float chaosCooldownMultiplier = 0.67f;
+        public static string chaosEquipCdr = Tools.ConvertDecimal(1 - chaosCooldownMultiplier);
+        void BuffBottledChaos()
+        {
+            On.RoR2.Inventory.CalculateEquipmentCooldownScale += BottledChaosCdr;
+            LanguageAPI.Add("ITEM_RANDOMEQUIPMENTTRIGGER_DESC", 
+                $"Trigger a <style=cIsDamage>random equipment</style> effect <style=cIsDamage>1</style> <style=cStack>(+1 per stack)</style> time(s). " +
+                $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
+                $"<style=cIsUtility>{chaosEquipCdr}</style> <style=cStack>(+{chaosEquipCdr} per stack)</style>.");
+        }
+
+        private float BottledChaosCdr(On.RoR2.Inventory.orig_CalculateEquipmentCooldownScale orig, Inventory self)
+        {
+            float scale = orig(self);
+            int chaosCount = self.GetItemCount(DLC1Content.Items.RandomEquipmentTrigger);
+            if (chaosCount > 0)
+                scale *= Mathf.Pow(chaosCooldownMultiplier, chaosCount);
+            return scale;
+        }
+        #endregion
     }
 }

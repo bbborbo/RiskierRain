@@ -336,6 +336,18 @@ namespace RiskierRain
             {
                 GooboJrChanges();
             }
+
+            //fuel cell
+            if (GetConfigBool(true, "Fuel Cell"))
+            {
+                ReworkFuelCell();
+            }
+
+            //bottled chaos
+            if (GetConfigBool(true, "Bottled Chaos"))
+            {
+                BuffBottledChaos();
+            }
             //this.MakeMinionsInheritOnKillEffects();
 
             //scav could have royal cap? cunning

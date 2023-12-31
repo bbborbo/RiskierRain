@@ -109,7 +109,7 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
+            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.BonusGoldPackOnKill)); //ghors
 

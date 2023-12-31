@@ -15,7 +15,7 @@ namespace RiskierRainContent
     public partial class RiskierRainContent
     {
         public static float harpoonBarrierBase = 8;
-        public static float harpoonBarrierStack = 4;
+        public static float harpoonBarrierStack = 8;
         public static float harpoonTargetTime = 15;
         public void HuntersHarpoonRework()
         {

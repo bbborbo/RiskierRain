@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static RiskierRainContent.CoreModules.StatHooks;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -27,7 +28,7 @@ namespace RiskierRainContent.Items
         float shardsPerSecondStack = 0;
 
 
-        public override string ItemName => "Compression Loop";
+        public override string ItemName => "Elegy of Extinction";
 
         public override string ItemLangTokenName => "LUNARINCREASECD";
 
@@ -40,9 +41,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Lunar;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/compressionLoop.prefab");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/LunarPortalOnUse/PickupLunarPortalOnUse.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_LUNARINCREASECD.png");
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/LunarPortalOnUse/texLunarPortalOnUseIcon.png").WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -156,6 +157,13 @@ namespace RiskierRainContent.Items
             CreateLang();
             Hooks();
             LoadItemBehavior();
+            On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
+        }
+
+        private void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        {
+            orig();
+            CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
         }
 
         public void LoadItemBehavior()

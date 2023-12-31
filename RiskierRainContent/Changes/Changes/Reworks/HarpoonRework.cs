@@ -39,7 +39,7 @@ namespace RiskierRainContent
                 if(harpoonCount > 0)
                 {
                     float barrierGrant = harpoonBarrierBase + harpoonBarrierStack * (harpoonCount - 1);
-                    hc.AddBarrierAuthority(barrierGrant);
+                    hc.AddBarrierAuthority(barrierGrant * damageInfo.procCoefficient);
                 }
             }
         }

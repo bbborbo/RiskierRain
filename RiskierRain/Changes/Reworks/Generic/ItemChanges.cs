@@ -524,7 +524,8 @@ namespace RiskierRain
         public static int fuelCellStock = 2;
         void ReworkFuelCell()
         {
-            RetierItem(nameof(RoR2Content.Items.EquipmentMagazine));
+            RetierItem(nameof(RoR2Content.Items.EquipmentMagazine), ItemTier.Tier3);
+            RetierItem(nameof(DLC1Content.Items.EquipmentMagazineVoid), ItemTier.VoidTier3);
             IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
             IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
             IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;

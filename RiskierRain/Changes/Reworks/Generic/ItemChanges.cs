@@ -517,5 +517,120 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region fuel cell
+        public const float fuelCellCooldownMultiplier = 0.67f;
+        public static string fuelCellEquipCdr = Tools.ConvertDecimal(1 - fuelCellCooldownMultiplier);
+        public static int fuelCellStock = 2;
+        void ReworkFuelCell()
+        {
+            RetierItem(nameof(RoR2Content.Items.EquipmentMagazine), ItemTier.Tier3);
+            RetierItem(nameof(DLC1Content.Items.EquipmentMagazineVoid), ItemTier.VoidTier3);
+            IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
+            IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
+            IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;
+
+            LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_DESC",
+                $"Hold {fuelCellStock} <style=cIsUtility>additional equipment charges</style> <style=cStack>(+{fuelCellStock} per stack)</style>. " +
+                $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
+                $"<style=cIsUtility>{fuelCellEquipCdr}</style> <style=cStack>(+{fuelCellEquipCdr} per stack)</style>.");
+        }
+
+        private void FuelCellStock(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                );
+            c.Emit(OpCodes.Ldc_I4, fuelCellStock);
+            c.Emit(OpCodes.Mul);
+        }
+
+        private void FuelCellCdr(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int fuelCell = 0;
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchStloc(out fuelCell)
+                );
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdloc(fuelCell)
+                );
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, fuelCellCooldownMultiplier);
+        }
+        #endregion
+
+        #region bottled chaos
+
+        public const float chaosCooldownMultiplier = 0.67f;
+        public static string chaosEquipCdr = Tools.ConvertDecimal(1 - chaosCooldownMultiplier);
+        void BuffBottledChaos()
+        {
+            On.RoR2.Inventory.CalculateEquipmentCooldownScale += BottledChaosCdr;
+            LanguageAPI.Add("ITEM_RANDOMEQUIPMENTTRIGGER_DESC", 
+                $"Trigger a <style=cIsDamage>random equipment</style> effect <style=cIsDamage>1</style> <style=cStack>(+1 per stack)</style> time(s). " +
+                $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
+                $"<style=cIsUtility>{chaosEquipCdr}</style> <style=cStack>(+{chaosEquipCdr} per stack)</style>.");
+        }
+
+        private float BottledChaosCdr(On.RoR2.Inventory.orig_CalculateEquipmentCooldownScale orig, Inventory self)
+        {
+            float scale = orig(self);
+            int chaosCount = self.GetItemCount(DLC1Content.Items.RandomEquipmentTrigger);
+            if (chaosCount > 0)
+                scale *= Mathf.Pow(chaosCooldownMultiplier, chaosCount);
+            return scale;
+        }
+        #endregion
+
+        #region sticky bomb
+        public static float stickyDamageCoeffBase = 3.2f; //3.2 is 8 stacks to beat atg, 4.0 is 6 stacks
+        public static float stickyDamageCoeffStack = 0.4f;
+        void ReworkStickyBomb()
+        {
+            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
+
+            IL.RoR2.GlobalEventManager.OnHitEnemy += StickyBombRework;
+            LanguageAPI.Add("ITEM_STICKYBOMB_DESC",
+                $"<style=cIsDamage>5%</style> <style=cStack>(+5% per stack)</style> chance " +
+                $"on hit to attach a <style=cIsDamage>bomb</style> to an enemy, detonating for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(stickyDamageCoeffBase)}</style> " +
+                $"<style=cStack>(+{Tools.ConvertDecimal(stickyDamageCoeffStack)} per stack)</style> TOTAL damage.");
+
+            GameObject stickyPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/StickyBomb");
+            ProjectileImpactExplosion pie = stickyPrefab.GetComponent<ProjectileImpactExplosion>();
+        }
+
+        private void StickyBombRework(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int stickyLoc = 14;
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "StickyBomb"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchStloc(out stickyLoc)
+                );
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt("RoR2.Util", nameof(RoR2.Util.OnHitProcDamage))
+                );
+            c.Emit(OpCodes.Ldloc, stickyLoc);
+            c.EmitDelegate<Func<float, int, float>>((damageCoefficient, itemCount) =>
+            {
+                float damageOut = stickyDamageCoeffBase + (stickyDamageCoeffStack * (itemCount - 1));
+                return damageOut;
+            });
+        }
     }
+    #endregion
+}
 }

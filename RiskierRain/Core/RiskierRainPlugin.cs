@@ -480,6 +480,12 @@ namespace RiskierRain
             {
                 LostSeersFix();
             }
+
+            // lost seers lenses
+            if (GetConfigBool(true, "Sticky Bomb Rework"))
+            {
+                ReworkStickyBomb();
+            }
             //this.DoSadistScavenger();
             #endregion
 

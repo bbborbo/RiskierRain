@@ -143,12 +143,43 @@ namespace RiskierRain.CoreModules
             AddShockCooldown();
             AddPlanulaChargeBuff();
             AddMaskHauntAssets();
+            AddCommanderRollBuff();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
+            On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
+            On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
 
 
             LanguageAPI.Add(shredKeywordToken, $"<style=cKeywordName>Shred</style>" +
                 $"<style=cSub>Apply a stacking debuff that increases ALL damage taken by {shredArmorReduction}% per stack. Critical Strikes apply more Shred.</style>");
+        }
+
+        private void OnAddSpreadBloom(On.RoR2.CharacterBody.orig_AddSpreadBloom orig, CharacterBody self, float value)
+        {
+            if (self.HasBuff(commandoRollBuff))
+                return;
+            orig(self, value);
+        }
+
+        private void OnAddRecoil(On.EntityStates.BaseState.orig_AddRecoil orig, EntityStates.BaseState self, float verticalMin, float verticalMax, float horizontalMin, float horizontalMax)
+        {
+            if (self.HasBuff(commandoRollBuff))
+                return;
+            orig(self, verticalMin, verticalMax, horizontalMin, horizontalMax);
+        }
+
+        public static BuffDef commandoRollBuff;
+        private void AddCommanderRollBuff()
+        {
+            commandoRollBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                commandoRollBuff.buffColor = new Color(0.8f, 0.6f, 0.1f);
+                commandoRollBuff.canStack = false;
+                commandoRollBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                commandoRollBuff.isDebuff = false;
+                commandoRollBuff.name = "CommandoDualieRoll";
+            }
+            Assets.buffDefs.Add(commandoRollBuff);
         }
 
         #region happiest mask

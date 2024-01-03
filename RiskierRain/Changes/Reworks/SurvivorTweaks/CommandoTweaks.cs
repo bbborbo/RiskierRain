@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -27,8 +28,10 @@ namespace RiskierRain.SurvivorTweaks
 
         public static int rollStock = 2; //1
         public static float rollCooldown = 4f; //4f
-        public static float rollDuration = 0.25f; //0.4f
+        public static float rollDuration = 0.2f; //0.4f
         public static float slideCooldown = 5f; //4f
+        public static float rollAspdBuff = 1.0f; 
+        public static float rollAspdDuration = 0.5f; 
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
@@ -56,7 +59,12 @@ namespace RiskierRain.SurvivorTweaks
             utility.variants[0].skillDef.forceSprintDuringState = true;
             utility.variants[0].skillDef.cancelSprintingOnActivation = false;
             On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
-            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance. Has <style=cIsUtility>{rollStock}</style> charges.");
+            On.EntityStates.Commando.DodgeState.OnExit += DodgeBuffExit;
+            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance, " +
+                $"then briefly increase your <style=cIsDamage>attack speed</style> " +
+                $"by <style=cIsDamage>{Tools.ConvertDecimal(rollAspdBuff)}</style>. " +
+                $"Has <style=cIsUtility>{rollStock}</style> charges.");
+            GetStatCoefficients += RollStatBuff;
 
             //slide
             utility.variants[1].skillDef.baseRechargeInterval = slideCooldown;
@@ -121,8 +129,23 @@ namespace RiskierRain.SurvivorTweaks
         {
             self.duration = rollDuration;
             self.initialSpeedCoefficient = 10f; //5
-            self.finalSpeedCoefficient = 3f; //2.5
+            self.finalSpeedCoefficient = 2.5f; //2.5
             orig(self);
+        }
+
+        private void DodgeBuffExit(On.EntityStates.Commando.DodgeState.orig_OnExit orig, EntityStates.Commando.DodgeState self)
+        {
+            orig(self);
+            self.characterBody.AddTimedBuffAuthority(Assets.commandoRollBuff.buffIndex, rollAspdDuration);
+            self.characterBody.SetSpreadBloom(0, false);
+        }
+
+        private void RollStatBuff(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (sender.HasBuff(Assets.commandoRollBuff))
+            {
+                args.attackSpeedMultAdd += rollAspdBuff;
+            }
         }
 
         private void SoupBuff(On.EntityStates.Commando.CommandoWeapon.FireBarrage.orig_OnEnter orig, FireBarrage self)

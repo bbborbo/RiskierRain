@@ -43,6 +43,7 @@ namespace RiskierRainContent.Equipment
         public override Color EliteBuffColor => new Color(0.4f, 0.0f, 0.4f, 1.0f);
 
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Other;
+        public override string EliteRampTextureName { get; set; } = "texRampLeeching";
 
 
         public override float Cooldown { get; } = 6f;

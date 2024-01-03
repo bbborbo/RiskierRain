@@ -150,5 +150,14 @@ Of course, you can always buy the premium version for unlimited discounts~
                 body.AddBuff(GreedyRing.greedyRingBuff);
             }
         }
+        void OnDestroy()
+        {
+            int buffCount = body.GetBuffCount(GreedyRing.greedyRingBuff);
+            while (buffCount > 0)
+            {
+                body.RemoveBuff(GreedyRing.greedyRingBuff);
+                buffCount--;
+            }
+        }
     }
 }

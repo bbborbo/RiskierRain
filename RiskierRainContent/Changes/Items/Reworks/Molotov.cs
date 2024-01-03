@@ -79,8 +79,7 @@ namespace RiskierRainContent.Items
             ILCursor c = new ILCursor(il);
 
             c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.damage)),
-                x => x.MatchConvR4() 
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.damage))
                 );
             c.Emit(OpCodes.Ldc_R4, molotovEquipmentDamage);
             c.Emit(OpCodes.Mul);

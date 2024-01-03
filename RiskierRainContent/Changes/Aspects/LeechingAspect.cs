@@ -79,6 +79,7 @@ namespace RiskierRainContent.Equipment
 
         public override void Init(ConfigFile config)
         {
+            return;
             /*Material mat = LegacyResourcesAPI.Load<Material>("materials/matEliteHauntedOverlay");
             mat.color = Color.magenta;
             EliteMaterial = mat;*/

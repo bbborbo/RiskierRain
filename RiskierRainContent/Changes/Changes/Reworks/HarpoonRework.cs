@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static RiskierRainContent.CoreModules.StatHooks;
 
@@ -17,8 +18,13 @@ namespace RiskierRainContent
         public static float harpoonBarrierBase = 8;
         public static float harpoonBarrierStack = 8;
         public static float harpoonTargetTime = 15;
+
+        public static Material harpoonTargetMaterial;
+
         public void HuntersHarpoonRework()
         {
+            harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
+
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHarpoonRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddHarpoonBehavior;
             GetHitBehavior += HarpoonOnHit;
@@ -26,6 +32,15 @@ namespace RiskierRainContent
             LanguageAPI.Add("ITEM_MOVESPEEDONKILL_DESC", $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
                 $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
                 $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.");
+        }
+        public static Material CreateMatRecolor(Color32 blueEquivalent)
+        {
+            var mat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashExpanded.mat").WaitForCompletion());
+
+            mat.SetColor("_TintColor", blueEquivalent);
+            mat.SetInt("_Cull", 1);
+
+            return mat;
         }
 
         private void HarpoonOnHit(CharacterBody attackerBody, DamageInfo damageInfo, GameObject victim)
@@ -106,16 +121,33 @@ namespace RiskierRainContent
                             continue;
                         }
 
-                        for (int n = 0; n < stack; n++)
-                        {
-                            enemyBody.AddTimedBuffAuthority(Assets.harpoonDebuff.buffIndex, RiskierRainContent.harpoonTargetTime);
-                        }
-
+                        DebuffEnemy(enemyBody);
                         hauntStopwatch -= RiskierRainContent.harpoonTargetTime;
                         return;
                     }
                     hauntStopwatch -= hauntRetryTime;
                 }
+            }
+        }
+
+        private void DebuffEnemy(CharacterBody enemyBody)
+        {
+            for (int n = 0; n < stack; n++)
+            {
+                enemyBody.AddTimedBuffAuthority(Assets.harpoonDebuff.buffIndex, RiskierRainContent.harpoonTargetTime);
+            }
+
+            //thanks hifu <3
+            Transform modelTransform = enemyBody.modelLocator?.modelTransform;
+            if(modelTransform != null)
+            {
+                var temporaryOverlay = modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                temporaryOverlay.duration = RiskierRainContent.harpoonTargetTime;
+                temporaryOverlay.animateShaderAlpha = true;
+                temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
+                temporaryOverlay.destroyComponentOnEnd = true;
+                temporaryOverlay.originalMaterial = RiskierRainContent.harpoonTargetMaterial;
+                temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
             }
         }
 

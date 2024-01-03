@@ -30,8 +30,8 @@ namespace RiskierRain.SurvivorTweaks
         public static float rollCooldown = 4f; //4f
         public static float rollDuration = 0.2f; //0.4f
         public static float slideCooldown = 5f; //4f
-        public static float rollAspdBuff = 0.50f; 
-        public static float rollAspdDuration = 0.75f; 
+        public static float rollAspdBuff = 1.0f; 
+        public static float rollAspdDuration = 0.5f; 
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
@@ -128,8 +128,8 @@ namespace RiskierRain.SurvivorTweaks
         private void DodgeBuff(On.EntityStates.Commando.DodgeState.orig_OnEnter orig, EntityStates.Commando.DodgeState self)
         {
             self.duration = rollDuration;
-            self.initialSpeedCoefficient = 9f; //5
-            self.finalSpeedCoefficient = 3f; //2.5
+            self.initialSpeedCoefficient = 10f; //5
+            self.finalSpeedCoefficient = 2.5f; //2.5
             orig(self);
         }
 

@@ -261,6 +261,9 @@ namespace RiskierRainContent.Equipment
                 model.UpdateOverlays();
             }
             body.UpdateHurtBoxesEnabled();
+
+            //ermm
+            body.healthComponent.AddBarrier(body.healthComponent.fullCombinedHealth);
         }
         public void AffixSimulatedAttack()
         {
@@ -282,20 +285,6 @@ namespace RiskierRainContent.Equipment
 
             attackDuration = attackBaseDuration;
             fireInterval = attackBaseDuration / Mathf.Min(portalBombCount * body.attackSpeed, maxPortalBombs);
-
-            //BullseyeSearch bullseyeSearch = new BullseyeSearch();
-            //bullseyeSearch.viewer = body;
-            //bullseyeSearch.searchOrigin = body.corePosition;
-            //bullseyeSearch.searchDirection = body.corePosition;
-            //bullseyeSearch.maxDistanceFilter = maxDistance;
-            //bullseyeSearch.teamMaskFilter = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
-            //bullseyeSearch.sortMode = BullseyeSearch.SortMode.DistanceAndAngle;
-            //bullseyeSearch.RefreshCandidates();
-            //this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
-            //if (this.target)
-            //{
-            //    this.pointA = this.target.transform.position;
-            //}
             chargeCount--;
             volleyStopWatch = 0;
         }
@@ -303,34 +292,8 @@ namespace RiskierRainContent.Equipment
         {
             if (barrierBool)
             {
-                OneTimeBarrierGain();
+                //OneTimeBarrierGain();
             }
-            //if (body.hasAuthority)
-            //{
-            //    if (isAiming)
-            //    {
-            //
-            //        if (this.target)
-            //        {
-            //
-            //            DoPortalBombAttack();
-            //        }
-            //    }
-            //    if (isFiring)
-            //    {
-            //        FirePortalBombAttack();
-            //    }
-            //    if (!isFiring && !isAiming && chargeCount > 0)
-            //    {
-            //        //volleyStopWatch += Time.fixedDeltaTime;
-            //        //if (volleyStopWatch >= volleyDelay)
-            //        {
-            //            Debug.Log(chargeCount);
-            //            PortalBombVolley();
-            //        }
-            //    }
-            //}
-            //NEW VERSION
             if (isFiring)
             {
                 TimerTick();
@@ -349,13 +312,10 @@ namespace RiskierRainContent.Equipment
         }
         private void NewPortalBombAttack()
         {
-            Debug.Log("simu1");
-
             Vector3 vector = Vector3.zero;
             Ray aimRay = GetAimRay();
             aimRay.origin += UnityEngine.Random.insideUnitSphere * randomRadius;
             RaycastHit raycastHit;
-            Debug.Log("simu2");
 
             if (Physics.Raycast(aimRay, out raycastHit, (float)LayerIndex.world.mask))
             {
@@ -365,13 +325,11 @@ namespace RiskierRainContent.Equipment
             {
                 return;
             }
-            Debug.Log("simu3");
 
             TeamIndex enemyTeam1 = TeamIndex.Player;
             TeamIndex enemyTeam2 = TeamIndex.Monster;
             
             Transform transform = FindTargetClosest(vector, enemyTeam1, enemyTeam2);
-            Debug.Log("simu4");
 
             Vector3 a = vector;
             if (transform)
@@ -379,7 +337,6 @@ namespace RiskierRainContent.Equipment
                 a = transform.transform.position;
             }
             a += UnityEngine.Random.insideUnitSphere * randomRadius;
-            Debug.Log("simu5");
 
             if (Physics.Raycast(new Ray
             {
@@ -387,7 +344,6 @@ namespace RiskierRainContent.Equipment
                 direction = Vector3.down
             }, out raycastHit, 500f, LayerIndex.world.mask))
             {
-                Debug.Log("simu6");
 
                 Vector3 point = raycastHit.point;
                 Quaternion rotation;
@@ -403,7 +359,6 @@ namespace RiskierRainContent.Equipment
                 fireProjectileInfo.crit = body.RollCrit();
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
             }
-            Debug.Log("simu7");
             bombsFired++;
             if (attackStopWatch >= this.attackDuration)
             {

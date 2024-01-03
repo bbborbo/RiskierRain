@@ -46,9 +46,10 @@ namespace RiskierRainContent.Items
 
         private void IchorPickup(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
+            int previousCount = GetCount(self);
             orig(self);
             int itemCount = GetCount(self);
-            if (itemCount <= 0) return;
+            if (itemCount <= previousCount) return;
             CharacterMaster xpRecipient = self.master;
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
             percentXP /= (ulong)xpDivisor;
@@ -70,12 +71,9 @@ namespace RiskierRainContent.Items
                 return;
             }
             CharacterMaster xpRecipient = damageReport.attackerMaster;
-
-            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
-            percentXP /= (ulong)xpDivisor;
             ulong xpToGive = (ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount);
             xpRecipient.GiveExperience(xpToGive);
-            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
+            Debug.Log($"gave {xpToGive} xp!!; {xpFlat} flat * {TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex)} level * {itemCount} items");
         }
         public override void Init(ConfigFile config)
         {

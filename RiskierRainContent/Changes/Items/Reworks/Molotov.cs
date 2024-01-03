@@ -99,7 +99,7 @@ namespace RiskierRainContent.Items
                     Vector3 forward = attackerBody.inputBank.aimDirection;
                     forward.y = 0;
 
-                    Vector3 fireDirection = forward + Vector3.up * 0.8f;
+                    Vector3 fireDirection = forward + Vector3.up * 0.5f;
                     ProjectileManager.instance.FireProjectile(new FireProjectileInfo
                     {
                         damage = attackerBody.damage * damageCoefficient,
@@ -111,7 +111,7 @@ namespace RiskierRainContent.Items
                         owner = damageInfo.attacker,
                         projectilePrefab = molotovProjectile,
                         rotation = Util.QuaternionSafeLookRotation(fireDirection),
-                        speedOverride = 16 //20
+                        speedOverride = 20 //20
                     });
                 }
             }

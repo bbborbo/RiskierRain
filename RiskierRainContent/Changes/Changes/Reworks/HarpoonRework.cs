@@ -15,8 +15,8 @@ namespace RiskierRainContent
 {
     public partial class RiskierRainContent
     {
-        public static float harpoonBarrierBase = 8;
-        public static float harpoonBarrierStack = 8;
+        public static float harpoonBarrierBase = 5;
+        public static float harpoonBarrierStack = 5;
         public static float harpoonTargetTime = 15;
 
         public static Material harpoonTargetMaterial;
@@ -144,7 +144,7 @@ namespace RiskierRainContent
                 var temporaryOverlay = modelTransform.gameObject.AddComponent<TemporaryOverlay>();
                 temporaryOverlay.duration = RiskierRainContent.harpoonTargetTime;
                 temporaryOverlay.animateShaderAlpha = true;
-                temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
+                temporaryOverlay.alphaCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);// AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                 temporaryOverlay.destroyComponentOnEnd = true;
                 temporaryOverlay.originalMaterial = RiskierRainContent.harpoonTargetMaterial;
                 temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());

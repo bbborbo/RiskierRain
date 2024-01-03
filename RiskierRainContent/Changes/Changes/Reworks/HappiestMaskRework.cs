@@ -2,7 +2,6 @@
 using EntityStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using On.RoR2.Items;
 using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
@@ -16,6 +15,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static BorboStatUtils.BorboStatUtils;
+using RiskierRainContent.Components;
+using static RiskierRainContent.Components.TargetRandomNearbyBehavior;
 
 namespace RiskierRainContent
 {
@@ -27,13 +28,14 @@ namespace RiskierRainContent
 
         public void HappiestMaskRework()
         {
+            OnTargetFoundEvent += MaskOnTargetFound;
             GetExecutionThreshold += MaskExecution;
             RoR2.GlobalEventManager.onServerCharacterExecuted += HappiestMaskGhostSpawn;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHappiestMaskRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddMaskBehavior;
 
             LanguageAPI.Add("ITEM_GHOSTONKILL_PICKUP", "Haunt nearby enemies, marking them for execution. Executing enemies summons a ghost.");
-            LanguageAPI.Add("ITEM_GHOSTONKILL_DESC", $"Once every <style=cIsDamage>{HappiestMaskBehavior.baseHauntInterval}</style> seconds, " +
+            LanguageAPI.Add("ITEM_GHOSTONKILL_DESC", $"Once every <style=cIsDamage>{TargetRandomNearbyBehavior.baseHauntInterval}</style> seconds, " +
                 $"Haunt a nearby non-boss enemy, marking them for Execution " +
                 $"below <style=cIsHealth>{Tools.ConvertDecimal(hauntExecutionThreshold)}</style> health. " +
                 $"Execution <style=cIsDamage>spawns a ghost</style> of the killed enemy with <style=cIsDamage>1500%</style> damage, " +
@@ -58,6 +60,25 @@ namespace RiskierRainContent
                 "\r\n\r\nThe man cursed under his breath as he loaded his shotgun. \u201CThis planet, I tell you...\u201D");
         }
 
+        private void MaskOnTargetFound(TargetRandomNearbyBehavior instance, CharacterBody newTarget, CharacterBody oldTarget)
+        {
+            CharacterBody body = instance.body;
+            if (body?.inventory)
+            {
+                int maskCount = body.inventory.GetItemCount(RoR2Content.Items.GhostOnKill);
+                if (maskCount > 0)
+                {
+                    if (newTarget != null && !newTarget.isBoss)
+                    {
+                        for (int n = 0; n < maskCount; n++)
+                        {
+                            newTarget.AddBuff(Assets.hauntDebuff.buffIndex);
+                        }
+                    }
+                }
+            }
+        }
+
         private void MaskExecution(CharacterBody sender, ref float executeThreshold)
         {
             bool hasHauntBuff = sender.HasBuff(Assets.hauntDebuff);
@@ -67,8 +88,13 @@ namespace RiskierRainContent
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            int maskCount = self.inventory.GetItemCount(RoR2Content.Items.GhostOnKill);
-            self.AddItemBehavior<HappiestMaskBehavior>(maskCount);
+            int hasHarpoon = self.inventory.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+            if (hasHarpoon > 0)
+            {
+                TargetRandomNearbyBehavior trnb = self.AddItemBehavior<TargetRandomNearbyBehavior>(1);
+                trnb.itemCounts["HappiestMask"] = hasHarpoon;
+                trnb.EvaluateItemCount();
+            }
         }
 
         private void HappiestMaskGhostSpawn(DamageReport damageReport, float executionHealthLost)

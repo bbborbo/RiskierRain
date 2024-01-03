@@ -1,4 +1,6 @@
 ﻿using BepInEx.Configuration;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
@@ -15,16 +17,19 @@ namespace RiskierRainContent.Items
 {
     class Molotov : ItemBase<Molotov>
     {
+        public static float molotovEquipmentDamage = 2.5f;
+        public static float molotovEquipmentDotDamage = 0.4f;
+        public static float molotovEquipmentDotFrequency = 3;
         public static GameObject molotovProjectile;
         public static GameObject molotovDotZone;
 
         public static float procChance = 9;
-        public static float baseDamageCoefficient = 1.6f;
-        public static float stackDamageCoefficient = 1.6f;
-        public static float impactProcCoefficient = 1;
+        public static float baseDamageCoefficient = 1.2f;
+        public static float stackDamageCoefficient = 0.6f;
+        public static float impactProcCoefficient = 0.5f;
         public static float dotDamageCoefficient = 0.25f; //0.4f
         public static float dotFrequency = 2f; //3f
-        public static float dotProcCoefficient = 0.5f;
+        public static float dotProcCoefficient = 0.33f;
         public static float blastRadius = 9;//7f
 
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
@@ -66,6 +71,19 @@ namespace RiskierRainContent.Items
         {
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             GetHitBehavior += MolotovOnHit;
+            IL.RoR2.EquipmentSlot.FireMolotov += MolotovEquipFix;
+        }
+
+        private void MolotovEquipFix(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.damage)),
+                x => x.MatchConvR4() 
+                );
+            c.Emit(OpCodes.Ldc_R4, molotovEquipmentDamage);
+            c.Emit(OpCodes.Mul);
         }
 
         private void MolotovOnHit(CharacterBody attackerBody, DamageInfo damageInfo, GameObject victim)
@@ -105,40 +123,63 @@ namespace RiskierRainContent.Items
             CreateLang();
             Hooks();
             CreateProjectile();
+
+            Debug.LogWarning("Still need to replace the molotov equipment icon");
+            LanguageAPI.Add("EQUIPMENT_MOLOTOV_DESC", 
+                $"Throw <style=cIsDamage>6</style> molotov cocktails that <style=cIsDamage>ignite</style> enemies for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage)} base damage</style>. " +
+                $"Each molotov leaves a burning area for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage * molotovEquipmentDotDamage * molotovEquipmentDotFrequency)} damage per second</style>.");
         }
 
         private void CreateProjectile()
         {
             GameObject molotov = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Molotov/MolotovSingleProjectile.prefab").WaitForCompletion();
             GameObject dotZone = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Molotov/MolotovProjectileDotZone.prefab").WaitForCompletion();
-            molotovProjectile = molotov.InstantiateClone("BorboMolotovProjectile", true);
-            molotovDotZone = dotZone.InstantiateClone("BorboMolotovDotZone", true);
 
-            ProjectileController projectile = molotovProjectile.GetComponent<ProjectileController>();
+            #region all molotov
+            ProjectileController projectile = molotov.GetComponent<ProjectileController>();
             if (projectile)
             {
                 projectile.procCoefficient = 1;
             }
 
-            ProjectileImpactExplosion pie = molotovProjectile.GetComponent<ProjectileImpactExplosion>();
+            ProjectileImpactExplosion pie = molotov.GetComponent<ProjectileImpactExplosion>();
             if (pie)
             {
                 pie.blastRadius = blastRadius;
-                pie.blastProcCoefficient = impactProcCoefficient;
                 pie.blastDamageCoefficient = 1;
-
-                pie.childrenProjectilePrefab = molotovDotZone;
             }
 
-            molotovDotZone.transform.localScale = Vector3.one * blastRadius / 6;
+            dotZone.transform.localScale = Vector3.one * blastRadius / 6;
 
-            ProjectileDotZone pdz = molotovDotZone.GetComponent<ProjectileDotZone>();
+            ProjectileDotZone pdz = dotZone.GetComponent<ProjectileDotZone>();
             if (pdz)
             {
-                pdz.overlapProcCoefficient = dotProcCoefficient;
-                pdz.damageCoefficient = dotDamageCoefficient;
-                pdz.resetFrequency = dotFrequency;
-                pdz.fireFrequency = dotFrequency * 2;
+                pdz.damageCoefficient = molotovEquipmentDotDamage;
+                pdz.resetFrequency = molotovEquipmentDotFrequency;
+                pdz.fireFrequency = molotovEquipmentDotFrequency * 2;
+            }
+            #endregion
+
+            molotovProjectile = molotov.InstantiateClone("BorboMolotovProjectile", true);
+
+            ProjectileImpactExplosion pie2 = molotovProjectile.GetComponent<ProjectileImpactExplosion>();
+            if (pie2)
+            {
+                pie2.blastProcCoefficient = impactProcCoefficient;
+                pie2.childrenProjectilePrefab = molotovDotZone;
+            }
+
+            molotovDotZone = dotZone.InstantiateClone("BorboMolotovDotZone", true);
+
+            ProjectileDotZone pdz2 = molotovDotZone.GetComponent<ProjectileDotZone>();
+            if (pdz2)
+            {
+                pdz2.overlapProcCoefficient = dotProcCoefficient;
+                pdz2.damageCoefficient = dotDamageCoefficient;
+                pdz2.resetFrequency = dotFrequency;
+                pdz2.fireFrequency = dotFrequency * 2;
             }
 
             Assets.projectilePrefabs.Add(molotovProjectile);

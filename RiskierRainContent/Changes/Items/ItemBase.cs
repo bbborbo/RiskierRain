@@ -45,6 +45,7 @@ namespace RiskierRainContent.Items
         public ItemDef ItemsDef;
 
         public virtual bool CanRemove { get; } = false;
+        public virtual bool IsDisabled { get; } = false;
         public virtual bool IsHidden { get; } = false;
         public virtual ExpansionDef RequiredExpansion { get; } = null;
 
@@ -126,6 +127,7 @@ namespace RiskierRainContent.Items
                 ItemsDef.tier = Tier;
                 ItemsDef.deprecatedTier = Tier;
                 ItemsDef.requiredExpansion = RequiredExpansion;
+                ItemsDef.hidden = IsHidden;
             }
             if (ItemTags.Length > 0) { ItemsDef.tags = ItemTags; }
 

@@ -374,9 +374,9 @@ namespace RiskierRainContent
             foreach (var itemType in ItemTypes)
             {
                 ItemBase item = (ItemBase)System.Activator.CreateInstance(itemType);
-                if (!item.IsHidden)
+                if (!item.IsDisabled)
                 {
-                    if (ValidateItem(item, Items))
+                    if (item.IsHidden || ValidateItem(item, Items))
                     {
                         item.Init(CustomConfigFile);
                     }

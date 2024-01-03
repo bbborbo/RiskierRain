@@ -19,6 +19,8 @@ namespace RiskierRainContent.Changes.Items
 {
     class VoidLeptonDaisy : ItemBase<VoidLeptonDaisy>
     {
+        public override bool IsDisabled => true;
+
         public static BuffDef lilyRageBuff;
         public static int duration = 20;
 
@@ -78,7 +80,6 @@ namespace RiskierRainContent.Changes.Items
 
         public override void Init(ConfigFile config)
         {
-            return;
             CreateItem();
             CreateLang();
             CreateBuff();

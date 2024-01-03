@@ -71,18 +71,6 @@ namespace RiskierRainContent.Items
         {
             On.RoR2.BodyCatalog.Init += GetDisplayRules;
             GetHitBehavior += MolotovOnHit;
-            IL.RoR2.EquipmentSlot.FireMolotov += MolotovEquipFix;
-        }
-
-        private void MolotovEquipFix(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.damage))
-                );
-            c.Emit(OpCodes.Ldc_R4, molotovEquipmentDamage);
-            c.Emit(OpCodes.Mul);
         }
 
         private void MolotovOnHit(CharacterBody attackerBody, DamageInfo damageInfo, GameObject victim)
@@ -147,7 +135,7 @@ namespace RiskierRainContent.Items
             if (pie)
             {
                 pie.blastRadius = blastRadius;
-                pie.blastDamageCoefficient = 1;
+                pie.blastDamageCoefficient = molotovEquipmentDamage;
             }
 
             dotZone.transform.localScale = Vector3.one * blastRadius / 6;
@@ -166,6 +154,7 @@ namespace RiskierRainContent.Items
             ProjectileImpactExplosion pie2 = molotovProjectile.GetComponent<ProjectileImpactExplosion>();
             if (pie2)
             {
+                pie2.blastDamageCoefficient = 1;
                 pie2.blastProcCoefficient = impactProcCoefficient;
                 pie2.childrenProjectilePrefab = molotovDotZone;
             }

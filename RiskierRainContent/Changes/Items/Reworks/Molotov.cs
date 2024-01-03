@@ -136,6 +136,7 @@ namespace RiskierRainContent.Items
             {
                 pie.blastRadius = blastRadius;
                 pie.blastDamageCoefficient = molotovEquipmentDamage;
+                pie.childrenProjectilePrefab = dotZone;
             }
 
             dotZone.transform.localScale = Vector3.one * blastRadius / 6;
@@ -150,6 +151,7 @@ namespace RiskierRainContent.Items
             #endregion
 
             molotovProjectile = molotov.InstantiateClone("BorboMolotovProjectile", true);
+            molotovDotZone = dotZone.InstantiateClone("BorboMolotovDotZone", true);
 
             ProjectileImpactExplosion pie2 = molotovProjectile.GetComponent<ProjectileImpactExplosion>();
             if (pie2)
@@ -158,8 +160,6 @@ namespace RiskierRainContent.Items
                 pie2.blastProcCoefficient = impactProcCoefficient;
                 pie2.childrenProjectilePrefab = molotovDotZone;
             }
-
-            molotovDotZone = dotZone.InstantiateClone("BorboMolotovDotZone", true);
 
             ProjectileDotZone pdz2 = molotovDotZone.GetComponent<ProjectileDotZone>();
             if (pdz2)

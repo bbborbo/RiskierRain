@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using EntityStates.Commando;
 using EntityStates.Commando.CommandoWeapon;
 using R2API;
 using RiskierRain.CoreModules;
@@ -29,9 +30,16 @@ namespace RiskierRain.SurvivorTweaks
         public static int rollStock = 2; //1
         public static float rollCooldown = 4f; //4f
         public static float rollDuration = 0.2f; //0.4f
-        public static float slideCooldown = 5f; //4f
         public static float rollAspdBuff = 1.0f; 
-        public static float rollAspdDuration = 0.5f; 
+        public static float rollAspdDuration = 0.5f;
+
+        public static int slideStock = 1; //1
+        public static float slideCooldown = 8f; //4f
+        public static float slideMaxDuration = 6f; //1f
+        public static float slideSpeedMultiplier = 0.75f; //1f
+        public static float slideStrafeMultiplier = 0.01f; //1f
+        public static float slideJumpDuration = 1f; //0.6f
+        public static float slideJumpMultiplier = 1.2f; //1f
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 9; //6
@@ -53,21 +61,7 @@ namespace RiskierRain.SurvivorTweaks
 
             ChangeSecondaries(secondary);
 
-            //roll
-            utility.variants[0].skillDef.baseMaxStock = rollStock;
-            utility.variants[0].skillDef.baseRechargeInterval = rollCooldown;
-            utility.variants[0].skillDef.forceSprintDuringState = true;
-            utility.variants[0].skillDef.cancelSprintingOnActivation = false;
-            On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
-            On.EntityStates.Commando.DodgeState.OnExit += DodgeBuffExit;
-            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance, " +
-                $"then briefly increase your <style=cIsDamage>attack speed</style> " +
-                $"by <style=cIsDamage>{Tools.ConvertDecimal(rollAspdBuff)}</style>. " +
-                $"Has <style=cIsUtility>{rollStock}</style> charges.");
-            GetStatCoefficients += RollStatBuff;
-
-            //slide
-            utility.variants[1].skillDef.baseRechargeInterval = slideCooldown;
+            ChangeUtilities();
 
             //special
             SkillDef soupFire = special.variants[0].skillDef;
@@ -83,6 +77,41 @@ namespace RiskierRain.SurvivorTweaks
                 $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +
                 $"then fire at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage per shot</style>.");
+        }
+
+        private void ChangeUtilities()
+        {
+            //roll
+            SkillDef roll = utility.variants[0].skillDef;
+            roll.baseMaxStock = rollStock;
+            roll.rechargeStock = rollStock;
+            roll.baseRechargeInterval = rollCooldown;
+            roll.forceSprintDuringState = true;
+            roll.cancelSprintingOnActivation = false;
+            roll.resetCooldownTimerOnUse = true;
+            On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
+            On.EntityStates.Commando.DodgeState.OnExit += DodgeBuffExit;
+            LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance, " +
+                $"then briefly increase your <style=cIsDamage>attack speed</style> " +
+                $"by <style=cIsDamage>{Tools.ConvertDecimal(rollAspdBuff)}</style>. " +
+                $"Has <style=cIsUtility>{rollStock}</style> charges.");
+            GetStatCoefficients += RollStatBuff;
+
+            //slide
+            SkillDef slide = utility.variants[1].skillDef;
+            Assets.RegisterEntityState(typeof(UltraSlide));
+            Assets.RegisterEntityState(typeof(UltraDash));
+            SerializableEntityStateType ultraSlideState = new SerializableEntityStateType(typeof(UltraSlide));
+            slide.activationState = ultraSlideState;
+            slide.baseRechargeInterval = slideCooldown;
+            slide.baseMaxStock = slideStock;
+            slide.rechargeStock = 1;
+            slide.beginSkillCooldownOnSkillEnd = true;
+
+            LanguageAPI.Add("COMMANDO_UTILITY_ALT_DESCRIPTION", 
+                $"Hold to <style=cIsUtility>slide</style> on the ground. " +
+                $"While sliding, jump to <style=cIsUtility>dash</style> in another direction. " +
+                $"You can <style=cIsDamage>fire while sliding</style>.");
         }
 
 

@@ -28,7 +28,7 @@ namespace RiskierRain.SurvivorTweaks
         public static float phaseBlastCooldown = 7; //3f
 
         public static int rollStock = 2; //1
-        public static float rollCooldown = 4f; //4f
+        public static float rollCooldown = 5f; //4f
         public static float rollDuration = 0.2f; //0.4f
         public static float rollAspdBuff = 1.0f; 
         public static float rollAspdDuration = 0.5f;
@@ -88,7 +88,7 @@ namespace RiskierRain.SurvivorTweaks
             roll.baseRechargeInterval = rollCooldown;
             roll.forceSprintDuringState = true;
             roll.cancelSprintingOnActivation = false;
-            roll.resetCooldownTimerOnUse = true;
+            roll.resetCooldownTimerOnUse = false;
             On.EntityStates.Commando.DodgeState.OnEnter += DodgeBuff;
             On.EntityStates.Commando.DodgeState.OnExit += DodgeBuffExit;
             LanguageAPI.Add("COMMANDO_UTILITY_DESCRIPTION", $"<style=cIsUtility>Roll</style> a short distance, " +

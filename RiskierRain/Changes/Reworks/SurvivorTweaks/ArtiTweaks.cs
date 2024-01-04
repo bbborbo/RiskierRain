@@ -81,7 +81,6 @@ namespace RiskierRain.SurvivorTweaks
             Collider collider = iceWallPillarPrefab.GetComponentInChildren<Collider>();
             if (collider)
             {
-                //Debug.Log("shit");
                 collider.transform.localScale = Vector3.one * 2.5f;
                 ProjectileImpactExplosion pie = iceWallPillarPrefab.GetComponentInChildren<ProjectileImpactExplosion>();
                 pie.blastRadius = 4f;

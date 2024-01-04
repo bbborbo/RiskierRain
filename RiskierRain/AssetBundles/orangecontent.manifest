@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1579079729
+CRC: 90229005
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 371d1ee3eabcae52a411457f484f6cff
+    Hash: 62f145cbf8e6cc09fafb0d1fc5c81bb3
   TypeTreeHash:
     serializedVersion: 2
     Hash: baf34b70b1930327c83ade3f7445d6e3
@@ -43,8 +43,9 @@ Assets:
 - Assets/Prefabs/mdlNinjaGear.prefab
 - Assets/Orange.mat
 - Assets/Prefabs/coralite.prefab
+- Assets/Prefabs/mdlAmethyst.prefab
 - Assets/ninjaGear.fbx
-- Assets/Prefabs/Kaleidoskull.prefab
+- Assets/Prefabs/mdlKaleidoskull.prefab
 - Assets/Prefabs/bottle.prefab
 - Assets/spine.fbx
 - Assets/spineCharger.fbx

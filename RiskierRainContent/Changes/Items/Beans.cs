@@ -56,10 +56,6 @@ namespace RiskierRainContent.Items
 
             CharacterBody enemyBody = damageReport.victimBody;
             CharacterBody attackerBody = damageReport.attackerBody;
-            if (enemyBody.healthComponent.alive)
-            {
-                return;
-            }
 
             int itemCount = GetCount(attackerBody);
             if (itemCount > 0)

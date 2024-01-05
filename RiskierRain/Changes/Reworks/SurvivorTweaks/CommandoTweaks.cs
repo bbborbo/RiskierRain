@@ -5,11 +5,13 @@ using R2API;
 using RiskierRain.CoreModules;
 using RiskierRain.EntityState.Commando;
 using RoR2;
+using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRain.SurvivorTweaks
@@ -42,9 +44,14 @@ namespace RiskierRain.SurvivorTweaks
         public static float slideJumpMultiplier = 1.2f; //1f
 
         public static int soupMaxTargets = 6;
-        public static int soupBaseShots = 9; //6
+        public static int soupBaseShots = 12; //6
         public static float soupDamageCoeff = 1.8f; //1f
-        public static float soupCooldown = 12f; //9f
+        public static float soupCooldown = 11f; //9f
+
+        public static float nadeRadius = 20f; //12f
+        public static float nadeCooldown = 8f; //5f
+        public static float nadeMass = 2f; //1f
+        public static float nadeDrag = 0.9f; //0f
 
         public override string survivorName => "Commando";
 
@@ -63,7 +70,12 @@ namespace RiskierRain.SurvivorTweaks
 
             ChangeUtilities();
 
-            //special
+            ChangeSpecials();
+        }
+
+        private void ChangeSpecials()
+        {
+            //soup
             SkillDef soupFire = special.variants[0].skillDef;
             Assets.RegisterEntityState(typeof(SoupTargeting));
             Assets.RegisterEntityState(typeof(SoupFire));
@@ -77,6 +89,34 @@ namespace RiskierRain.SurvivorTweaks
                 $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +
                 $"then fire at each target for <style=cIsDamage>{SoupFire.baseDuration}</style> seconds, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(soupDamageCoeff)} damage per shot</style>.");
+
+            //nade
+            SkillDef nade = special.variants[1].skillDef;
+            nade.baseRechargeInterval = nadeCooldown;
+            nade.keywordTokens = new string[1] { "KEYWORD_IGNITE" };
+            GameObject commandoNade = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoGrenadeProjectile.prefab").WaitForCompletion();
+
+            ProjectileDamage projectileDamage = commandoNade.GetComponent<ProjectileDamage>();
+            if (projectileDamage)
+            {
+                projectileDamage.damageType = DamageType.IgniteOnHit;
+            }
+
+            Rigidbody rb = commandoNade.GetComponent<Rigidbody>();
+            if (rb)
+            {
+                rb.mass = nadeMass;
+                rb.drag = nadeDrag;
+            }
+
+            ProjectileImpactExplosion pie = commandoNade.GetComponent<ProjectileImpactExplosion>();
+            if (pie)
+            {
+                pie.blastRadius = nadeRadius;
+            }
+
+            LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_NAME", $"Incendiary Grenade");
+            LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_DESCRIPTION", $"<style=cIsDamage>Ignite</style>. Throw a grenade that explodes for <style=cIsDamage>700% damage</style>. Can hold up to 2.");
         }
 
         private void ChangeUtilities()
@@ -122,6 +162,7 @@ namespace RiskierRain.SurvivorTweaks
             phaseRoundPrefab.transform.localScale *= 2;
             On.EntityStates.GenericProjectileBaseState.OnEnter += PhaseRoundBuff;
             secondary.variants[0].skillDef.baseRechargeInterval = phaseRoundCooldown;
+            secondary.variants[0].skillDef.fullRestockOnAssign = false;
             LanguageAPI.Add("COMMANDO_SECONDARY_DESCRIPTION", 
                 $"Fire a <style=cIsDamage>piercing</style> bullet for " +
                 $"<style=cIsDamage>{Tools.ConvertDecimal(phaseRoundDamageCoeff)} damage </style>. " +
@@ -130,6 +171,7 @@ namespace RiskierRain.SurvivorTweaks
             //phase blast
             On.EntityStates.GenericBulletBaseState.OnEnter += PhaseBlastBuff;
             secondary.variants[1].skillDef.baseRechargeInterval = phaseBlastCooldown;
+            secondary.variants[1].skillDef.fullRestockOnAssign = false;
             LanguageAPI.Add("COMMANDO_SECONDARY_ALT1_DESCRIPTION",
                 $"Fire two close-range blasts that deal " +
                 $"<style=cIsDamage>8x{Tools.ConvertDecimal(phaseBlastDamageCoeff)} damage</style> total.");

@@ -60,7 +60,6 @@ namespace RiskierRain
         {
             if (damageInfo.damageType.HasFlag(DamageType.Shock5s)) 
             { 
-                Debug.Log("shock hit!");
                 //GameObject attacker = damageInfo.attacker;
                 self.body.AddTimedBuff(Assets.shockMarker, Assets.shockMarkerDuration);//add authority
             }
@@ -89,12 +88,10 @@ namespace RiskierRain
                 {
                     if (self.characterBody.HasBuff(Assets.shockMarker))//it breaks here!
                     {
-                        Debug.Log("shock broken!");
                         HealthComponent hcVictim = self.healthComponent;                        
                         GameObject attackerObject = hcVictim.lastHitAttacker;
                         if(attackerObject == null)
                         {
-                            Debug.Log("attacker object null");
                         }
                         else 
                         {
@@ -105,20 +102,9 @@ namespace RiskierRain
                                 {
                                     ShockHeal(attacker.healthComponent);
                                 }
-                                else
-                                {
-                                    Debug.Log("no shield!");
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log("no attacker!");
+
                             }
                         }                        
-                    }
-                    else
-                    {
-                        Debug.Log("shock expired");
                     }
                 }
             }
@@ -132,16 +118,11 @@ namespace RiskierRain
                 float  missingShieldPercent = (attacker.body.maxShield - attacker.shield) / attacker.body.maxShield;
                 float maxShieldPercent = attacker.body.maxShield / attacker.fullCombinedHealth;
                 int cooldownToApply = (int)((maxShieldPercent * missingShieldPercent) * 20);
-                Debug.Log(cooldownToApply);
                 for(int i = 0; i < cooldownToApply; i++)
                 {
                     attacker.body.AddTimedBuff(Assets.shockHealCooldown, i + 1);
                 }
                 attacker.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
-            }
-            else
-            {
-                Debug.Log("ShockHeal on coolown");
             }
         }
         #endregion

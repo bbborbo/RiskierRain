@@ -215,7 +215,6 @@ namespace RiskierRainContent.Items
                             }
                         }
 
-                        //Debug.Log($"Adding {missilesToFire.Count} Missiles to {attackerBody.gameObject.name} Launcher");
                         missileLauncher.SetMissiles(missilesToFire);
                     }
                 }

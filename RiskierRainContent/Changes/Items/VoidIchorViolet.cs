@@ -46,15 +46,14 @@ namespace RiskierRainContent.Items
 
         private void IchorPickup(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
-            int previousCount = GetCount(self);
             orig(self);
             int itemCount = GetCount(self);
-            if (itemCount <= previousCount) return;
+            if (itemCount <= 0) return; //broken but ill fix it later guhh
             CharacterMaster xpRecipient = self.master;
             ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
             percentXP /= (ulong)xpDivisor;
             ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(itemCount);
-            xpRecipient.GiveExperience(xpToGive);
+            //xpRecipient.GiveExperience(xpToGive);
             Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
         }
 

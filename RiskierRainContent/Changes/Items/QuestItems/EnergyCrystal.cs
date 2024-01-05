@@ -56,7 +56,6 @@ namespace RiskierRainContent.Items
             orig(self, damageInfo, hitObject);
             if (!damageInfo.crit) return;
 
-            Debug.Log("thatsacrit baby");
             CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
             if (attackerBody == null) return;
 

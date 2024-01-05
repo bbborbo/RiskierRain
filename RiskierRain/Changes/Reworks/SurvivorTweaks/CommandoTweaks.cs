@@ -30,7 +30,7 @@ namespace RiskierRain.SurvivorTweaks
         public static float phaseBlastCooldown = 7; //3f
 
         public static int rollStock = 2; //1
-        public static float rollCooldown = 5f; //4f
+        public static float rollCooldown = 6f; //4f
         public static float rollDuration = 0.2f; //0.4f
         public static float rollAspdBuff = 1.0f; 
         public static float rollAspdDuration = 0.7f;
@@ -45,12 +45,12 @@ namespace RiskierRain.SurvivorTweaks
 
         public static int soupMaxTargets = 6;
         public static int soupBaseShots = 12; //6
-        public static float soupDamageCoeff = 1.8f; //1f
+        public static float soupDamageCoeff = 1.6f; //1f
         public static float soupCooldown = 11f; //9f
 
-        public static float nadeRadius = 20f; //12f
+        public static float nadeRadius = 16f; //11f
         public static float nadeCooldown = 8f; //5f
-        public static float nadeMass = 2f; //1f
+        public static float nadeMass = 2.5f; //1f
         public static float nadeDrag = 0.9f; //0f
 
         public override string survivorName => "Commando";
@@ -113,6 +113,9 @@ namespace RiskierRain.SurvivorTweaks
             if (pie)
             {
                 pie.blastRadius = nadeRadius;
+
+                GameObject commandoNadeExplosion = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/OmniExplosionVFXCommandoGrenade.prefab").WaitForCompletion();
+                commandoNadeExplosion.transform.localScale = Vector3.one * nadeRadius * 4 / 11;
             }
 
             LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_NAME", $"Incendiary Grenade");

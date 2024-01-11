@@ -31,7 +31,7 @@ namespace RiskierRainContent
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
-            LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
+            //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
         }
 
         private void CreateStormEliteTiers()
@@ -54,7 +54,6 @@ namespace RiskierRainContent
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard)));
             StormT2.eliteTypes = new EliteDef[0];
             //EliteAPI.AddCustomEliteTier(StormT2);
-            return;
         }
 
         private static void CreateStormsRunBehaviorPrefab()
@@ -71,6 +70,9 @@ namespace RiskierRainContent
         }
     }
 
+    /// <summary>
+    /// Handles event timing + resetting on stage start
+    /// </summary>
     public class StormDirector : MonoBehaviour
     {
         public static float GetStormStartDelay()
@@ -135,7 +137,8 @@ namespace RiskierRainContent
         public bool hasBegunStorm = false;
 
         internal bool teleporterActive = false;
-        internal TeleporterInteraction teleporter;
+        internal GameObject teleporter;
+        internal List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
 
 
         private Dictionary<HUD, GameObject> hudPanels;
@@ -150,9 +153,13 @@ namespace RiskierRainContent
             instance = this;
 
             On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage += Run_EndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
+
+            On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
+            On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
             hudPanels = new Dictionary<HUD, GameObject>();
         }
@@ -160,12 +167,17 @@ namespace RiskierRainContent
         public void OnDestroy()
         {
             On.RoR2.Run.OnServerTeleporterPlaced -= Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage -= Run_EndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter -= TeleporterInteraction_ChargedState_OnEnter;
+
+            On.RoR2.HoldoutZoneController.OnEnable -= RegisterHoldoutZone;
+            On.RoR2.HoldoutZoneController.OnDisable -= UnregisterHoldoutZone;
         }
+
         #region hooks
-        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        private void Run_EndStage(On.RoR2.Run.orig_EndStage orig, Run self)
         {
             stormType = StormType.None;
             stormStartDelay = -1;
@@ -173,12 +185,15 @@ namespace RiskierRainContent
             hasBegunStorm = false;
             teleporterActive = false;
             this.teleporter = null;
-
+        }
+        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        {
             stormType = GetStormType();
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
             stormStartDelay = GetStormStartDelay(); 
             stormEarlyWarningDelay = stormStartDelay / 6;
             stormStartRandomDelay = Run.instance.stageRng.RangeInt(0, 60); // up to 1 minute of additional delay
+            this.teleporter = teleporter;
 
             orig(self, sceneDirector, teleporter);
         }
@@ -192,15 +207,34 @@ namespace RiskierRainContent
         private void TeleporterInteraction_OnInteractionBegin(On.RoR2.TeleporterInteraction.orig_OnInteractionBegin orig, TeleporterInteraction self, Interactor activator)
         {
             orig.Invoke(self, activator);
-            this.teleporter = self;
             this.teleporterActive = true;
+        }
+
+        private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            holdoutZones.Add(self);
+        }
+        private void UnregisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnDisable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            holdoutZones.Remove(self);
         }
         #endregion
 
         void FixedUpdate()
         {
-            if (stormType == StormType.None || !Run.instance)
+            if (stormType == StormType.None || !Run.instance || !this.teleporter)
+            {
+                if(this.hudPanels.Count > 0)
+                {
+                    foreach (HUD hud in HUD.readOnlyInstanceList)
+                    {
+                        SetHudCountdownEnabled(hud, false);
+                    }
+                }
                 return;
+            }
 
             float currentTime = RoR2.Run.instance.GetRunStopwatch();
             if (!hasSentStormEarlyWarning && currentTime > stormEarlyWarningTime)
@@ -215,7 +249,7 @@ namespace RiskierRainContent
                 BeginStorm();
             }
 
-            if (hasSentStormEarlyWarning && teleporter == null)
+            if (hasSentStormEarlyWarning && !teleporterActive)
             {
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
@@ -353,10 +387,13 @@ namespace RiskierRainContent
         #endregion
     }
 
+    /// <summary>
+    /// Handles storm environmental hazards
+    /// </summary>
     public class StormHazardController : MonoBehaviour
     {
+        private List<HoldoutZoneController> holdoutZones => StormDirector.instance.holdoutZones;
         bool teleporterActive => StormDirector.instance.teleporterActive;
-        private TeleporterInteraction teleporter => StormDirector.instance?.teleporter;
 
         //all the projectile/prefab stuff
         public float waveMinInterval = 1f;
@@ -475,26 +512,29 @@ namespace RiskierRainContent
         private object MeteorWave_GetNextMeteor(On.RoR2.MeteorStormController.MeteorWave.orig_GetNextMeteor orig, object self)
         {
             object meteor = orig.Invoke(self);
+            if (holdoutZones.Count == 0)
+                return meteor;
+
             try
             {
-                if (teleporterActive)
+                foreach(HoldoutZoneController holdoutZone in holdoutZones)
                 {
-                    if (teleporter == null)
+                    if(holdoutZone == null)
                     {
-                        Debug.LogError("tp interaction null?");
-                        return meteor;
+                        holdoutZones.Remove(holdoutZone);
+                        continue;
                     }
-                    if (teleporter.holdoutZoneController == null)
+                    if (!holdoutZone.isActiveAndEnabled || holdoutZone.charge <= 0)
                     {
-                        Debug.LogError("holdout zone null???");
-                        return meteor;
+                        continue;
                     }
+
                     //i have no goddamn clue what this does lmao
                     //this uses reflection to find the impact position of the meteor that was spawned -borbo
                     Vector3 impactPosition = (Vector3)meteor.GetType()
-                        .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor); 
+                        .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor);
 
-                    if (this.IsInRange(impactPosition, this.teleporter.transform.position, teleporter.holdoutZoneController.currentRadius + meteorBlastRadius))
+                    if (this.IsInRange(impactPosition, holdoutZone.transform.position, holdoutZone.currentRadius + meteorBlastRadius))
                     {
                         meteor = null;
                     }
@@ -504,6 +544,7 @@ namespace RiskierRainContent
             {
                 Debug.LogError(ex.Message);
             }
+
             return meteor;
         }
         private bool IsInRange(Vector3 a, Vector3 b, float dist)

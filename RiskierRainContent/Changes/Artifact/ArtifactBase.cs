@@ -50,6 +50,7 @@ namespace RiskierRainContent.Artifacts
         {
             ArtifactDef = ScriptableObject.CreateInstance<ArtifactDef>();
             {
+                ArtifactDef.cachedName = "Borbo" + ArtifactName;
                 ArtifactDef.nameToken = "ARTIFACT_" + ArtifactLangTokenName + "_NAME";
                 ArtifactDef.descriptionToken = "ARTIFACT_" + ArtifactLangTokenName + "_DESCRIPTION";
                 ArtifactDef.smallIconDeselectedSprite = ArtifactDeselectedIcon;

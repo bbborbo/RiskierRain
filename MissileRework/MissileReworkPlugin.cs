@@ -6,6 +6,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using ModularEclipse;
+using RoR2.ExpansionManagement;
 
 namespace MissileRework
 {
@@ -38,6 +39,7 @@ namespace MissileRework
             MissileArtifact.smallIconDeselectedSprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
             MissileArtifact.smallIconSelectedSprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
             MissileArtifact.unlockableDef = null;
+            MissileArtifact.requiredExpansion = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
 
             icbmItemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/MoreMissile/MoreMissile.asset").WaitForCompletion();
             if (icbmItemDef != null)

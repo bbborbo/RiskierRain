@@ -546,12 +546,6 @@ namespace RiskierRain
                 EclipseChanges();
             }
 
-            //eclipse level select
-            if (GetConfigBool(true, "Difficulty: Eclipse Level Select"))
-            {
-                EclipseLevelSelect();
-            }
-
             //overloading elite
             if (GetConfigBool(true, "Elite: Overloading Elite Rework"))
             {

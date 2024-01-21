@@ -14,8 +14,15 @@ using System.Security.Permissions;
 using System.Security;
 using System.Linq;
 using RoR2.Projectile;
-using On.EntityStates.VoidSurvivor.Weapon;
 using EntityStates.Captain.Weapon;
+using UnityEngine.Networking;
+using EntityStates.ArtifactShell;
+using EntityStates.LemurianMonster;
+using EntityStates.VagrantMonster;
+using EntityStates.LunarWisp;
+using EntityStates.BeetleGuardMonster;
+using EntityStates;
+using EntityStates.ClayBoss;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -66,11 +73,317 @@ namespace MissileRework
 
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;
+            On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.OnEnter += MissileArtifact_ViendCorruptSecondary;
             //captain tazer
             On.EntityStates.Captain.Weapon.FireTazer.Fire += MissileArtifact_CaptainTazer;
 
             //mushrum spore grenade
             On.EntityStates.MiniMushroom.SporeGrenade.FireGrenade += MissileArtifact_MushrumSporeGrenade;
+            //reliquary solar flares
+            On.EntityStates.ArtifactShell.FireSolarFlares.FixedUpdate += MissileArtifact_ReliquaryFlares;
+            //worm meatball
+            On.RoR2.WormBodyPositions2.FireMeatballs += MissileArtifact_FireMeatballs;
+            //titan rock
+            On.RoR2.TitanRockController.Fire += MissileArtifact_TitanRock;
+            //lemurian
+            On.EntityStates.LemurianMonster.FireFireball.OnEnter += MissileArtifact_LemurianFireball;
+            //vagrant tracking bomb
+            On.EntityStates.VagrantMonster.FireTrackingBomb.FireBomb += MissileArtifact_VagrantTrackingBomb;
+            //chimera tracking bomb
+            On.EntityStates.LunarWisp.SeekingBomb.FireBomb += MissileArtifact_ChimeraSeekingBomb;
+            //beetle guard roller
+            On.EntityStates.BeetleGuardMonster.FireSunder.FixedUpdate += MissileArtifact_BeetleGuardRoller;
+            //dunestrider roller
+            On.EntityStates.ClayBoss.FireTarball.FireSingleTarball += MissileArtifact_DunestriderRoller;
+        }
+
+        private void MissileArtifact_DunestriderRoller(On.EntityStates.ClayBoss.FireTarball.orig_FireSingleTarball orig, EntityStates.ClayBoss.FireTarball self, string targetMuzzle)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self, targetMuzzle);
+                return;
+            }
+            self.PlayCrossfade("Body", "FireTarBall", 0.1f);
+            Util.PlaySound(FireTarball.attackSoundString, self.gameObject);
+            self.aimRay = self.GetAimRay();
+            if (self.modelTransform)
+            {
+                ChildLocator component = self.modelTransform.GetComponent<ChildLocator>();
+                if (component)
+                {
+                    Transform transform = component.FindChild(targetMuzzle);
+                    if (transform)
+                    {
+                        self.aimRay.origin = transform.position;
+                    }
+                }
+            }
+            self.AddRecoil(-1f * FireTarball.recoilAmplitude, -2f * FireTarball.recoilAmplitude, -1f * FireTarball.recoilAmplitude, 1f * FireTarball.recoilAmplitude);
+            if (FireTarball.effectPrefab)
+            {
+                EffectManager.SimpleMuzzleFlash(FireTarball.effectPrefab, self.gameObject, targetMuzzle, false);
+            }
+            if (self.isAuthority)
+            {
+                Vector3 axis = Vector3.up;
+                Vector3 forward = Vector3.ProjectOnPlane(self.aimRay.direction, axis);
+
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = FireSunder.projectilePrefab;
+                fireProjectileInfo.position = self.aimRay.origin;
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(forward);
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * FireTarball.damageCoefficient;
+                fireProjectileInfo.force = 0;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * forward);
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * forward);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
+            self.characterBody.AddSpreadBloom(FireTarball.spreadBloomValue);
+        }
+
+        private void MissileArtifact_BeetleGuardRoller(On.EntityStates.BeetleGuardMonster.FireSunder.orig_FixedUpdate orig, EntityStates.BeetleGuardMonster.FireSunder self)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self);
+                return;
+            }
+            self.fixedAge += Time.fixedDeltaTime;
+            if (self.modelAnimator && self.modelAnimator.GetFloat("FireSunder.activate") > 0.5f && !self.hasAttacked)
+            {
+                if (self.isAuthority && self.modelTransform)
+                {
+                    Ray aimRay = self.GetAimRay();
+                    aimRay.origin = self.handRTransform.position;
+
+                    Vector3 axis = Vector3.up;
+
+                    FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                    fireProjectileInfo.projectilePrefab = FireSunder.projectilePrefab;
+                    fireProjectileInfo.position = aimRay.origin;
+                    fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimRay.direction);
+                    fireProjectileInfo.owner = self.gameObject;
+                    fireProjectileInfo.damage = self.damageStat * FireSunder.damageCoefficient;
+                    fireProjectileInfo.force = FireSunder.forceMagnitude;
+                    fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                    FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                    FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                    fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
+                    fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+                }
+                self.hasAttacked = true;
+                EntityState.Destroy(self.rightHandChargeEffect);
+            }
+            if (self.fixedAge >= self.duration && self.isAuthority)
+            {
+                self.outer.SetNextStateToMain();
+                return;
+            }
+        }
+
+        private void MissileArtifact_ChimeraSeekingBomb(On.EntityStates.LunarWisp.SeekingBomb.orig_FireBomb orig, EntityStates.LunarWisp.SeekingBomb self)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self);
+                return;
+            }
+            Util.PlaySound(SeekingBomb.fireBombSoundString, self.gameObject);
+            Ray aimRay = self.GetAimRay();
+            Transform modelTransform = self.GetModelTransform();
+            if (modelTransform)
+            {
+                ChildLocator component = modelTransform.GetComponent<ChildLocator>();
+                if (component)
+                {
+                    aimRay.origin = component.FindChild(SeekingBomb.muzzleName).transform.position;
+                }
+            }
+            if (self.isAuthority)
+            {
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = SeekingBomb.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimRay.direction);
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * SeekingBomb.bombDamageCoefficient;
+                fireProjectileInfo.force = SeekingBomb.bombForce;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
+            Util.PlaySound(SeekingBomb.spinDownSoundString, self.gameObject);
+            self.PlayCrossfade("Gesture", "BombStop", 0.2f);
+        }
+
+        private void MissileArtifact_VagrantTrackingBomb(On.EntityStates.VagrantMonster.FireTrackingBomb.orig_FireBomb orig, EntityStates.VagrantMonster.FireTrackingBomb self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                Ray aimRay = self.GetAimRay();
+
+                Vector3 axis = Vector3.up;
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = FireTrackingBomb.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * FireTrackingBomb.bombDamageCoefficient;
+                fireProjectileInfo.force = FireTrackingBomb.bombForce;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+            }
+        }
+
+        private void MissileArtifact_TitanRock(On.RoR2.TitanRockController.orig_Fire orig, TitanRockController self)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self);
+                return;
+            }
+            if(NetworkServer.active && self.ownerInputBank)
+            {
+                Vector3 position = self.fireTransform.position;
+                Vector3 forward = self.ownerInputBank.aimDirection;
+                RaycastHit raycastHit;
+                if (Util.CharacterRaycast(self.owner, new Ray(self.ownerInputBank.aimOrigin, self.ownerInputBank.aimDirection), 
+                    out raycastHit, float.PositiveInfinity, LayerIndex.world.mask | LayerIndex.entityPrecise.mask, QueryTriggerInteraction.UseGlobal))
+                {
+                    forward = raycastHit.point - position;
+                }
+                float baseDamage = self.ownerCharacterBody ? self.ownerCharacterBody.damage : 1f;
+                ProjectileManager.instance.FireProjectile(self.projectilePrefab, position, 
+                    Util.QuaternionSafeLookRotation(forward), self.owner, self.damageCoefficient * baseDamage,
+                    self.damageForce, self.isCrit, DamageColorIndex.Default, null, -1f);
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, forward);
+                Vector3 axis = Vector3.Cross(forward, rhs);
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                fireProjectileInfo.position = position;
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(forward);
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageCoefficient * baseDamage;
+                fireProjectileInfo.force = self.damageForce;
+                fireProjectileInfo.crit = self.isCrit;
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * forward);
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * forward);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
+        }
+
+        private void MissileArtifact_LemurianFireball(On.EntityStates.LemurianMonster.FireFireball.orig_OnEnter orig, EntityStates.LemurianMonster.FireFireball self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                Ray aimRay = self.GetAimRay();
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = FireFireball.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * FireFireball.damageCoefficient;
+                fireProjectileInfo.force = FireFireball.force;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+            }
+        }
+
+        private void MissileArtifact_FireMeatballs(On.RoR2.WormBodyPositions2.orig_FireMeatballs orig, WormBodyPositions2 self, Vector3 impactNormal, Vector3 impactPosition, Vector3 forward, int meatballCount, float meatballAngle, float meatballForce)
+        {
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                meatballCount *= 3;
+            }
+            orig(self, impactNormal, impactPosition, forward, meatballCount, meatballAngle, meatballForce);
+        }
+
+        private void MissileArtifact_ReliquaryFlares(On.EntityStates.ArtifactShell.FireSolarFlares.orig_FixedUpdate orig, EntityStates.ArtifactShell.FireSolarFlares self)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self);
+                return;
+            }
+            if (NetworkServer.active)
+            {
+                float num = self.duration / (float)self.projectileCount;
+                if (self.fixedAge >= (float)self.projectilesFired * num)
+                {
+                    self.projectilesFired++;
+                    FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                    fireProjectileInfo.owner = self.gameObject;
+                    fireProjectileInfo.position = self.transform.position + self.currentRotation * Vector3.forward * FireSolarFlares.radius;
+                    fireProjectileInfo.rotation = self.currentRotation;
+                    fireProjectileInfo.projectilePrefab = FireSolarFlares.projectilePrefab;
+                    fireProjectileInfo.fuseOverride = FireSolarFlares.projectileFuse;
+                    fireProjectileInfo.useFuseOverride = true;
+                    fireProjectileInfo.speedOverride = FireSolarFlares.projectileSpeed;
+                    fireProjectileInfo.useSpeedOverride = true;
+                    fireProjectileInfo.damage = self.damageStat * FireSolarFlares.projectileDamageCoefficient;
+                    fireProjectileInfo.force = FireSolarFlares.projectileForce;
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                    Vector3 axis = Vector3.up;
+                    FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                    fireProjectileInfo2.rotation = Quaternion.AngleAxis(missileSpread, axis) * self.currentRotation;
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+
+                    FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                    fireProjectileInfo3.rotation = Quaternion.AngleAxis(-missileSpread, axis) * self.currentRotation;
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+
+                    self.currentRotation *= self.deltaRotation;
+                }
+                if (self.fixedAge >= self.duration)
+                {
+                    self.outer.SetNextStateToMain();
+                }
+            }
         }
 
         private void MissileArtifact_CaptainTazer(On.EntityStates.Captain.Weapon.FireTazer.orig_Fire orig, EntityStates.Captain.Weapon.FireTazer self)
@@ -125,6 +438,16 @@ namespace MissileRework
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
             }
+        }
+
+        private void MissileArtifact_ViendCorruptSecondary(On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.orig_OnEnter orig, EntityStates.VoidSurvivor.Weapon.FireCorruptDisks self)
+        {
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                self.projectileCount = 3;
+                self.yawPerProjectile = projectileSpread;
+            }
+            orig(self);
         }
 
         private void MissileArtifact_MushrumSporeGrenade(On.EntityStates.MiniMushroom.SporeGrenade.orig_FireGrenade orig, EntityStates.MiniMushroom.SporeGrenade self, string targetMuzzle)

@@ -129,7 +129,6 @@ namespace MissileRework
                 Vector3 axis = Vector3.up;
                 Vector3 forward = Vector3.ProjectOnPlane(self.aimRay.direction, axis);
 
-
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = FireSunder.projectilePrefab;
                 fireProjectileInfo.position = self.aimRay.origin;
@@ -540,8 +539,9 @@ namespace MissileRework
             {
                 if (self.isAuthority)
                 {
-                    //alpha construct, blind pest
-                    if (self is EntityStates.MinorConstruct.Weapon.FireConstructBeam || self is EntityStates.FlyingVermin.Weapon.Spit)
+                    //alpha construct, blind pest, phase round, scrap cannon
+                    if (self is EntityStates.MinorConstruct.Weapon.FireConstructBeam || self is EntityStates.FlyingVermin.Weapon.Spit 
+                        || self is EntityStates.Commando.CommandoWeapon.FireFMJ || self is EntityStates.Toolbot.FireGrenadeLauncher)
                     {
                         Ray aimRay = self.GetAimRay();
                         aimRay = self.ModifyProjectileAimRay(aimRay);

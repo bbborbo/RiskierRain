@@ -22,13 +22,13 @@ namespace MissileRework
     {
         public static GameObject missilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/MissileProjectile");
         public float procCoefficient = 0.5f;
-        public float procChance = 15;
+        public float procChance = 10;
         public float atgMk3BaseDamageCoefficientPerRocket = 3;
         static float atgMk3TotalDamageMultiplierBase = 0.0f;
         static float atgMk3TotalDamageMultiplierStack = 1.5f;
         static int maxMissiles = 100;
         string damagePerStack = (atgMk3TotalDamageMultiplierStack * 100).ToString() + "%";
-        string damageBase = (atgMk3TotalDamageMultiplierBase + atgMk3TotalDamageMultiplierStack).ToString() + "%";
+        string damageBase = ((atgMk3TotalDamageMultiplierBase + atgMk3TotalDamageMultiplierStack) * 100).ToString() + "%";
 
         internal void ReworkAtg()
         {
@@ -128,47 +128,23 @@ namespace MissileRework
                     List<FireProjectileInfo> missilesToFire = new List<FireProjectileInfo>();
                     for (int i = 0; i < totalMissilesToFire; i++)
                     {
-                        FireProjectileInfo newMissile = NewMissile(atgMk3BaseDamageCoefficientPerRocket, damageInfo, attackerBody, victim);
+                        //FireProjectileInfo newMissile = NewMissile(atgMk3BaseDamageCoefficientPerRocket, damageInfo, attackerBody, victim);
+
+                        FireProjectileInfo newMissile = new FireProjectileInfo
+                        {
+                            projectilePrefab = missilePrefab,
+                            procChainMask = damageInfo.procChainMask,
+                            damage = atgDamagePerRocket,
+                            crit = damageInfo.crit,
+                            target = victim
+                        };
 
                         missilesToFire.Add(newMissile);
-                        if (missilesToFire.Count + currentMissiles > maxMissiles)
-                        {
-                            int remainingMissiles = missilesToFire.Count + currentMissiles - maxMissiles;
-                            Debug.Log($"Discarded {remainingMissiles} missiles!");
-                            break;
-                        }
                     }
 
                     missileLauncher.SetMissiles(missilesToFire);
                 }
             }
-        }
-        public static FireProjectileInfo NewMissile(float damage, DamageInfo damageInfo, CharacterBody attackerBody, GameObject victim)
-        {
-            GameObject gameObject = attackerBody.gameObject;
-            InputBankTest component = gameObject.GetComponent<InputBankTest>();
-            Vector3 position = component ? component.aimOrigin : gameObject.transform.position;
-            Vector3 up = Vector3.up;
-            float rotationVariance = UnityEngine.Random.Range(0.1f, 0.5f); //0.1f
-
-            float rocketDamage = attackerBody.damage * damage;
-            ProcChainMask procChainMask2 = damageInfo.procChainMask;
-            procChainMask2.AddProc(ProcType.Missile);
-            FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-            {
-                projectilePrefab = missilePrefab,
-                position = position,
-                rotation = Util.QuaternionSafeLookRotation(up + UnityEngine.Random.insideUnitSphere * rotationVariance),
-                procChainMask = procChainMask2,
-                owner = gameObject,
-                damage = rocketDamage,
-                crit = damageInfo.crit,
-                force = 200f,
-                damageColorIndex = DamageColorIndex.Item,
-                target = victim
-            };
-
-            return (fireProjectileInfo);
         }
     }
     public class Mk3MissileBehavior : RoR2.CharacterBody.ItemBehavior
@@ -181,20 +157,12 @@ namespace MissileRework
         float missileSpreadFraction = 0.33f;
         float missileSpreadMax = 0.6f;
 
-        public void SetMissiles(List<FireProjectileInfo> newMissiles, bool replace = false)
+        public void SetMissiles(List<FireProjectileInfo> newMissiles)
         {
-            if (replace == true)
+            for (int i = 0; i < newMissiles.Count; i++)
             {
-                currentMissiles = new List<FireProjectileInfo>(newMissiles);
+                currentMissiles.Add(newMissiles[i]);
             }
-            else
-            {
-                for (int i = 0; i < newMissiles.Count; i++)
-                {
-                    currentMissiles.Add(newMissiles[i]);
-                }
-            }
-            currentMissileTimer += GetScaledDelay();
         }
 
         private void FixedUpdate()
@@ -205,15 +173,14 @@ namespace MissileRework
                 {
                     FireProjectileInfo missile = currentMissiles[0];
                     missile.position = body.gameObject.transform.position;
-                    missile.rotation = Util.QuaternionSafeLookRotation(Vector3.up + UnityEngine.Random.insideUnitSphere * missileSpread);
                     missileSpread += (missileSpreadMax - missileSpread) * missileSpreadFraction;
 
-                    ProjectileManager.instance.FireProjectile(missile);
+                    //ProjectileManager.instance.FireProjectile(missile);
+                    MissileUtils.FireMissile(body.corePosition, body, missile.procChainMask, missile.target, 
+                        missile.damage, missile.crit, missile.projectilePrefab, DamageColorIndex.Item, Vector3.up + UnityEngine.Random.insideUnitSphere * missileSpread, 200f, true);
 
-                    List<FireProjectileInfo> newMissileList = new List<FireProjectileInfo>(currentMissiles);
-                    newMissileList.RemoveAt(0);
-                    //Debug.Log(newMissileList.Count);
-                    SetMissiles(newMissileList, true);
+                    currentMissiles.RemoveAt(0);
+                    currentMissileTimer += GetScaledDelay();
                 }
 
                 if (this.currentMissileTimer > 0f)
@@ -223,7 +190,7 @@ namespace MissileRework
             }
             else
             {
-                currentMissileTimer = 0;
+                currentMissileTimer = GetScaledDelay();
                 missileSpread = 0;
             }
         }

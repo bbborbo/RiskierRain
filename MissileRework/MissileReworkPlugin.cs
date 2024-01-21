@@ -72,6 +72,7 @@ namespace MissileRework
 
         public void Awake()
         {
+            CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
 
             ShouldReworkIcbm = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Pocket ICBM (incl. Artifact of Warfare)", true,
                 "Set to TRUE to rework Pocket ICBM and turn its vanilla effect into an artifact.");

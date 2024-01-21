@@ -22,8 +22,8 @@ namespace MissileRework
     public partial class MissileReworkPlugin
     {
         float shrimpShieldBase = 40;
-        float shrimpDamageCoeffBase = 0.25f;
-        float shrimpDamageCoeffStack = 0.25f;
+        float shrimpDamageCoeffBase = 0.30f;
+        float shrimpDamageCoeffStack = 0.30f;
 
         internal void ReworkPrimp()
         {

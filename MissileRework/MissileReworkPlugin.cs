@@ -104,6 +104,56 @@ namespace MissileRework
             On.EntityStates.BeetleGuardMonster.FireSunder.FixedUpdate += MissileArtifact_BeetleGuardRoller;
             //dunestrider roller
             On.EntityStates.ClayBoss.FireTarball.FireSingleTarball += MissileArtifact_DunestriderRoller;
+            //grandpa vaccuum
+            On.EntityStates.GrandParentBoss.FireSecondaryProjectile.Fire += MissileArtifact_GrandpaVacuum;
+        }
+
+        private void MissileArtifact_GrandpaVacuum(On.EntityStates.GrandParentBoss.FireSecondaryProjectile.orig_Fire orig, EntityStates.GrandParentBoss.FireSecondaryProjectile self)
+        {
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                orig(self);
+                return;
+            }
+
+            self.hasFired = true;
+            if (self.muzzleEffectPrefab)
+            {
+                EffectManager.SimpleMuzzleFlash(self.muzzleEffectPrefab, self.gameObject, self.muzzleName, false);
+            }
+            if (self.isAuthority && self.projectilePrefab)
+            {
+                Ray aimRay = self.GetAimRay();
+                Transform modelTransform = self.GetModelTransform();
+                if (modelTransform)
+                {
+                    ChildLocator component = modelTransform.GetComponent<ChildLocator>();
+                    if (component)
+                    {
+                        aimRay.origin = component.FindChild(self.muzzleName).transform.position;
+                    }
+                }
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimRay.direction);
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
+                fireProjectileInfo.force = self.force;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
         }
 
         private void MissileArtifact_RailerPistol(On.EntityStates.Railgunner.Weapon.FirePistol.orig_FireBullet orig, EntityStates.Railgunner.Weapon.FirePistol self, Ray aimRay)
@@ -705,6 +755,7 @@ namespace MissileRework
                 {
                     //alpha construct, blind pest, phase round, scrap cannon
                     if (self is EntityStates.MinorConstruct.Weapon.FireConstructBeam || self is EntityStates.FlyingVermin.Weapon.Spit 
+                        || self is EntityStates.VoidBarnacle.Weapon.Fire
                         || self is EntityStates.Commando.CommandoWeapon.FireFMJ || self is EntityStates.Toolbot.FireGrenadeLauncher)
                     {
                         Ray aimRay = self.GetAimRay();

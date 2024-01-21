@@ -229,7 +229,7 @@ namespace MissileRework
                                 projectilePrefab = self.projectilePrefab,
                                 position = aimRay.origin,
                                 rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                                owner = base.gameObject,
+                                owner = self.gameObject,
                                 damage = self.damageStat * num,
                                 force = num2,
                                 crit = self.RollCrit()
@@ -278,8 +278,8 @@ namespace MissileRework
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
                 FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
             }
@@ -344,7 +344,7 @@ namespace MissileRework
                 Vector3 forward = Vector3.ProjectOnPlane(self.aimRay.direction, axis);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
-                fireProjectileInfo.projectilePrefab = FireSunder.projectilePrefab;
+                fireProjectileInfo.projectilePrefab = FireTarball.projectilePrefab;
                 fireProjectileInfo.position = self.aimRay.origin;
                 fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(forward);
                 fireProjectileInfo.owner = self.gameObject;

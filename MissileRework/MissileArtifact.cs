@@ -38,13 +38,19 @@ namespace MissileRework
 {
     public partial class MissileReworkPlugin
     {
+        ArtifactDef MissileArtifact = null;
+        public const float missileSpread = 45;
+        public const float projectileSpread = 25;
+
         private void CreateArtifact()
         {
+            MissileArtifact = ScriptableObject.CreateInstance<ArtifactDef>();
+
             MissileArtifact.cachedName = "BorboWarfare";
             MissileArtifact.nameToken = "ARTIFACT_MISSILE_NAME";
             MissileArtifact.descriptionToken = "ARTIFACT_MISSILE_DESC";
-            MissileArtifact.smallIconDeselectedSprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-            MissileArtifact.smallIconSelectedSprite = LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+            MissileArtifact.smallIconDeselectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfare.png");
+            MissileArtifact.smallIconSelectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfaredeactivated.png");
             MissileArtifact.unlockableDef = null;
             MissileArtifact.requiredExpansion = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
 

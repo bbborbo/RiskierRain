@@ -22,8 +22,7 @@ namespace MissileRework
 {
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(R2API.DamageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(R2API.DamageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(ModularEclipsePlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInPlugin(guid, modName, version)]
@@ -64,11 +63,26 @@ namespace MissileRework
         }
         public static bool ModularEclipseLoaded = isLoaded(ModularEclipse.ModularEclipsePlugin.guid);
 
-        ArtifactDef MissileArtifact = ScriptableObject.CreateInstance<ArtifactDef>();
         ItemDef icbmItemDef;
 
-        public const float missileSpread = 45;
-        public const float projectileSpread = 25;
+        private static AssetBundle _assetBundle;
+        public static AssetBundle assetBundle
+        {
+            get
+            {
+                if (_assetBundle == null)
+                    _assetBundle = AssetBundle.LoadFromFile(GetAssetBundlePath("missilereworkassets"));
+                return _assetBundle;
+            }
+            set
+            {
+                _assetBundle = value;
+            }
+        }
+        public static string GetAssetBundlePath(string bundleName)
+        {
+            return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(MissileReworkPlugin.PInfo.Location), bundleName);
+        }
 
         public void Awake()
         {
@@ -98,6 +112,59 @@ namespace MissileRework
             {
                 ReworkPrimp();
             }
+            if(ShouldReworkEnemyMissileTargeting.Value == true)
+            {
+                On.RoR2.Projectile.MissileController.FixedUpdate += MissileController_FixedUpdate;
+                On.RoR2.Projectile.MissileController.FindTarget += MissileController_FindTarget;
+            }
+        }
+
+        private void MissileController_FixedUpdate(On.RoR2.Projectile.MissileController.orig_FixedUpdate orig, RoR2.Projectile.MissileController self)
+        {
+            if(self.teamFilter != null && self.teamFilter.teamIndex != TeamIndex.Player)
+            {
+                if(self.targetComponent.target != null)
+                {
+                    CharacterMotor targetMotor = self.targetComponent.target.GetComponent<HurtBox>()?.healthComponent?.body.characterMotor;
+                    if(targetMotor != null)
+                    {
+                        if (targetMotor.isGrounded)
+                        {
+                            self.targetComponent.target = self.FindTarget();
+                        }
+                    }
+                }
+            }
+            orig(self);
+        }
+
+        private Transform MissileController_FindTarget(On.RoR2.Projectile.MissileController.orig_FindTarget orig, RoR2.Projectile.MissileController self)
+        {
+            if (self.teamFilter.teamIndex == TeamIndex.Player)
+            {
+                return orig(self);
+            }
+
+            self.search.searchOrigin = self.transform.position;
+            self.search.searchDirection = self.transform.forward;
+            self.search.teamMaskFilter.RemoveTeam(self.teamFilter.teamIndex);
+            self.search.sortMode = BullseyeSearch.SortMode.Distance;
+            self.search.RefreshCandidates();
+
+            self.search.candidatesEnumerable = from v in self.search.candidatesEnumerable
+                                        where !((v.hurtBox.healthComponent.body.characterMotor != null) 
+                                            && v.hurtBox.healthComponent.body.characterMotor.isGrounded == true)
+                                        select v;
+            /*self.search.candidatesEnumerable = from v in self.search.candidatesEnumerable
+                                        where !(v.hurtBox.transform.gameObject.GetComponent<CharacterMotor>()?.isGrounded ?? false)
+                                        select v;*/
+
+            HurtBox hurtBox = self.search.GetResults().FirstOrDefault<HurtBox>();
+            if (hurtBox == null)
+            {
+                return null;
+            }
+            return hurtBox.transform;
         }
     }
 }

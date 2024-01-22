@@ -55,7 +55,7 @@ namespace MissileRework
             MissileArtifact.requiredExpansion = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
 
             LanguageAPI.Add(MissileArtifact.nameToken, "Artifact of Warfare");
-            LanguageAPI.Add(MissileArtifact.descriptionToken, "Triple MOST projectile attacks.");
+            LanguageAPI.Add(MissileArtifact.descriptionToken, "Triple most projectile attacks.");
             ContentAddition.AddArtifactDef(MissileArtifact);
 
             //compatibility with Modular Eclipse

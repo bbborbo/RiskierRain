@@ -153,8 +153,9 @@ namespace MissileRework
 
         public void AddMissiles(FireProjectileInfo newMissile, int count)
         {
-            for (int i = 0; i < count; i++)
+            while (count > 0)
             {
+                count--;
                 currentMissiles.Add(newMissile);
             }
         }

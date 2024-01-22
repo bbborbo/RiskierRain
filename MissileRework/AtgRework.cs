@@ -85,9 +85,6 @@ namespace MissileRework
                     if (attackerMaster != null && inv != null)
                     {
                         int missileItemCount = inv.GetItemCount(RoR2Content.Items.Missile);
-                        TeamComponent teamComponent = attackerBody.GetComponent<TeamComponent>();
-                        TeamIndex team = teamComponent ? teamComponent.teamIndex : TeamIndex.Neutral;
-
                         DoMissileProc(damageInfo, victim, attackerBody, attackerMaster, missileItemCount);
                     }
                 }

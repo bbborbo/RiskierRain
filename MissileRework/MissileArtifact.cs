@@ -49,8 +49,8 @@ namespace MissileRework
             MissileArtifact.cachedName = "BorboWarfare";
             MissileArtifact.nameToken = "ARTIFACT_MISSILE_NAME";
             MissileArtifact.descriptionToken = "ARTIFACT_MISSILE_DESC";
-            MissileArtifact.smallIconDeselectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfare.png");
-            MissileArtifact.smallIconSelectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfaredeactivated.png");
+            MissileArtifact.smallIconSelectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfare.png");
+            MissileArtifact.smallIconDeselectedSprite = assetBundle.LoadAsset<Sprite>("Assets/warfaredeactivated.png");
             MissileArtifact.unlockableDef = null;
             MissileArtifact.requiredExpansion = Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
 

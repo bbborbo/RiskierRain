@@ -23,7 +23,7 @@ namespace MissileRework
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(ModularEclipsePlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(ModularEclipsePlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]
@@ -34,7 +34,7 @@ namespace MissileRework
 
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "HouseOfFruits";
-        public const string modName = "MissileRework";
+        public const string modName = "IAmBecomeMissiles";
         public const string version = "1.0.0";
         #endregion
 

@@ -23,10 +23,11 @@ namespace MissileRework
         public static GameObject missilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/MissileProjectile");
         public float procCoefficient = 0.5f;
         public float procChance = 10;
-        public float atgMk3BaseDamageCoefficientPerRocket = 3;
-        static float atgMk3TotalDamageMultiplierBase = 0.0f;
-        static float atgMk3TotalDamageMultiplierStack = 1.5f;
+        public static float atgMk3BaseDamageCoefficientPerRocket = 3;
+        public static float atgMk3TotalDamageMultiplierBase = 0.0f;
+        public static float atgMk3TotalDamageMultiplierStack = 1.5f;
         static int maxMissiles = 100;
+        string damagePerMissile = (atgMk3BaseDamageCoefficientPerRocket * 100).ToString() + "%";
         string damagePerStack = (atgMk3TotalDamageMultiplierStack * 100).ToString() + "%";
         string damageBase = ((atgMk3TotalDamageMultiplierBase + atgMk3TotalDamageMultiplierStack) * 100).ToString() + "%";
 
@@ -41,8 +42,9 @@ namespace MissileRework
 
             LanguageAPI.Add("ITEM_MISSILE_NAME", "AtG Missile Mk.3");
             LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Chance to fire missiles.");
-            LanguageAPI.Add("ITEM_MISSILE_DESC", $"<style=cIsDamage>{procChance}%</style> chance to fire a volley of missiles on hit, " +
-            $"that deal <style=cIsDamage>{damageBase}</style> <style=cStack>(+{damagePerStack} per stack)</style> TOTAL combined damage.");
+            LanguageAPI.Add("ITEM_MISSILE_DESC", $"<style=cIsDamage>{procChance}%</style> chance to fire a volley of missiles on hit " +
+            $"for <style=cIsDamage>{damageBase}</style> <style=cStack>(+{damagePerStack} per stack)</style> TOTAL damage. " +
+            $"Each missile deals <style=cIsDamage>{damagePerMissile}</style> base damage.");
         }
 
         #region mundane stuff

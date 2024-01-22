@@ -95,6 +95,9 @@ namespace MissileRework
             On.EntityStates.GenericProjectileBaseState.FireProjectile += MissileArtifact_FireProjectile;
             On.EntityStates.Mage.Weapon.BaseThrowBombState.Fire += MissileArtifact_ThrowBomb;
 
+            //shuriken
+            On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += MissileArtifact_Shuriken;
+
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.OnEnter += MissileArtifact_ViendCorruptSecondary;
@@ -130,6 +133,31 @@ namespace MissileRework
         }
 
         #region skill hooks
+        private void MissileArtifact_Shuriken(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                Ray aimRay = self.GetAimRay();
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.body.damage * (3f + 1f * (float)self.stack);
+                fireProjectileInfo.force = 0f;
+                fireProjectileInfo.crit = Util.CheckRoll(self.body.crit, self.body.master);
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction) * self.GetRandomRollPitch();
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction) * self.GetRandomRollPitch();
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+            }
+        }
         private void MissileArtifact_GrandpaVacuum(On.EntityStates.GrandParentBoss.FireSecondaryProjectile.orig_Fire orig, EntityStates.GrandParentBoss.FireSecondaryProjectile self)
         {
             if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))

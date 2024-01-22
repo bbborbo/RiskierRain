@@ -103,47 +103,42 @@ namespace MissileRework
             if (missileLauncher == null)
                 return;
 
-            if (Util.CheckRoll(procChance, attackerMaster))
+            //calculates the combined damage for all missiles in the proc
+            float atgTotalDamage = damageInfo.damage * (atgMk3TotalDamageMultiplierBase + atgMk3TotalDamageMultiplierStack * missileItemCount);
+            float atgDamagePerRocket = atgMk3BaseDamageCoefficientPerRocket * attackerBody.damage;
+            float atgDamageRemainder = atgTotalDamage % atgDamagePerRocket;
+
+            int totalMissilesToFire = (int)((atgTotalDamage - atgDamageRemainder) / atgDamagePerRocket);
+            if (atgDamageRemainder > 0)
             {
-                //calculates the combined damage for all missiles in the proc
-                float atgTotalDamage = damageInfo.damage * (atgMk3TotalDamageMultiplierBase + atgMk3TotalDamageMultiplierStack * missileItemCount);
-                float atgDamagePerRocket = atgMk3BaseDamageCoefficientPerRocket * attackerBody.damage;
-                float atgDamageRemainder = atgTotalDamage % atgDamagePerRocket;
-
-                int totalMissilesToFire = (int)((atgTotalDamage - atgDamageRemainder) / atgDamagePerRocket);
-                if(atgDamageRemainder > 0)
+                float remainderFraction = atgDamageRemainder / atgDamagePerRocket;
+                if (Util.CheckRoll(remainderFraction * 100, 0))
                 {
-                    float remainderFraction = atgDamageRemainder / atgDamagePerRocket;
-                    if (Util.CheckRoll(procChance * remainderFraction, attackerMaster))
-                    {
-                        totalMissilesToFire++;
-                    }
+                    totalMissilesToFire++;
+                }
+            }
+
+            if (Util.CheckRoll(procChance, attackerMaster) && totalMissilesToFire > 0)
+            {
+                FireProjectileInfo newMissile = new FireProjectileInfo
+                {
+                    projectilePrefab = missilePrefab,
+                    procChainMask = damageInfo.procChainMask,
+                    damage = atgDamagePerRocket,
+                    crit = damageInfo.crit,
+                    target = victim
+                };
+
+                missileLauncher.AddMissiles(newMissile, Mathf.Min(totalMissilesToFire, maxMissiles - missileLauncher.currentMissiles.Count));
+
+                /*int currentMissiles = missileLauncher.currentMissiles.Count;
+                List<FireProjectileInfo> missilesToFire = new List<FireProjectileInfo>();
+                for (int i = 0; i < totalMissilesToFire; i++)
+                {
+                    missilesToFire.Add(newMissile);
                 }
 
-                totalMissilesToFire = Mathf.Min(totalMissilesToFire, maxMissiles - missileLauncher.currentMissiles.Count);
-
-                if (totalMissilesToFire > 0)
-                {
-                    int currentMissiles = missileLauncher.currentMissiles.Count;
-                    List<FireProjectileInfo> missilesToFire = new List<FireProjectileInfo>();
-                    for (int i = 0; i < totalMissilesToFire; i++)
-                    {
-                        //FireProjectileInfo newMissile = NewMissile(atgMk3BaseDamageCoefficientPerRocket, damageInfo, attackerBody, victim);
-
-                        FireProjectileInfo newMissile = new FireProjectileInfo
-                        {
-                            projectilePrefab = missilePrefab,
-                            procChainMask = damageInfo.procChainMask,
-                            damage = atgDamagePerRocket,
-                            crit = damageInfo.crit,
-                            target = victim
-                        };
-
-                        missilesToFire.Add(newMissile);
-                    }
-
-                    missileLauncher.SetMissiles(missilesToFire);
-                }
+                missileLauncher.SetMissiles(missilesToFire);*/
             }
         }
     }
@@ -157,11 +152,11 @@ namespace MissileRework
         float missileSpreadFraction = 0.33f;
         float missileSpreadMax = 0.6f;
 
-        public void SetMissiles(List<FireProjectileInfo> newMissiles)
+        public void AddMissiles(FireProjectileInfo newMissile, int count)
         {
-            for (int i = 0; i < newMissiles.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                currentMissiles.Add(newMissiles[i]);
+                currentMissiles.Add(newMissile);
             }
         }
 

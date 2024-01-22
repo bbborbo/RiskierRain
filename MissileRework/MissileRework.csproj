@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
@@ -14,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     <PackageReference Include="RiskOfRain2.GameLibs" Version="1.2.4-r.0" />
     <PackageReference Include="MMHOOK.RoR2" Version="2022.4.19">
       <NoWarn>NU1701</NoWarn>
@@ -62,19 +62,19 @@
     <Reference Include="Wwise">
       <HintPath>libs\Wwise.dll</HintPath>
     </Reference>
-    <Reference Include="AncientScepter">
-      <HintPath>libs\AncientScepter.dll</HintPath>
-    </Reference>
     <Reference Include="Decalicious">
       <HintPath>libs\Decalicious.dll</HintPath>
+    </Reference>
+    <Reference Include="ModularEclipse">
+      <HintPath>libs\ModularEclipse.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BorboStatUtils\BorboStatUtils.csproj" />
-    <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
-    <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
-    <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
-    <ProjectReference Include="..\RiskierRainContent\RiskierRainContent.csproj" />
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

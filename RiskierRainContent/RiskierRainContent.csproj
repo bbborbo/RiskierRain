@@ -72,6 +72,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BorboStatUtils\BorboStatUtils.csproj" />
     <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
+    <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
     <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
   </ItemGroup>
 

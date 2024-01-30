@@ -24,6 +24,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using BorboStatUtils;
 using ChillRework;
+using MissileRework;
 using RoR2.ExpansionManagement;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -42,6 +43,7 @@ namespace RiskierRainContent
 
     //[BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(ChillRework.ChillRework.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
@@ -81,6 +83,21 @@ namespace RiskierRainContent
         public static bool isAELoaded => Tools.isLoaded("com.Borbo.ArtificerExtended");
         public static bool is2R4RLoaded => Tools.isLoaded("com.HouseOfFruits.RiskierRain");
         public static bool isHBULoaded => Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
+        public static bool IsMissileArtifactEnabled()
+        {
+            if (Tools.isLoaded(MissileReworkPlugin.guid))
+            {
+                return GetMissileArtifactEnabled();
+            }
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static bool GetMissileArtifactEnabled()
+        {
+            return RunArtifactManager.instance.IsArtifactEnabled(MissileReworkPlugin.MissileArtifact);
+        }
+
         public static bool isScepterLoaded => Tools.isLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
         public static bool acridLungeLoaded => Tools.isLoaded("Withor.AcridBiteLunge");

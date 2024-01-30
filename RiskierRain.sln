@@ -23,6 +23,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NegativeRegenFix", "NegativeRegenFix\NegativeRegenFix.csproj", "{08B8379B-E045-4F59-B9F7-18D66AE32433}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RiskierRainContent", "RiskierRainContent\RiskierRainContent.csproj", "{BC53782F-4ABA-4DD3-9CB6-BCA1AD5A46DE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D27C489-F96C-4E87-8515-62339EB61136} = {6D27C489-F96C-4E87-8515-62339EB61136}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissileRework", "MissileRework\MissileRework.csproj", "{6D27C489-F96C-4E87-8515-62339EB61136}"
 EndProject

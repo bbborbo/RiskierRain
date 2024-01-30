@@ -286,28 +286,40 @@ namespace RiskierRainContent
                 }
                 if (body.hasAuthority)
                 {
-                    float totalYaw = urnBallYawSpread * 2 / (urnBallCountBase + 1);
-                    float totalSpread = (urnBallCountBase - 1) * urnBallYawSpread;
-                    float halfSpread = totalSpread / 2;
-
-                    for (int i = 0; i < urnBallCountBase; i++)
+                    if (RiskierRainContent.IsMissileArtifactEnabled())
                     {
-                        //float currentSpread = Mathf.FloorToInt(i - (urnBallCountBase - 1) / 2f) / (urnBallCountBase - 1) * totalSpread;
-                        //float currentSpread = Mathf.Lerp(0, totalSpread, i / (urnBallCountBase - 1)) - halfSpread;
-                        float currentSpread = (i / (urnBallCountBase - 1)) * totalSpread - halfSpread;
-                        float bonusYaw = (urnBallYawSpread * i) - (totalYaw * 2f);
+                        float totalYaw = urnBallYawSpread * 2 / (urnBallCountBase + 1);
+                        float totalSpread = (urnBallCountBase - 1) * urnBallYawSpread;
+                        float halfSpread = totalSpread / 2;
 
-                        Vector3 forward = Util.ApplySpread(aimRay.direction, 0, 0, 1, 0, bonusYaw, 0); 
-                        //Vector3 fwd = Vector3.ProjectOnPlane(forward, Vector3.up);
+                        for (int i = 0; i < urnBallCountBase; i++)
+                        {
+                            //float currentSpread = Mathf.FloorToInt(i - (urnBallCountBase - 1) / 2f) / (urnBallCountBase - 1) * totalSpread;
+                            //float currentSpread = Mathf.Lerp(0, totalSpread, i / (urnBallCountBase - 1)) - halfSpread;
+                            float currentSpread = (i / (urnBallCountBase - 1)) * totalSpread - halfSpread;
+                            float bonusYaw = (urnBallYawSpread * i) - (totalYaw * 2f);
 
-                        ProjectileManager.instance.FireProjectile(
-                            Assets.miredUrnTarball, aimRay.origin, Util.QuaternionSafeLookRotation(forward),
-                            body.gameObject, body.damage * urnBallDamageCoefficient, 0f,
-                            Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
+                            Vector3 forward = Util.ApplySpread(aimRay.direction, 0, 0, 1, 0, bonusYaw, 0);
+                            //Vector3 fwd = Vector3.ProjectOnPlane(forward, Vector3.up);
+
+                            FireTarballProjectile(body, aimRay.origin, forward);
+                        }
+                    }
+                    else
+                    {
+                        FireTarballProjectile(body, aimRay.origin, aimRay.direction);
                     }
                 }
                 body.AddSpreadBloom(FireTarball.spreadBloomValue);
             }
+        }
+
+        private void FireTarballProjectile(CharacterBody body, Vector3 origin, Vector3 forward)
+        {
+            ProjectileManager.instance.FireProjectile(
+                Assets.miredUrnTarball, origin, Util.QuaternionSafeLookRotation(forward), 
+                body.gameObject, body.damage * urnBallDamageCoefficient, 0f, 
+                Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
         }
         #endregion
 

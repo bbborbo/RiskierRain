@@ -38,7 +38,7 @@ namespace MissileRework
 {
     public partial class MissileReworkPlugin
     {
-        ArtifactDef MissileArtifact = null;
+        public static ArtifactDef MissileArtifact = null;
         public const float missileSpread = 45;
         public const float projectileSpread = 25;
 

@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,6 +41,7 @@ namespace RiskierRainContent.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

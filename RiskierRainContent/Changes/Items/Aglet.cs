@@ -14,12 +14,12 @@ namespace RiskierRainContent.Items
     class Aglet : ItemBase<Aglet>
     {
         public static BuffDef agletSpeed;
-        public static float baseSpeedBuff = 0.40f;
-        public static float stackSpeedBuff = 0.40f;
+        public static float baseSpeedBuff = 0.30f;
+        public static float stackSpeedBuff = 0.30f;
         public const float maxGroundTimeForMaxBuff = 5;
         public const float minGroundTimeForMinBuff = 1;
-        public const float buffPerSecond = 2;
-        public const float ungroundedLossRate = 2;
+        public const float buffPerSecond = 5;
+        public const float ungroundedLossRate = 1;
         public override string ItemName => "Aglet";
 
         public override string ItemLangTokenName => "AGLET";

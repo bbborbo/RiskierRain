@@ -32,8 +32,8 @@ namespace RiskierRain.SurvivorTweaks
         public static int rollStock = 2; //1
         public static float rollCooldown = 6f; //4f
         public static float rollDuration = 0.2f; //0.4f
-        public static float rollAspdBuff = 1.0f; 
-        public static float rollAspdDuration = 0.7f;
+        public static float rollAspdBuff = 0.6f; 
+        public static float rollAspdDuration = 1f;
 
         public static int slideStock = 1; //1
         public static float slideCooldown = 8f; //4f

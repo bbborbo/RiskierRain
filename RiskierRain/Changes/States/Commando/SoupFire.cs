@@ -22,14 +22,12 @@ namespace RiskierRain.EntityState.Commando
 		private int fireIndex;
 		private float stopwatch;
 		bool crit = false;
-		Ray aimRay;
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			//crit = Util.CheckRoll(this.critStat, base.characterBody.master);
 			shotsTotal = Mathf.CeilToInt(CommandoTweaks.soupBaseShots * this.attackSpeedStat);
 			durationPerShot = SoupFire.baseDuration / shotsTotal;
-			aimRay = base.GetAimRay();
 			FireAtTarget();
 		}
 
@@ -50,31 +48,20 @@ namespace RiskierRain.EntityState.Commando
 						return;
 					}
 				}
-				if (targetsList.Count == 0)
-				{
-					this.outer.SetNextState(new Idle());
-				}
 			}
 		}
 
         private void FireAtTarget()
-        {
-			if(targetsList.Count > 0)
+		{
+			Ray aimRay = base.GetAimRay();
+
+			if (targetsList.Count > 0)
 			{
 				HurtBox hurtBox = targetsList[fireIndex % targetsList.Count];
 				//HurtBox hurtBox = targetsList[Mathf.FloorToInt(targetsList.Count * fireIndex / shotsTotal)];
 				if (hurtBox.healthComponent && hurtBox.healthComponent.alive)
 				{
-					if (fireIndex % 2 == 0)
-					{
-						this.PlayAnimation("Gesture Additive, Left", "FirePistol, Left");
-						this.FireBullet(hurtBox, "MuzzleLeft");
-					}
-					else
-					{
-						this.PlayAnimation("Gesture Additive, Right", "FirePistol, Right");
-						this.FireBullet(hurtBox, "MuzzleRight");
-					}
+					aimRay.direction = (hurtBox.transform.position - aimRay.origin).normalized;
 				}
                 else
                 {
@@ -83,26 +70,35 @@ namespace RiskierRain.EntityState.Commando
 					return;
                 }
 			}
-            this.fireIndex++;
-        }
 
-        private void FireBullet(HurtBox target, string targetMuzzle)
+			if (fireIndex % 2 == 0)
+			{
+				this.PlayAnimation("Gesture Additive, Left", "FirePistol, Left");
+				this.FireBullet(aimRay, "MuzzleLeft");
+			}
+			else
+			{
+				this.PlayAnimation("Gesture Additive, Right", "FirePistol, Right");
+				this.FireBullet(aimRay, "MuzzleRight");
+			}
+			this.fireIndex++;
+		}
+
+		private void FireBullet(Ray aimRay, string targetMuzzle)
 		{
 			if (FirePistol2.muzzleEffectPrefab)
 			{
 				EffectManager.SimpleMuzzleFlash(FirePistol2.muzzleEffectPrefab, base.gameObject, targetMuzzle, false);
 			}
 			base.AddRecoil(-0.4f * FirePistol2.recoilAmplitude, -0.8f * FirePistol2.recoilAmplitude, -0.3f * FirePistol2.recoilAmplitude, 0.3f * FirePistol2.recoilAmplitude);
-			aimRay = base.GetAimRay();
-			aimRay.direction = (target.transform.position - aimRay.origin).normalized;
-			StartAimMode(this.aimRay, 3f, true);
+			StartAimMode(aimRay, 3f, true);
 			if (base.isAuthority)
 			{
 				new BulletAttack
 				{
 					owner = base.gameObject,
 					weapon = base.gameObject,
-					origin = this.aimRay.origin,
+					origin = aimRay.origin,
 					aimVector = aimRay.direction,
 					minSpread = 0f,
 					maxSpread = base.characterBody.spreadBloomAngle,
@@ -125,8 +121,6 @@ namespace RiskierRain.EntityState.Commando
 		public override void OnExit()
 		{
 			base.OnExit();
-			aimRay = base.GetAimRay();
-			StartAimMode(this.aimRay, 3f, true);
 			//base.PlayCrossfade("Gesture, Additive", "ExitHarpoons", 0.1f);
 		}
 	}

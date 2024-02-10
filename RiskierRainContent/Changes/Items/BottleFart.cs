@@ -21,11 +21,12 @@ namespace RiskierRainContent.Items
     class BottleFart : ItemBase<BottleFart>
     {
         static GameObject fartZone;
-        static float resetFrequency = 3f;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
         internal static float smokeBombRadius = 9f;
+        static float resetFrequency = 3f;
         static float fartBaseDamageCoefficient = 1f;
         static float fartStackDamageCoefficient = 1f;
+        static float fartZoneDuration = 5f; //7
 
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Sealed Pestilence";
@@ -37,8 +38,8 @@ namespace RiskierRainContent.Items
 
         public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
             $"produces a <style=cIsDamage>toxic gas</style>, " +
-            $"dealing <style=cIsDamage>{Tools.ConvertDecimal(fartBaseDamageCoefficient * resetFrequency)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient * resetFrequency)} per stack)</style> damage per second " +
+            $"dealing <style=cIsDamage>{Tools.ConvertDecimal(fartBaseDamageCoefficient)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(fartStackDamageCoefficient)} per stack)</style> damage per second " +
             $"and Crippling enemies inside. " +
             $"Cannot be reactivated for <style=cIsUtility>{FartBottleBehavior.cooldownDuration}</style> seconds. " +
             $"<style=cIsVoid>Corrupts all Cloud In A Bottles.</style>";
@@ -119,7 +120,8 @@ namespace RiskierRainContent.Items
             {
                 pdz.resetFrequency = resetFrequency;
                 pdz.damageCoefficient = 1 / resetFrequency;
-                pdz.overlapProcCoefficient = (1 / resetFrequency) / (3); //3 is the duration of cripple proc, this makes it the minimum proc coefficient for constant cripple
+                pdz.overlapProcCoefficient = (1 / resetFrequency) / (3); //3 is the base duration of cripple proc, this makes it the minimum proc coefficient for constant cripple
+                pdz.lifetime = fartZoneDuration;
             }
 
             ProjectileDamage dmg = fartZone.GetComponent<ProjectileDamage>();

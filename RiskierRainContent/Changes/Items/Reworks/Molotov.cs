@@ -24,13 +24,14 @@ namespace RiskierRainContent.Items
         public static GameObject molotovDotZone;
 
         public static float procChance = 9;
-        public static float baseDamageCoefficient = 1.2f;
+        public static float baseDamageCoefficient = 0.6f;
         public static float stackDamageCoefficient = 0.6f;
         public static float impactProcCoefficient = 0.5f;
         public static float dotDamageCoefficient = 0.25f; //0.4f
         public static float dotFrequency = 2f; //3f
         public static float dotProcCoefficient = 0.33f;
-        public static float blastRadius = 9;//7f
+        public static float blastRadius = 12;//7f
+        public static float napalmDuration = 5;//7f
 
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
@@ -147,6 +148,7 @@ namespace RiskierRainContent.Items
                 pdz.damageCoefficient = molotovEquipmentDotDamage;
                 pdz.resetFrequency = molotovEquipmentDotFrequency;
                 pdz.fireFrequency = molotovEquipmentDotFrequency * 2;
+                pdz.lifetime = napalmDuration;
             }
             #endregion
 

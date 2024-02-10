@@ -29,9 +29,10 @@ namespace RiskierRainContent.Items
         public override string ItemPickupDesc => "Gain an extra jump. Double jumping near enemies stuns them.";
 
         public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
-            $"drops a <style=cIsUtility>smoke bomb</style>, stunning them for <style=cIsUtility>{smokeBombProcCoefficient}</style> seconds. " +
+            $"drops a <style=cIsUtility>smoke bomb</style>, <style=cIsDamage>stunning</style> them " +
+            $"for <style=cIsDamage>{smokeBombProcCoefficient}</style> second. " +
             $"Cannot be reactivated for <style=cIsUtility>{CloudBottleBehavior.cooldownDuration}</style> seconds " +
-            $"<style=cIsStack>(-{Tools.ConvertDecimal(CloudBottleBehavior.cooldownReductionPerStack)} per stack)</style>.";
+            $"<style=cStack>(-{Tools.ConvertDecimal(CloudBottleBehavior.cooldownReductionPerStack)} per stack)</style>.";
 
         public override string ItemLore => "";
 

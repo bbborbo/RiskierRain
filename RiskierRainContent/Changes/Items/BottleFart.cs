@@ -24,8 +24,8 @@ namespace RiskierRainContent.Items
         static float resetFrequency = 3f;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
         internal static float smokeBombRadius = 9f;
-        static float fartBaseDamageCoefficient = 2f;
-        static float fartStackDamageCoefficient = 2f;
+        static float fartBaseDamageCoefficient = 1f;
+        static float fartStackDamageCoefficient = 1f;
 
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Sealed Pestilence";
@@ -119,7 +119,7 @@ namespace RiskierRainContent.Items
             {
                 pdz.resetFrequency = resetFrequency;
                 pdz.damageCoefficient = 1 / resetFrequency;
-                pdz.overlapProcCoefficient = (1 / resetFrequency) / (3);
+                pdz.overlapProcCoefficient = (1 / resetFrequency) / (3); //3 is the duration of cripple proc, this makes it the minimum proc coefficient for constant cripple
             }
 
             ProjectileDamage dmg = fartZone.GetComponent<ProjectileDamage>();

@@ -25,10 +25,11 @@ namespace RiskierRainContent.Items
 
         public override string ItemPickupDesc => "Casting your Utility skill grants a temporary barrier.";
 
-        public override string ItemFullDescription => $"Casting your Utility skill grants you <style=cIsHealing>a temporary barrier</style> " +
+        public override string ItemFullDescription => $"Activating your <style=cIsUtility>Utility skill</style> " +
+            $"also grants you <style=cIsHealing>a temporary barrier</style> " +
             $"for <style=cIsHealing>{Tools.ConvertDecimal(castBarrierBase)}</style> of your maximum health " +
             $"<style=cStack>(+{Tools.ConvertDecimal(castBarrierStack)} per stack)</style> " +
-            $"per second of your Utility skill's <style=cIsUtility>base cooldown</style>.";
+            $"per second of the skill's <style=cIsUtility>base cooldown</style>.";
 
         public override string ItemLore => "";
 

@@ -34,7 +34,7 @@ namespace RiskierRainContent
 
             LanguageAPI.Add("ITEM_GHOSTONKILL_PICKUP", "Haunt nearby enemies, marking them for execution. Executing enemies summons a ghost.");
             LanguageAPI.Add("ITEM_GHOSTONKILL_DESC", $"Once every <style=cIsDamage>{HappiestMaskBehavior.baseHauntInterval}</style> seconds, " +
-                $"Haunt a nearby non-boss enemy, marking them for Execution " +
+                $"<style=cIsDamage>Haunt</style> a nearby non-boss enemy, marking them for Execution " +
                 $"below <style=cIsHealth>{Tools.ConvertDecimal(hauntExecutionThreshold)}</style> health. " +
                 $"Execution <style=cIsDamage>spawns a ghost</style> of the killed enemy with <style=cIsDamage>1500%</style> damage, " +
                 $"lasting for <style=cIsDamage>{ghostDurationPerStack}s</style> <style=cStack>(+{ghostDurationPerStack}s per stack)</style>.");

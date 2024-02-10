@@ -48,7 +48,7 @@ namespace RiskierRainContent.Items
 
         public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
             $"Also deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style> bonus damage</style>, " +
-            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style>per chest you can afford</style>, " +
+            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> per chest you can afford</style>, " +
             $"for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
 
         public override string ItemLore =>

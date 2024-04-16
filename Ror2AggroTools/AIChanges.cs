@@ -24,14 +24,16 @@ namespace Ror2AggroTools
         {
             aiTargetPairs = new Dictionary<BaseAI, BaseAI.Target>();
 
+
+            On.RoR2.CharacterAI.BaseAI.FindEnemyHurtBox += BaseAI_FindEnemyHurtbox;
+            On.RoR2.CharacterAI.BaseAI.OnBodyDamaged += BaseAI_OnBodyDamaged;
+
+            return;
             Hook ospHook = new Hook(
               typeof(BaseAI).GetMethod("set_currentEnemy", (BindingFlags)(-1)),
               typeof(AggroToolsPlugin).GetMethod(nameof(Set_CurrentEnemy), (BindingFlags)(-1))
             );
             On.RoR2.CharacterAI.BaseAI.OnDestroy += ClearTargetPairing;
-
-            On.RoR2.CharacterAI.BaseAI.FindEnemyHurtBox += BaseAI_FindEnemyHurtbox;
-            On.RoR2.CharacterAI.BaseAI.OnBodyDamaged += BaseAI_OnBodyDamaged;
         }
 
         private static void ClearTargetPairing(On.RoR2.CharacterAI.BaseAI.orig_OnDestroy orig, BaseAI self)
@@ -42,20 +44,20 @@ namespace Ror2AggroTools
                 aiTargetPairs.Remove(self);
             }
         }
-        public static void Set_CurrentEnemy(orig_setCurrentEnemy orig, BaseAI self, BaseAI.Target value)
+        public static void Set_CurrentEnemy(orig_setCurrentEnemy orig, BaseAI self, BaseAI.Target target)
         {
-            if(value != self.currentEnemy)
+            if(target != self.currentEnemy)
             {
-                if(value == null)
+                if(target == null)
                 {
                     aiTargetPairs.Remove(self);
                 }
                 else
                 {
-                    aiTargetPairs[self] = value;
+                    aiTargetPairs[self] = target;
                 }
             }
-            orig(self, value);
+            orig(self, target);
         }
         public delegate void orig_setCurrentEnemy(BaseAI self, BaseAI.Target target);
 
@@ -78,11 +80,11 @@ namespace Ror2AggroTools
                             return c.hurtBox;
                         case AggroPriority.HighAggro:
                             modified = true;
-                            newDistance /= 30;
+                            newDistance /= AggroToolsPlugin.highPriorityAggroWeight;
                             break;
                         case AggroPriority.LowAggro:
                             modified = true;
-                            newDistance *= 3;
+                            newDistance *= AggroToolsPlugin.lowPriorityAggroWeight;
                             break;
                     }
                 }
@@ -115,7 +117,7 @@ namespace Ror2AggroTools
         private static void BaseAI_OnBodyDamaged(On.RoR2.CharacterAI.BaseAI.orig_OnBodyDamaged orig, RoR2.CharacterAI.BaseAI self, DamageReport damageReport)
         {
             AggroPriority currentTargetPriority = Aggro.GetAggroPriority(self.currentEnemy.characterBody);
-            AggroPriority attackerPriority = Aggro.GetAggroPriority(self.currentEnemy.characterBody);
+            AggroPriority attackerPriority = Aggro.GetAggroPriority(damageReport.attackerBody);
 
             //if the current target is higher priority, ignore the attacker and keep prioritizing the current target
             if(currentTargetPriority > attackerPriority)

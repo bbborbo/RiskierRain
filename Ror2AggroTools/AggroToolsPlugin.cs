@@ -36,6 +36,10 @@ namespace Ror2AggroTools
         public const string version = "1.0.0";
         #endregion
 
+        public const float lowPriorityAggroWeight = 3;
+        public const float highPriorityAggroWeight = 50;
+        public const float priorityAggroDuration = 5;
+
         public static BuffDef priorityAggro;
         public static ModdedDamageType AggroOnHit;
 
@@ -43,46 +47,43 @@ namespace Ror2AggroTools
         {
             PInfo = Info;
 
+            AIChanges.Init();
+
             AggroOnHit = ReserveDamageType();
 
             priorityAggro = ScriptableObject.CreateInstance<BuffDef>();
             priorityAggro.canStack = false;
             priorityAggro.isHidden = true;
             priorityAggro.isDebuff = false;
+            R2API.ContentAddition.AddBuffDef(priorityAggro);
 
             On.RoR2.GlobalEventManager.OnHitEnemy += AggroOnHitHook;
         }
 
         private void AggroOnHitHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
-            CharacterMaster attackerMaster = null;
-            if (damageInfo.attacker != null)
-            {
-                CharacterBody aBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if (aBody != null)
-                {
-                    attackerMaster = aBody.master;
-                }
-            }
+            orig(self, damageInfo, victim);
 
-            if (victim != null)
+            if (!damageInfo.rejected)
             {
-                CharacterBody vBody = victim?.GetComponent<CharacterBody>();
-                if (vBody != null)
+                if (victim != null)
                 {
-                    float procCoefficient = damageInfo.procCoefficient;
-                    if (procCoefficient != 0 && !damageInfo.rejected)
+                    CharacterBody aBody = damageInfo.attacker?.GetComponent<CharacterBody>(); ;
+                    CharacterBody vBody = victim?.GetComponent<CharacterBody>();
+                    if (aBody != null && vBody != null && vBody.healthComponent.alive)
                     {
-                        if (damageInfo.HasModdedDamageType(AggroOnHit))
+                        float procCoefficient = damageInfo.procCoefficient;
+                        if (procCoefficient != 0 && !damageInfo.rejected)
                         {
-                            damageInfo.RemoveModdedDamageType(AggroOnHit);
-                            Aggro.AggroMinionsToEnemy(attackerMaster, vBody);
+                            if (damageInfo.HasModdedDamageType(AggroOnHit))
+                            {
+                                damageInfo.RemoveModdedDamageType(AggroOnHit);
+                                Aggro.AggroMinionsToEnemy(aBody, vBody);
+                            }
                         }
                     }
                 }
             }
-
-            orig(self, damageInfo, victim);
         }
     }
 }

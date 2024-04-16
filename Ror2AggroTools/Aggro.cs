@@ -27,16 +27,16 @@ namespace Ror2AggroTools
 
     public static class Aggro
     {
-        public static void AggroMinionsToEnemy(CharacterMaster master, CharacterBody victim)
+        public static void AggroMinionsToEnemy(CharacterBody leaderBody, CharacterBody victimBody)
         {
-            ApplyAggroBuff(victim);
-            ResetMinionAggro(master);
+            ApplyAggroBuff(victimBody);
+            ResetMinionAggro(leaderBody);
         }
         public static void ApplyAggroBuff(CharacterBody victim)
         {
             if (NetworkServer.active)
             {
-                victim.AddTimedBuff(AggroToolsPlugin.priorityAggro, 5f);
+                victim.AddTimedBuff(AggroToolsPlugin.priorityAggro, AggroToolsPlugin.priorityAggroDuration);
             }
         }
         public static void ShedAggroFromCharacter(CharacterBody body)
@@ -46,7 +46,7 @@ namespace Ror2AggroTools
         public static void ShedAggroFromCharacter(GameObject gameObject)
         {
             //loop through every ai 
-            /*BaseAI[] baseAIs = GameObject.FindObjectsOfType<BaseAI>();
+            BaseAI[] baseAIs = GameObject.FindObjectsOfType<BaseAI>();
             foreach (BaseAI baseAI in baseAIs)
             {
                 //if an ai is targeting the character that's trying to shed aggro
@@ -54,8 +54,8 @@ namespace Ror2AggroTools
                 {
                     ResetAggro(baseAI);
                 }
-            }*/
-
+            }
+            return;
             //loop through every ai 
             foreach (KeyValuePair<BaseAI, BaseAI.Target> keyValuePair in AIChanges.aiTargetPairs)
             {
@@ -66,9 +66,28 @@ namespace Ror2AggroTools
                 }
             }
         }
-        public static void ResetMinionAggro(CharacterMaster master)
+        public static void ResetAllyAggro(CharacterMaster master)
         {
-            AIOwnership[] baseAIs = GameObject.FindObjectsOfType<AIOwnership>();
+            BaseAI[] baseAIs = GameObject.FindObjectsOfType<BaseAI>();
+            foreach (BaseAI baseAI in baseAIs)
+            {
+                if (baseAI.master.teamIndex == master.teamIndex)
+                {
+                    ResetAggro(baseAI);
+                }
+            }
+        }
+        public static void ResetMinionAggro(CharacterBody leaderBody)
+        {
+            BaseAI[] baseAIs = GameObject.FindObjectsOfType<BaseAI>();
+            foreach (BaseAI baseAI in baseAIs)
+            {
+                if (baseAI.leader.characterBody == leaderBody)
+                {
+                    ResetAggroIfApplicable(baseAI);
+                }
+            }
+            /*AIOwnership[] baseAIs = GameObject.FindObjectsOfType<AIOwnership>();
             foreach (AIOwnership baseAI in baseAIs)
             {
                 //if an ai is targeting the character that's trying to shed aggro
@@ -76,16 +95,36 @@ namespace Ror2AggroTools
                 {
                     ResetAggro(baseAI.baseAI);
                 }
-            }
+            }*/
         }
         public static void ResetAggro(BaseAI baseAI)
         {
             baseAI.currentEnemy.Reset();
         }
+        public static void ResetAggroIfApplicable(BaseAI baseAI)
+        {
+            HurtBox newTarget = baseAI.FindEnemyHurtBox(float.PositiveInfinity, baseAI.fullVision, true);
+            HealthComponent hc = newTarget.healthComponent;
+            if (hc != baseAI.currentEnemy.healthComponent && 
+                newTarget && hc && hc.body && baseAI.currentEnemy.characterBody)
+            {
+                //if the new target has higher priority than the old target, then shift
+                if (GetAggroPriority(newTarget.healthComponent?.body) >= GetAggroPriority(baseAI.currentEnemy.characterBody))
+                {
+                    baseAI.currentEnemy.gameObject = hc.gameObject;
+                    baseAI.currentEnemy.bestHurtBox = newTarget;
+                    baseAI.enemyAttention = baseAI.enemyAttentionDuration;
+                }
+            }
+        }
         public static AggroPriority GetAggroPriority(CharacterBody body)
         {
+            if (body == null || !body.healthComponent.alive)
+                return AggroPriority.LowAggro;
+
             if (body.HasBuff(AggroToolsPlugin.priorityAggro))
                 return AggroPriority.HighAggro;
+
             return AggroPriority.Normal;
         }
     }

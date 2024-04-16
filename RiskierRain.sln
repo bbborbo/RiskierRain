@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RiskierRainContent", "Riski
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissileRework", "MissileRework\MissileRework.csproj", "{6D27C489-F96C-4E87-8515-62339EB61136}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ror2AggroTools", "Ror2AggroTools\Ror2AggroTools.csproj", "{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{6D27C489-F96C-4E87-8515-62339EB61136}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D27C489-F96C-4E87-8515-62339EB61136}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D27C489-F96C-4E87-8515-62339EB61136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

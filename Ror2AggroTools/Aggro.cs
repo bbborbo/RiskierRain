@@ -19,6 +19,7 @@ namespace Ror2AggroTools
 {
     public enum AggroPriority
     {
+        None = -3,
         LowAggro = -1,
         Normal = 0,
         HighAggro,
@@ -29,8 +30,12 @@ namespace Ror2AggroTools
     {
         public static void AggroMinionsToEnemy(CharacterBody leaderBody, CharacterBody victimBody)
         {
-            ApplyAggroBuff(victimBody);
-            ResetMinionAggro(leaderBody);
+            if (victimBody)
+            {
+                ApplyAggroBuff(victimBody);
+                if (leaderBody)
+                    ResetMinionAggro(leaderBody);
+            }
         }
         public static void ApplyAggroBuff(CharacterBody victim)
         {
@@ -103,13 +108,15 @@ namespace Ror2AggroTools
         }
         public static void ResetAggroIfApplicable(BaseAI baseAI)
         {
-            HurtBox newTarget = baseAI.FindEnemyHurtBox(float.PositiveInfinity, baseAI.fullVision, true);
+            HurtBox newTarget = baseAI.FindEnemyHurtBox(float.PositiveInfinity, baseAI.fullVision, false);
             HealthComponent hc = newTarget.healthComponent;
             if (hc != baseAI.currentEnemy.healthComponent && 
                 newTarget && hc && hc.body && baseAI.currentEnemy.characterBody)
             {
+                AggroPriority newPriority = GetAggroPriority(newTarget.healthComponent?.body);
+                AggroPriority oldPriority = GetAggroPriority(baseAI.currentEnemy.characterBody);
                 //if the new target has higher priority than the old target, then shift
-                if (GetAggroPriority(newTarget.healthComponent?.body) >= GetAggroPriority(baseAI.currentEnemy.characterBody))
+                if (newPriority >= oldPriority && (newPriority > AggroPriority.Normal))
                 {
                     baseAI.currentEnemy.gameObject = hc.gameObject;
                     baseAI.currentEnemy.bestHurtBox = newTarget;
@@ -120,6 +127,9 @@ namespace Ror2AggroTools
         public static AggroPriority GetAggroPriority(CharacterBody body)
         {
             if (body == null || !body.healthComponent.alive)
+                return AggroPriority.None;
+
+            if (body.HasBuff(RoR2Content.Buffs.Cloak))
                 return AggroPriority.LowAggro;
 
             if (body.HasBuff(AggroToolsPlugin.priorityAggro))

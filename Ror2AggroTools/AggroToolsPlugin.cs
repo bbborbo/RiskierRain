@@ -64,23 +64,16 @@ namespace Ror2AggroTools
         {
             orig(self, damageInfo, victim);
 
-            if (!damageInfo.rejected)
+            if (!damageInfo.rejected && damageInfo.procCoefficient > 0 && damageInfo.HasModdedDamageType(AggroOnHit))
             {
-                if (victim != null)
+                if (victim != null && damageInfo.attacker != null)
                 {
-                    CharacterBody aBody = damageInfo.attacker?.GetComponent<CharacterBody>(); ;
-                    CharacterBody vBody = victim?.GetComponent<CharacterBody>();
+                    CharacterBody aBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    CharacterBody vBody = victim.GetComponent<CharacterBody>();
                     if (aBody != null && vBody != null && vBody.healthComponent.alive)
                     {
-                        float procCoefficient = damageInfo.procCoefficient;
-                        if (procCoefficient != 0 && !damageInfo.rejected)
-                        {
-                            if (damageInfo.HasModdedDamageType(AggroOnHit))
-                            {
-                                damageInfo.RemoveModdedDamageType(AggroOnHit);
-                                Aggro.AggroMinionsToEnemy(aBody, vBody);
-                            }
-                        }
+                        damageInfo.RemoveModdedDamageType(AggroOnHit);
+                        Aggro.AggroMinionsToEnemy(aBody, vBody);
                     }
                 }
             }

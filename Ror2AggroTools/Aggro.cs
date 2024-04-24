@@ -109,7 +109,7 @@ namespace Ror2AggroTools
         public static void ResetAggroIfApplicable(BaseAI baseAI)
         {
             HurtBox newTarget = baseAI.FindEnemyHurtBox(float.PositiveInfinity, baseAI.fullVision, false);
-            HealthComponent hc = newTarget.healthComponent;
+            HealthComponent hc = newTarget?.healthComponent;
             if (hc != baseAI.currentEnemy.healthComponent && 
                 newTarget && hc && hc.body && baseAI.currentEnemy.characterBody)
             {

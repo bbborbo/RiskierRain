@@ -111,7 +111,7 @@ namespace RiskierRain
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp
+           //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.BonusGoldPackOnKill)); //ghors
 
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Talisman)); //soulbound

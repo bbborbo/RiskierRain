@@ -131,6 +131,7 @@ namespace RiskierRainContent.CoreModules
         {
             CreateVoidtouchedSingularity();
             CreateMiredUrnTarball();
+            CreateSquidBlasterBall();
 
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
@@ -207,6 +208,41 @@ namespace RiskierRainContent.CoreModules
             }
 
             R2API.ContentAddition.AddProjectile(miredUrnTarball);
+        }
+        public static GameObject squidBlasterBall;
+        private void CreateSquidBlasterBall()
+        {
+            squidBlasterBall = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarSeeker.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
+
+            ProjectileSteerTowardTarget pstt = squidBlasterBall.GetComponent<ProjectileSteerTowardTarget>(); //no homing
+            if (pstt)
+            {
+                UnityEngine.Object.Destroy(pstt);
+            }
+            ProjectileDirectionalTargetFinder pdtf = squidBlasterBall.GetComponent<ProjectileDirectionalTargetFinder>();
+            if (pdtf)
+            {
+                pdtf.ignoreAir = false;
+            }
+            //ProjectileCharacterController pcc = squidBlasterBall.GetComponent<ProjectileCharacterController>();
+            //if (pcc)
+            //{
+            //    pcc.
+            //}
+            //CharacterController cc = squidBlasterBall.GetComponent<CharacterController>();
+            //if (cc)
+            //{
+            //    UnityEngine.Object.Destroy(cc);
+            //}
+            ProjectileImpactExplosion pie = squidBlasterBall.GetComponent<ProjectileImpactExplosion>();
+            if (pie)
+            {
+                pie.lifetime = 1;
+                pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballExplosion.prefab").WaitForCompletion();
+            }
+
+
+            R2API.ContentAddition.AddProjectile(squidBlasterBall);
         }
 
         public static GameObject voidtouchedSingularityDelay;

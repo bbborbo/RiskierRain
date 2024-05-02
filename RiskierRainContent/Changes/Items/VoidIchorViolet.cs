@@ -8,13 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.AddressableAssets;
+
 
 namespace RiskierRainContent.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
         int xpDivisor = 10;
-        int xpFlat = 5;
+        int xpFlat = 1;
         public override string ItemName => "Metamorphic Ichor (violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
@@ -47,14 +50,21 @@ namespace RiskierRainContent.Items
         private void IchorPickup(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            int itemCount = GetCount(self);
-            if (itemCount <= 0) return; //broken but ill fix it later guhh
-            CharacterMaster xpRecipient = self.master;
-            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
-            percentXP /= (ulong)xpDivisor;
-            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(itemCount);
-            //xpRecipient.GiveExperience(xpToGive);
-            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
+
+            if (NetworkServer.active)
+            {
+                if (self.master)
+                {
+                    int ichorCount = GetCount(self);
+
+                    VoiletIchorBehavior itemBehavior = self.GetComponent<VoiletIchorBehavior>();
+                    if (itemBehavior && itemBehavior.stack < ichorCount)
+                    {
+                        itemBehavior.PickupXP();
+                    }
+                    self.AddItemBehavior<VoiletIchorBehavior>(ichorCount);
+                }
+            }
         }
 
         private void IchorXPGain(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
@@ -96,6 +106,26 @@ namespace RiskierRainContent.Items
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(rockPaperScissors);
             orig();
+        }
+    }
+    public class VoiletIchorBehavior : CharacterBody.ItemBehavior
+    {
+        int xpDivisor = 10;
+
+        private void Start()
+        {
+            PickupXP();
+        }
+        public void PickupXP()
+        {
+            
+            CharacterMaster xpRecipient = body.master;
+            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
+            percentXP /= (ulong)xpDivisor;
+            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(stack);
+            xpRecipient.GiveExperience(xpToGive);
+            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
+
         }
     }
 }

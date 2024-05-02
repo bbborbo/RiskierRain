@@ -46,8 +46,8 @@ namespace RiskierRainContent.Items.Helpers
             if (value)
             {
                 Inventory inv = enemySpawned.GetComponent<Inventory>();
-                int num = 0;
-                using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
+                int num = 0;//number of enemy health up items on the player team
+                using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())//gets each character on the player team and checks each ones inventory
                 {
                     while (enumerator.MoveNext())
                     {

@@ -37,8 +37,8 @@ namespace Ror2AggroTools
         #endregion
 
         public const float lowPriorityAggroWeight = 3;
-        public const float highPriorityAggroWeight = 50;
-        public const float priorityAggroDuration = 5;
+        public const float highPriorityAggroWeight = 100;
+        public const float priorityAggroDuration = 10;
 
         public static BuffDef priorityAggro;
         public static ModdedDamageType AggroOnHit;
@@ -72,7 +72,6 @@ namespace Ror2AggroTools
                     CharacterBody vBody = victim.GetComponent<CharacterBody>();
                     if (aBody != null && vBody != null && vBody.healthComponent.alive)
                     {
-                        damageInfo.RemoveModdedDamageType(AggroOnHit);
                         Aggro.AggroMinionsToEnemy(aBody, vBody);
                     }
                 }

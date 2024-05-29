@@ -121,7 +121,7 @@ namespace Ror2AggroTools
                 orig(self, damageReport);
                 return;
             }
-            AggroPriority currentTargetPriority = Aggro.GetAggroPriority(self.currentEnemy.characterBody);
+            AggroPriority currentTargetPriority = Aggro.GetAggroPriority(self.currentEnemy?.characterBody);
             AggroPriority attackerPriority = Aggro.GetAggroPriority(damageReport.attackerBody);
 
             //if the current target is higher priority, ignore the attacker and keep prioritizing the current target

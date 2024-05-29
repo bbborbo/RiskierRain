@@ -898,23 +898,23 @@ namespace RiskierRain
         #endregion
 
         void InitializeSurvivorTweaks()
+        {
+            var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
+
+            foreach (var tweakType in TweakTypes)
             {
-                var TweakTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(SurvivorTweakModule)));
+                SurvivorTweakModule module = (SurvivorTweakModule)Activator.CreateInstance(tweakType);
 
-                foreach (var tweakType in TweakTypes)
+                string name = module.survivorName == "" ? module.bodyName : module.survivorName;
+                bool isEnabled = CustomConfigFile.Bind<bool>("Survivor Tweaks",
+                    $"Enable Tweaks For: {module.survivorName}", true,
+                    $"Should DuckSurvivorTweaks change {module.survivorName}?").Value;
+                if (isEnabled)
                 {
-                    SurvivorTweakModule module = (SurvivorTweakModule)Activator.CreateInstance(tweakType);
-
-                    string name = module.survivorName == "" ? module.bodyName : module.survivorName;
-                    bool isEnabled = CustomConfigFile.Bind<bool>("Survivor Tweaks",
-                        $"Enable Tweaks For: {module.survivorName}", true,
-                        $"Should DuckSurvivorTweaks change {module.survivorName}?").Value;
-                    if (isEnabled)
-                    {
-                        module.Init();
-                    }
-                    //TweakStatusDictionary.Add(module.ToString(), isEnabled);
+                    module.Init();
                 }
+                //TweakStatusDictionary.Add(module.ToString(), isEnabled);
             }
+        }
     }
 }

@@ -22,42 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>libs\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>libs\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="MMHOOK_RoR2">
-      <HintPath>libs\MMHOOK_RoR2.dll</HintPath>
-    </Reference>
-    <Reference Include="R2API">
-      <HintPath>libs\R2API.dll</HintPath>
-    </Reference>
-    <Reference Include="MMHOOK_Assembly-CSharp">
-      <HintPath>libs\MMHOOK_Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="HGCSharpUtils">
-      <HintPath>libs\HGCSharpUtils.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>libs\BepInEx.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>libs\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>libs\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>libs\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>libs\UnityEngine.dll</HintPath>
-    </Reference>
     <Reference Include="Wwise">
       <HintPath>libs\Wwise.dll</HintPath>
     </Reference>

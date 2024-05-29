@@ -36,7 +36,7 @@ namespace RiskierRainContent.Items
 
         public override ItemTier Tier => ItemTier.Tier3;
 
-        public override ItemTag[] ItemTags => new ItemTag[]{ ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.InteractableRelated, ItemTag.PriorityScrap, ItemTag.CannotDuplicate };
+        public override ItemTag[] ItemTags => new ItemTag[]{ ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.InteractableRelated, ItemTag.PriorityScrap, ItemTag.Scrap, ItemTag.CannotDuplicate };
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/RegeneratingScrap/PickupRegeneratingScrap.prefab").WaitForCompletion();
 

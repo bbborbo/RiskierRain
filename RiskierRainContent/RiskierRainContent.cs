@@ -167,7 +167,11 @@ namespace RiskierRainContent
             {
                 FocusedConvergenceChanges();
             }
-
+            //squid polyp :3
+            if (GetConfigBool(true, "Core: Squid Polyp"))
+            {
+                SquolypRework();
+            }
             //interactables bc they need to load after items:
             InitializeInteractables();
             //need to do this after interactablestuff

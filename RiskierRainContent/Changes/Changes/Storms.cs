@@ -13,12 +13,14 @@ using RiskierRainContent.CoreModules;
 using RiskierRainContent.Changes.Aspects;
 using static RoR2.CombatDirector;
 using RoR2.UI;
+using UnityEngine.Networking;
 
 namespace RiskierRainContent
 {
     public partial class RiskierRainContent : BaseUnityPlugin
     {
         public static GameObject StormsRunBehaviorPrefab;
+        public static GameObject StormsControllerPrefab;
         public static EliteTierDef StormT1;
         public static EliteTierDef StormT2;
 
@@ -66,6 +68,33 @@ namespace RiskierRainContent
             StormsRunBehaviorPrefab.AddComponent<StormEventDirector>();
 
             RiskierRainContent.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
+            Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
+
+            StormsControllerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion().InstantiateClone("2R4RStormController", true);
+            MonoBehaviour[] components = StormsControllerPrefab.GetComponentsInChildren<MonoBehaviour>();
+            bool directorInstanceFound = false;
+            foreach(MonoBehaviour component in components)
+            {
+                if(component is CombatDirector && directorInstanceFound == false)
+                {
+                    CombatDirector cd = (component as CombatDirector);
+                    cd.creditMultiplier = 0.5f;
+                    cd.expRewardCoefficient = 1f;
+                    cd.goldRewardCoefficient = 1f;
+                    cd.minRerollSpawnInterval = 15f;
+                    cd.maxRerollSpawnInterval = 25f;
+                    cd.teamIndex = TeamIndex.Monster;
+
+                    directorInstanceFound = true;
+                }
+                else
+                {
+                    Destroy(component);
+                }
+            }
+
+            StormsControllerPrefab.AddComponent<StormHazardController>();
+            StormsControllerPrefab.AddComponent<NetworkIdentity>();
             Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
         }
     }
@@ -350,28 +379,11 @@ namespace RiskierRainContent
         #region do storms
         private void BeginStorm()
         {
-            GameObject go = new GameObject();
+            GameObject stormController = Instantiate(RiskierRainContent.StormsControllerPrefab);
 
-            go.AddComponent<StormHazardController>();
-            return;
-            CombatDirector cd = go.AddComponent<CombatDirector>();
-
-            DirectorCardCategorySelection dccs = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
-            dccs.CopyFrom(ClassicStageInfo.instance.monsterCategories);
-            cd._monsterCards = dccs;
+            CombatDirector cd = stormController.GetComponent<CombatDirector>();
+            //cd._monsterCards = ClassicStageInfo.instance.monsterCategories;
             cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
-
-            RangeFloat moneyWaveInterval = new RangeFloat();
-            moneyWaveInterval.min = 1;
-            moneyWaveInterval.max = 1;
-            cd.moneyWaveIntervals = new RangeFloat[] { moneyWaveInterval };
-
-            cd.creditMultiplier = 0.5f;
-            cd.expRewardCoefficient = 1f;
-            cd.goldRewardCoefficient = 1f;
-            cd.minRerollSpawnInterval = 15f;
-            cd.maxRerollSpawnInterval = 25f;
-            cd.teamIndex = TeamIndex.Monster;
             
             Debug.LogWarning("Beginning Storm");
         }

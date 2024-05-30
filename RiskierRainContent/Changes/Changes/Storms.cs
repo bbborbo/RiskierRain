@@ -351,15 +351,28 @@ namespace RiskierRainContent
         private void BeginStorm()
         {
             GameObject go = new GameObject();
+
             go.AddComponent<StormHazardController>();
+            return;
             CombatDirector cd = go.AddComponent<CombatDirector>();
+
+            DirectorCardCategorySelection dccs = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
+            dccs.CopyFrom(ClassicStageInfo.instance.monsterCategories);
+            cd._monsterCards = dccs;
+            cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+
+            RangeFloat moneyWaveInterval = new RangeFloat();
+            moneyWaveInterval.min = 1;
+            moneyWaveInterval.max = 1;
+            cd.moneyWaveIntervals = new RangeFloat[] { moneyWaveInterval };
+
             cd.creditMultiplier = 0.5f;
             cd.expRewardCoefficient = 1f;
             cd.goldRewardCoefficient = 1f;
             cd.minRerollSpawnInterval = 15f;
             cd.maxRerollSpawnInterval = 25f;
             cd.teamIndex = TeamIndex.Monster;
-            cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            
             Debug.LogWarning("Beginning Storm");
         }
 

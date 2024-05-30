@@ -154,6 +154,7 @@ namespace RiskierRainContent
         }
 
         public static StormEventDirector instance;
+        internal CombatDirector stormControllerInstance;
         StormType stormType = StormType.None;
 
         float stageBeginTime;
@@ -208,6 +209,11 @@ namespace RiskierRainContent
         #region hooks
         private void Run_EndStage(On.RoR2.Run.orig_EndStage orig, Run self)
         {
+            if(stormControllerInstance.gameObject != null)
+            {
+                stormControllerInstance.onSpawnedServer.RemoveListener(OnStormDirectorSpawnServer);
+                Destroy(stormControllerInstance.gameObject);
+            }
             stormType = StormType.None;
             stormStartDelay = -1;
             hasSentStormEarlyWarning = false;
@@ -381,9 +387,9 @@ namespace RiskierRainContent
         {
             GameObject stormController = Instantiate(RiskierRainContent.StormsControllerPrefab);
 
-            CombatDirector cd = stormController.GetComponent<CombatDirector>();
+            stormControllerInstance = stormController.GetComponent<CombatDirector>();
             //cd._monsterCards = ClassicStageInfo.instance.monsterCategories;
-            cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            stormControllerInstance.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
             
             Debug.LogWarning("Beginning Storm");
         }

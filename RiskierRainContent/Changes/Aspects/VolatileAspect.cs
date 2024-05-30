@@ -17,6 +17,11 @@ namespace RiskierRainContent.Equipment
 {
     class VolatileAspect : T1EliteEquipmentBase<VolatileAspect>
     {
+        public static float volatileMortarDamageCoefficient = 3f;
+        public static GameObject volatileMortarPrefab;
+        // this is the exact damage the landmine does, but it scales with team level
+        public static float volatileLandmineDamage = 30f;
+        public static GameObject volatileLandminePrefab;
         public override string EliteEquipmentName => "Bava\u2019s Refrain";
 
         public override string EliteAffixToken => "AFFIX_EXPLOSIVE";
@@ -65,7 +70,10 @@ namespace RiskierRainContent.Equipment
                 if (victimBody.HasBuff(EliteBuffDef))
                 {
                     Vector3 spawnPosition = Util.GetCorePosition(victimBody);
-                    List<BombArtifactManager.BombRequest> bombRequests = new List<BombArtifactManager.BombRequest>();
+                    ProjectileManager.instance.FireProjectile(volatileLandminePrefab, spawnPosition, Util.QuaternionSafeLookRotation(Vector3.up), 
+                        victimBody.gameObject, (1 + 0.3f * victimBody.level) * volatileLandmineDamage, 400, Util.CheckRoll(victimBody.crit, victimBody.master));
+
+                    /*List<BombArtifactManager.BombRequest> bombRequests = new List<BombArtifactManager.BombRequest>();
 
                     int num = Mathf.CeilToInt(Mathf.Min(Mathf.CeilToInt(victimBody.bestFitRadius * BombArtifactManager.extraBombPerRadius * BombArtifactManager.cvSpiteBombCoefficient.value),
                         BombArtifactManager.maxBombCount) / 2);
@@ -119,7 +127,7 @@ namespace RiskierRainContent.Equipment
                             component2.teamIndex = bombRequest.teamIndex;
                             NetworkServer.Spawn(gameObject);
                         }
-                    }
+                    }*/
                 }
             }
             orig(self, damageReport);
@@ -209,47 +217,94 @@ namespace RiskierRainContent.Equipment
 
         private void CreateProjectile()
         {
-            GameObject projectilePrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile").InstantiateClone("borboVolatileMortar", true);
-            GameObject projectileGhost = LegacyResourcesAPI.Load<GameObject>("prefabs/projectileghosts/ToolbotGrenadeGhost").InstantiateClone("borboVolatileMortarGhost", false);
-            projectilePrefab.transform.localScale = Vector3.one * 0.2f;
-
-            ProjectileController pc = projectilePrefab.GetComponent<ProjectileController>();
-            ProjectileGhostController pgc = projectileGhost.GetComponent<ProjectileGhostController>();
-            pc.ghost = pgc;
-
-            Material material1 = Assets.mainAssetBundle.LoadAsset<Material>(Assets.eliteMaterialsPath + "matVolatile.mat");
-            //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
-            Tools.GetMaterial(projectileGhost, "Mesh", Color.red, ref material1);
-            Tools.GetMaterial(projectileGhost, "GameObject (1)", Color.green, ref material1);// material2);
-            Tools.GetParticle(projectileGhost, "Fire", Color.blue);
-            //Tools.DebugMaterial(projectileGhost);
-            //Tools.DebugParticleSystem(projectileGhost);
-
-            ProjectileDamage pd = projectilePrefab.GetComponent<ProjectileDamage>();
-            pd.force = 1500;
-
-            ProjectileSimple scrapPs = projectilePrefab.GetComponent<ProjectileSimple>();
-            scrapPs.desiredForwardSpeed = 30f;
-
-            Rigidbody scrapRb = projectilePrefab.GetComponent<Rigidbody>();
-            scrapRb.useGravity = true;
-            scrapRb.freezeRotation = false;
-
-            AntiGravityForce scrapAntiGravity = projectilePrefab.GetComponent<AntiGravityForce>();
-            if(scrapAntiGravity == null)
+            volatileMortarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile").InstantiateClone("BorboVolatileMortar", true);
+            if(volatileMortarPrefab != null)
             {
-                scrapAntiGravity = projectilePrefab.AddComponent<AntiGravityForce>();
+                GameObject mortarGhost = LegacyResourcesAPI.Load<GameObject>("prefabs/projectileghosts/ToolbotGrenadeGhost").InstantiateClone("BorboVolatileMortarGhost", false);
+                volatileMortarPrefab.transform.localScale = Vector3.one * 0.2f;
+
+                ProjectileController pc = volatileMortarPrefab.GetComponent<ProjectileController>();
+                ProjectileGhostController pgc = mortarGhost.GetComponent<ProjectileGhostController>();
+                pc.ghost = pgc;
+
+                Material material1 = Assets.mainAssetBundle.LoadAsset<Material>(Assets.eliteMaterialsPath + "matVolatile.mat");
+                //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
+                Tools.GetMaterial(mortarGhost, "Mesh", Color.red, ref material1);
+                Tools.GetMaterial(mortarGhost, "GameObject (1)", Color.green, ref material1);// material2);
+                Tools.GetParticle(mortarGhost, "Fire", Color.blue);
+                //Tools.DebugMaterial(projectileGhost);
+                //Tools.DebugParticleSystem(projectileGhost);
+
+                ProjectileDamage pd = volatileMortarPrefab.GetComponent<ProjectileDamage>();
+                pd.force = 1500;
+
+                ProjectileSimple scrapPs = volatileMortarPrefab.GetComponent<ProjectileSimple>();
+                scrapPs.desiredForwardSpeed = 30f;
+
+                Rigidbody scrapRb = volatileMortarPrefab.GetComponent<Rigidbody>();
+                scrapRb.useGravity = true;
+                scrapRb.freezeRotation = false;
+
+                AntiGravityForce scrapAntiGravity = volatileMortarPrefab.GetComponent<AntiGravityForce>();
+                if (scrapAntiGravity == null)
+                {
+                    scrapAntiGravity = volatileMortarPrefab.AddComponent<AntiGravityForce>();
+                }
+                scrapAntiGravity.rb = scrapRb;
+                scrapAntiGravity.antiGravityCoefficient = 0f;
+
+                ProjectileImpactExplosion pie = volatileMortarPrefab.GetComponent<ProjectileImpactExplosion>();
+                pie.blastProcCoefficient = 0;
+                pie.blastRadius = 15f;
+                pie.bonusBlastForce = Vector3.up * 1000;
+
+                Assets.projectilePrefabs.Add(volatileMortarPrefab);
             }
-            scrapAntiGravity.rb = scrapRb;
-            scrapAntiGravity.antiGravityCoefficient = 0f;
 
-            ProjectileImpactExplosion pie = projectilePrefab.GetComponent<ProjectileImpactExplosion>();
-            pie.blastProcCoefficient = 0;
-            pie.blastRadius = 15f;
-            pie.bonusBlastForce = Vector3.up * 1000;
+            volatileLandminePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiMine.prefab").WaitForCompletion().InstantiateClone("BorboVolatileLandmine", true);
+            if (volatileLandminePrefab != null)
+            {
+                GameObject landmineGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiMineGhost.prefab").WaitForCompletion().InstantiateClone("BorboVolatileLandmineGhost", false);
+                //landmineGhost.transform.localScale = Vector3.one * 1f;
 
-            Assets.projectilePrefabs.Add(projectilePrefab);
-            VolatileMortarAttachment.projectilePrefab = projectilePrefab;
+                Deployable deployableComponent = volatileLandminePrefab.GetComponent<Deployable>();
+                if (deployableComponent)
+                    UnityEngine.Object.Destroy(deployableComponent);
+
+                ProjectileDeployToOwner pdto = volatileLandminePrefab.GetComponent<ProjectileDeployToOwner>();
+                if (pdto)
+                    UnityEngine.Object.Destroy(pdto);
+
+                ProjectileController pc = volatileLandminePrefab.GetComponent<ProjectileController>();
+                ProjectileGhostController pgc = landmineGhost.GetComponent<ProjectileGhostController>();
+                pc.ghost = pgc;
+
+                Material material1 = Assets.mainAssetBundle.LoadAsset<Material>(Assets.eliteMaterialsPath + "matVolatile.mat");
+                //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
+                Tools.GetMaterial(landmineGhost, "Mesh", Color.red, ref material1);
+                Tools.GetMaterial(landmineGhost, "GameObject (1)", Color.green, ref material1);// material2);
+                Tools.GetParticle(landmineGhost, "Fire", Color.blue);
+                //Tools.DebugMaterial(projectileGhost);
+                //Tools.DebugParticleSystem(projectileGhost);
+
+                ProjectileDamage pd = volatileLandminePrefab.GetComponent<ProjectileDamage>();
+                pd.force = 2500;
+
+                /*EntityStateMachine[] stateMachines = volatileLandminePrefab.GetComponents<EntityStateMachine>();
+                foreach(EntityStateMachine esm in stateMachines)
+                {
+                    if(esm.customName == "Main")
+                    {
+
+                    }
+                    if(esm.customName == "Arming")
+                    {
+
+                    }
+                }*/
+
+                Assets.projectilePrefabs.Add(volatileLandminePrefab);
+            }
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
@@ -260,9 +315,9 @@ namespace RiskierRainContent.Equipment
 
     class VolatileMortarAttachment : MonoBehaviour
     {
-        public static GameObject projectilePrefab;
+        public static GameObject projectilePrefab => VolatileAspect.volatileMortarPrefab;
+        public static float mortarDamageCoefficient => VolatileAspect.volatileMortarDamageCoefficient;
         public static BuffDef buffDef;
-        public static float mortarDamageCoefficient = 3f;
 
         public CharacterBody body;
         static float mortarTimer = 0f;

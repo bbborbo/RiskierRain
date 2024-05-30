@@ -213,6 +213,7 @@ namespace RiskierRainContent
             {
                 stormControllerInstance.onSpawnedServer.RemoveListener(OnStormDirectorSpawnServer);
                 Destroy(stormControllerInstance.gameObject);
+                stormControllerInstance = null;
             }
             stormType = StormType.None;
             stormStartDelay = -1;

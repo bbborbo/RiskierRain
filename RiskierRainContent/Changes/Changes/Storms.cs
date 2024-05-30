@@ -39,14 +39,14 @@ namespace RiskierRainContent
             StormT1 = new EliteTierDef();
             StormT1.costMultiplier = 2;
             StormT1.canSelectWithoutAvailableEliteDef = false;
-            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm);
+            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormEventDirector.instance && StormEventDirector.instance.hasBegunStorm);
             StormT1.eliteTypes = new EliteDef[0];
             //EliteAPI.AddCustomEliteTier(StormT1);
 
             StormT2 = new EliteTierDef();
             StormT2.costMultiplier = 2;
             StormT2.canSelectWithoutAvailableEliteDef = false;
-            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm && 
+            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormEventDirector.instance && StormEventDirector.instance.hasBegunStorm && 
                     !RiskierRainContent.is2R4RLoaded ? (Run.instance.loopClearCount > 0) :
                     ((Run.instance.stageClearCount >= 10 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
                     || (Run.instance.stageClearCount >= 5 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)
@@ -63,7 +63,7 @@ namespace RiskierRainContent
             ExpansionRequirementComponent erc = StormsRunBehaviorPrefab.GetComponent<ExpansionRequirementComponent>();
             erc.requiredExpansion = RiskierRainContent.expansionDef;
 
-            StormsRunBehaviorPrefab.AddComponent<StormDirector>();
+            StormsRunBehaviorPrefab.AddComponent<StormEventDirector>();
 
             RiskierRainContent.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
             Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
@@ -73,7 +73,7 @@ namespace RiskierRainContent
     /// <summary>
     /// Handles event timing + resetting on stage start
     /// </summary>
-    public class StormDirector : MonoBehaviour
+    public class StormEventDirector : MonoBehaviour
     {
         public static float GetStormStartDelay()
         {
@@ -113,8 +113,8 @@ namespace RiskierRainContent
         }
 
         public const float drizzleStormDelay = 10;
-        public const float rainstormStormDelay = 5;
-        public const float monsoonStormDelay = 3;
+        public const float rainstormStormDelay = 7;
+        public const float monsoonStormDelay = 4;
         public enum StormType
         {
             None,
@@ -124,7 +124,7 @@ namespace RiskierRainContent
             Cold
         }
 
-        public static StormDirector instance;
+        public static StormEventDirector instance;
         StormType stormType = StormType.None;
 
         float stageBeginTime;
@@ -318,7 +318,7 @@ namespace RiskierRainContent
             this.hudPanels.TryGetValue(hud, out gameObject);
             if (gameObject != shouldEnableCountdownPanel)
             {
-                if (shouldEnableCountdownPanel)
+                if (shouldEnableCountdownPanel && stormType != StormType.None)
                 {
                     RectTransform rectTransform = hud.GetComponent<ChildLocator>().FindChild("TopCenterCluster") as RectTransform;
                     if (rectTransform)
@@ -352,24 +352,30 @@ namespace RiskierRainContent
         {
             GameObject go = new GameObject();
             go.AddComponent<StormHazardController>();
-            //CombatDirector cd = go.AddComponent<CombatDirector>();
-            //cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            CombatDirector cd = go.AddComponent<CombatDirector>();
+            cd.creditMultiplier = 0.5f;
+            cd.expRewardCoefficient = 1f;
+            cd.goldRewardCoefficient = 1f;
+            cd.minRerollSpawnInterval = 15f;
+            cd.maxRerollSpawnInterval = 25f;
+            cd.teamIndex = TeamIndex.Monster;
+            cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            Debug.LogWarning("Beginning Storm");
         }
 
         private void OnStormDirectorSpawnServer(GameObject masterObject)
         {
             EliteDef eliteDef = WhirlwindAspect.instance.EliteDef;
-            EquipmentIndex? equipmentIndex;
-            if (eliteDef == null)
-            {
-                equipmentIndex = null;
-            }
-            else
+            if (Util.CheckRoll(50))
+                eliteDef = SurgingAspect.instance.EliteDef;
+
+            EquipmentIndex equipmentIndex = EquipmentIndex.None;
+            if (eliteDef != null)
             {
                 EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
-                equipmentIndex = ((eliteEquipmentDef != null) ? new EquipmentIndex?(eliteEquipmentDef.equipmentIndex) : null);
+                equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
             }
-            EquipmentIndex equipmentIndex2 = equipmentIndex ?? EquipmentIndex.None;
+
             CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
             GameObject bodyObject = component.GetBodyObject();
             if (bodyObject)
@@ -379,9 +385,10 @@ namespace RiskierRainContent
                     entityStateMachine.initialStateType = entityStateMachine.mainStateType;
                 }
             }
-            if (equipmentIndex2 != EquipmentIndex.None)
+            if (equipmentIndex != EquipmentIndex.None)
             {
-                component.inventory.SetEquipmentIndex(equipmentIndex2);
+                Debug.LogWarning("Spawning Storm Elite: " + eliteDef.name);
+                component.inventory.SetEquipmentIndex(equipmentIndex);
             }
         }
         #endregion
@@ -392,8 +399,8 @@ namespace RiskierRainContent
     /// </summary>
     public class StormHazardController : MonoBehaviour
     {
-        private List<HoldoutZoneController> holdoutZones => StormDirector.instance.holdoutZones;
-        bool teleporterActive => StormDirector.instance.teleporterActive;
+        private List<HoldoutZoneController> holdoutZones => StormEventDirector.instance.holdoutZones;
+        bool teleporterActive => StormEventDirector.instance.teleporterActive;
 
         //all the projectile/prefab stuff
         public float waveMinInterval = 1f;

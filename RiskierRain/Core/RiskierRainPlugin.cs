@@ -546,10 +546,10 @@ namespace RiskierRain
                 EclipseChanges();
             }
 
-            //eclipse level select
-            if (GetConfigBool(true, "Difficulty: Eclipse Level Select"))
+            //eclipse changes
+            if (GetConfigBool(true, "Difficulty: Director Changes"))
             {
-                EclipseLevelSelect();
+                ChangeDirectorStats();
             }
 
             //overloading elite

@@ -528,5 +528,61 @@ namespace RiskierRain
             Run.instance.SetRunStopwatch(Run.instance.GetRunStopwatch() + voidFieldsTimeCost);
         }
         #endregion
+
+        #region directors
+        public static float fastDirectorEliteBias = 0.2f;//1
+        public static float fastDirectorCreditMultiplier = 1f;//0.75f
+        public static float slowDirectorEliteBias = 0.2f;//1
+        public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
+
+        public static float teleLesserEliteBias = 0.2f;//1
+        public static float teleLesserCreditMultiplier = 2f;//1f
+        public static float teleBossEliteBias = 1f;//1
+        public static float teleBossCreditMultiplier = 1f;//1f
+        void ChangeDirectorStats()
+        {
+            GameObject baseDirector = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
+            CombatDirector[] directors1 = baseDirector.GetComponents<CombatDirector>();
+            if(directors1.Length > 0)
+            {
+                CombatDirector fastDirector = directors1[0];
+                if(fastDirector != null)
+                {
+                    fastDirector.eliteBias = fastDirectorEliteBias;
+                    fastDirector.eliteBias = fastDirectorCreditMultiplier;
+                }
+
+                CombatDirector slowDirector = directors1[1];
+                if (slowDirector != null)
+                {
+                    slowDirector.eliteBias = slowDirectorEliteBias;
+                    slowDirector.eliteBias = slowDirectorCreditMultiplier;
+                }
+            }
+            GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
+            GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
+            AdjustTeleporterDirectors(teleporterDefault.GetComponents<CombatDirector>());
+            AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
+        }
+        void AdjustTeleporterDirectors(CombatDirector[] directors)
+        {
+            if(directors != null && directors.Length > 0)
+            {
+                foreach (CombatDirector director in directors)
+                {
+                    if (director.customName == "Boss")
+                    {
+                        director.eliteBias = teleBossEliteBias;
+                        director.creditMultiplier = teleBossCreditMultiplier;
+                    }
+                    if (director.customName == "Monsters")
+                    {
+                        director.eliteBias = teleLesserEliteBias;
+                        director.creditMultiplier = teleLesserCreditMultiplier;
+                    }
+                }
+            }
+        }
+        #endregion
     }
 }

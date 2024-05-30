@@ -20,7 +20,7 @@ namespace RiskierRainContent.Equipment
         public static float volatileMortarDamageCoefficient = 3f;
         public static GameObject volatileMortarPrefab;
         // this is the exact damage the landmine does, but it scales with team level
-        public static float volatileLandmineDamage = 30f;
+        public static float volatileLandmineDamage = 10f;
         public static GameObject volatileLandminePrefab;
         public override string EliteEquipmentName => "Bava\u2019s Refrain";
 
@@ -289,6 +289,12 @@ namespace RiskierRainContent.Equipment
 
                 ProjectileDamage pd = volatileLandminePrefab.GetComponent<ProjectileDamage>();
                 pd.force = 2500;
+
+                ProjectileSphereTargetFinder pstf = volatileLandminePrefab.GetComponent<ProjectileSphereTargetFinder>();
+                if (pstf)
+                {
+                    pstf.targetSearchInterval = 0.2f;
+                }
 
                 /*EntityStateMachine[] stateMachines = volatileLandminePrefab.GetComponents<EntityStateMachine>();
                 foreach(EntityStateMachine esm in stateMachines)

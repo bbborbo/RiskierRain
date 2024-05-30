@@ -229,7 +229,7 @@ namespace RiskierRainContent.Equipment
             pd.force = 1500;
 
             ProjectileSimple scrapPs = projectilePrefab.GetComponent<ProjectileSimple>();
-            scrapPs.desiredForwardSpeed = 30;
+            scrapPs.desiredForwardSpeed = 30f;
 
             Rigidbody scrapRb = projectilePrefab.GetComponent<Rigidbody>();
             scrapRb.useGravity = true;
@@ -245,7 +245,7 @@ namespace RiskierRainContent.Equipment
 
             ProjectileImpactExplosion pie = projectilePrefab.GetComponent<ProjectileImpactExplosion>();
             pie.blastProcCoefficient = 0;
-            pie.blastRadius = 8f;
+            pie.blastRadius = 15f;
             pie.bonusBlastForce = Vector3.up * 1000;
 
             Assets.projectilePrefabs.Add(projectilePrefab);
@@ -266,8 +266,8 @@ namespace RiskierRainContent.Equipment
 
         public CharacterBody body;
         static float mortarTimer = 0f;
-        static float mortarInterval = 4f;
-        static float maxYawSpread = 45f;
+        static float mortarInterval = 6f;
+        static float maxYawSpread = 60f;
 
         void Start()
         {
@@ -291,15 +291,15 @@ namespace RiskierRainContent.Equipment
                         mortarTimer = 0f;
                         Vector3 forward = body.inputBank.aimDirection;
                         forward.y = 0;
-                        float projectileCount = Mathf.Ceil(body.radius);
+                        float projectileCount = Mathf.Ceil(body.radius * 1f) + 1;
                         float yawPerProjectile = (maxYawSpread * 2) / (projectileCount + 1);
 
                         for (int i = 0; i < projectileCount; i++)
                         {
                             //float currentYaw = (yawPerProjectile - (i)) * maxYawSpread;
                             float currentYaw = (projectileCount == 1) ? 0 : (yawPerProjectile * (i + 1)) - maxYawSpread;
-                            Vector3 forward2 = (projectileCount == 1) ? forward : Util.ApplySpread(forward, 0, 0, 1f, 1f, currentYaw, 0);
-                            Vector3 fireDirection = forward2 + Vector3.up * 2f;
+                            Vector3 forward2 = (projectileCount == 1) ? forward : Util.ApplySpread(forward, 2, 10, 1f, 1f, currentYaw, 0);
+                            Vector3 fireDirection = forward2 + Vector3.up * 1.2f;
                             ProjectileManager.instance.FireProjectile(projectilePrefab, body.corePosition,
                                 Util.QuaternionSafeLookRotation(fireDirection), body.gameObject, body.damage * mortarDamageCoefficient, 0f,
                                 Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);

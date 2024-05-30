@@ -547,6 +547,12 @@ namespace RiskierRain
                 EclipseChanges();
             }
 
+            //eclipse changes
+            if (GetConfigBool(true, "Difficulty: Director Changes"))
+            {
+                ChangeDirectorStats();
+            }
+
             //overloading elite
             if (GetConfigBool(true, "Elite: Overloading Elite Rework"))
             {

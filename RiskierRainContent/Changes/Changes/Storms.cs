@@ -31,7 +31,7 @@ namespace RiskierRainContent
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
-            LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
+            //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
         }
 
         private void CreateStormEliteTiers()
@@ -39,14 +39,14 @@ namespace RiskierRainContent
             StormT1 = new EliteTierDef();
             StormT1.costMultiplier = 2;
             StormT1.canSelectWithoutAvailableEliteDef = false;
-            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm);
+            StormT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormEventDirector.instance && StormEventDirector.instance.hasBegunStorm);
             StormT1.eliteTypes = new EliteDef[0];
             //EliteAPI.AddCustomEliteTier(StormT1);
 
             StormT2 = new EliteTierDef();
             StormT2.costMultiplier = 2;
             StormT2.canSelectWithoutAvailableEliteDef = false;
-            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormDirector.instance && StormDirector.instance.hasBegunStorm && 
+            StormT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormEventDirector.instance && StormEventDirector.instance.hasBegunStorm && 
                     !RiskierRainContent.is2R4RLoaded ? (Run.instance.loopClearCount > 0) :
                     ((Run.instance.stageClearCount >= 10 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
                     || (Run.instance.stageClearCount >= 5 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)
@@ -54,7 +54,6 @@ namespace RiskierRainContent
                     || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard)));
             StormT2.eliteTypes = new EliteDef[0];
             //EliteAPI.AddCustomEliteTier(StormT2);
-            return;
         }
 
         private static void CreateStormsRunBehaviorPrefab()
@@ -64,14 +63,17 @@ namespace RiskierRainContent
             ExpansionRequirementComponent erc = StormsRunBehaviorPrefab.GetComponent<ExpansionRequirementComponent>();
             erc.requiredExpansion = RiskierRainContent.expansionDef;
 
-            StormsRunBehaviorPrefab.AddComponent<StormDirector>();
+            StormsRunBehaviorPrefab.AddComponent<StormEventDirector>();
 
             RiskierRainContent.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
             Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
         }
     }
 
-    public class StormDirector : MonoBehaviour
+    /// <summary>
+    /// Handles event timing + resetting on stage start
+    /// </summary>
+    public class StormEventDirector : MonoBehaviour
     {
         public static float GetStormStartDelay()
         {
@@ -111,8 +113,8 @@ namespace RiskierRainContent
         }
 
         public const float drizzleStormDelay = 10;
-        public const float rainstormStormDelay = 5;
-        public const float monsoonStormDelay = 3;
+        public const float rainstormStormDelay = 7;
+        public const float monsoonStormDelay = 4;
         public enum StormType
         {
             None,
@@ -122,7 +124,7 @@ namespace RiskierRainContent
             Cold
         }
 
-        public static StormDirector instance;
+        public static StormEventDirector instance;
         StormType stormType = StormType.None;
 
         float stageBeginTime;
@@ -135,7 +137,8 @@ namespace RiskierRainContent
         public bool hasBegunStorm = false;
 
         internal bool teleporterActive = false;
-        internal TeleporterInteraction teleporter;
+        internal GameObject teleporter;
+        internal List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
 
 
         private Dictionary<HUD, GameObject> hudPanels;
@@ -150,9 +153,13 @@ namespace RiskierRainContent
             instance = this;
 
             On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage += Run_EndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin += TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter += TeleporterInteraction_ChargedState_OnEnter;
+
+            On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
+            On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
             hudPanels = new Dictionary<HUD, GameObject>();
         }
@@ -160,12 +167,17 @@ namespace RiskierRainContent
         public void OnDestroy()
         {
             On.RoR2.Run.OnServerTeleporterPlaced -= Run_OnServerTeleporterPlaced;
+            On.RoR2.Run.EndStage -= Run_EndStage;
 
             On.RoR2.TeleporterInteraction.OnInteractionBegin -= TeleporterInteraction_OnInteractionBegin;
             On.RoR2.TeleporterInteraction.ChargedState.OnEnter -= TeleporterInteraction_ChargedState_OnEnter;
+
+            On.RoR2.HoldoutZoneController.OnEnable -= RegisterHoldoutZone;
+            On.RoR2.HoldoutZoneController.OnDisable -= UnregisterHoldoutZone;
         }
+
         #region hooks
-        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        private void Run_EndStage(On.RoR2.Run.orig_EndStage orig, Run self)
         {
             stormType = StormType.None;
             stormStartDelay = -1;
@@ -173,12 +185,15 @@ namespace RiskierRainContent
             hasBegunStorm = false;
             teleporterActive = false;
             this.teleporter = null;
-
+        }
+        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        {
             stormType = GetStormType();
             stageBeginTime = RoR2.Run.instance.GetRunStopwatch();
             stormStartDelay = GetStormStartDelay(); 
             stormEarlyWarningDelay = stormStartDelay / 6;
             stormStartRandomDelay = Run.instance.stageRng.RangeInt(0, 60); // up to 1 minute of additional delay
+            this.teleporter = teleporter;
 
             orig(self, sceneDirector, teleporter);
         }
@@ -192,15 +207,34 @@ namespace RiskierRainContent
         private void TeleporterInteraction_OnInteractionBegin(On.RoR2.TeleporterInteraction.orig_OnInteractionBegin orig, TeleporterInteraction self, Interactor activator)
         {
             orig.Invoke(self, activator);
-            this.teleporter = self;
             this.teleporterActive = true;
+        }
+
+        private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            holdoutZones.Add(self);
+        }
+        private void UnregisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnDisable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            holdoutZones.Remove(self);
         }
         #endregion
 
         void FixedUpdate()
         {
-            if (stormType == StormType.None || !Run.instance)
+            if (stormType == StormType.None || !Run.instance || !this.teleporter)
+            {
+                if(this.hudPanels.Count > 0)
+                {
+                    foreach (HUD hud in HUD.readOnlyInstanceList)
+                    {
+                        SetHudCountdownEnabled(hud, false);
+                    }
+                }
                 return;
+            }
 
             float currentTime = RoR2.Run.instance.GetRunStopwatch();
             if (!hasSentStormEarlyWarning && currentTime > stormEarlyWarningTime)
@@ -215,7 +249,7 @@ namespace RiskierRainContent
                 BeginStorm();
             }
 
-            if (hasSentStormEarlyWarning && teleporter == null)
+            if (hasSentStormEarlyWarning && !teleporterActive)
             {
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
@@ -284,7 +318,7 @@ namespace RiskierRainContent
             this.hudPanels.TryGetValue(hud, out gameObject);
             if (gameObject != shouldEnableCountdownPanel)
             {
-                if (shouldEnableCountdownPanel)
+                if (shouldEnableCountdownPanel && stormType != StormType.None)
                 {
                     RectTransform rectTransform = hud.GetComponent<ChildLocator>().FindChild("TopCenterCluster") as RectTransform;
                     if (rectTransform)
@@ -318,24 +352,30 @@ namespace RiskierRainContent
         {
             GameObject go = new GameObject();
             go.AddComponent<StormHazardController>();
-            //CombatDirector cd = go.AddComponent<CombatDirector>();
-            //cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            CombatDirector cd = go.AddComponent<CombatDirector>();
+            cd.creditMultiplier = 0.5f;
+            cd.expRewardCoefficient = 1f;
+            cd.goldRewardCoefficient = 1f;
+            cd.minRerollSpawnInterval = 15f;
+            cd.maxRerollSpawnInterval = 25f;
+            cd.teamIndex = TeamIndex.Monster;
+            cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+            Debug.LogWarning("Beginning Storm");
         }
 
         private void OnStormDirectorSpawnServer(GameObject masterObject)
         {
             EliteDef eliteDef = WhirlwindAspect.instance.EliteDef;
-            EquipmentIndex? equipmentIndex;
-            if (eliteDef == null)
-            {
-                equipmentIndex = null;
-            }
-            else
+            if (Util.CheckRoll(50))
+                eliteDef = SurgingAspect.instance.EliteDef;
+
+            EquipmentIndex equipmentIndex = EquipmentIndex.None;
+            if (eliteDef != null)
             {
                 EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
-                equipmentIndex = ((eliteEquipmentDef != null) ? new EquipmentIndex?(eliteEquipmentDef.equipmentIndex) : null);
+                equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
             }
-            EquipmentIndex equipmentIndex2 = equipmentIndex ?? EquipmentIndex.None;
+
             CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
             GameObject bodyObject = component.GetBodyObject();
             if (bodyObject)
@@ -345,18 +385,22 @@ namespace RiskierRainContent
                     entityStateMachine.initialStateType = entityStateMachine.mainStateType;
                 }
             }
-            if (equipmentIndex2 != EquipmentIndex.None)
+            if (equipmentIndex != EquipmentIndex.None)
             {
-                component.inventory.SetEquipmentIndex(equipmentIndex2);
+                Debug.LogWarning("Spawning Storm Elite: " + eliteDef.name);
+                component.inventory.SetEquipmentIndex(equipmentIndex);
             }
         }
         #endregion
     }
 
+    /// <summary>
+    /// Handles storm environmental hazards
+    /// </summary>
     public class StormHazardController : MonoBehaviour
     {
-        bool teleporterActive => StormDirector.instance.teleporterActive;
-        private TeleporterInteraction teleporter => StormDirector.instance?.teleporter;
+        private List<HoldoutZoneController> holdoutZones => StormEventDirector.instance.holdoutZones;
+        bool teleporterActive => StormEventDirector.instance.teleporterActive;
 
         //all the projectile/prefab stuff
         public float waveMinInterval = 1f;
@@ -475,26 +519,29 @@ namespace RiskierRainContent
         private object MeteorWave_GetNextMeteor(On.RoR2.MeteorStormController.MeteorWave.orig_GetNextMeteor orig, object self)
         {
             object meteor = orig.Invoke(self);
+            if (holdoutZones.Count == 0)
+                return meteor;
+
             try
             {
-                if (teleporterActive)
+                foreach(HoldoutZoneController holdoutZone in holdoutZones)
                 {
-                    if (teleporter == null)
+                    if(holdoutZone == null)
                     {
-                        Debug.LogError("tp interaction null?");
-                        return meteor;
+                        holdoutZones.Remove(holdoutZone);
+                        continue;
                     }
-                    if (teleporter.holdoutZoneController == null)
+                    if (!holdoutZone.isActiveAndEnabled || holdoutZone.charge <= 0)
                     {
-                        Debug.LogError("holdout zone null???");
-                        return meteor;
+                        continue;
                     }
+
                     //i have no goddamn clue what this does lmao
                     //this uses reflection to find the impact position of the meteor that was spawned -borbo
                     Vector3 impactPosition = (Vector3)meteor.GetType()
-                        .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor); 
+                        .GetField("impactPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).GetValue(meteor);
 
-                    if (this.IsInRange(impactPosition, this.teleporter.transform.position, teleporter.holdoutZoneController.currentRadius + meteorBlastRadius))
+                    if (this.IsInRange(impactPosition, holdoutZone.transform.position, holdoutZone.currentRadius + meteorBlastRadius))
                     {
                         meteor = null;
                     }
@@ -504,6 +551,7 @@ namespace RiskierRainContent
             {
                 Debug.LogError(ex.Message);
             }
+
             return meteor;
         }
         private bool IsInRange(Vector3 a, Vector3 b, float dist)

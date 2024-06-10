@@ -267,13 +267,13 @@ namespace RiskierRainContent.Equipment
                 GameObject landmineGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiMineGhost.prefab").WaitForCompletion().InstantiateClone("BorboVolatileLandmineGhost", false);
                 //landmineGhost.transform.localScale = Vector3.one * 1f;
 
-                Deployable deployableComponent = volatileLandminePrefab.GetComponent<Deployable>();
-                if (deployableComponent)
-                    UnityEngine.Object.Destroy(deployableComponent);
-
                 ProjectileDeployToOwner pdto = volatileLandminePrefab.GetComponent<ProjectileDeployToOwner>();
                 if (pdto)
                     UnityEngine.Object.Destroy(pdto);
+
+                Deployable deployableComponent = volatileLandminePrefab.GetComponent<Deployable>();
+                if (deployableComponent)
+                    UnityEngine.Object.Destroy(deployableComponent);
 
                 ProjectileController pc = volatileLandminePrefab.GetComponent<ProjectileController>();
                 ProjectileGhostController pgc = landmineGhost.GetComponent<ProjectileGhostController>();

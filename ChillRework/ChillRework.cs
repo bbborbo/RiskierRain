@@ -27,7 +27,7 @@ namespace ChillRework
         #region plugin info
         public static PluginInfo PInfo { get; private set; }
         public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "HouseOfFruits";
+        public const string teamName = "RiskOfBrainrot";
         public const string modName = "ChillRework";
         public const string version = "1.3.0";
         #endregion

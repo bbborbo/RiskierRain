@@ -35,7 +35,7 @@ namespace ChillRework
         {
             On.RoR2.GlobalEventManager.OnHitEnemy += ChillOnHitHook;
             On.RoR2.CharacterBody.AddBuff_BuffIndex += CapChillStacks;
-            IL.RoR2.GlobalEventManager.OnHitEnemy += IceRingMultiChill;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += IceRingMultiChill;
             //IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
             GetStatCoefficients += ChillStats;
         }
@@ -120,12 +120,12 @@ namespace ChillRework
                     if (procCoefficient != 0 && !damageInfo.rejected)
                     {
                         bool hasChilled = false;
-                        if (damageInfo.damageType.HasFlag(DamageType.Freeze2s))
+                        if (damageInfo.damageType.damageType.HasFlag(DamageType.Freeze2s))
                         {
                             hasChilled = true;
                             this.frozenBy[victim] = damageInfo.attacker;
                             float chillCount = chillStacksOnFreeze;
-                            if (damageInfo.damageType.HasFlag(DamageType.AOE))
+                            if (damageInfo.damageType.damageType.HasFlag(DamageType.AOE))
                             {
                                 chillCount -= 1;
                             }

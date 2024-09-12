@@ -129,7 +129,7 @@ namespace RiskierRainContent.Items
                 wickedCooldown.isDebuff = true;
                 wickedCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsReadyIcon");
             };
-            Assets.buffDefs.Add(wickedCooldown);
+            CoreModules.Assets.buffDefs.Add(wickedCooldown);
         }
     }
 }

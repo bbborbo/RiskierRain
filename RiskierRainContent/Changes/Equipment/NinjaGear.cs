@@ -36,9 +36,9 @@ namespace RiskierRainContent.Equipment
 
         public override string EquipmentLore => "";
 
-        public override GameObject EquipmentModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
+        public override GameObject EquipmentModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
 
-        public override Sprite EquipmentIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
+        public override Sprite EquipmentIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
 
         public override bool CanDrop { get; } = true;
 

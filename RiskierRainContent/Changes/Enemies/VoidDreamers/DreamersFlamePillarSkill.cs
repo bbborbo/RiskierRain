@@ -63,8 +63,8 @@ namespace RiskierRainContent.Enemies.VoidDreamers
             ProjectileFireChildren pfc = dreamersFlamePillarWarning.AddComponent<ProjectileFireChildren>();
             pfc.childProjectilePrefab = dreamersFlamePillar;
             pfc.timer = pie.lifetime;
-            Assets.projectilePrefabs.Add(dreamersFlamePillar);
-            Assets.projectilePrefabs.Add(dreamersFlamePillarWarning);
+            CoreModules.Assets.projectilePrefabs.Add(dreamersFlamePillar);
+            CoreModules.Assets.projectilePrefabs.Add(dreamersFlamePillarWarning);
         }
     }
 

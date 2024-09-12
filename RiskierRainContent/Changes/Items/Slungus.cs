@@ -67,9 +67,9 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.CannotCopy }; //, ItemTag.Damage
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSlungus.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSlungus.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_SLUNGUS.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_SLUNGUS.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -140,9 +140,9 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
                 slungusBuff.buffColor = new Color(0.9f, 0.9f, 0f);
                 slungusBuff.canStack = false;
                 slungusBuff.isDebuff = false;
-                slungusBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                slungusBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
-            Assets.buffDefs.Add(slungusBuff);
+            CoreModules.Assets.buffDefs.Add(slungusBuff);
         }
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)

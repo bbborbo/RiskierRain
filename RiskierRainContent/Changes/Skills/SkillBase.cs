@@ -83,7 +83,7 @@ namespace RiskierRainContent.Skills
                 SkillDef = ScriptableObject.CreateInstance<SteppedSkillDef>();
             }
 
-            Assets.RegisterEntityState(ActivationState);
+            CoreModules.Assets.RegisterEntityState(ActivationState);
             SkillDef.activationState = new SerializableEntityStateType(ActivationState);
 
             SkillDef.skillNameToken = Token + SkillLangTokenName;
@@ -92,7 +92,7 @@ namespace RiskierRainContent.Skills
             SkillDef.activationStateMachineName = "Weapon";
 
             SkillDef.keywordTokens = KeywordTokens;
-            SkillDef.icon = Assets.mainAssetBundle.LoadAsset<Sprite>(Assets.iconsPath + "Skill/" + IconName + ".png");
+            SkillDef.icon = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>(CoreModules.Assets.iconsPath + "Skill/" + IconName + ".png");
 
             #region SkillData
             SkillDef.baseMaxStock = SkillData.baseMaxStock;
@@ -111,7 +111,7 @@ namespace RiskierRainContent.Skills
             SkillDef.stockToConsume = SkillData.stockToConsume;
             #endregion
 
-            Assets.skillDefs.Add(SkillDef);
+            CoreModules.Assets.skillDefs.Add(SkillDef);
             AddSkillDefToCharacter();
         }
 

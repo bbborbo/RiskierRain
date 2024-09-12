@@ -99,8 +99,8 @@ namespace RiskierRainContent
             if (inv)
             {
                 int featherCount = inv.GetItemCount(RoR2Content.Items.Feather);
-                int buffCountP = sender.GetBuffCount(Assets.hopooDamageBuff);
-                int buffCountT = sender.GetBuffCount(Assets.hopooDamageBuffTemporary);
+                int buffCountP = sender.GetBuffCount(CoreModules.Assets.hopooDamageBuff);
+                int buffCountT = sender.GetBuffCount(CoreModules.Assets.hopooDamageBuffTemporary);
                 if(featherCount > 0)
                 {
                     if(buffCountT > buffCountP)
@@ -160,23 +160,23 @@ namespace RiskierRainContent
         private void FeatherOnLandServer(On.RoR2.GlobalEventManager.orig_OnCharacterHitGroundServer orig, GlobalEventManager self, CharacterBody characterBody, Vector3 impactVelocity)
         {
             orig(self, characterBody, impactVelocity);
-            int buffCount = characterBody.GetBuffCount(Assets.hopooDamageBuff);
+            int buffCount = characterBody.GetBuffCount(CoreModules.Assets.hopooDamageBuff);
             for (int i = 0; i < buffCount; i++)
             {
-                characterBody.RemoveBuff(Assets.hopooDamageBuff);
-                characterBody.AddTimedBuff(Assets.hopooDamageBuffTemporary, hopooDamageBuffDuration);
+                characterBody.RemoveBuff(CoreModules.Assets.hopooDamageBuff);
+                characterBody.AddTimedBuff(CoreModules.Assets.hopooDamageBuffTemporary, hopooDamageBuffDuration);
             }
         }
 
         private void FeatherOnLand(On.RoR2.GlobalEventManager.orig_OnCharacterHitGround orig, GlobalEventManager self, CharacterBody characterBody, Vector3 impactVelocity)
         {
             orig(self, characterBody, impactVelocity);
-            int buffCount = characterBody.GetBuffCount(Assets.hopooDamageBuff);
+            int buffCount = characterBody.GetBuffCount(CoreModules.Assets.hopooDamageBuff);
             for (int i = 0; i < buffCount; i++)
             {
-                characterBody.RemoveBuff(Assets.hopooDamageBuff);
+                characterBody.RemoveBuff(CoreModules.Assets.hopooDamageBuff);
                 if(characterBody.hasAuthority)
-                    characterBody.AddTimedBuff(Assets.hopooDamageBuffTemporary, hopooDamageBuffDuration);
+                    characterBody.AddTimedBuff(CoreModules.Assets.hopooDamageBuffTemporary, hopooDamageBuffDuration);
             }
         }
         #endregion
@@ -317,7 +317,7 @@ namespace RiskierRainContent
         private void FireTarballProjectile(CharacterBody body, Vector3 origin, Vector3 forward)
         {
             ProjectileManager.instance.FireProjectile(
-                Assets.miredUrnTarball, origin, Util.QuaternionSafeLookRotation(forward), 
+                CoreModules.Assets.miredUrnTarball, origin, Util.QuaternionSafeLookRotation(forward), 
                 body.gameObject, body.damage * urnBallDamageCoefficient, 0f, 
                 Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
         }

@@ -90,7 +90,7 @@ namespace RiskierRainContent.Equipment
             executionDebuffIndex.name = "ExecutionDebuffStackable";
             executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
 
-            Assets.buffDefs.Add(executionDebuffIndex);
+            CoreModules.Assets.buffDefs.Add(executionDebuffIndex);
         }
         private void AddLuckBuff()
         {
@@ -102,7 +102,7 @@ namespace RiskierRainContent.Equipment
             luckBuffIndex.name = "LuckBuffStackable";
             luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
 
-            Assets.buffDefs.Add(luckBuffIndex);
+            CoreModules.Assets.buffDefs.Add(luckBuffIndex);
         }
         #endregion
 

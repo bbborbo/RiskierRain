@@ -184,8 +184,8 @@ namespace RiskierRainContent.Items
                 mochaBuffInactive.canStack = false;
                 mochaBuffInactive.isDebuff = false;
             };
-            Assets.buffDefs.Add(mochaBuffActive);
-            Assets.buffDefs.Add(mochaBuffInactive);
+            CoreModules.Assets.buffDefs.Add(mochaBuffActive);
+            CoreModules.Assets.buffDefs.Add(mochaBuffInactive);
         }
     }
 

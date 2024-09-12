@@ -149,14 +149,14 @@ namespace RiskierRainContent.Items
             main.startSizeYMultiplier *= 0.5f;
             main.startSizeZMultiplier *= 2f;
 
-            Assets.CreateEffect(retaliateTracer);
+            CoreModules.Assets.CreateEffect(retaliateTracer);
 
             retaliateExplosion = Resources.Load<GameObject>("prefabs/effects/BleedOnHitAndExplode_Explosion").InstantiateClone("retaliateBlast", false);
             ShakeEmitter shake = retaliateExplosion.GetComponent<ShakeEmitter>();
             shake.radius = 150;
             shake.duration = 0.7f;
 
-            Assets.CreateEffect(retaliateExplosion);
+            CoreModules.Assets.CreateEffect(retaliateExplosion);
         }
 
         private void CreateBuff()
@@ -169,7 +169,7 @@ namespace RiskierRainContent.Items
                 bloodBuff.isDebuff = true;
                 bloodBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
             };
-            Assets.buffDefs.Add(bloodBuff);
+            CoreModules.Assets.buffDefs.Add(bloodBuff);
         }
     }
     public class BloodAnomalyBehavior : RoR2.CharacterBody.ItemBehavior

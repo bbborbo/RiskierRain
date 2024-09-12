@@ -48,7 +48,7 @@ namespace RiskierRainContent
             CharacterBody victimBody = victim.GetComponent<CharacterBody>();
             Inventory inv = attackerBody.inventory;
             HealthComponent hc = attackerBody.healthComponent;
-            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(Assets.harpoonDebuff))
+            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(CoreModules.Assets.harpoonDebuff))
             {
                 int harpoonCount = inv.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
                 if(harpoonCount > 0)
@@ -134,7 +134,7 @@ namespace RiskierRainContent
         {
             for (int n = 0; n < stack; n++)
             {
-                enemyBody.AddTimedBuffAuthority(Assets.harpoonDebuff.buffIndex, RiskierRainContent.harpoonTargetTime);
+                enemyBody.AddTimedBuffAuthority(CoreModules.Assets.harpoonDebuff.buffIndex, RiskierRainContent.harpoonTargetTime);
             }
 
             //thanks hifu <3

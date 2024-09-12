@@ -70,7 +70,7 @@ namespace RiskierRainContent.Skills
             CreateSkill();
             CreateProjectile();
 
-            Assets.RegisterEntityState(typeof(FireExplosiveArrow));
+            CoreModules.Assets.RegisterEntityState(typeof(FireExplosiveArrow));
         }
 
         private void CreateProjectile()
@@ -163,9 +163,9 @@ namespace RiskierRainContent.Skills
             pd.damageType = DamageType.Generic;
             #endregion
 
-            Assets.projectilePrefabs.Add(regularArrowPrefab);
-            Assets.projectilePrefabs.Add(critArrowPrefab);
-            Assets.projectilePrefabs.Add(critBombletsPrefab);
+            CoreModules.Assets.projectilePrefabs.Add(regularArrowPrefab);
+            CoreModules.Assets.projectilePrefabs.Add(critArrowPrefab);
+            CoreModules.Assets.projectilePrefabs.Add(critBombletsPrefab);
         }
     }
 }

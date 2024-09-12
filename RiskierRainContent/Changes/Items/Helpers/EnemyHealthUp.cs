@@ -25,9 +25,9 @@ namespace RiskierRainContent.Items.Helpers
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.CannotSteal };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyHealthUp.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyHealthUp.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ENEMYHEALTHUP.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_ENEMYHEALTHUP.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

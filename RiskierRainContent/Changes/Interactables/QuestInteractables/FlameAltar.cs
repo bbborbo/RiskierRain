@@ -17,7 +17,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "FLAMEALTAR";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/flameAltar.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/flameAltar.prefab");
 
         public override string modelName => "mdlFlameAltar";
 

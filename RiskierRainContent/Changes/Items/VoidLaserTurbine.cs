@@ -43,9 +43,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlS2Engine.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlS2Engine.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDLASERTURBINE.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -106,7 +106,7 @@ namespace RiskierRainContent.Items
                 turbineChargeBuff.canStack = true;
                 turbineChargeBuff.isDebuff = false;
             };
-            Assets.buffDefs.Add(turbineChargeBuff);
+            CoreModules.Assets.buffDefs.Add(turbineChargeBuff);
             turbineReadyBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 turbineReadyBuff.name = "VoidTurbineReadyBuff";
@@ -115,7 +115,7 @@ namespace RiskierRainContent.Items
                 turbineReadyBuff.canStack = false;
                 turbineReadyBuff.isDebuff = false;
             };
-            Assets.buffDefs.Add(turbineReadyBuff);
+            CoreModules.Assets.buffDefs.Add(turbineReadyBuff);
         }
     }
     public class VoidTurbineBehavior : CharacterBody.ItemBehavior

@@ -37,9 +37,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.VoidTier2;
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Damage };
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/coralite.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/coralite.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

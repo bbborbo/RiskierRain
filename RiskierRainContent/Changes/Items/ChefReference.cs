@@ -44,9 +44,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChefStache.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChefStache.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_CHEFITEM.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_CHEFITEM.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -128,7 +128,7 @@ namespace RiskierRainContent.Items
             DestroyOnTimer destroyTimer = meatChunk.GetComponentInChildren<DestroyOnTimer>();
             destroyTimer.duration = chunkLifetime;
 
-            Assets.networkedObjectPrefabs.Add(meatChunk);
+            CoreModules.Assets.networkedObjectPrefabs.Add(meatChunk);
         }
     }
 }

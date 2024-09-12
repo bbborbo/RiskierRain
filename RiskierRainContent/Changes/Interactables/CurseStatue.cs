@@ -18,7 +18,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "CURSE_STATUE";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/curseStatue.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/curseStatue.prefab");
         public override string modelName => "mdlCurseStatue";
 
         public override string prefabName => "curseStatue";

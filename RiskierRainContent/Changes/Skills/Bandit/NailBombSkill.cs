@@ -51,7 +51,7 @@ namespace RiskierRainContent.Skills
 
         public override void Init(ConfigFile config)
         {
-            KeywordTokens = new string[] { "KEYWORD_STUNNING", Assets.shredKeywordToken };
+            KeywordTokens = new string[] { "KEYWORD_STUNNING", CoreModules.Assets.shredKeywordToken };
             CreateLang();
             CreateSkill();
             Hooks();
@@ -84,7 +84,7 @@ namespace RiskierRainContent.Skills
             antigrav.antiGravityCoefficient = 0.15f;
             antigrav.rb = rb;
 
-            Assets.projectilePrefabs.Add(nailBombProjectile);
+            CoreModules.Assets.projectilePrefabs.Add(nailBombProjectile);
         }
     }
 }

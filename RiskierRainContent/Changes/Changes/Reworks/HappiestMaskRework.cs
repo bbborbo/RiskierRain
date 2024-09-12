@@ -60,7 +60,7 @@ namespace RiskierRainContent
 
         private void MaskExecution(CharacterBody sender, ref float executeThreshold)
         {
-            bool hasHauntBuff = sender.HasBuff(Assets.hauntDebuff);
+            bool hasHauntBuff = sender.HasBuff(CoreModules.Assets.hauntDebuff);
             executeThreshold = ModifyExecutionThreshold(executeThreshold, hauntExecutionThreshold, hasHauntBuff);
         }
 
@@ -144,7 +144,7 @@ namespace RiskierRainContent
 
                         for(int n = 0; n < stack; n++)
                         {
-                            enemyBody.AddBuff(Assets.hauntDebuff.buffIndex);
+                            enemyBody.AddBuff(CoreModules.Assets.hauntDebuff.buffIndex);
                         }
                         break;
                     }

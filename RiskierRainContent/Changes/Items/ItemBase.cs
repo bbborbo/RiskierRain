@@ -176,13 +176,13 @@ namespace RiskierRainContent.Items
 
         public static GameObject LoadDropPrefab(string prefabName)
         {
-            GameObject prefab = Assets.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");
+            GameObject prefab = CoreModules.Assets.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");
             return prefab;
         }
 
         public static GameObject LoadDisplayPrefab(string prefabName)
         {
-            GameObject prefab = Assets.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab");
+            GameObject prefab = CoreModules.Assets.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab");
             if(prefab == null)
             {
                 prefab = LoadDisplayPrefab(prefabName);
@@ -192,7 +192,7 @@ namespace RiskierRainContent.Items
 
         public static Sprite LoadItemIcon(string spriteName)
         {
-            Sprite icon = Assets.mainAssetBundle.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
+            Sprite icon = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
             return icon;
         }
         public static ExpansionDef SotvExpansionDef()

@@ -85,7 +85,7 @@ namespace RiskierRainContent.Skills
             poa.damageCoefficient = 1f;
             poa.overlapProcCoefficient = 0.8f;
 
-            Assets.projectilePrefabs.Add(boomerangPrefab);
+            CoreModules.Assets.projectilePrefabs.Add(boomerangPrefab);
         }
     }
 }

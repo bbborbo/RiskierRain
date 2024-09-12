@@ -36,9 +36,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
 
-        public override GameObject ItemModel => Assets.mainAssetBundle.LoadAsset<GameObject>(Assets.dropPrefabsPath + "Item/Beans.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.mainAssetBundle.LoadAsset<GameObject>(CoreModules.Assets.dropPrefabsPath + "Item/Beans.prefab");
 
-        public override Sprite ItemIcon => Assets.mainAssetBundle.LoadAsset<Sprite>(Assets.iconsPath + "Item/texIconBeans.png");
+        public override Sprite ItemIcon => CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>(CoreModules.Assets.iconsPath + "Item/texIconBeans.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -92,7 +92,7 @@ namespace RiskierRainContent.Items
                 beansHealBuff.isDebuff = false;
                 beansHealBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffMedkitHealIcon");
             }
-            Assets.buffDefs.Add(beansHealBuff);
+            CoreModules.Assets.buffDefs.Add(beansHealBuff);
         }
     }
 }

@@ -99,8 +99,8 @@ namespace RiskierRainContent.Scavengers
                 pickupComp.equipmentString = ScavEquipName;
             }
 
-            Assets.bodyPrefabs.Add(bodyObject);
-            Assets.masterPrefabs.Add(masterObject);
+            CoreModules.Assets.bodyPrefabs.Add(bodyObject);
+            CoreModules.Assets.masterPrefabs.Add(masterObject);
             ScavBody = body;
             ScavObject = bodyObject;
         }

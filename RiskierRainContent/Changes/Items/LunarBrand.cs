@@ -45,9 +45,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Lunar;
 
         public override ItemTag[] ItemTags => new ItemTag [] { ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarBrand.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarBrand.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_LUNARBRAND.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_LUNARBRAND.png");
 
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
@@ -156,9 +156,9 @@ namespace RiskierRainContent.Items
                 CauterizeBuff.buffColor = new Color(0f, 0f, 0f);
                 CauterizeBuff.canStack = true;
                 CauterizeBuff.isDebuff = false;
-                CauterizeBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                CauterizeBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
-            Assets.buffDefs.Add(CauterizeBuff);
+            CoreModules.Assets.buffDefs.Add(CauterizeBuff);
         }
 
         

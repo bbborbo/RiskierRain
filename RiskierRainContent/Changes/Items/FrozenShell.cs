@@ -37,9 +37,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/frozenTurtleShell.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/frozenTurtleShell.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texFrozenShellIcon.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texFrozenShellIcon.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -96,7 +96,7 @@ namespace RiskierRainContent.Items
 	            frozenShellArmorBuff.isDebuff = false;
                 frozenShellArmorBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
             };
-            Assets.buffDefs.Add(frozenShellArmorBuff);
+            CoreModules.Assets.buffDefs.Add(frozenShellArmorBuff);
         }
     }
     public class FrozenShellBehavior : CharacterBody.ItemBehavior

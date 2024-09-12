@@ -172,8 +172,8 @@ namespace RiskierRainContent.Items
                 pdz2.fireFrequency = dotFrequency * 2;
             }
 
-            Assets.projectilePrefabs.Add(molotovProjectile);
-            Assets.projectilePrefabs.Add(molotovDotZone);
+            CoreModules.Assets.projectilePrefabs.Add(molotovProjectile);
+            CoreModules.Assets.projectilePrefabs.Add(molotovDotZone);
         }
     }
 }

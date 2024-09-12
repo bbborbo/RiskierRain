@@ -63,19 +63,19 @@ namespace RiskierRainContent
     public partial class RiskierRainContent : BaseUnityPlugin
     {
         public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "HouseOfFruits";
-        public const string modName = "RiskierRainContent";
+        public const string teamName = "RiskOfBrainrot";
+        public const string modName = "SwanSongExtended";
         public const string version = "1.0.0";
         public const string expansionName = "Swan Song";
         public const string expansionToken = "EXPANSION2R4R";
         public static PluginInfo PInfo { get; private set; }
 
         public static ExpansionDef expansionDef;
-        public static AssetBundle mainAssetBundle => Assets.mainAssetBundle;
-        public static AssetBundle orangeAssetBundle => Assets.orangeAssetBundle;
-        public static string dropPrefabsPath => Assets.dropPrefabsPath;
-        public static string iconsPath => Assets.iconsPath;
-        public static string eliteMaterialsPath => Assets.eliteMaterialsPath;
+        public static AssetBundle mainAssetBundle => CoreModules.Assets.mainAssetBundle;
+        public static AssetBundle orangeAssetBundle => CoreModules.Assets.orangeAssetBundle;
+        public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
+        public static string iconsPath => CoreModules.Assets.iconsPath;
+        public static string eliteMaterialsPath => CoreModules.Assets.eliteMaterialsPath;
 
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> EnableConfig { get; set; }
@@ -119,7 +119,7 @@ namespace RiskierRainContent
             InitializeArtifacts();
             InitializeScavengers();
             //InitializeEverything();
-            Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
+            CoreModules.Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
             RoR2Application.onLoad += InitializeEverything;
 
@@ -133,7 +133,7 @@ namespace RiskierRainContent
             expansionDef.descriptionToken = expansionToken + "_DESCRIPTION";
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
-            Assets.expansionDefs.Add(expansionDef);
+            CoreModules.Assets.expansionDefs.Add(expansionDef);
         }
 
         private void InitializeEverything()
@@ -300,7 +300,7 @@ namespace RiskierRainContent
             component2.intensity = 6f;
             component2.range = 12f;
 
-            Assets.projectilePrefabs.Add(meatballNapalmPool);
+            CoreModules.Assets.projectilePrefabs.Add(meatballNapalmPool);
         }
 
         private bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")

@@ -227,7 +227,7 @@ namespace RiskierRainContent.Equipment
                 ProjectileGhostController pgc = mortarGhost.GetComponent<ProjectileGhostController>();
                 pc.ghost = pgc;
 
-                Material material1 = Assets.mainAssetBundle.LoadAsset<Material>(Assets.eliteMaterialsPath + "matVolatile.mat");
+                Material material1 = CoreModules.Assets.mainAssetBundle.LoadAsset<Material>(CoreModules.Assets.eliteMaterialsPath + "matVolatile.mat");
                 //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
                 Tools.GetMaterial(mortarGhost, "Mesh", Color.red, ref material1);
                 Tools.GetMaterial(mortarGhost, "GameObject (1)", Color.green, ref material1);// material2);
@@ -258,7 +258,7 @@ namespace RiskierRainContent.Equipment
                 pie.blastRadius = 15f;
                 pie.bonusBlastForce = Vector3.up * 1000;
 
-                Assets.projectilePrefabs.Add(volatileMortarPrefab);
+                CoreModules.Assets.projectilePrefabs.Add(volatileMortarPrefab);
             }
 
             volatileLandminePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiMine.prefab").WaitForCompletion().InstantiateClone("BorboVolatileLandmine", true);
@@ -279,7 +279,7 @@ namespace RiskierRainContent.Equipment
                 ProjectileGhostController pgc = landmineGhost.GetComponent<ProjectileGhostController>();
                 pc.ghost = pgc;
 
-                Material material1 = Assets.mainAssetBundle.LoadAsset<Material>(Assets.eliteMaterialsPath + "matVolatile.mat");
+                Material material1 = CoreModules.Assets.mainAssetBundle.LoadAsset<Material>(CoreModules.Assets.eliteMaterialsPath + "matVolatile.mat");
                 //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
                 Tools.GetMaterial(landmineGhost, "Mesh", Color.red, ref material1);
                 Tools.GetMaterial(landmineGhost, "GameObject (1)", Color.green, ref material1);// material2);
@@ -309,7 +309,7 @@ namespace RiskierRainContent.Equipment
                     }
                 }*/
 
-                Assets.projectilePrefabs.Add(volatileLandminePrefab);
+                CoreModules.Assets.projectilePrefabs.Add(volatileLandminePrefab);
             }
         }
 

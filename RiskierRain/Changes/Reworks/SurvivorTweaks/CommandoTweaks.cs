@@ -77,8 +77,8 @@ namespace RiskierRain.SurvivorTweaks
         {
             //soup
             SkillDef soupFire = special.variants[0].skillDef;
-            Assets.RegisterEntityState(typeof(SoupTargeting));
-            Assets.RegisterEntityState(typeof(SoupFire));
+            CoreModules.Assets.RegisterEntityState(typeof(SoupTargeting));
+            CoreModules.Assets.RegisterEntityState(typeof(SoupFire));
             SerializableEntityStateType newSoupFireState = new SerializableEntityStateType(typeof(SoupTargeting));
             soupFire.activationState = newSoupFireState;
             soupFire.baseRechargeInterval = soupCooldown;
@@ -142,8 +142,8 @@ namespace RiskierRain.SurvivorTweaks
 
             //slide
             SkillDef slide = utility.variants[1].skillDef;
-            Assets.RegisterEntityState(typeof(UltraSlide));
-            Assets.RegisterEntityState(typeof(UltraDash));
+            CoreModules.Assets.RegisterEntityState(typeof(UltraSlide));
+            CoreModules.Assets.RegisterEntityState(typeof(UltraDash));
             SerializableEntityStateType ultraSlideState = new SerializableEntityStateType(typeof(UltraSlide));
             slide.activationState = ultraSlideState;
             slide.baseRechargeInterval = slideCooldown;
@@ -210,13 +210,13 @@ namespace RiskierRain.SurvivorTweaks
         private void DodgeBuffExit(On.EntityStates.Commando.DodgeState.orig_OnExit orig, EntityStates.Commando.DodgeState self)
         {
             orig(self);
-            self.characterBody.AddTimedBuffAuthority(Assets.commandoRollBuff.buffIndex, rollAspdDuration);
+            self.characterBody.AddTimedBuffAuthority(CoreModules.Assets.commandoRollBuff.buffIndex, rollAspdDuration);
             self.characterBody.SetSpreadBloom(0, false);
         }
 
         private void RollStatBuff(CharacterBody sender, StatHookEventArgs args)
         {
-            if (sender.HasBuff(Assets.commandoRollBuff))
+            if (sender.HasBuff(CoreModules.Assets.commandoRollBuff))
             {
                 args.attackSpeedMultAdd += rollAspdBuff;
             }

@@ -206,7 +206,7 @@ What happened to all of our gold?";
                 coinBuff.canStack = true;
                 coinBuff.isDebuff = false;
             };
-            Assets.buffDefs.Add(coinBuff);
+            CoreModules.Assets.buffDefs.Add(coinBuff);
 
             return coinBuff;
         }

@@ -61,15 +61,15 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "HouseOfFruits";
+        public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
         public const string version = "1.0.0";
 
         public static PluginInfo PInfo { get; private set; }
 
-        public static string dropPrefabsPath => Assets.dropPrefabsPath;
-        public static string iconsPath => Assets.iconsPath;
-        public static string eliteMaterialsPath => Assets.eliteMaterialsPath;
+        public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
+        public static string iconsPath => CoreModules.Assets.iconsPath;
+        public static string eliteMaterialsPath => CoreModules.Assets.eliteMaterialsPath;
 
         public static bool isAELoaded = Tools.isLoaded("com.Borbo.ArtificerExtended");
         public static bool isHBULoaded = Tools.isLoaded("com.Borbo.HuntressBuffULTIMATE");
@@ -861,7 +861,7 @@ namespace RiskierRain
             component2.intensity = 6f;
             component2.range = 12f;
 
-            Assets.projectilePrefabs.Add(meatballNapalmPool);
+            CoreModules.Assets.projectilePrefabs.Add(meatballNapalmPool);
         }
 
         private bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")

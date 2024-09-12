@@ -63,11 +63,11 @@ namespace RiskierRainContent
                             if (hasScalpel)
                             {
                                 DisposableScalpel.ConsumeScalpel(attackerBody);
-                                enemyBody.AddBuff(Assets.bossHunterDebuffWithScalpel);
+                                enemyBody.AddBuff(CoreModules.Assets.bossHunterDebuffWithScalpel);
                             }
                             else
                             {
-                                enemyBody.AddBuff(Assets.bossHunterDebuff);
+                                enemyBody.AddBuff(CoreModules.Assets.bossHunterDebuff);
                                 destroyTricorn = true;
                             }
 

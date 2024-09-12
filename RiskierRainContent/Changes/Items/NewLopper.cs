@@ -125,7 +125,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
                 dangerCritBuff.name = "NewLopperCritBonus";
                 dangerCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
             };
-            Assets.buffDefs.Add(dangerCritBuff);
+            CoreModules.Assets.buffDefs.Add(dangerCritBuff);
         }
     }
 

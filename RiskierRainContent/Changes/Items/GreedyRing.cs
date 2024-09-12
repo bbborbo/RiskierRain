@@ -51,9 +51,9 @@ Of course, you can always buy the premium version for unlimited discounts~
         public override ItemTag[] ItemTags => new ItemTag[] 
             { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.InteractableRelated };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlGreedyRing.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlGreedyRing.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BORBODISCOUNT.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -135,7 +135,7 @@ Of course, you can always buy the premium version for unlimited discounts~
                 greedyRingBuff.canStack = true;
                 greedyRingBuff.isDebuff = false;
             };
-            Assets.buffDefs.Add(greedyRingBuff);
+            CoreModules.Assets.buffDefs.Add(greedyRingBuff);
         }
     }
 

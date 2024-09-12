@@ -47,7 +47,7 @@ namespace RiskierRainContent.Skills
 
         public override void Init(ConfigFile config)
         {
-            Assets.RegisterEntityState(typeof(ThermalCannonFire));
+            CoreModules.Assets.RegisterEntityState(typeof(ThermalCannonFire));
 
             KeywordTokens = new string[1] { "KEYWORD_SONIC_BOOM" };
             CreateLang();

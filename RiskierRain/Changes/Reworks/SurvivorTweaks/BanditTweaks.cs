@@ -108,10 +108,10 @@ namespace RiskierRain.SurvivorTweaks
                         float baseShredDuration = 10f;
                         damageInfo.damageType = damageInfo.damageType & ~DamageType.BypassArmor;
 
-                        self.body.AddTimedBuffAuthority(Assets.banditShredDebuff.buffIndex, baseShredDuration);
+                        self.body.AddTimedBuffAuthority(CoreModules.Assets.banditShredDebuff.buffIndex, baseShredDuration);
                         if (damageInfo.crit || BackstabManager.IsBackstab(self.transform.position - damageInfo.position, self.body))
                         {
-                            self.body.AddTimedBuffAuthority(Assets.banditShredDebuff.buffIndex, baseShredDuration * 2);
+                            self.body.AddTimedBuffAuthority(CoreModules.Assets.banditShredDebuff.buffIndex, baseShredDuration * 2);
                         }
                     }
                 }
@@ -381,7 +381,7 @@ namespace RiskierRain.SurvivorTweaks
                 desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
                 desperadoExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
             }
-            Assets.buffDefs.Add(desperadoExecutionDebuff);
+            CoreModules.Assets.buffDefs.Add(desperadoExecutionDebuff);
             lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 lightsoutExecutionDebuff.buffColor = Color.black;
@@ -390,7 +390,7 @@ namespace RiskierRain.SurvivorTweaks
                 lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
                 lightsoutExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
             }
-            Assets.buffDefs.Add(lightsoutExecutionDebuff);
+            CoreModules.Assets.buffDefs.Add(lightsoutExecutionDebuff);
         }
 
         private void BanditFinisher(CharacterBody sender, ref float executeThreshold)

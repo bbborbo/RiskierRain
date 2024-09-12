@@ -38,8 +38,8 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility};
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScug.prefab");
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDSCUG.png");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScug.prefab");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_VOIDSCUG.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -116,7 +116,7 @@ namespace RiskierRainContent.Items
                 scugBuff.isDebuff = false;
                 scugBuff.isHidden = true;
             };
-            Assets.buffDefs.Add(scugBuff);
+            CoreModules.Assets.buffDefs.Add(scugBuff);
         }
 
 

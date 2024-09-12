@@ -104,7 +104,7 @@ namespace Ror2AggroTools
                 Func<BullseyeSearch.CandidateInfo, float> sorter = self.enemySearch.GetSorter();
                 if (sorter != null)
                 {
-                    self.enemySearch.candidatesEnumerable = (newCandidates as IEnumerable<BullseyeSearch.CandidateInfo>).OrderBy(sorter);
+                    self.enemySearch.candidatesEnumerable = (newCandidates as IEnumerable<BullseyeSearch.CandidateInfo>).OrderBy(sorter).ToList();
                 }
                 return self.enemySearch.GetResults().FirstOrDefault<HurtBox>();
             }

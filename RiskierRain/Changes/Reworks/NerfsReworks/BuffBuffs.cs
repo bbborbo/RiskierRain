@@ -61,7 +61,7 @@ namespace RiskierRain
             if (damageInfo.damageType.HasFlag(DamageType.Shock5s)) 
             { 
                 //GameObject attacker = damageInfo.attacker;
-                self.body.AddTimedBuff(Assets.shockMarker, Assets.shockMarkerDuration);//add authority
+                self.body.AddTimedBuff(CoreModules.Assets.shockMarker, CoreModules.Assets.shockMarkerDuration);//add authority
             }
             orig(self, damageInfo);
         }
@@ -86,7 +86,7 @@ namespace RiskierRain
                 }
                 else
                 {
-                    if (self.characterBody.HasBuff(Assets.shockMarker))//it breaks here!
+                    if (self.characterBody.HasBuff(CoreModules.Assets.shockMarker))//it breaks here!
                     {
                         HealthComponent hcVictim = self.healthComponent;                        
                         GameObject attackerObject = hcVictim.lastHitAttacker;
@@ -113,14 +113,14 @@ namespace RiskierRain
         }
         private void ShockHeal(HealthComponent attacker)
         {
-            if (!attacker.body.HasBuff(Assets.shockHealCooldown))
+            if (!attacker.body.HasBuff(CoreModules.Assets.shockHealCooldown))
             {
                 float  missingShieldPercent = (attacker.body.maxShield - attacker.shield) / attacker.body.maxShield;
                 float maxShieldPercent = attacker.body.maxShield / attacker.fullCombinedHealth;
                 int cooldownToApply = (int)((maxShieldPercent * missingShieldPercent) * 20);
                 for(int i = 0; i < cooldownToApply; i++)
                 {
-                    attacker.body.AddTimedBuff(Assets.shockHealCooldown, i + 1);
+                    attacker.body.AddTimedBuff(CoreModules.Assets.shockHealCooldown, i + 1);
                 }
                 attacker.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
             }

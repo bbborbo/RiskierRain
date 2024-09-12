@@ -25,9 +25,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTier Tier => ItemTier.NoTier;
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScalpelBroken.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScalpelBroken.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png");
 
         public override ItemTag[] ItemTags => new ItemTag[] { };
 

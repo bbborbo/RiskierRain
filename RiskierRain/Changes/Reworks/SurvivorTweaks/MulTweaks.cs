@@ -101,7 +101,7 @@ namespace RiskierRain.SurvivorTweaks
             {
                 if (ToolbotDualWieldBase.penaltyBuff && self.applyPenaltyBuff)
                 {
-                    self.characterBody.RemoveBuff(Assets.aspdPenaltyDebuff);
+                    self.characterBody.RemoveBuff(CoreModules.Assets.aspdPenaltyDebuff);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace RiskierRain.SurvivorTweaks
             {
                 if (ToolbotDualWieldBase.penaltyBuff && self.applyPenaltyBuff)
                 {
-                    self.characterBody.AddBuff(Assets.aspdPenaltyDebuff);
+                    self.characterBody.AddBuff(CoreModules.Assets.aspdPenaltyDebuff);
                 }
             }
             orig(self);

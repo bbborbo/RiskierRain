@@ -18,7 +18,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "EGG_PILE";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/eggPile.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/eggPile.prefab");
 
         public override string modelName => "eggPile";
 

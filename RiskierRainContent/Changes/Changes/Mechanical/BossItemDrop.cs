@@ -101,7 +101,7 @@ namespace RiskierRainContent
 
                 bool isTricorn = false;
                 bool isScalpel = false;
-                if(enemyBody.HasBuff(Assets.bossHunterDebuff) || enemyBody.HasBuff(Assets.bossHunterDebuffWithScalpel))
+                if(enemyBody.HasBuff(CoreModules.Assets.bossHunterDebuff) || enemyBody.HasBuff(CoreModules.Assets.bossHunterDebuffWithScalpel))
                 {
                     isTricorn = true;
                     dropChance += 100;

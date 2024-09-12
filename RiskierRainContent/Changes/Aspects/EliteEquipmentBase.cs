@@ -145,7 +145,7 @@ namespace RiskierRainContent.Equipment
             EliteDef.modifierToken = "BORBO_ELITE_" + EliteAffixToken + "_MODIFIER";
             EliteDef.color = EliteBuffColor;
             EliteDef.shaderEliteRampIndex = 0;
-            Texture2D eliteRamp = Assets.mainAssetBundle.LoadAsset<Texture2D>(Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
+            Texture2D eliteRamp = CoreModules.Assets.mainAssetBundle.LoadAsset<Texture2D>(CoreModules.Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
             EliteRamp.AddRamp(EliteDef, eliteRamp);
 
             //elite equipment
@@ -175,8 +175,8 @@ namespace RiskierRainContent.Equipment
 
             ItemAPI.Add(new CustomEquipment(EliteEquipmentDef, CreateItemDisplayRules()));
             //EliteAPI.Add(new CustomElite(EliteDef, CanAppearInEliteTiers));
-            Assets.eliteDefs.Add(EliteDef);
-            Assets.buffDefs.Add(EliteBuffDef);
+            CoreModules.Assets.eliteDefs.Add(EliteDef);
+            CoreModules.Assets.buffDefs.Add(EliteBuffDef);
             //Assets.equipDefs.Add(EliteEquipmentDef);
             CustomElite customElite = new CustomElite(EliteDef, new EliteTierDef[0]);
 
@@ -207,7 +207,7 @@ namespace RiskierRainContent.Equipment
             CustomEliteDef customElite = ScriptableObject.CreateInstance<CustomEliteDef>();
             customElite.eliteDef = EliteDef;
             customElite.eliteTier = EliteTier;
-            customElite.eliteRamp = Assets.mainAssetBundle.LoadAsset<Texture>(Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
+            customElite.eliteRamp = CoreModules.Assets.mainAssetBundle.LoadAsset<Texture>(CoreModules.Assets.eliteMaterialsPath + EliteRampTextureName + ".png");
             customElite.overlayMaterial = EliteOverlayMaterial;
             customElite.spawnEffect = null;
             return customElite;

@@ -138,7 +138,7 @@ namespace RiskierRainContent.Items
                 brewActiveBuff.canStack = false;
                 brewActiveBuff.isDebuff = false;
             };
-            Assets.buffDefs.Add(brewActiveBuff);
+            CoreModules.Assets.buffDefs.Add(brewActiveBuff);
         }
     }
 }

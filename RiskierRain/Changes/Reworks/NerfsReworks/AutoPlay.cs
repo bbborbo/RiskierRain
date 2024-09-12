@@ -171,13 +171,13 @@ namespace RiskierRain
 			c.EmitDelegate<Func<Int32, HealthComponent, Int32>>((itemCount, hc) =>
 			{
 				CharacterBody body = hc.body;
-                if (body.HasBuff(Assets.noRazorwire))
+                if (body.HasBuff(CoreModules.Assets.noRazorwire))
                 {
 					itemCount = 0;
                 }
                 else if (itemCount > 0)
                 {
-					body.AddTimedBuffAuthority(Assets.noRazorwire.buffIndex, razorwireCooldown);
+					body.AddTimedBuffAuthority(CoreModules.Assets.noRazorwire.buffIndex, razorwireCooldown);
                 }
 
 				return itemCount;

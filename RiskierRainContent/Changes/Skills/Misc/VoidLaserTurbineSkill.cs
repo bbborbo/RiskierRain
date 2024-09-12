@@ -70,7 +70,7 @@ namespace RiskierRainContent.Skills
             main.startSizeYMultiplier *= 5f;
             main.startSizeZMultiplier *= 0.1f;
 
-            Assets.CreateEffect(tracerLaser);
+            CoreModules.Assets.CreateEffect(tracerLaser);
         }
     }
 }

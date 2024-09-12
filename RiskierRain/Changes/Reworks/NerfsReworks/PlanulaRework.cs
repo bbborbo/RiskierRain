@@ -40,7 +40,7 @@ namespace RiskierRain
 					int itemCount = inv.GetItemCount(RoR2Content.Items.ParentEgg);
 					if(itemCount > 0)
 					{
-						attackerBody.AddBuff(Assets.planulaChargeBuff);
+						attackerBody.AddBuff(CoreModules.Assets.planulaChargeBuff);
 					}
                 }
             }
@@ -101,7 +101,7 @@ namespace RiskierRain
 				return;
 			}
 			int stack = this.stack;
-			int buffCount = body.GetBuffCount(Assets.planulaChargeBuff);
+			int buffCount = body.GetBuffCount(CoreModules.Assets.planulaChargeBuff);
 			bool flag = stack > 0 && this.body.notMovingStopwatch >= 2f;
 			float radius = burnDistanceBase + (burnDistanceStack * (stack));
 
@@ -112,7 +112,7 @@ namespace RiskierRain
 					buffCostStopwatch += Time.fixedDeltaTime;
 					while(buffCostStopwatch > burnInterval)
                     {
-						body.RemoveBuff(Assets.planulaChargeBuff);
+						body.RemoveBuff(CoreModules.Assets.planulaChargeBuff);
 						buffCostStopwatch -= burnInterval;
                     }
                 }

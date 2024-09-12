@@ -53,7 +53,7 @@ namespace RiskierRain.SurvivorTweaks
 
             #region primary
             SkillDef viendPrimary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireHandBeam.asset").WaitForCompletion();
-            Assets.RegisterEntityState(typeof(FireHandBeamNew));
+            CoreModules.Assets.RegisterEntityState(typeof(FireHandBeamNew));
             SerializableEntityStateType newViendPrimaryCharge = new SerializableEntityStateType(typeof(FireHandBeamNew));
             viendPrimary.activationState = newViendPrimaryCharge;
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION", 

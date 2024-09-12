@@ -328,7 +328,7 @@ namespace RiskierRain
 
         private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)
         {
-            int buffCount = sender.GetBuffCount(Assets.voidCradleCurse);
+            int buffCount = sender.GetBuffCount(CoreModules.Assets.voidCradleCurse);
             if(buffCount > 0)
             {
                 args.baseCurseAdd += _cradleHealthCost * buffCount;

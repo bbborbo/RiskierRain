@@ -68,7 +68,7 @@ namespace RiskierRainContent
             StormsRunBehaviorPrefab.AddComponent<StormEventDirector>();
 
             RiskierRainContent.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
-            Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
+            CoreModules.Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
 
             StormsControllerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion().InstantiateClone("2R4RStormController", true);
             MonoBehaviour[] components = StormsControllerPrefab.GetComponentsInChildren<MonoBehaviour>();
@@ -95,7 +95,7 @@ namespace RiskierRainContent
 
             StormsControllerPrefab.AddComponent<StormHazardController>();
             StormsControllerPrefab.AddComponent<NetworkIdentity>();
-            Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
+            CoreModules.Assets.networkedObjectPrefabs.Add(StormsRunBehaviorPrefab);
         }
     }
 

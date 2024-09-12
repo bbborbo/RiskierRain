@@ -97,7 +97,7 @@ namespace RiskierRainContent.Equipment
         {
             pulsePrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/teleporterhealnovapulse").InstantiateClone("LeechingHealNovaPulse", true);
             LeechingHealingPulseComponent LHP = pulsePrefab.AddComponent<LeechingHealingPulseComponent>();
-            Assets.entityStates.Add(typeof(LeechingHealNovaPulse));
+            CoreModules.Assets.entityStates.Add(typeof(LeechingHealNovaPulse));
 
             Transform PP = pulsePrefab.transform.Find("PP");
             if (PP == null)

@@ -121,7 +121,7 @@ namespace RiskierRainContent.Enemies.VoidDreamers
             atField.AddComponent<ATFieldComponent>();
             //invisField.AddComponent<ATFieldComponent>();
 
-            Assets.projectilePrefabs.Add(atField);
+            CoreModules.Assets.projectilePrefabs.Add(atField);
             //Assets.projectilePrefabs.Add(invisField);
         }
     }
@@ -151,7 +151,7 @@ namespace RiskierRainContent.Enemies.VoidDreamers
             TeamMask mask = default(TeamMask);
             mask.AddTeam(TeamIndex.Player);//improve later
             sphereSearch.FilterCandidatesByHurtBoxTeam(mask);
-            CollectionExtensions.Do<HurtBox>(sphereSearch.GetHurtBoxes(), delegate (HurtBox hurtBox)
+            HarmonyLib.CollectionExtensions.Do<HurtBox>(sphereSearch.GetHurtBoxes(), delegate (HurtBox hurtBox)
             {
                 UnityEngine.Object x;
                 if (hurtBox == null)

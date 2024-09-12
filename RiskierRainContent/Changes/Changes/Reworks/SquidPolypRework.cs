@@ -22,7 +22,7 @@ namespace RiskierRainContent
         void SquolypChangeAttack()
         {
             SkillDef squolypFire = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Squid/SquidTurretBodyTurret.asset").WaitForCompletion();
-            Assets.RegisterEntityState(typeof(SquidBlaster));
+            CoreModules.Assets.RegisterEntityState(typeof(SquidBlaster));
             SerializableEntityStateType newSquolypState = new SerializableEntityStateType(typeof(SquidBlaster));
             squolypFire.activationState = newSquolypState;
         }

@@ -61,7 +61,7 @@ namespace RiskierRainContent.Enemies.VoidDreamers
             ps.lifetime = 10;
 
 
-            Assets.projectilePrefabs.Add(dreamOrbPrefab);
+            CoreModules.Assets.projectilePrefabs.Add(dreamOrbPrefab);
         }
     }
 }

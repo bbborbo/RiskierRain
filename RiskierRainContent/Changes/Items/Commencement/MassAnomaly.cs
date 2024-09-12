@@ -52,9 +52,9 @@ namespace RiskierRainContent.Items
             On.RoR2.HealthComponent.OnInventoryChanged += AdaptiveArmorHook;
         }
 
-        private void Fuck(On.RoR2.HealthComponent.orig_ServerFixedUpdate orig, HealthComponent self)
+        private void Fuck(On.RoR2.HealthComponent.orig_ServerFixedUpdate orig, HealthComponent self, float deltaTime)
         {
-            orig(self);
+            orig(self, deltaTime);
             if(self.itemCounts.adaptiveArmor > 0)
             {
                 //Debug.Log(self.adaptiveArmorValue);

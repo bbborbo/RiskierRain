@@ -54,7 +54,7 @@ namespace RiskierRain
             pstt.yAxisOnly = false;
             pstt.rotationSpeed = 50;
 
-            Assets.projectilePrefabs.Add(impBleedSpikePrefab);
+            CoreModules.Assets.projectilePrefabs.Add(impBleedSpikePrefab);
 
             IL.RoR2.GlobalEventManager.OnHitEnemy += RevokeShatterspleenBleedRights;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeShatterspleenDeathRights;
@@ -97,7 +97,7 @@ namespace RiskierRain
 
         private void FireShatterspleenBleedSpike(On.RoR2.CharacterBody.orig_RemoveBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
         {
-            if (buffType == Assets.shatterspleenSpikeBuff.buffIndex)
+            if (buffType == CoreModules.Assets.shatterspleenSpikeBuff.buffIndex)
             {
                 int itemCount = self.inventory.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode);
                 if (itemCount > 0)
@@ -142,13 +142,13 @@ namespace RiskierRain
                         if (victimBody != null && spleenCount > 0)
                         {
                             int targetBuffCount = UnityEngine.Random.Range(minSpikes, maxSpikes + 1);
-                            int buffCount = attackerBody.GetBuffCount(Assets.shatterspleenSpikeBuff);
+                            int buffCount = attackerBody.GetBuffCount(CoreModules.Assets.shatterspleenSpikeBuff);
                             if (damageInfo.damage / attackerBody.damage >= minDamageCoefficient && targetBuffCount > buffCount)
                             {
                                 damageInfo.procChainMask.AddProc(ProcType.BleedOnHit);
                                 for (int i = buffCount; i < targetBuffCount; i++)
                                 {
-                                    attackerBody.AddTimedBuffAuthority(Assets.shatterspleenSpikeBuff.buffIndex, releaseSpeed * (i + 1));
+                                    attackerBody.AddTimedBuffAuthority(CoreModules.Assets.shatterspleenSpikeBuff.buffIndex, releaseSpeed * (i + 1));
                                 }
                             }
                         }

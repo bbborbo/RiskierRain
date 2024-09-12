@@ -4,6 +4,7 @@ using RiskierRainContent.CoreModules;
 using RiskierRainContent.Items;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -54,10 +55,11 @@ namespace RiskierRainContent.Items
             return IDR;
         }
 
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
+            yield break;
         }
 
         public override void Hooks()
@@ -136,8 +138,8 @@ namespace RiskierRainContent.Items
                 lunarLuckBarrierCooldown.isCooldown = true;
                 lunarLuckBarrierCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
             };
-            Assets.buffDefs.Add(lunarLuckBuff);
-            Assets.buffDefs.Add(lunarLuckBarrierCooldown);
+            CoreModules.Assets.buffDefs.Add(lunarLuckBuff);
+            CoreModules.Assets.buffDefs.Add(lunarLuckBarrierCooldown);
         }
     }
 

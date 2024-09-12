@@ -64,9 +64,9 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
         public override ItemTier Tier => ItemTier.Lunar;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable, ItemTag.Damage, ItemTag.AIBlacklist };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/starVeil.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/starVeil.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_STARVEIL.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_STARVEIL.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -84,7 +84,7 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
             if (!damageInfo.rejected && damageInfo.procCoefficient > 0)
             {
                 int itemCount = GetCount(self.body);
-                if (itemCount > 0 && !self.body.HasBuff(RoR2Content.Buffs.Immune) && !damageInfo.damageType.HasFlag(DamageType.Silent))
+                if (itemCount > 0 && !self.body.HasBuff(RoR2Content.Buffs.Immune) && !damageInfo.damageType.damageType.HasFlag(DamageType.Silent))
                 {
                     float iframes = GetStackValue(iframeDurationBase, iframeDurationStack, itemCount);
                     self.body.AddTimedBuffAuthority(RoR2Content.Buffs.Immune.buffIndex, iframes);

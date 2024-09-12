@@ -93,7 +93,7 @@ namespace RiskierRainContent.Items
 			component.material = material;
 			hgintersectionController.material = material;
 			material.SetFloat("_BrightnessBoost", 0.1f);*/
-			Assets.networkedObjectPrefabs.Add(opalAreaIndicator);
+			CoreModules.Assets.networkedObjectPrefabs.Add(opalAreaIndicator);
 		}
 
         private void OpalStatCoefficients(CharacterBody sender, StatHookEventArgs args)

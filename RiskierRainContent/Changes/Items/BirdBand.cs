@@ -60,9 +60,9 @@ namespace RiskierRainContent.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlBirdBand.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlBirdBand.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BIRDBAND.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BIRDBAND.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -118,7 +118,7 @@ namespace RiskierRainContent.Items
                 birdBuff.isDebuff = false;
                 birdBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsReadyIcon");
             };
-            Assets.buffDefs.Add(birdBuff);
+            CoreModules.Assets.buffDefs.Add(birdBuff);
             birdDebuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 birdDebuff.name = "birdBandCooldown";
@@ -127,7 +127,7 @@ namespace RiskierRainContent.Items
                 birdDebuff.isDebuff = true;
                 birdDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsCooldownIcon");
             };
-            Assets.buffDefs.Add(birdDebuff);
+            CoreModules.Assets.buffDefs.Add(birdDebuff);
         }
     }
     public class BirdBandBehavior : CharacterBody.ItemBehavior

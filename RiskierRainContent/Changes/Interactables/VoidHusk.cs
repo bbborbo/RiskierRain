@@ -19,7 +19,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "VOID_HUSK";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/VoidHusk.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/VoidHusk.prefab");
 
         public override string modelName => "mdlVoidHusk";
 

@@ -191,7 +191,7 @@ namespace RiskierRain
                         procChainMask = procChainMask6,
                         force = 6000f,
                         owner = victimBody.gameObject,
-                        projectilePrefab = Assets.voidtouchedSingularity,
+                        projectilePrefab = CoreModules.Assets.voidtouchedSingularity,
                         rotation = Quaternion.identity,
                         target = null,
                     });

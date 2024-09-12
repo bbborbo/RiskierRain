@@ -114,12 +114,12 @@ namespace BorboStatUtils
         // i basically copied how this delegate stuff works from RecalculateStatsAPI
         internal static void SetExecutionHooks()
         {
-            IL.RoR2.HealthComponent.TakeDamage += InterceptExecutionThreshold;
+            IL.RoR2.HealthComponent.TakeDamageProcess += InterceptExecutionThreshold;
             On.RoR2.HealthComponent.GetHealthBarValues += DisplayExecutionThreshold;
         }
         internal static void UnsetExecutionHooks()
         {
-            IL.RoR2.HealthComponent.TakeDamage -= InterceptExecutionThreshold;
+            IL.RoR2.HealthComponent.TakeDamageProcess -= InterceptExecutionThreshold;
             On.RoR2.HealthComponent.GetHealthBarValues -= DisplayExecutionThreshold;
         }
 

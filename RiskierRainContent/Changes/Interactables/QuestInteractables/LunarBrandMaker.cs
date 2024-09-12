@@ -17,7 +17,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "LUNARBRANDMAKER";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarBrandMaker.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarBrandMaker.prefab");
 
         public override string modelName => "mdlLunarBrandMaker";
 

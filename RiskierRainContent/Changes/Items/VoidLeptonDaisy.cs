@@ -48,9 +48,9 @@ namespace RiskierRainContent.Changes.Items
         public override ItemTier Tier => ItemTier.VoidTier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.HoldoutZoneRelated, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlPhrygianLily.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlPhrygianLily.prefab");
 
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_PHRYGIANLILY.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -94,9 +94,9 @@ namespace RiskierRainContent.Changes.Items
                 lilyRageBuff.buffColor = new Color(0.8f, 0f, 0f);
                 lilyRageBuff.canStack = false;
                 lilyRageBuff.isDebuff = false;
-                lilyRageBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                lilyRageBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
-            Assets.buffDefs.Add(lilyRageBuff);
+            CoreModules.Assets.buffDefs.Add(lilyRageBuff);
         }
 
         private void LilyCDR(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

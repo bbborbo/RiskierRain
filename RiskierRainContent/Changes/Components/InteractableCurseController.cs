@@ -14,7 +14,7 @@ namespace RiskierRainContent.Components
         internal override void Start()
         {
             base.Start();
-            buffDef = Assets.voidCradleCurse;
+            buffDef = CoreModules.Assets.voidCradleCurse;
             if (TeleporterInteraction.instance)
             {
                 //TeleporterInteraction.onTeleporterBeginChargingGlobal += VoidExplode;

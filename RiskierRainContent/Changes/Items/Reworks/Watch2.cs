@@ -133,7 +133,7 @@ namespace RiskierRainContent.Items
                 watchCritBuff.name = "DelicateWatchCritChance";
                 watchCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
             };
-            Assets.buffDefs.Add(watchCritBuff);
+            CoreModules.Assets.buffDefs.Add(watchCritBuff);
         }
     }
 }

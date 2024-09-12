@@ -56,9 +56,9 @@ namespace RiskierRainContent.Equipment
 
         public override string EquipmentLore => "I can't believe we left this in the game!";
 
-        public override GameObject EquipmentModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
+        public override GameObject EquipmentModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 
-        public override Sprite EquipmentIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
+        public override Sprite EquipmentIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
         public override float Cooldown { get; } = 35f;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

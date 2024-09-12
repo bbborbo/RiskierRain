@@ -4,6 +4,7 @@ using MonoMod.Cil;
 using R2API;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -49,10 +50,11 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        private void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.IncreaseHealing);
+            yield break;
         }
 
         public override void Hooks()

@@ -79,7 +79,7 @@ namespace RiskierRainContent.States
 
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
             {
-                projectilePrefab = Assets.squidBlasterBall,
+                projectilePrefab = CoreModules.Assets.squidBlasterBall,
                 position = aimRay.origin,
                 rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
                 owner = base.gameObject,

@@ -93,7 +93,7 @@ namespace RiskierRainContent.Items
                 spiritBuff.isDebuff = false;
                 spiritBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
             };
-            Assets.buffDefs.Add(spiritBuff);
+            CoreModules.Assets.buffDefs.Add(spiritBuff);
         }
     }
     public class SoulAnomalyBehavior : CharacterBody.ItemBehavior

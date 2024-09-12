@@ -50,7 +50,7 @@ namespace RiskierRainContent
                 {
                     int critAdd = scopeBaseCrit;// + scopeStackCrit * (scopeCount - 1);
 
-                    int buffCount = sender.GetBuffCount(Assets.combatTelescopeCritChance);
+                    int buffCount = sender.GetBuffCount(CoreModules.Assets.combatTelescopeCritChance);
                     if (buffCount > 0)
                     {
                         critAdd += scopeBaseStationaryCrit;// + scopeStackStationaryCrit * (buffCount - 1);
@@ -85,22 +85,22 @@ namespace RiskierRainContent
 
                 if (stack > 0 && notMovingStopwatch >= combatTelescopeWaitTime)
                 {
-                    if (!body.HasBuff(Assets.combatTelescopeCritChance))
+                    if (!body.HasBuff(CoreModules.Assets.combatTelescopeCritChance))
                     {
-                        this.body.AddBuff(Assets.combatTelescopeCritChance);
+                        this.body.AddBuff(CoreModules.Assets.combatTelescopeCritChance);
                         return;
                     }
                 }
-                else if (body.HasBuff(Assets.combatTelescopeCritChance))
+                else if (body.HasBuff(CoreModules.Assets.combatTelescopeCritChance))
                 {
-                    body.RemoveBuff(Assets.combatTelescopeCritChance);
+                    body.RemoveBuff(CoreModules.Assets.combatTelescopeCritChance);
                 }
             }
         }
 
         private void OnDisable()
         {
-            this.body.RemoveBuff(Assets.combatTelescopeCritChance);
+            this.body.RemoveBuff(CoreModules.Assets.combatTelescopeCritChance);
         }
     }
 }

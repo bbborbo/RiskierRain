@@ -41,7 +41,7 @@ namespace RiskierRain.SurvivorTweaks
                 JetpackOn.hoverVelocity = -2f;
                 if (self.isAuthority)
                 {
-                    self.characterBody.AddBuff(Assets.jetpackSpeedBoost);
+                    self.characterBody.AddBuff(CoreModules.Assets.jetpackSpeedBoost);
                 }
                 orig(self);
             };
@@ -49,7 +49,7 @@ namespace RiskierRain.SurvivorTweaks
             {
                 if (self.isAuthority)
                 {
-                    self.characterBody.RemoveBuff(Assets.jetpackSpeedBoost);
+                    self.characterBody.RemoveBuff(CoreModules.Assets.jetpackSpeedBoost);
                 }
                 orig(self);
             };
@@ -138,7 +138,7 @@ namespace RiskierRain.SurvivorTweaks
         private void JetpackSpeedBoost(CharacterBody sender, StatHookEventArgs args)
         {
 
-            if (sender.HasBuff(Assets.jetpackSpeedBoost))
+            if (sender.HasBuff(CoreModules.Assets.jetpackSpeedBoost))
             {
                 args.moveSpeedMultAdd += 0.15f;
             }

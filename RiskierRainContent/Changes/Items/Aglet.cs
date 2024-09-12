@@ -92,9 +92,9 @@ namespace RiskierRainContent.Items
                 agletSpeed.buffColor = new Color(0.9f, 0.9f, 0.2f);
                 agletSpeed.canStack = true;
                 agletSpeed.isDebuff = false;
-                agletSpeed.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                agletSpeed.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
-            Assets.buffDefs.Add(agletSpeed);
+            CoreModules.Assets.buffDefs.Add(agletSpeed);
         }
     }
     public class AgletItemBehavior : CharacterBody.ItemBehavior

@@ -17,7 +17,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "SPINECHARGER";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineCharger.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineCharger.prefab");
 
         public override string modelName => "mdlSpineCharger";
 

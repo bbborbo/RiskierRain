@@ -25,7 +25,7 @@ namespace RiskierRainContent.Items.Helpers
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.CannotSteal };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyDamageUp.prefab");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyDamageUp.prefab");
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 

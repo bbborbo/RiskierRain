@@ -4,6 +4,7 @@ using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -42,10 +43,11 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        private void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.BarrierOnOverHeal);
+            yield break;
         }
 
         public override void Hooks()
@@ -118,8 +120,8 @@ namespace RiskierRainContent.Items
             aegisDecayBuff.buffColor = new Color(0.95f, 0.85f, 0.08f);
             aegisDecayBuff.canStack = false;
             aegisDecayBuff.isDebuff = false;
-            aegisDecayBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
-            Assets.buffDefs.Add(aegisDecayBuff);
+            aegisDecayBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+            CoreModules.Assets.buffDefs.Add(aegisDecayBuff);
         }
     }
     public class AegisDecayBehavior : CharacterBody.ItemBehavior

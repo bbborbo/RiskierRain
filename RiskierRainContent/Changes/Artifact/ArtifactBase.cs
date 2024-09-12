@@ -57,7 +57,7 @@ namespace RiskierRainContent.Artifacts
                 ArtifactDef.smallIconSelectedSprite = ArtifactSelectedIcon;
                 //ArtifactDef.unlockableDef = UnlockableCatalog.GetUnlockableDef("SuicideHermitCrabs");
             }
-            Assets.artifactDefs.Add(ArtifactDef);
+            CoreModules.Assets.artifactDefs.Add(ArtifactDef);
             RunArtifactManager.onArtifactEnabledGlobal += OnArtifactEnabled;
             RunArtifactManager.onArtifactDisabledGlobal += OnArtifactDisabled;
         }

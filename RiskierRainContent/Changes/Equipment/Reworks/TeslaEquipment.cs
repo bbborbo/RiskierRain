@@ -3,6 +3,7 @@ using R2API;
 using RoR2;
 using RoR2.Orbs;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -75,10 +76,11 @@ namespace RiskierRainContent.Equipment
             return IDR;
         }
 
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(TeslaEquipment.instance.EquipDef, RoR2Content.Items.ShockNearby);
+            yield break;
         }
 
         public override void Hooks()
@@ -86,7 +88,6 @@ namespace RiskierRainContent.Equipment
             On.RoR2.GlobalEventManager.OnCharacterDeath += GrantShieldOnKill;
             GetStatCoefficients += AddBonusShield;
             RiskierRainContent.RetierItem(nameof(RoR2Content.Items.ShockNearby), ItemTier.NoTier);
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
         }
 
         private void AddBonusShield(CharacterBody sender, StatHookEventArgs args)

@@ -12,6 +12,7 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static RiskierRainContent.CoreModules.StatHooks;
 using UnityEngine.AddressableAssets;
+using System.Collections;
 
 namespace RiskierRainContent.Items
 {
@@ -160,10 +161,11 @@ namespace RiskierRainContent.Items
             On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
         }
 
-        private void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
+            yield break;
         }
 
         public void LoadItemBehavior()

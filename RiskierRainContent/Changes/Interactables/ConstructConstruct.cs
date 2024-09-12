@@ -20,7 +20,7 @@ namespace RiskierRainContent.Interactables
 
         public override string interactableLangToken => "CONSTRUCTCONSTRUCT";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/constructConstruct.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/constructConstruct.prefab");
 
         public override string modelName => "mdlConstructConstruct";
 

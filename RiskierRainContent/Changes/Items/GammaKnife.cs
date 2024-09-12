@@ -158,7 +158,7 @@ namespace RiskierRainContent.Items
                 gammaKnifeTemporaryBuff.isDebuff = false;
                 gammaKnifeTemporaryBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffMedkitHealIcon");
             }
-            Assets.buffDefs.Add(gammaKnifeTemporaryBuff);
+            CoreModules.Assets.buffDefs.Add(gammaKnifeTemporaryBuff);
         }
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)

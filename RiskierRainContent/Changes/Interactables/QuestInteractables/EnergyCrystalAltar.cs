@@ -18,7 +18,7 @@ namespace RiskierRainContent.Interactables.QuestInteractables
 
         public override string interactableLangToken => "ENERGY_CRYSTAL_ALTAR";
 
-        public override GameObject interactableModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/CrystalInteractable.prefab");
+        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/CrystalInteractable.prefab");
 
         public override string modelName => "energyCrystal";
 

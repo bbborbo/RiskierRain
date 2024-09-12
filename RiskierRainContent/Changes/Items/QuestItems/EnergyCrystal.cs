@@ -27,8 +27,8 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.Cleansable, ItemTag.Healing, ItemTag.Damage };
 
-        public override GameObject ItemModel => Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlEnergyCrystal.prefab");
-        public override Sprite ItemIcon => Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
+        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlEnergyCrystal.prefab");
+        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -98,9 +98,9 @@ namespace RiskierRainContent.Items
                 energyBuff.buffColor = new Color(1f, 0.9f, .7f);
                 energyBuff.canStack = false;
                 energyBuff.isDebuff = false;
-                energyBuff.iconSprite = Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
+                energyBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
             };
-            Assets.buffDefs.Add(energyBuff);
+            CoreModules.Assets.buffDefs.Add(energyBuff);
         }
         public override void Init(ConfigFile config)
         {

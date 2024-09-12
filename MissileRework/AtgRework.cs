@@ -35,10 +35,10 @@ namespace MissileRework
         {
             missilePrefab.GetComponent<ProjectileController>().procCoefficient = procCoefficient;
 
-            IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVanillaAtgLogic;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveVanillaAtgLogic;
 
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.GlobalEventManager.OnHitEnemy += AtgReworkLogic;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += AtgReworkLogic;
 
             LanguageAPI.Add("ITEM_MISSILE_NAME", "AtG Missile Mk.3");
             LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Chance to fire missiles.");
@@ -72,7 +72,7 @@ namespace MissileRework
         }
         #endregion
 
-        void AtgReworkLogic(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
+        void AtgReworkLogic(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
         {
             orig(self, damageInfo, victim);
 

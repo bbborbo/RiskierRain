@@ -27,6 +27,7 @@ namespace MissileRework
             icbmItemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/MoreMissile/MoreMissile.asset").WaitForCompletion();
             if (icbmItemDef != null)
             {
+                icbmItemDef.deprecatedTier = ItemTier.NoTier;
                 icbmItemDef.tier = ItemTier.NoTier;
                 //icbmItemDef.deprecatedTier = ItemTier.NoTier;
             }

@@ -33,9 +33,9 @@ namespace MissileRework
         public static PluginInfo PInfo { get; private set; }
 
         public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "HouseOfFruits";
+        public const string teamName = "RiskOfBrainrot";
         public const string modName = "IAmBecomeMissiles";
-        public const string version = "1.0.0";
+        public const string version = "1.0.3";
         #endregion
 
         #region config
@@ -153,10 +153,10 @@ namespace MissileRework
             self.search.sortMode = BullseyeSearch.SortMode.Distance;
             self.search.RefreshCandidates();
 
-            self.search.candidatesEnumerable = from v in self.search.candidatesEnumerable
+            self.search.candidatesEnumerable = (from v in self.search.candidatesEnumerable.AsEnumerable<BullseyeSearch.CandidateInfo>()
                                         where !((v.hurtBox.healthComponent.body.characterMotor != null) 
                                             && v.hurtBox.healthComponent.body.characterMotor.isGrounded == true)
-                                        select v;
+                                        select v).ToList();
             /*self.search.candidatesEnumerable = from v in self.search.candidatesEnumerable
                                         where !(v.hurtBox.transform.gameObject.GetComponent<CharacterMotor>()?.isGrounded ?? false)
                                         select v;*/

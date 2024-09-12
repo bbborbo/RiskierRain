@@ -28,6 +28,7 @@ using EntityStates.ClayBoss;
 using EntityStates.Mage.Weapon;
 using EntityStates.Loader;
 using EntityStates.MiniMushroom;
+using EntityStates.ChildMonster;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -40,7 +41,7 @@ namespace MissileRework
     {
         public static ArtifactDef MissileArtifact = null;
         public const float missileSpread = 45;
-        public const float projectileSpread = 25;
+        public const float projectileSpread = 20;
 
         private void CreateArtifact()
         {
@@ -109,6 +110,12 @@ namespace MissileRework
             On.EntityStates.Loader.ThrowPylon.OnEnter += MissileArtifact_LodrPylon;
             //railer pistol
             On.EntityStates.Railgunner.Weapon.FirePistol.FireBullet += MissileArtifact_RailerPistol;
+            //seeker punch
+            On.EntityStates.Seeker.SpiritPunch.FireGauntlet += MissileArtifact_SeekerPunch;
+            //false son spikes
+            On.EntityStates.FalseSon.LunarSpikes.FireLunarSpike += MissileArtifact_SonSurvivorSpike;
+            //chef cleavers
+            On.EntityStates.Chef.Dice.OnEnter += MissileArtifact_ChefCleaver;
 
             //mushrum spore grenade
             On.EntityStates.MiniMushroom.SporeGrenade.FireGrenade += MissileArtifact_MushrumSporeGrenade;
@@ -130,18 +137,129 @@ namespace MissileRework
             On.EntityStates.ClayBoss.FireTarball.FireSingleTarball += MissileArtifact_DunestriderRoller;
             //grandpa vaccuum
             On.EntityStates.GrandParentBoss.FireSecondaryProjectile.Fire += MissileArtifact_GrandpaVacuum;
+            //child spark
+            On.EntityStates.ChildMonster.SparkBallFire.FireBomb += MissileArtifact_ChildSpark;
+        }
+
+        private void MissileArtifact_ChildSpark(On.EntityStates.ChildMonster.SparkBallFire.orig_FireBomb orig, EntityStates.ChildMonster.SparkBallFire self)
+        {
+            orig(self);
+            if (self.isAuthority)
+            {
+                Ray aimRay = self.GetAimRay();
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = SparkBallFire.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * SparkBallFire.bombDamageCoefficient;
+                fireProjectileInfo.force = SparkBallFire.bombForce;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
+            }
+        }
+
+        private void MissileArtifact_ChefCleaver(On.EntityStates.Chef.Dice.orig_OnEnter orig, EntityStates.Chef.Dice self)
+        {
+            orig(self);
+            if (self.isAuthority)
+            {
+                if (!self.hasBoost)
+                {
+                    Ray aimRay = self.GetAimRay();
+
+                    Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                    Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                    FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                    fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                    fireProjectileInfo.position = aimRay.origin;
+                    fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimRay.direction);
+                    fireProjectileInfo.owner = self.gameObject;
+                    fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
+                    fireProjectileInfo.force = self.force;
+                    fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+
+                    FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                    fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
+                    fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
+                    if (!NetworkServer.active && self.chefController)
+                    {
+                        self.chefController.CacheCleaverProjectileFireInfo(fireProjectileInfo);
+                    }
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                    if (!NetworkServer.active && self.chefController)
+                    {
+                        self.chefController.CacheCleaverProjectileFireInfo(fireProjectileInfo2);
+                    }
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                }
+            }
+        }
+
+        public void FireWarfareProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread)
+        {
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(spread, axis) * aimRay.direction);
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-spread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+            }
+        }
+
+        private void MissileArtifact_SeekerPunch(On.EntityStates.Seeker.SpiritPunch.orig_FireGauntlet orig, EntityStates.Seeker.SpiritPunch self)
+        {
+            orig(self);
+            if (self.isAuthority)
+            {
+                Ray aimRay = self.GetAimRay();
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
+                fireProjectileInfo.force = 0f;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+            }
+        }
+
+        private void MissileArtifact_SonSurvivorSpike(On.EntityStates.FalseSon.LunarSpikes.orig_FireLunarSpike orig, EntityStates.FalseSon.LunarSpikes self)
+        {
+            orig(self);
+
+            if (self.isAuthority)
+            {
+                Ray aimRay = self.GetAimRay();
+
+                FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
+                fireProjectileInfo.projectilePrefab = self.projectilePrefab;
+                fireProjectileInfo.position = aimRay.origin;
+                fireProjectileInfo.owner = self.gameObject;
+                fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
+                fireProjectileInfo.force = 0f;
+                fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
+
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+            }
         }
 
         #region skill hooks
         private void MissileArtifact_Shuriken(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (NetworkServer.active)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = self.projectilePrefab;
@@ -150,12 +268,8 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.body.damage * (3f + 1f * (float)self.stack);
                 fireProjectileInfo.force = 0f;
                 fireProjectileInfo.crit = Util.CheckRoll(self.body.crit, self.body.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction) * self.GetRandomRollPitch();
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction) * self.GetRandomRollPitch();
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
         }
         private void MissileArtifact_GrandpaVacuum(On.EntityStates.GrandParentBoss.FireSecondaryProjectile.orig_Fire orig, EntityStates.GrandParentBoss.FireSecondaryProjectile self)
@@ -266,7 +380,7 @@ namespace MissileRework
             {
                 if (self.isAuthority)
                 {
-                    //alpha construct, blind pest, phase round, scrap cannon
+                    //hooks of heresy
                     if (self is EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary)
                     {
                         Ray aimRay = self.GetAimRay();
@@ -312,12 +426,9 @@ namespace MissileRework
         private void MissileArtifact_LodrPylon(On.EntityStates.Loader.ThrowPylon.orig_OnEnter orig, EntityStates.Loader.ThrowPylon self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = ThrowPylon.projectilePrefab;
@@ -326,24 +437,17 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * ThrowPylon.damageCoefficient;
                 fireProjectileInfo.force = 0f;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
         }
 
         private void MissileArtifact_ArtiBolts(On.EntityStates.Mage.Weapon.FireFireBolt.orig_FireGauntlet orig, EntityStates.Mage.Weapon.FireFireBolt self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = self.projectilePrefab;
@@ -352,12 +456,8 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
                 fireProjectileInfo.force = 0f;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
 
@@ -504,11 +604,9 @@ namespace MissileRework
         private void MissileArtifact_VagrantTrackingBomb(On.EntityStates.VagrantMonster.FireTrackingBomb.orig_FireBomb orig, EntityStates.VagrantMonster.FireTrackingBomb self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 axis = Vector3.up;
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = FireTrackingBomb.projectilePrefab;
@@ -517,12 +615,8 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * FireTrackingBomb.bombDamageCoefficient;
                 fireProjectileInfo.force = FireTrackingBomb.bombForce;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
         }
 
@@ -573,12 +667,9 @@ namespace MissileRework
         private void MissileArtifact_LemurianFireball(On.EntityStates.LemurianMonster.FireFireball.orig_OnEnter orig, EntityStates.LemurianMonster.FireFireball self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = FireFireball.projectilePrefab;
@@ -587,12 +678,8 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * FireFireball.damageCoefficient;
                 fireProjectileInfo.force = FireFireball.force;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
 
@@ -652,12 +739,9 @@ namespace MissileRework
         private void MissileArtifact_CaptainTazer(On.EntityStates.Captain.Weapon.FireTazer.orig_Fire orig, EntityStates.Captain.Weapon.FireTazer self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
                 fireProjectileInfo.projectilePrefab = FireTazer.projectilePrefab;
@@ -667,24 +751,17 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * FireTazer.damageCoefficient;
                 fireProjectileInfo.force = FireTazer.force;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
 
         private void MissileArtifact_ViendSecondary(On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.orig_FireProjectiles orig, EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            if (self.isAuthority)
             {
                 Ray aimRay = self.GetAimRay();
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
 
                 aimRay.direction = Util.ApplySpread(aimRay.direction, 0f, self.spread, 1f, 1f, 0f, 0f);
                 FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
@@ -694,12 +771,8 @@ namespace MissileRework
                 fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
                 fireProjectileInfo.force = self.force;
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
 
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
 

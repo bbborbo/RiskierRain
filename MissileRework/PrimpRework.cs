@@ -27,7 +27,7 @@ namespace MissileRework
 
         internal void ReworkPrimp()
         {
-            IL.RoR2.GlobalEventManager.OnHitEnemy += ShrimpRework;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += ShrimpRework;
             GetStatCoefficients += ShrimpShieldFix;
 
             LanguageAPI.Add("ITEM_MISSILEVOID_PICKUP", "While you have shield, fire missiles on every hit. <style=cIsVoid>Corrupts all AtG Missile Mk. 3s</style>.");

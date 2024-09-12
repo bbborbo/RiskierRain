@@ -38,7 +38,7 @@ namespace RiskierRainContent.Equipment
 
         public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.png").WaitForCompletion();
+        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion();
 
         public override Color EliteBuffColor => new Color(0.4f, 0.0f, 0.4f, 1.0f);
 

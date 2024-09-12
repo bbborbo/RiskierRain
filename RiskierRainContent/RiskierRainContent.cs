@@ -113,11 +113,13 @@ namespace RiskierRainContent
 
             InitializeConfig();
             InitializeItems();
+            InitializeInteractables();
             InitializeSkills();
-            InitializeEquipment();
+            //InitializeEquipment();
             InitializeEliteEquipment();
             InitializeArtifacts();
-            InitializeScavengers();
+            //InitializeScavengers();
+
             //InitializeEverything();
             CoreModules.Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
@@ -173,7 +175,7 @@ namespace RiskierRainContent
                 SquolypRework();
             }
             //interactables bc they need to load after items:
-            InitializeInteractables();
+            //InitializeInteractables();
             //need to do this after interactablestuff
             //List<DirectorCard> directorCards = new List<DirectorCard>();
             //directorCards.Add(doubleChestDirectorCard);

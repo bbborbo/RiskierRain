@@ -45,7 +45,7 @@ namespace RiskierRainContent.Equipment
 
         public override float Cooldown { get; } = 0f;
 
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteIce/texBuffAffixWhite.png").WaitForCompletion();
+        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
         public override Color EliteBuffColor => new Color(1.0f, 0.6f, 0.0f, 1.0f);
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

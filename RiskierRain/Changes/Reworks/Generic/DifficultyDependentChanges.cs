@@ -286,7 +286,7 @@ namespace RiskierRain
             IL.RoR2.GlobalEventManager.OnCharacterHitGroundServer += RemoveEclipseEffect; //lv3 frailty
             IL.RoR2.HealthComponent.Heal += RemoveEclipseEffect;//lv5 healing
             IL.RoR2.DeathRewards.OnKilledServer += RemoveEclipseEffect;//lv6 gold drops
-            IL.RoR2.HealthComponent.TakeDamage += RemoveEclipseEffect;//lv8 eclipse curse :skull:
+            IL.RoR2.HealthComponent.TakeDamageProcess += RemoveEclipseEffect;//lv8 eclipse curse :skull:
 
             IL.RoR2.CharacterBody.RecalculateStats += RemoveEclipseStats; //lv4 enemy speed lv7 enemy cooldowns
 

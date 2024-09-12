@@ -98,7 +98,7 @@ What happened to all of our gold?";
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
-            On.RoR2.HealthComponent.TakeDamage += GoldGunDamageBoost;
+            On.RoR2.HealthComponent.TakeDamageProcess += GoldGunDamageBoost;
             GetStatCoefficients += this.GiveBonusDamage;
         }
 
@@ -143,7 +143,7 @@ What happened to all of our gold?";
             orig(self, amount);
         }
 
-        private void GoldGunDamageBoost(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void GoldGunDamageBoost(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             if (damageInfo.attacker != null)
             {

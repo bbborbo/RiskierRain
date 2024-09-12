@@ -48,7 +48,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += ScugTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += ScugTakeDamage;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
@@ -63,7 +63,7 @@ namespace RiskierRainContent.Items
                 }
             }
         }
-        private void ScugTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void ScugTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             CharacterBody body = self.body;
             int scugItemCount = GetCount(body);

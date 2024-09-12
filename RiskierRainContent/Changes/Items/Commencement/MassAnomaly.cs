@@ -46,7 +46,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            IL.RoR2.HealthComponent.TakeDamage += NerfAdaptiveArmor;
+            IL.RoR2.HealthComponent.TakeDamageProcess += NerfAdaptiveArmor;
             IL.RoR2.HealthComponent.ServerFixedUpdate += AdaptiveArmorDecay;
             On.RoR2.HealthComponent.ServerFixedUpdate += Fuck;
             On.RoR2.HealthComponent.OnInventoryChanged += AdaptiveArmorHook;

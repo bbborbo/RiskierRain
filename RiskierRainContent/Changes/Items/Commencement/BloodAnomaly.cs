@@ -55,7 +55,7 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.HealthComponent.TakeDamage += BloodAnomalyRetaliate;
+            On.RoR2.HealthComponent.TakeDamageProcess += BloodAnomalyRetaliate;
         }
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -67,7 +67,7 @@ namespace RiskierRainContent.Items
             }
         }
 
-        private void BloodAnomalyRetaliate(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void BloodAnomalyRetaliate(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             orig(self, damageInfo);
 

@@ -75,10 +75,10 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += StarVeilTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += StarVeilTakeDamage;
         }
 
-        private void StarVeilTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void StarVeilTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             orig(self, damageInfo);
             if (!damageInfo.rejected && damageInfo.procCoefficient > 0)

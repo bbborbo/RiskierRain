@@ -49,10 +49,10 @@ namespace RiskierRainContent.Items
             GetStatCoefficients += CobaltArmorBuff;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
-            On.RoR2.HealthComponent.TakeDamage += RemoveDamageForce;
+            On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
         }
 
-        private void RemoveDamageForce(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void RemoveDamageForce(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             int itemCount = GetCount(self.body);
             if(self.body != null && itemCount > 0)

@@ -125,7 +125,7 @@ namespace RiskierRain
             bombPie.blastRadius = 9;
             bombPie.lifetime = 1.2f;
 
-            On.RoR2.HealthComponent.TakeDamage += OverloadingKnockbackFix;
+            On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAll += OverloadingBombDamage;
         }
 
@@ -145,7 +145,7 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldc_R4, overloadingBombDamage);
         }
 
-        private void OverloadingKnockbackFix(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void OverloadingKnockbackFix(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             if (damageInfo.attacker)
             {

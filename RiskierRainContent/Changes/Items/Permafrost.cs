@@ -47,7 +47,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += PermafrostBehavior;
+            On.RoR2.HealthComponent.TakeDamageProcess += PermafrostBehavior;
         }
 
         public override void Init(ConfigFile config)
@@ -57,7 +57,7 @@ namespace RiskierRainContent.Items
             Hooks();
         }
 
-        private void PermafrostBehavior(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void PermafrostBehavior(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             orig(self, damageInfo);
 

@@ -50,10 +50,10 @@ namespace RiskierRainContent.Items
         {
             On.RoR2.CharacterBody.RecalculateStats += VampireBleedChance;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.HealthComponent.TakeDamage += TakeMoreDamageWhileBurning;
+            On.RoR2.HealthComponent.TakeDamageProcess += TakeMoreDamageWhileBurning;
         }
 
-        private void TakeMoreDamageWhileBurning(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void TakeMoreDamageWhileBurning(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             if (damageInfo.attacker != null)
             {

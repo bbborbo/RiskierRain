@@ -53,10 +53,10 @@ namespace RiskierRain
             
             On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
             On.EntityStates.ShockState.OnExit += ShockBuffExit;
-            On.RoR2.HealthComponent.TakeDamage += ShockHit;
+            On.RoR2.HealthComponent.TakeDamageProcess += ShockHit;
         }
 
-        private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             if (damageInfo.damageType.damageType.HasFlag(DamageType.Shock5s)) 
             { 
@@ -205,7 +205,7 @@ namespace RiskierRain
             {
                 ChangeBuffStacking(nameof(RoR2Content.Buffs.DeathMark), true);
                 IL.RoR2.GlobalEventManager.OnHitEnemy += DeathMarkFix_Stacking;
-                IL.RoR2.HealthComponent.TakeDamage += DeathMarkFix_Damage;
+                IL.RoR2.HealthComponent.TakeDamageProcess += DeathMarkFix_Damage;
                 LanguageAPI.Add("ITEM_DEATHMARK_DESC",
                     "Enemies with <style=cIsDamage>4</style> or more debuffs are <style=cIsDamage>marked for death</style>, " +
                     "increasing damage taken by <style=cIsDamage>30%</style> <style=cStack>(+30% per stack)</style> " +

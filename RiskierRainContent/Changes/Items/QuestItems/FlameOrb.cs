@@ -44,10 +44,10 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             
-            On.RoR2.HealthComponent.TakeDamage += FlameOrbTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += FlameOrbTakeDamage;
         }
 
-        private void FlameOrbTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void FlameOrbTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             CharacterBody body = self.body;
             int itemCount = GetCount(body);

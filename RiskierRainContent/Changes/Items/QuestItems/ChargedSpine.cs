@@ -37,7 +37,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += ChargedSpineTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += ChargedSpineTakeDamage;
             GetStatCoefficients += ChargedSpineStats;
         }
 
@@ -60,7 +60,7 @@ namespace RiskierRainContent.Items
             }
         }
 
-        private void ChargedSpineTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void ChargedSpineTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             bool hadShieldBefore = HasShield(self);
             CharacterBody body = self.body;

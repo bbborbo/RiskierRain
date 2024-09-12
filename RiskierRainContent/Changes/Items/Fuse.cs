@@ -53,7 +53,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += FuseTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += FuseTakeDamage;
             GetStatCoefficients += FuseShieldBonus;
         }
 
@@ -66,7 +66,7 @@ namespace RiskierRainContent.Items
             }
         }
 
-        private void FuseTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void FuseTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             bool hadShieldBefore = HasShield(self);
             CharacterBody body = self.body;

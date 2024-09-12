@@ -65,10 +65,10 @@ namespace RiskierRain
         #region helfire
         void TinctureIgnoreArmor()
         {
-            On.RoR2.HealthComponent.TakeDamage += MakeTinctureIgnoreArmor;
+            On.RoR2.HealthComponent.TakeDamageProcess += MakeTinctureIgnoreArmor;
         }
 
-        private void MakeTinctureIgnoreArmor(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void MakeTinctureIgnoreArmor(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             if (damageInfo.dotIndex.HasFlag(DotController.DotIndex.Helfire))
             {

@@ -494,7 +494,7 @@ namespace RiskierRain
         #region lost seers lenses
         void LostSeersFix()
         {
-            IL.RoR2.HealthComponent.TakeDamage += FixLostSeersDamageImmunity;
+            IL.RoR2.HealthComponent.TakeDamageProcess += FixLostSeersDamageImmunity;
         }
 
         private void FixLostSeersDamageImmunity(ILContext il)

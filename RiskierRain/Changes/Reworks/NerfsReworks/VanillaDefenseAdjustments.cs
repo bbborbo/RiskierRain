@@ -57,8 +57,8 @@ namespace RiskierRain
 
         private void TeddyChanges()
         {
-            IL.RoR2.HealthComponent.TakeDamage += TeddyChanges;
-            IL.RoR2.HealthComponent.TakeDamage += VoidBearChanges;
+            IL.RoR2.HealthComponent.TakeDamageProcess += TeddyChanges;
+            IL.RoR2.HealthComponent.TakeDamageProcess += VoidBearChanges;
             LanguageAPI.Add("ITEM_BEAR_DESC",
                 $"<style=cIsHealing>{15 / teddyNewMaxValue}%</style> " +
                 $"<style=cStack>(+{15 / teddyNewMaxValue}% per stack)</style> " +

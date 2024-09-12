@@ -80,10 +80,10 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             R2API.RecalculateStatsAPI.GetStatCoefficients += SlungusDamage;
-            On.RoR2.HealthComponent.TakeDamage += RemoveSlungusBuff;
+            On.RoR2.HealthComponent.TakeDamageProcess += RemoveSlungusBuff;
         }
 
-        private void RemoveSlungusBuff(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void RemoveSlungusBuff(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             if (!damageInfo.rejected)
             {

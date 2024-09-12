@@ -39,11 +39,11 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += IchorTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += IchorTakeDamage;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
-        private void IchorTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void IchorTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             orig(self, damageInfo);
             if (self.body == null || damageInfo.attacker == null)

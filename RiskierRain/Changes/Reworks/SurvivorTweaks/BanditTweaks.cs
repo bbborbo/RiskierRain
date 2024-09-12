@@ -56,7 +56,7 @@ namespace RiskierRain.SurvivorTweaks
             ChangeVanillaUtilities(utility);
             ChangeVanillaSpecials(special);
 
-            On.RoR2.HealthComponent.TakeDamage += BanditTweaksTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += BanditTweaksTakeDamage;
             LanguageAPI.Add("KEYWORD_SUPERBLEED", 
                 $"<style=cKeywordName>Hemorrhage</style>" +
                 $"<style=cSub>Bleed enemies for <style=cIsDamage>{Tools.ConvertDecimal(hemmorageDamageBase * hemmorageDamageMin)}</style> base damage over 15s. " +
@@ -67,7 +67,7 @@ namespace RiskierRain.SurvivorTweaks
             TeleporterInteraction.onTeleporterFinishGlobal += OnAdvanceStageSaveTokens;
             ShowReport.OnEnter += ResetTokens;
 
-            On.RoR2.HealthComponent.TakeDamage += ShredApply;
+            On.RoR2.HealthComponent.TakeDamageProcess += ShredApply;
 
             //On.RoR2.CharacterBody.RecalculateStats += BackstabPassiveCritChance;
             On.RoR2.CharacterBody.Start += BackstabPassiveCritChance;
@@ -92,7 +92,7 @@ namespace RiskierRain.SurvivorTweaks
             }
         }
 
-        private void ShredApply(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void ShredApply(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             CharacterBody vBody = self.body;
             CharacterBody aBody = null;
@@ -201,7 +201,7 @@ namespace RiskierRain.SurvivorTweaks
         }
         #endregion
 
-        private void BanditTweaksTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void BanditTweaksTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             bool isAlreadyDead = (self.health <= 0 || !self.alive);
             CharacterBody attackerBody = null;

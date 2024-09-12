@@ -82,7 +82,7 @@ namespace RiskierRain
         private void VoidsentNerfs()
         {
             this.voidsentPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = 0f;
-            IL.RoR2.HealthComponent.TakeDamage += VoidsentFlameChanges;
+            IL.RoR2.HealthComponent.TakeDamageProcess += VoidsentFlameChanges;
             LanguageAPI.Add("ITEM_EXPLODEONDEATHVOID_PICKUP",
                 $"Chance to detonate full health enemies on hit. <style=cIsVoid>Corrupts all Will-o'-the-wisps</style>.");
             LanguageAPI.Add("ITEM_EXPLODEONDEATHVOID_DESC",
@@ -121,7 +121,7 @@ namespace RiskierRain
 
         private void RazorwireReworks()
         {
-            IL.RoR2.HealthComponent.TakeDamage += RazorwireNerf;
+            IL.RoR2.HealthComponent.TakeDamageProcess += RazorwireNerf;
             LanguageAPI.Add("ITEM_THORNS_DESC",
                 $"Getting hit causes you to explode in a burst of razors, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(razorwireDamage)} damage</style>. " +

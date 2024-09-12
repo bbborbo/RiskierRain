@@ -41,7 +41,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += BackstabDamageReduction;
+            On.RoR2.HealthComponent.TakeDamageProcess += BackstabDamageReduction;
             GetStatCoefficients += ArmorBoost;
         }
 
@@ -51,7 +51,7 @@ namespace RiskierRainContent.Items
             args.armorAdd += itemCount * bonusArmor;
         }
 
-        private void BackstabDamageReduction(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void BackstabDamageReduction(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             if(damageInfo.damage > 0 && damageInfo.attacker)
             {

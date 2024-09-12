@@ -52,10 +52,10 @@ namespace RiskierRainContent.Equipment
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += NinjaGearDodge;
+            On.RoR2.HealthComponent.TakeDamageProcess += NinjaGearDodge;
         }
 
-        private void NinjaGearDodge(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        private void NinjaGearDodge(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             if(self.body.equipmentSlot)
             {

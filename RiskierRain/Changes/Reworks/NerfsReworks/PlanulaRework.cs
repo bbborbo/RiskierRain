@@ -17,7 +17,7 @@ namespace RiskierRain
 	{
         void ReworkPlanula()
         {
-            IL.RoR2.HealthComponent.TakeDamage += RevokePlanulaRights;
+            IL.RoR2.HealthComponent.TakeDamageProcess += RevokePlanulaRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddPlanulaItemBehavior;
 			On.RoR2.GrandParentSunController.Start += SunTeamFilter;
 			On.RoR2.GlobalEventManager.OnCharacterDeath += AddPlanulaCharge;

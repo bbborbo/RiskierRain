@@ -36,10 +36,10 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamage += MalachiteSpineTakeDamage;
+            On.RoR2.HealthComponent.TakeDamageProcess += MalachiteSpineTakeDamage;
         }
 
-        private void MalachiteSpineTakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        private void MalachiteSpineTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             orig (self, damageInfo);
             int i = GetCount(self.body);

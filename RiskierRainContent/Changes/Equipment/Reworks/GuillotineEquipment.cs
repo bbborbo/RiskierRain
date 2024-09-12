@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
 using System.Linq;
+using System.Collections;
 
 namespace RiskierRainContent.Equipment
 {
@@ -72,11 +73,12 @@ namespace RiskierRainContent.Equipment
             return IDR;
         }
 
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
 
             CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
+            yield break;
         }
 
         #region assets
@@ -183,7 +185,6 @@ namespace RiskierRainContent.Equipment
         {
             RiskierRainContent.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
             //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
             AddExecutionDebuff();
             AddLuckBuff();
             CreateEquipment();

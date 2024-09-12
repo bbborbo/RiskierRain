@@ -58,7 +58,7 @@ namespace RiskierRain
 
         private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
-            if (damageInfo.damageType.HasFlag(DamageType.Shock5s)) 
+            if (damageInfo.damageType.damageType.HasFlag(DamageType.Shock5s)) 
             { 
                 //GameObject attacker = damageInfo.attacker;
                 self.body.AddTimedBuff(CoreModules.Assets.shockMarker, CoreModules.Assets.shockMarkerDuration);//add authority

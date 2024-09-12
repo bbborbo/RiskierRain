@@ -119,7 +119,7 @@ namespace RiskierRainContent.Equipment
             CharacterBody victimBody = damageReport.victimBody;
             CharacterBody attackerBody = damageReport.attackerBody;
 
-            if (damageReport.damageInfo.damageType.HasFlag(DamageType.VoidDeath))
+            if (damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.VoidDeath))
             {
                 if (!victimBody.isPlayerControlled)
                 {

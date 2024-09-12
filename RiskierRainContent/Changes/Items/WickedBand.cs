@@ -3,6 +3,7 @@ using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -44,7 +45,7 @@ namespace RiskierRainContent.Items
             return IDR;
         }
 
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             if (ItemBase.DefDictionary.ContainsKey("BorboWickedBand"))
@@ -73,6 +74,7 @@ namespace RiskierRainContent.Items
                     }
                 }
             }
+            yield break;
         }
 
         public override void Hooks()

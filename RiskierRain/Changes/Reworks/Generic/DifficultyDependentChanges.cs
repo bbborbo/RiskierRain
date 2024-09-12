@@ -294,7 +294,7 @@ namespace RiskierRain
             GetStatCoefficients += this.EclipseStatBuffs;
             On.RoR2.CharacterBody.RecalculateStats += this.EclipseCdr;
             On.RoR2.RunArtifactManager.SetArtifactEnabled += EclipseSpiteArtifact;
-            IL.RoR2.HoldoutZoneController.FixedUpdate += EclipseHoldoutScale;
+            IL.RoR2.HoldoutZoneController.DoUpdate += EclipseHoldoutScale;
             On.RoR2.HoldoutZoneController.Start += EclipseHoldoutDischarge;
 
             string eclipse8Prefix = "\"You only celebrate in the light... because I allow it.\" \n\n";

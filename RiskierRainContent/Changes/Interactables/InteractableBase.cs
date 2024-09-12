@@ -306,9 +306,10 @@ namespace RiskierRainContent.Interactables
 			return orig.Invoke(self, deck, maxCost);
 		}
 
-		public void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self)
+		public void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self, 
+			DirectorCardCategorySelection forcedMonsterCategory = null, DirectorCardCategorySelection forcedInteractableCategory = null)
 		{
-			orig(self);
+			orig(self, forcedMonsterCategory, forcedInteractableCategory);
 			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
 			{
 				self.interactableCategories.AddCard((int)category, customInteractable.directorCard);

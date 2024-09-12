@@ -103,7 +103,7 @@ namespace RiskierRain.SurvivorTweaks
             {
                 if (aBody.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
                 {
-                    if (damageInfo.damageType.HasFlag(DamageType.BypassArmor))
+                    if (damageInfo.damageType.damageType.HasFlag(DamageType.BypassArmor))
                     {
                         float baseShredDuration = 10f;
                         damageInfo.damageType = damageInfo.damageType & ~DamageType.BypassArmor;
@@ -219,11 +219,11 @@ namespace RiskierRain.SurvivorTweaks
 
             if(!isAlreadyDead)
             {
-                if (damageInfo.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
                 {
                     self.body.AddTimedBuffAuthority(lightsoutExecutionDebuff.buffIndex, 0.5f);
                 }
-                if (damageInfo.damageType.HasFlag(DamageType.GiveSkullOnKill))
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
                 {
                     self.body.AddTimedBuffAuthority(desperadoExecutionDebuff.buffIndex, 0.5f);
                 }
@@ -233,7 +233,7 @@ namespace RiskierRain.SurvivorTweaks
 
             if((self.health <= 0 || !self.alive) && attackerBody != null && !isAlreadyDead)
             {
-                if (self.body.HasBuff(lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
+                if (self.body.HasBuff(lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
                 {
                     self.body.RemoveBuff(lightsoutExecutionDebuff.buffIndex);
 
@@ -247,7 +247,7 @@ namespace RiskierRain.SurvivorTweaks
                         skillLocator.ResetSkills();
                     }
                 }
-                if (self.body.HasBuff(desperadoExecutionDebuff.buffIndex) && !damageInfo.damageType.HasFlag(DamageType.GiveSkullOnKill))
+                if (self.body.HasBuff(desperadoExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
                 {
                     self.body.RemoveBuff(desperadoExecutionDebuff.buffIndex);
 

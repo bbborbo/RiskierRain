@@ -157,9 +157,9 @@ namespace RiskierRainContent
             }
         }
 
-        private void FeatherOnLandServer(On.RoR2.GlobalEventManager.orig_OnCharacterHitGroundServer orig, GlobalEventManager self, CharacterBody characterBody, Vector3 impactVelocity)
+        private void FeatherOnLandServer(On.RoR2.GlobalEventManager.orig_OnCharacterHitGroundServer orig, GlobalEventManager self, CharacterBody characterBody, CharacterMotor.HitGroundInfo hitGroundInfo)
         {
-            orig(self, characterBody, impactVelocity);
+            orig(self, characterBody, hitGroundInfo);
             int buffCount = characterBody.GetBuffCount(CoreModules.Assets.hopooDamageBuff);
             for (int i = 0; i < buffCount; i++)
             {

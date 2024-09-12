@@ -12,6 +12,7 @@ using static R2API.RecalculateStatsAPI;
 using static RiskierRainContent.CoreModules.StatHooks;
 using RoR2.EntitlementManagement;
 using RoR2.ExpansionManagement;
+using System.Collections;
 
 namespace RiskierRainContent.Items
 {
@@ -66,10 +67,11 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
+            yield break;
         }
 
         public override void Hooks()

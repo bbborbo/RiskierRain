@@ -7,6 +7,7 @@ using RoR2;
 using RoR2.ExpansionManagement;
 using RoR2.Projectile;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -62,10 +63,11 @@ namespace RiskierRainContent.Items
         {
             return null;
         }
-        public static void GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
         {
             orig();
             CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.Missile);
+            yield break;
         }
 
         public override void Hooks()

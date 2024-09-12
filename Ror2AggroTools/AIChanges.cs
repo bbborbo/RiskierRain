@@ -116,7 +116,7 @@ namespace Ror2AggroTools
 
         private static void BaseAI_OnBodyDamaged(On.RoR2.CharacterAI.BaseAI.orig_OnBodyDamaged orig, RoR2.CharacterAI.BaseAI self, DamageReport damageReport)
         {
-            if(damageReport.damageInfo.attacker == null || damageReport.damageInfo.attacker == self.body.gameObject)
+            if(damageReport.damageInfo == null || damageReport.damageInfo.attacker == null || damageReport.damageInfo.attacker == self.body.gameObject)
             {
                 orig(self, damageReport);
                 return;
@@ -131,7 +131,7 @@ namespace Ror2AggroTools
             }
 
             //if the current target is lower priority, immediately prioritize the attacker
-            if(currentTargetPriority < attackerPriority)
+            if(currentTargetPriority < attackerPriority && currentTargetPriority != AggroPriority.None)
             {
                 self.currentEnemy.gameObject = null;
             }

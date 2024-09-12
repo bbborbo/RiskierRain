@@ -56,11 +56,11 @@ namespace RiskierRain
 
             CoreModules.Assets.projectilePrefabs.Add(impBleedSpikePrefab);
 
-            IL.RoR2.GlobalEventManager.OnHitEnemy += RevokeShatterspleenBleedRights;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += RevokeShatterspleenBleedRights;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeShatterspleenDeathRights;
             GetStatCoefficients += RemoveShatterspleenCrit;
             On.RoR2.CharacterBody.RecalculateStats += ShatterspleenBleedChance;
-            On.RoR2.GlobalEventManager.OnHitEnemy += NewShatterspleenFunctionality;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += NewShatterspleenFunctionality;
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += FireShatterspleenBleedSpike;
 
             LanguageAPI.Add("ITEM_BLEEDONHITANDEXPLODE_PICKUP", "Massive hits charge a volley of bleed spikes.");
@@ -125,7 +125,7 @@ namespace RiskierRain
             orig(self, buffType);
         }
 
-        private void NewShatterspleenFunctionality(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
+        private void NewShatterspleenFunctionality(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject victim)
         {
             if (damageInfo.attacker && damageInfo.procCoefficient > 0f && !damageInfo.procChainMask.HasProc(ProcType.BleedOnHit))
             {

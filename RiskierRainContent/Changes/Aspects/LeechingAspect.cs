@@ -65,7 +65,7 @@ namespace RiskierRainContent.Equipment
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += LeechingOnHit;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += LeechingOnHit;
             //On.EntityStates.TeleporterHealNovaController.TeleporterHealNovaPulse.OnEnter += LeechingHealingPulse;
             On.EntityStates.TeleporterHealNovaController.TeleporterHealNovaWindup.OnEnter += LeechingHealingPulseIntercept;
             On.RoR2.CharacterBody.OnInventoryChanged += LeechingPulseRangeIndicator;
@@ -118,7 +118,7 @@ namespace RiskierRainContent.Equipment
             }
         }
 
-        private void LeechingOnHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void LeechingOnHit(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if (damageInfo.attacker && victim && NetworkServer.active && damageInfo.procCoefficient > 0)
             {

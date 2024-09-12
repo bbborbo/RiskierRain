@@ -166,8 +166,8 @@ namespace RiskierRain
         public float voidtouchedNullifyBaseDuration = 15;
         void VoidtouchedEliteChanges()
         {
-            IL.RoR2.GlobalEventManager.OnHitEnemy += RemoveVoidtouchedCollapse;
-            On.RoR2.GlobalEventManager.OnHitEnemy += AddVoidtouchedNullify;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveVoidtouchedCollapse;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += AddVoidtouchedNullify;
             On.RoR2.GlobalEventManager.OnCharacterDeath += VoidtouchedSingularity;
         }
 
@@ -200,7 +200,7 @@ namespace RiskierRain
             orig(self, damageReport);
         }
 
-        private void AddVoidtouchedNullify(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void AddVoidtouchedNullify(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if(damageInfo.attacker != null && victim != null && damageInfo.procCoefficient > 0)
             {

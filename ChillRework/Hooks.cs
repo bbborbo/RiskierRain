@@ -33,7 +33,7 @@ namespace ChillRework
         public static event Action<DamageInfo, CharacterBody> OnMaxChill;
         public void ChillHooks()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += ChillOnHitHook;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += ChillOnHitHook;
             On.RoR2.CharacterBody.AddBuff_BuffIndex += CapChillStacks;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += IceRingMultiChill;
             //IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
@@ -99,7 +99,7 @@ namespace ChillRework
             });
         }
 
-        private void ChillOnHitHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void ChillOnHitHook(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             CharacterMaster attackerMaster = null;
             if(damageInfo.attacker != null)

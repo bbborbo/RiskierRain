@@ -204,7 +204,7 @@ namespace RiskierRain
             if (!Tools.isLoaded("com.Skell.DeathMarkChange"))
             {
                 ChangeBuffStacking(nameof(RoR2Content.Buffs.DeathMark), true);
-                IL.RoR2.GlobalEventManager.OnHitEnemy += DeathMarkFix_Stacking;
+                IL.RoR2.GlobalEventManager.ProcessHitEnemy += DeathMarkFix_Stacking;
                 IL.RoR2.HealthComponent.TakeDamageProcess += DeathMarkFix_Damage;
                 LanguageAPI.Add("ITEM_DEATHMARK_DESC",
                     "Enemies with <style=cIsDamage>4</style> or more debuffs are <style=cIsDamage>marked for death</style>, " +

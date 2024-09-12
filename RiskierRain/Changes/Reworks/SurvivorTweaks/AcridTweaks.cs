@@ -53,7 +53,7 @@ namespace RiskierRain.SurvivorTweaks
             ChangeVanillaUtilities(utility);
             ChangeVanillaSpecials(special);
 
-            IL.RoR2.GlobalEventManager.OnHitEnemy += ChangePoisonDuration;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangePoisonDuration;
             LanguageAPI.Add("KEYWORD_POISON", 
                 $"<style=cKeywordName>Poisonous</style>" +
                 $"<style=cSub>Deal damage equal to <style=cIsDamage>up to 10%</style> of their maximum health over {poisonDuration}s. " +

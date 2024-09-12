@@ -41,7 +41,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            IL.RoR2.GlobalEventManager.OnHitEnemy += FuckLeechingSeed;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += FuckLeechingSeed;
             GetHitBehavior += NewSeedBehavior;
             LanguageAPI.Add("ITEM_SEED_PICKUP", "Dealing damage heals you.");
             LanguageAPI.Add("ITEM_SEED_DESC", $"Dealing damage increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +

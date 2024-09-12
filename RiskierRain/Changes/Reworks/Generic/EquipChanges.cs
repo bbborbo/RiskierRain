@@ -115,14 +115,14 @@ namespace RiskierRain
         public float crunderFunnyMoneyProcChance = 10;
         void CrowdfunderFunny()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += CrunderFunnyMoney;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += CrunderFunnyMoney;
             LanguageAPI.Add("EQUIPMENT_GOLDGAT_PICKUP", "Toggle to fire. Costs gold per bullet. Passively has a chance to gain gold on hit.");
             LanguageAPI.Add("EQUIPMENT_GOLDGAT_DESC", 
                 $"Fires a continuous barrage that deals <style=cIsDamage>100% damage per bullet</style>. " +
                 $"Costs $1 per bullet. Hitting enemies has a {crunderFunnyMoneyProcChance}% chance to refund the cost. Cost increases over time.");
         }
 
-        private void CrunderFunnyMoney(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void CrunderFunnyMoney(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if (!damageInfo.rejected && damageInfo.procCoefficient > 0 && damageInfo.attacker)
             {

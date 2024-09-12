@@ -30,7 +30,7 @@ namespace RiskierRainContent
         public static int brandBurnChance = 30;
         void BurnReworks()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += BurnChanceHook;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += BurnChanceHook;
 
             IgnitionTankRework();
         }
@@ -83,7 +83,7 @@ namespace RiskierRainContent
             }
         }
         #endregion
-        private void BurnChanceHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void BurnChanceHook(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if (damageInfo.attacker && damageInfo.procCoefficient > 0f)
             {

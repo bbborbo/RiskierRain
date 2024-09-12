@@ -26,7 +26,7 @@ namespace RiskierRain.CoreModules
         public override void Init()
         {
             On.RoR2.CharacterBody.RecalculateStats += AttackSpeedBs;
-            On.RoR2.GlobalEventManager.OnHitEnemy += GlobalEventManager_OnHitEnemy;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += GlobalEventManager_OnHitEnemy;
         }
 
         public delegate void StatHookEventHandler(CharacterBody sender, BorboStatHookEventArgs args);
@@ -43,7 +43,7 @@ namespace RiskierRain.CoreModules
 
         public delegate void HitHookEventHandler(CharacterBody body, DamageInfo damageInfo, GameObject victim);
         public static event HitHookEventHandler GetHitBehavior;
-        private void GlobalEventManager_OnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void GlobalEventManager_OnHitEnemy(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if(damageInfo.attacker && damageInfo.procCoefficient > 0f)
             {

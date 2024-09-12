@@ -58,7 +58,7 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             BurnStatCoefficient += AddBurnChance;
-            On.RoR2.GlobalEventManager.OnHitEnemy += BrandOnHit;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += BrandOnHit;
             On.RoR2.CharacterBody.RecalculateStats += CauterizeBuffBehavior;
         }
 
@@ -68,7 +68,7 @@ namespace RiskierRainContent.Items
             self.armor += cauterizeArmor * self.GetBuffCount(CauterizeBuff);
         }
 
-        private void BrandOnHit(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void BrandOnHit(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             orig(self, damageInfo, victim);
             CharacterBody victimBody = victim ? victim.GetComponent<CharacterBody>() : null;

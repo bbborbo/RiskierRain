@@ -57,10 +57,10 @@ namespace Ror2AggroTools
             priorityAggro.isDebuff = false;
             R2API.ContentAddition.AddBuffDef(priorityAggro);
 
-            On.RoR2.GlobalEventManager.OnHitEnemy += AggroOnHitHook;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += AggroOnHitHook;
         }
 
-        private void AggroOnHitHook(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void AggroOnHitHook(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             orig(self, damageInfo, victim);
 

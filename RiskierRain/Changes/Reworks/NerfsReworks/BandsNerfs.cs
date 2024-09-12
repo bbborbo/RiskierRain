@@ -22,10 +22,10 @@ namespace RiskierRain
 
         void NerfBands()
         {
-            //IL.RoR2.GlobalEventManager.OnHitEnemy += CooldownBuff;
+            //IL.RoR2.GlobalEventManager.ProcessHitEnemy += CooldownBuff;
 
-            IL.RoR2.GlobalEventManager.OnHitEnemy += RunaldNerf;
-            IL.RoR2.GlobalEventManager.OnHitEnemy += KjaroNerf;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += RunaldNerf;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += KjaroNerf;
 
             LanguageAPI.Add("ITEM_ICERING_DESC", 
                 $"Hits that deal <style=cIsDamage>more than 400% damage</style> also blasts enemies with a " +

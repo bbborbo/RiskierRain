@@ -206,7 +206,7 @@ namespace RiskierRain
         float justiceMinDamageCoeff = 8f;
         void BuffJustice()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += this.JusticeBuff;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += this.JusticeBuff;
             LanguageAPI.Add("ITEM_ARMORREDUCTIONONHIT_PICKUP",
                 "Reduce the armor of enemies after repeatedly striking them or on massive hits.");
             LanguageAPI.Add("ITEM_ARMORREDUCTIONONHIT_DESC",
@@ -215,7 +215,7 @@ namespace RiskierRain
                 $"reduce their <style=cIsDamage>armor</style> by <style=cIsDamage>60</style> " +
                 $"for <style=cIsDamage>8</style><style=cStack> (+8 per stack)</style> seconds.");
         }
-        private void JusticeBuff(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void JusticeBuff(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             orig(self, damageInfo, victim);
             if (damageInfo.attacker && damageInfo.procCoefficient > 0f)
@@ -387,7 +387,7 @@ namespace RiskierRain
         {
             if (ucrLoaded)
                 return;
-            IL.RoR2.GlobalEventManager.OnHitEnemy += PolyluteDamage;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += PolyluteDamage;
 
             LanguageAPI.Add("ITEM_CHAINLIGHTNINGVOID_DESC",
                 $"<style=cIsDamage>25%</style> chance " +
@@ -598,7 +598,7 @@ namespace RiskierRain
         {
             RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
 
-            IL.RoR2.GlobalEventManager.OnHitEnemy += StickyBombRework;
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += StickyBombRework;
             LanguageAPI.Add("ITEM_STICKYBOMB_DESC",
                 $"<style=cIsDamage>5%</style> <style=cStack>(+5% per stack)</style> chance " +
                 $"on hit to attach a <style=cIsDamage>bomb</style> to an enemy, detonating for " +

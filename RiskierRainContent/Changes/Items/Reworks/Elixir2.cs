@@ -37,9 +37,9 @@ namespace RiskierRainContent.Items
             $"of maximum health in <style=cIsHealing>barrier</style>, " +
             $"<style=cIsUtility>cleansing</style> all debuffs, " +
             $"and <style=cIsUtility>resetting</style> all cooldowns. " +
-            $"Each empty bottle increases attack speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.attackSpeedBuff)}</style> " +
-            $"movement speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.moveSpeedBuff)}</style> " +
-            $"and reduces cooldowns by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.cooldownReduction)}</style> " +
+            $"Each empty bottle increases attack speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.attackSpeedBuff)}</style>, " +
+            $"movement speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.moveSpeedBuff)}</style>, " +
+            $"and reduces cooldowns by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.cooldownReduction)}</style>. " +
             $"Regenerates at the start of each stage.";
 
         public override string ItemLore => 

@@ -67,11 +67,9 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
+        public void GetDisplayRules()
         {
-            orig();
             CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
-            yield break;
         }
 
         public override void Hooks()
@@ -81,7 +79,7 @@ namespace RiskierRainContent.Items
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
             On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
             GetStatCoefficients += MochaSpeed;
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
             RoR2Application.onLoad += YoinkMochaAssets;
         }
 

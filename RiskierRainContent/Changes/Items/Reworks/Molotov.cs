@@ -63,16 +63,10 @@ namespace RiskierRainContent.Items
         {
             return null;
         }
-        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.Missile);
-            yield break;
-        }
 
         public override void Hooks()
         {
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.Molotov);
             GetHitBehavior += MolotovOnHit;
         }
 

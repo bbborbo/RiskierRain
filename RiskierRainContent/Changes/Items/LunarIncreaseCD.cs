@@ -53,6 +53,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
             On.RoR2.GenericSkill.CalculateFinalRechargeInterval += EnableCooldownAddition; //move this
             On.RoR2.CharacterBody.OnSkillActivated += FireShards;
             On.RoR2.CharacterBody.RecalculateStats += IncreaseCDs;
@@ -158,14 +159,6 @@ namespace RiskierRainContent.Items
             CreateLang();
             Hooks();
             LoadItemBehavior();
-            On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
-        }
-
-        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
-            yield break;
         }
 
         public void LoadItemBehavior()

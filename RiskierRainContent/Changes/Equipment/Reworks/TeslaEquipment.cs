@@ -76,15 +76,9 @@ namespace RiskierRainContent.Equipment
             return IDR;
         }
 
-        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(TeslaEquipment.instance.EquipDef, RoR2Content.Items.ShockNearby);
-            yield break;
-        }
-
         public override void Hooks()
         {
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ShockNearby);
             On.RoR2.GlobalEventManager.OnCharacterDeath += GrantShieldOnKill;
             GetStatCoefficients += AddBonusShield;
             RiskierRainContent.RetierItem(nameof(RoR2Content.Items.ShockNearby), ItemTier.NoTier);
@@ -152,7 +146,6 @@ namespace RiskierRainContent.Equipment
 
         public override void Init(ConfigFile config)
         {
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
             CreateEquipment();
             CreateLang();
             Hooks();

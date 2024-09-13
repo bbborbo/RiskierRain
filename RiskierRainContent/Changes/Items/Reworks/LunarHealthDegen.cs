@@ -32,7 +32,7 @@ namespace RiskierRainContent.Items
         public static float damageBase = 4;
         public static float damageLevel = 0.6f;
 
-        public override string ItemName => "Elegy of Extinction";
+        public override string ItemName => "Corpsebloom";
 
         public override string ItemLangTokenName => "LUNARHEALTHDEGEN";
 
@@ -55,19 +55,12 @@ namespace RiskierRainContent.Items
             return IDR;
         }
 
-        public IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
-            yield break;
-        }
-
         public override void Hooks()
         {
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
-            On.RoR2.BodyCatalog.Init += GetDisplayRules; // i tink this doesnt work :s
+
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
             ModifyLuckStat += ElegyLuck;
         }
 
@@ -113,6 +106,7 @@ namespace RiskierRainContent.Items
         }
         public override void Init(ConfigFile config)
         {
+            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
             CreateItem();
             CreateLang();
             CreateBuff();

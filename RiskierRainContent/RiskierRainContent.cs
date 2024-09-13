@@ -115,10 +115,10 @@ namespace RiskierRainContent
             InitializeItems();
             InitializeInteractables();
             InitializeSkills();
-            //InitializeEquipment();
+            InitializeEquipment();
             InitializeEliteEquipment();
             InitializeArtifacts();
-            //InitializeScavengers();
+            InitializeScavengers();
 
             //InitializeEverything();
             CoreModules.Assets.SwapShadersFromMaterialsInBundle(orangeAssetBundle);

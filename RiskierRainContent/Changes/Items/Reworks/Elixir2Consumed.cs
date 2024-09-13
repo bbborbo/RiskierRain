@@ -6,18 +6,25 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using static R2API.RecalculateStatsAPI;
+using static RiskierRainContent.CoreModules.StatHooks;
 
 namespace RiskierRainContent.Items
 {
     class Elixir2Consumed : ItemBase<Elixir2Consumed>
     {
+        public static float moveSpeedBuff = 0.14f;
+        public static float attackSpeedBuff = 0.15f;
+        public static float cooldownReduction = 0.06f;
         public override string ItemName => "Empty Flask";
 
         public override string ItemLangTokenName => "LEGALLYDISTINCTBOTTLE";
 
-        public override string ItemPickupDesc => "An empty flask. Does nothing.";
+        public override string ItemPickupDesc => "An empty flask. You feel lightweight.";
 
-        public override string ItemFullDescription => "An empty flask. Does nothing.";
+        public override string ItemFullDescription => $"Increases attack speed by {Tools.ConvertDecimal(attackSpeedBuff)} (+{Tools.ConvertDecimal(attackSpeedBuff)} per stack), " +
+            $"movement speed by {Tools.ConvertDecimal(moveSpeedBuff)} (+{Tools.ConvertDecimal(moveSpeedBuff)} per stack), " +
+            $"and reduces cooldowns by {Tools.ConvertDecimal(cooldownReduction)} (-{Tools.ConvertDecimal(cooldownReduction)} per stack). ";
 
         public override string ItemLore => "Nothing to see here.";
 
@@ -37,6 +44,38 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             On.RoR2.CharacterMaster.OnServerStageBegin += TryRegenerateElixir;
+            GetStatCoefficients += BerserkerBrewBuff;
+            On.RoR2.CharacterBody.RecalculateStats += BerserkerBrewCdr;
+        }
+
+        private void BerserkerBrewCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            int stack = GetCount(self);
+            if (stack > 0)
+            {
+                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
+                float cdrBoost = Mathf.Pow(1 - cooldownReduction, stack);
+
+                SkillLocator skillLocator = self.skillLocator;
+                if (skillLocator != null)
+                {
+                    ApplyCooldownScale(skillLocator.primary, cdrBoost);
+                    ApplyCooldownScale(skillLocator.secondary, cdrBoost);
+                    ApplyCooldownScale(skillLocator.utility, cdrBoost);
+                    ApplyCooldownScale(skillLocator.special, cdrBoost);
+                }
+            }
+        }
+
+        private void BerserkerBrewBuff(CharacterBody sender, StatHookEventArgs args)
+        {
+            int stack = GetCount(sender);
+            if(stack > 0)
+            {
+                args.attackSpeedMultAdd += attackSpeedBuff * stack;
+                args.moveSpeedMultAdd += attackSpeedBuff * stack;
+            }
         }
 
         private void TryRegenerateElixir(On.RoR2.CharacterMaster.orig_OnServerStageBegin orig, CharacterMaster self, Stage stage)

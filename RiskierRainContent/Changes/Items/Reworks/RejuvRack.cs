@@ -50,19 +50,12 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.IncreaseHealing);
-            yield break;
-        }
-
         public override void Hooks()
         {
             RiskierRainContent.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
             RiskierRainContent.RetierItem(nameof(RoR2Content.Items.IncreaseHealing));
 
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.IncreaseHealing);
             On.RoR2.Inventory.GetItemCount_ItemIndex += OverrideItemCount;
             On.RoR2.HealthComponent.RepeatHealComponent.FixedUpdate += RepeatHealWhileHurt;
             IL.RoR2.HealthComponent.Heal += RejuvOverheal;

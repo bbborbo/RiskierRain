@@ -50,6 +50,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.RegeneratingScrap);
             On.RoR2.CostTypeDef.IsAffordable += SuperScrapIsAffordable;
             On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
             On.RoR2.CharacterMaster.TryRegenerateScrap += SuperScrapRegenerate;

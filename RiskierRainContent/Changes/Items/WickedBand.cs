@@ -79,7 +79,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, JunkContent.Items.CooldownOnCrit);
             GetHitBehavior += WickedBandCdr;
         }
 

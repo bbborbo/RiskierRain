@@ -57,7 +57,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
 		{
-			CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.OutOfCombatArmor);
+			BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.OutOfCombatArmor);
 			On.RoR2.CharacterBody.OnInventoryChanged += AddOpalItemBehavior;
 			GetStatCoefficients += OpalStatCoefficients;
 		}

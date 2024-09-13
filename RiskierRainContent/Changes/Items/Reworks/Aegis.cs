@@ -43,17 +43,10 @@ namespace RiskierRainContent.Items
             return null;
         }
 
-        private IEnumerator GetDisplayRules(On.RoR2.BodyCatalog.orig_Init orig)
-        {
-            orig();
-            CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.BarrierOnOverHeal);
-            yield break;
-        }
-
         public override void Hooks()
         {
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
-            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.BarrierOnOverHeal));
+            //On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.BarrierOnOverHeal);
 
             MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
             MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase;
@@ -107,6 +100,7 @@ namespace RiskierRainContent.Items
 
         public override void Init(ConfigFile config)
         {
+            RiskierRainContent.RetierItem(nameof(RoR2Content.Items.BarrierOnOverHeal));
             CreateItem();
             CreateLang();
             CreateBuff();

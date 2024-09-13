@@ -196,7 +196,7 @@ namespace RiskierRainContent.Equipment
         {
             On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
             On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
-            On.RoR2.BodyCatalog.Init += GetDisplayRules;
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
             GetExecutionThreshold += GuillotineExecutionThreshold;
             ModifyLuckStat += GuillotineLuckBuff;
         }

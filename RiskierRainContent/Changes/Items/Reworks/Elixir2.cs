@@ -16,8 +16,8 @@ namespace RiskierRainContent.Items
     class Elixir2 : ItemBase<Elixir2>
     {
         public static BuffDef brewActiveBuff;
-        public float buffDurationBase = 15f;
-        public float buffDurationStack = 7.5f;
+        public float buffDurationBase = 0;
+        public float buffDurationStack = 0;
         public float damageBuff = 0.8f;
         public float msBuff = 0.45f;
         public int armorBuff = 60;
@@ -27,19 +27,19 @@ namespace RiskierRainContent.Items
 
         public override string ItemLangTokenName => "LEGALLYDISTINCTELIXIR";
 
-        public override string ItemPickupDesc => "Receive healing and a massive stat boost at low health. Usable once per stage.";
+        public override string ItemPickupDesc => "At low health, gain barrier, cleanse debuffs, and reset all cooldowns. Usable once per stage.";
 
         public override string ItemFullDescription => 
             $"Taking damage to below " +
             $"<style=cIsHealth>{Tools.ConvertDecimal(0.25f)} health</style> " +
             $"<style=cIsUtility>consumes</style> this item, " +
-            $"instantly restoring <style=cIsHealing>{Tools.ConvertDecimal(instantHeal)}</style> " +
-            $"of <style=cIsHealing>maximum health</style>. " +
-            $"Consumption also grants a boost " +
-            $"for {buffDurationBase} <style=cStack>(+{buffDurationStack} per stack)</style> seconds, " +
-            $"increasing <style=cIsDamage>damage</style> by <style=cIsDamage>+{Tools.ConvertDecimal(damageBuff)}</style>, " +
-            $"<style=cIsUtility>movement speed</style> by <style=cIsUtility>+{Tools.ConvertDecimal(msBuff)}</style>, " +
-            $"and <style=cIsDamage>armor</style> by <style=cIsDamage>+{armorBuff}</style>. " +
+            $"instantly granting <style=cIsHealing>100%</style> " +
+            $"of maximum health in <style=cIsHealing>barrier</style>, " +
+            $"<style=cIsUtility>cleansing</style> all debuffs, " +
+            $"and <style=cIsUtility>resetting</style> all cooldowns. " +
+            $"Each empty bottle increases attack speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.attackSpeedBuff)}</style> " +
+            $"movement speed by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.moveSpeedBuff)}</style> " +
+            $"and reduces cooldowns by <style=cIsDamage>{Tools.ConvertDecimal(Elixir2Consumed.cooldownReduction)}</style> " +
             $"Regenerates at the start of each stage.";
 
         public override string ItemLore => 
@@ -67,6 +67,7 @@ namespace RiskierRainContent.Items
 
         public override void Hooks()
         {
+            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.HealingPotion);
             On.RoR2.HealthComponent.UpdateLastHitTime += ElixirHook;
             GetStatCoefficients += BerserkerBrewBuff;
         }
@@ -91,8 +92,12 @@ namespace RiskierRainContent.Items
                 if(count > 0 && self.isHealthLow)
                 {
                     float buffDuration = buffDurationBase + buffDurationStack * (count - 1);
-                    body.AddTimedBuff(brewActiveBuff, buffDuration);
-                    self.HealFraction(instantHeal, default(ProcChainMask));
+                    if(buffDuration > 0)
+                        body.AddTimedBuff(brewActiveBuff, buffDuration);
+
+                    self.AddBarrier(body.maxHealth);
+                    body.skillLocator.ApplyAmmoPack();
+                    Util.CleanseBody(body, true, false, true, true, true, true);
 
                     TransformPotions(count, body);
 

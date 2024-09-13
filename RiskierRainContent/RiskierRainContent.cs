@@ -43,6 +43,9 @@ namespace RiskierRainContent
 
     //[BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(ChillRework.ChillRework.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BarrierRework.BarrierReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
@@ -140,19 +143,11 @@ namespace RiskierRainContent
 
         private void InitializeEverything()
         {
-            JumpReworks();
             BurnReworks();
             MakePillarsFun();
             if (GetConfigBool(true, "Core: Laser Scope Rework (Combat Telescope)"))
             {
                 ReworkLaserScope();
-            }
-            // boss item drop
-            if (GetConfigBool(true, "Core: Boss Item Drops"))
-            {
-                BossesDropBossItems();
-                TricornRework();
-                DirectorAPI.InteractableActions += DeleteYellowPrinters;
             }
             //happiest mask
             if (GetConfigBool(true, "Core: Happiest Mask"))

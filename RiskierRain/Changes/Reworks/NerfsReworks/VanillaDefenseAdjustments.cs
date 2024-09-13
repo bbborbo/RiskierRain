@@ -149,76 +149,6 @@ namespace RiskierRain
             c.Remove();
         }
 
-        public static float dynamicJumpAscentHoldGravity = 0.8f; //1f
-        public static float dynamicJumpAscentReleaseGravity = 1.3f; //1f
-        public static float dynamicJumpDescentGravity = 1f; //1f
-        private void DynamicJump(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<UnityEngine.Physics>("get_gravity"),
-                x => x.MatchLdfld<Vector3>("y")
-                );
-
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<float, CharacterMotor, float>>((gravityIn, motor) =>
-            {
-                float gravityOut = gravityIn;
-
-                if (!motor.disableAirControlUntilCollision)
-                {
-                    if(motor.velocity.y >= 0)
-                    {
-                        if (motor.body.inputBank.jump.down)
-                        {
-                            gravityOut *= dynamicJumpAscentHoldGravity;
-                        }
-                        else
-                        {
-                            gravityOut *= dynamicJumpAscentReleaseGravity;
-                        }
-                    }
-                    else
-                    {
-                        gravityOut *= dynamicJumpDescentGravity;
-                    }
-                }
-
-                return gravityOut;
-            });
-        }
-
-        public static float doubleJumpVerticalBonus = 1.0f; //1.5f
-        public static float doubleJumpHorizontalBonus = 1.1f; //1.3f; //1.5f
-        private void FeatherNerf(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdarg(0),
-                x => x.MatchCallOrCallvirt<EntityStates.EntityState>("get_characterBody"),
-                x => x.MatchLdfld<CharacterBody>("baseJumpCount")
-                );
-
-            int horizontalBoostLoc = 3;
-            c.GotoNext(MoveType.Before,
-                x => x.MatchLdcR4(out _),
-                x => x.MatchStloc(out horizontalBoostLoc)
-                );
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, doubleJumpHorizontalBonus);
-            c.Index++;
-
-            int verticalBoostLoc = 4;
-            c.GotoNext(MoveType.Before,
-                x => x.MatchLdcR4(out _),
-                x => x.MatchStloc(out verticalBoostLoc)
-                );
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, doubleJumpVerticalBonus);
-        }
-
 
         public static float drinkSpeedBonusBase = 0.2f; //0.25
         public static float drinkSpeedBonusStack = 0.15f; //0.25
@@ -387,21 +317,6 @@ namespace RiskierRain
 
                 return newHealAmt;
             });
-        }
-        #endregion
-
-        #region barrier
-        private float barrierDecayRate = 0.33f;
-        void BuffBarrier()
-        {
-            On.RoR2.CharacterBody.FixedUpdate += this.BarrierBuff;
-        }
-        private void BarrierBuff(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
-        {
-            if(self.barrierDecayRate > 0)
-                self.barrierDecayRate = Mathf.Max(1f, self.healthComponent.barrier * this.barrierDecayRate);
-
-            orig(self);
         }
         #endregion
     }

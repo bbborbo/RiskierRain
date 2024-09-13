@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static RiskierRainContent.RiskierRainContent;
-using static RiskierRainContent.JumpStatHook;
+using static JumpRework.JumpStatHook;
 using On.RoR2.Items;
 using HarmonyLib;
 using EntityStates.Bandit2;
@@ -15,6 +15,7 @@ using RoR2.Projectile;
 using UnityEngine.Networking;
 using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
+using JumpRework;
 
 namespace RiskierRainContent.Items
 {
@@ -171,7 +172,7 @@ namespace RiskierRainContent.Items
             if (body && body.inventory?.GetItemCount(BottleFart.instance.ItemsDef) <= 0)
                 return;
 
-            if (!IsDoubleJump(motor, body))
+            if (!JumpReworkPlugin.IsDoubleJump(motor, body))
                 return;
 
 

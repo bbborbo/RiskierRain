@@ -1,6 +1,4 @@
 ﻿using BepInEx;
-using RiskierRainContent.CoreModules;
-using RiskierRainContent.Items;
 using R2API;
 using RoR2;
 using RoR2.UI;
@@ -10,28 +8,48 @@ using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRainContent
+namespace BossDropRework
 {
-    public partial class RiskierRainContent : BaseUnityPlugin
+    public partial class BossDropReworkPlugin : BaseUnityPlugin
     {
+        public static BuffDef bossHunterDebuff;
+
         float tricornDamageCoefficient = 70;
         float tricornProcCoefficient = 2;
         int tricornDebuffDuration = 999;
+        bool reworkTricorn = true;
 
         void TricornRework()
         {
             On.RoR2.EquipmentSlot.FireBossHunter += FireTricornFix;
+            ModifyBossItemDropChance += TricornDropChance;
 
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_PICKUP", "Cripple a large monster and claim its <style=cIsDamage>trophy</style> after it dies. Consumed on use.");
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_DESC", 
                 $"Targets any enemy capable of dropping a <style=cIsDamage>unique reward</style>, " +
-                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(tricornDamageCoefficient)} damage</style>, " +
+                $"dealing <style=cIsDamage>{tricornDamageCoefficient * 100}% damage</style>, " +
                 $"then <style=cIsUtility>Crippling and Hemorrhaging</style> it " +
                 $"for <style=cIsUtility>{tricornDebuffDuration}</style> seconds. " +
                 $"When the enemy dies, it has a 100% chance to drop it's <style=cIsDamage>trophy</style>. " +
                 $"Equipment is <style=cIsUtility>consumed</style> on use.");
-                //"<style=cIsDamage>Execute</style> any enemy capable of spawning a <style=cIsDamage>unique reward</style>,
-                //and it will drop that <style=cIsDamage>item</style>. Equipment is <style=cIsUtility>consumed</style> on use.");
+            //"<style=cIsDamage>Execute</style> any enemy capable of spawning a <style=cIsDamage>unique reward</style>,
+            //and it will drop that <style=cIsDamage>item</style>. Equipment is <style=cIsUtility>consumed</style> on use.");
+        }
+
+        private void TricornDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
+        {
+            if (victim.HasBuff(bossHunterDebuff) && dropChance != 0)
+            {
+                dropChance = 100;
+            }
+        }
+
+        public delegate void TricornFireHandler(CharacterBody attacker, CharacterBody victim, ref bool shouldFire);
+        public static event TricornFireHandler ShouldTricornFireAndBreak;
+        public static bool GetTricornFireAndBreak(CharacterBody attacker, CharacterBody victim, ref bool shouldFire)
+        {
+            ShouldTricornFireAndBreak?.Invoke(attacker, victim, ref shouldFire);
+            return shouldFire;
         }
 
         private bool FireTricornFix(On.RoR2.EquipmentSlot.orig_FireBossHunter orig, EquipmentSlot self)
@@ -58,50 +76,57 @@ namespace RiskierRainContent
                         {
                             //hurtBox.healthComponent.body.master.TrueKill(base.gameObject, null, DamageType.Generic);
                             //destroyTricorn = true;
-
-                            bool hasScalpel = (self.characterBody.inventory.GetItemCount(DisposableScalpel.instance.ItemsDef) > 0);
+                            bool shouldFire = true; 
+                            if(GetTricornFireAndBreak(attackerBody, enemyBody, ref shouldFire))
+                            {
+                                enemyBody.AddBuff(bossHunterDebuff);
+                                destroyTricorn = true;
+                            }
+                            /*bool hasScalpel = (self.characterBody.inventory.GetItemCount(DisposableScalpel.instance.ItemsDef) > 0);
                             if (hasScalpel)
                             {
                                 DisposableScalpel.ConsumeScalpel(attackerBody);
                                 enemyBody.AddBuff(CoreModules.Assets.bossHunterDebuffWithScalpel);
+                            }*/
+
+                            if (reworkTricorn)
+                            {
+                                DamageInfo damageInfo = new DamageInfo();
+                                damageInfo.attacker = self.gameObject;
+                                damageInfo.force = normalized * 1500f;
+                                damageInfo.damage = attackerBody.damage * tricornDamageCoefficient;
+                                damageInfo.procCoefficient = tricornProcCoefficient;
+                                enemyHealthComponent.TakeDamage(damageInfo);
+
+
+                                enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
+                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker,
+                                    DotController.DotIndex.SuperBleed, tricornDebuffDuration, 1f);
                             }
                             else
                             {
-                                enemyBody.AddBuff(CoreModules.Assets.bossHunterDebuff);
-                                destroyTricorn = true;
+                                enemyBody.master.TrueKill(base.gameObject, null, default(DamageTypeCombo));
                             }
-
-                            DamageInfo damageInfo = new DamageInfo();
-                            damageInfo.attacker = self.gameObject;
-                            damageInfo.force = normalized * 1500f;
-                            damageInfo.damage = attackerBody.damage * tricornDamageCoefficient;
-                            damageInfo.procCoefficient = tricornProcCoefficient;
-                            enemyHealthComponent.TakeDamage(damageInfo);
-                            
-
-                            enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
-                            DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker, 
-                                DotController.DotIndex.SuperBleed, tricornDebuffDuration, 1f);
                         }
 
                         #region overlay fx
                         CharacterModel component = hurtBox.hurtBoxGroup.GetComponent<CharacterModel>();
                         if (component)
                         {
-                            TemporaryOverlay temporaryOverlay = component.gameObject.AddComponent<TemporaryOverlay>();
+                            TemporaryOverlayInstance temporaryOverlay = TemporaryOverlayManager.AddOverlay(component.gameObject);
                             temporaryOverlay.duration = 0.1f;
                             temporaryOverlay.animateShaderAlpha = true;
                             temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                             temporaryOverlay.destroyComponentOnEnd = true;
                             temporaryOverlay.originalMaterial = LegacyResourcesAPI.Load<Material>("Materials/matHuntressFlashBright");
-                            temporaryOverlay.AddToCharacerModel(component);
-                            TemporaryOverlay temporaryOverlay2 = component.gameObject.AddComponent<TemporaryOverlay>();
+                            temporaryOverlay.AddToCharacterModel(component);
+                            TemporaryOverlayInstance temporaryOverlay2 = TemporaryOverlayManager.AddOverlay(component.gameObject);
                             temporaryOverlay2.duration = 1.2f;
                             temporaryOverlay2.animateShaderAlpha = true;
                             temporaryOverlay2.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                             temporaryOverlay2.destroyComponentOnEnd = true;
                             temporaryOverlay2.originalMaterial = LegacyResourcesAPI.Load<Material>("Materials/matGhostEffect");
-                            temporaryOverlay2.AddToCharacerModel(component);
+                            temporaryOverlay2.AddToCharacterModel(component);
                         }
                         #endregion
 

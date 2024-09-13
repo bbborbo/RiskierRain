@@ -38,6 +38,9 @@
     <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
     <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
     <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
+    <ProjectReference Include="..\JumpRework\JumpRework.csproj" />
+    <ProjectReference Include="..\BarrierRework\BarrierRework.csproj" />
+    <ProjectReference Include="..\BossDropRework\BossDropRework.csproj" />
   </ItemGroup>
 
 </Project>

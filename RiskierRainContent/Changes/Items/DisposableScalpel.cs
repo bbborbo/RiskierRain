@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using BossDropRework;
+using static BossDropRework.BossDropReworkPlugin;
 
 namespace RiskierRainContent.Items
 {
@@ -53,7 +55,34 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
 
         public override void Hooks()
         {
+            ShouldTricornFireAndBreak += ScalpelTricornSynergy;
+            ModifyBossItemDropChance += ScalpelDropChance;
+        }
 
+        private void ScalpelTricornSynergy(CharacterBody attacker, CharacterBody victim, ref bool shouldFire)
+        {
+            if (GetCount(attacker) > 0)
+            {
+                shouldFire = false;
+                victim.AddBuff(CoreModules.Assets.bossHunterDebuffWithScalpel);
+                ConsumeScalpel(attacker);
+            }
+        }
+
+        private void ScalpelDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
+        {
+            if (victim.HasBuff(CoreModules.Assets.bossHunterDebuffWithScalpel))
+            {
+                dropChance = 100;
+            }
+            else if (dropChance < 100 && GetCount(attacker) > 0)
+            {
+                if (Util.CheckRoll(bonusDropChance))
+                {
+                    dropChance = 100;
+                    ConsumeScalpel(attacker);
+                }
+            }
         }
 
         public override void Init(ConfigFile config)

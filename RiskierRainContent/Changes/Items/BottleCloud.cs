@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static RiskierRainContent.RiskierRainContent;
-using static RiskierRainContent.JumpStatHook;
+using static JumpRework.JumpStatHook;
 using EntityStates.Bandit2;
 using UnityEngine.Networking;
 using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
+using JumpRework;
 
 namespace RiskierRainContent.Items
 {
@@ -145,12 +146,12 @@ namespace RiskierRainContent.Items
             int maxJumpCount = body.maxJumpCount;
             int baseJumpCount = body.baseJumpCount;
 
-            if (IsBaseJump(motor, body))
+            if (JumpReworkPlugin.IsBaseJump(motor, body))
                 return;
 
 
             TeamIndex teamIndex = this.body.teamComponent.teamIndex;
-            int num = 0;
+            int enemyCountWithinRadius = 0;
             for (TeamIndex teamIndex2 = TeamIndex.Neutral; teamIndex2 < TeamIndex.Count; teamIndex2 += 1)
             {
                 bool flag2 = teamIndex2 != teamIndex && teamIndex2 > TeamIndex.Neutral;
@@ -161,22 +162,22 @@ namespace RiskierRainContent.Items
                         bool flag3 = (teamComponent.transform.position - this.body.corePosition).sqrMagnitude <= bombRadiusSqr;
                         if (flag3)
                         {
-                            num++;
+                            enemyCountWithinRadius++;
                             break;
                         }
                     }
                 }
-                if (num > 0)
+                if (enemyCountWithinRadius > 0)
                     break;
             }
 
-            if (num > 0)
+            if (enemyCountWithinRadius > 0)
             {
                 cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
                 BottleCloud.CreateNinjaSmokeBomb(motor.body);
                 verticalBonus += BottleCloud.verticalBonusOnCloudJump;
             }
-            else if (IsLastJump(motor, body))
+            else if (JumpReworkPlugin.IsLastJump(motor, body))
             {
                 EffectManager.SpawnEffect(StealthMode.smokeBombEffectPrefab, new EffectData
                 {

@@ -157,23 +157,15 @@ namespace RiskierRain
 
             // mobility
             GoatHoofNerf();
-            IL.EntityStates.GenericCharacterMain.ProcessJump += FeatherNerf;
             EnergyDrinkNerf();
 
             // defense
-            this.BuffBarrier();
             TeddyChanges();
 
             // scythe
             if (GetConfigBool(true, "Harvesters Scythe"))
             {
                 ScytheNerf();
-            }
-
-            // dynamic jump
-            if (GetConfigBool(true, "Dynamic Jump"))
-            {
-                IL.RoR2.CharacterMotor.PreMove += DynamicJump;
             }
 
             // nkuhana D+H

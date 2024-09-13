@@ -71,4 +71,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
+  </ItemGroup>
 </Project>

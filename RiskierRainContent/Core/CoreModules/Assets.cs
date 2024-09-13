@@ -130,7 +130,6 @@ namespace RiskierRainContent.CoreModules
         public override void Init()
         {
             CreateVoidtouchedSingularity();
-            CreateMiredUrnTarball();
             CreateSquidBlasterBall();
 
             AddShatterspleenSpikeBuff();
@@ -139,7 +138,6 @@ namespace RiskierRainContent.CoreModules
             AddShredDebuff();
             AddCooldownBuff();
             AddAspdPenaltyDebuff();
-            AddHopooDamageBuff();
             AddCombatTelescopeCritChance();
             AddVoidCradleCurse();
             AddJetpackSpeedBoost();
@@ -196,19 +194,6 @@ namespace RiskierRainContent.CoreModules
         }
         #endregion
 
-        public static GameObject miredUrnTarball;
-        private void CreateMiredUrnTarball()
-        {
-            miredUrnTarball = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarSeeker.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
-
-            ProjectileImpactExplosion pie = miredUrnTarball.GetComponent<ProjectileImpactExplosion>();
-            if (pie)
-            {
-                pie.lifetime = 2;
-            }
-
-            R2API.ContentAddition.AddProjectile(miredUrnTarball);
-        }
         public static GameObject squidBlasterBall;
         private void CreateSquidBlasterBall()
         {
@@ -318,28 +303,6 @@ namespace RiskierRainContent.CoreModules
                 voidCradleCurse.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffVoidFog");
             }
             buffDefs.Add(voidCradleCurse);
-        }
-
-        public static BuffDef hopooDamageBuff;
-        public static BuffDef hopooDamageBuffTemporary;
-        private void AddHopooDamageBuff()
-        {
-            hopooDamageBuff = CreateHopooDamageBuff("Permanent");
-            hopooDamageBuffTemporary = CreateHopooDamageBuff("Temporary");
-            buffDefs.Add(hopooDamageBuff);
-            buffDefs.Add(hopooDamageBuffTemporary);
-        }
-        private BuffDef CreateHopooDamageBuff(string suffix)
-        {
-            BuffDef hopoo = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                hopoo.buffColor = Color.cyan;
-                hopoo.canStack = true;
-                hopoo.isDebuff = false;
-                hopoo.name = "HopooFeatherDamageBuff" + suffix;
-                hopoo.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            }
-            return hopoo;
         }
 
         public static BuffDef banditShredDebuff;
@@ -457,20 +420,9 @@ namespace RiskierRainContent.CoreModules
         public static float banditExecutionThreshold = 0.1f;
         public static float harvestExecutionThreshold = 0.2f;
 
-        public static BuffDef bossHunterDebuff;
         public static BuffDef bossHunterDebuffWithScalpel;
         private void AddTrophyHunterDebuffs()
         {
-            bossHunterDebuff = ScriptableObject.CreateInstance<BuffDef>();
-
-            bossHunterDebuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
-            bossHunterDebuff.canStack = false;
-            bossHunterDebuff.isDebuff = true;
-            bossHunterDebuff.name = "TrophyHunterDebuff";
-            bossHunterDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
-
-            buffDefs.Add(bossHunterDebuff);
-
             bossHunterDebuffWithScalpel = ScriptableObject.CreateInstance<BuffDef>();
 
             bossHunterDebuffWithScalpel.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);

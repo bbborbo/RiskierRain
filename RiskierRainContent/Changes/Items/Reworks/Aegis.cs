@@ -48,8 +48,8 @@ namespace RiskierRainContent.Items
             //On.RoR2.BodyCatalog.Init += GetDisplayRules;
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.BarrierOnOverHeal);
 
-            MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
-            MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase;
+            On.RoR2.Items.MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
+            On.RoR2.Items.MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase;
             On.RoR2.CharacterBody.RecalculateStats += AegisBarrierDecay;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }

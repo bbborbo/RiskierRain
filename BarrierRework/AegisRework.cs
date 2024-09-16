@@ -21,6 +21,7 @@ namespace BarrierRework
         protected void ReworkAegis()
         {
             CreateBuff();
+            Hooks();
             IL.RoR2.HealthComponent.Heal += RemoveAegisOverheal;
 
             LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_PICKUP", "Gain barrier on any interaction. While out of danger, barrier stops decaying.");

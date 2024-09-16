@@ -31,8 +31,9 @@ namespace JumpRework
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_DESC",
                 $"Gain <style=cIsUtility>{urnJumpCount}</style> jumps. " +
                 $"While in danger, jumping has a <style=cIsUtility>{Tools.ConvertDecimal(urnBallChance)} chance</style> to fire " +
-                $"<style=cIsDamage>sentient tar pots</style> in a spread in front of you, dealing " +
-                $"<style=cIsDamage>{urnBallCountBase}x{Tools.ConvertDecimal(urnBallDamageCoefficient)}</stack> damage " +
+                $"<style=cIsDamage>sentient tar pots</style> in front of you, dealing " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(urnBallDamageCoefficient)}</style> damage " +
+                $"<style=cStack>(+{Tools.ConvertDecimal(urnBallDamageCoefficient)} per stack)</style> " +
                 $"and <style=cIsUtility>slowing</style> enemies hit.");
         }
 
@@ -93,15 +94,16 @@ namespace JumpRework
                 {
                     if (JumpReworkPlugin.IsMissileArtifactEnabled())
                     {
-                        float totalYaw = urnBallYawSpread * 2 / (urnBallCountBase + 1);
-                        float totalSpread = (urnBallCountBase - 1) * urnBallYawSpread;
+                        int n = 3;
+                        float totalYaw = urnBallYawSpread * 2 / (n + 1);
+                        float totalSpread = (n - 1) * urnBallYawSpread;
                         float halfSpread = totalSpread / 2;
 
-                        for (int i = 0; i < urnBallCountBase; i++)
+                        for (int i = 0; i < n; i++)
                         {
                             //float currentSpread = Mathf.FloorToInt(i - (urnBallCountBase - 1) / 2f) / (urnBallCountBase - 1) * totalSpread;
                             //float currentSpread = Mathf.Lerp(0, totalSpread, i / (urnBallCountBase - 1)) - halfSpread;
-                            float currentSpread = (i / (urnBallCountBase - 1)) * totalSpread - halfSpread;
+                            float currentSpread = (i / (n - 1)) * totalSpread - halfSpread;
                             float bonusYaw = (urnBallYawSpread * i) - (totalYaw * 2f);
 
                             Vector3 forward = Util.ApplySpread(aimRay.direction, 0, 0, 1, 0, bonusYaw, 0);

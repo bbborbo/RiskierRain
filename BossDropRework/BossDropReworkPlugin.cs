@@ -98,6 +98,10 @@ namespace BossDropRework
 
             CharacterBody attackerBody = damageReport.attackerBody;
             CharacterBody enemyBody = damageReport.victimBody;
+
+            if (attackerBody == null || enemyBody == null)
+                return;
+
             BodyIndex enemyBodyIndex = enemyBody.bodyIndex;
 
             if (enemyBodyIndex == BodyCatalog.FindBodyIndex("TitanGoldBody") &&

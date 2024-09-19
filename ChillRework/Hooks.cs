@@ -28,9 +28,9 @@ namespace ChillRework
         #region chill on hit
         private readonly Dictionary<GameObject, GameObject> frozenBy = new Dictionary<GameObject, GameObject>();
         /// <summary>
-        /// damageInfo, victim
+        /// attacker, victim
         /// </summary>
-        public static event Action<DamageInfo, CharacterBody> OnMaxChill;
+        public static event Action<CharacterBody, CharacterBody> OnMaxChill;
         public void ChillHooks()
         {
             On.RoR2.GlobalEventManager.ProcessHitEnemy += ChillOnHitHook;
@@ -119,10 +119,8 @@ namespace ChillRework
                     float procCoefficient = damageInfo.procCoefficient;
                     if (procCoefficient != 0 && !damageInfo.rejected)
                     {
-                        bool hasChilled = false;
                         if (damageInfo.damageType.damageType.HasFlag(DamageType.Freeze2s))
                         {
-                            hasChilled = true;
                             this.frozenBy[victim] = damageInfo.attacker;
                             float chillCount = chillStacksOnFreeze;
                             if (damageInfo.damageType.damageType.HasFlag(DamageType.AOE))
@@ -131,24 +129,19 @@ namespace ChillRework
                             }
                             ApplyChillStacks(attackerMaster, vBody, procCoefficient * 100, chillCount);
                         }
-                        else if (damageInfo.HasModdedDamageType(ChillOnHit))//(damageInfo.damageType.HasFlag(DamageType.SlowOnHit))
+                        else
                         {
-                            hasChilled = true;
-                            damageInfo.RemoveModdedDamageType(ChillOnHit);
-                            float procChance = chillProcChance * procCoefficient * 100;
-
-                            ApplyChillStacks(attackerMaster, vBody, procChance);
-                        }
-
-                        //arctic blast
-                        if (hasChilled)
-                        {
-                            int chillDebuffCount = vBody.GetBuffCount(RoR2Content.Buffs.Slow80);
-                            if (chillDebuffCount >= chillStacksMax)
+                            bool chillOnHit = damageInfo.HasModdedDamageType(ChillOnHit);
+                            bool multiChill = damageInfo.HasModdedDamageType(MultiChillOnHit);
+                            if(chillOnHit || multiChill)
                             {
-                                OnMaxChill?.Invoke(damageInfo, vBody);
-                                /*vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80);
-                                AltArtiPassive.DoNova(aBody, icePower, damageInfo.position, AltArtiPassive.novaDebuffThreshold);*/
+                                if(chillOnHit)
+                                    damageInfo.RemoveModdedDamageType(ChillOnHit);
+                                if(multiChill)
+                                    damageInfo.RemoveModdedDamageType(MultiChillOnHit);
+                                float procChance = chillProcChance * procCoefficient * 100;
+
+                                ApplyChillStacks(attackerMaster, vBody, procChance, chillCount: (multiChill ? 3 : 1));
                             }
                         }
                     }
@@ -157,13 +150,25 @@ namespace ChillRework
             orig(self, damageInfo, victim);
         }
 
-        private void CapChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
+        private void CapChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody vBody, BuffIndex buffType)
         {
-            if (buffType == RoR2Content.Buffs.Slow80.buffIndex && self.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax)
+            if (buffType == RoR2Content.Buffs.Slow80.buffIndex && vBody.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax - 1)
             {
+                vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80.buffIndex);
+                SetStateOnHurt component = vBody.healthComponent.GetComponent<SetStateOnHurt>();
+                if (component != null)
+                {
+                    component.SetFrozen(2f);
+                }
+
+                GameObject lastAttacker = vBody.healthComponent.lastHitAttacker;
+                if(lastAttacker != null && lastAttacker.TryGetComponent(out CharacterBody aBody))
+                {
+                    OnMaxChill?.Invoke(aBody, vBody);
+                }
                 return;
             }
-            orig(self, buffType);
+            orig(vBody, buffType);
         }
         #endregion
     }

@@ -28,20 +28,23 @@ namespace Ror2AggroTools
 
     public static class Aggro
     {
-        public static void AggroMinionsToEnemy(CharacterBody leaderBody, CharacterBody victimBody)
+        public static void AggroMinionsToEnemy(CharacterBody leaderBody, CharacterBody victimBody, bool killethAggro = false)
         {
             if (victimBody)
             {
-                ApplyAggroBuff(victimBody);
+                ApplyAggroBuff(victimBody, killethAggro);
                 if (leaderBody)
                     ResetMinionAggro(leaderBody);
             }
         }
-        public static void ApplyAggroBuff(CharacterBody victim)
+        public static void ApplyAggroBuff(CharacterBody victim, bool killethAggro = false)
         {
             if (NetworkServer.active)
             {
-                victim.AddTimedBuff(AggroToolsPlugin.priorityAggro, AggroToolsPlugin.priorityAggroDuration);
+                if(killethAggro)
+                    victim.AddTimedBuff(AggroToolsPlugin.killethAggro, AggroToolsPlugin.priorityAggroDuration);
+                else
+                    victim.AddTimedBuff(AggroToolsPlugin.priorityAggro, AggroToolsPlugin.priorityAggroDuration);
             }
         }
         public static void ShedAggroFromCharacter(CharacterBody body)
@@ -131,6 +134,9 @@ namespace Ror2AggroTools
 
             if (body.HasBuff(RoR2Content.Buffs.Cloak))
                 return AggroPriority.LowAggro;
+
+            if(body.HasBuff(AggroToolsPlugin.killethAggro))
+                return AggroPriority.Killeth;
 
             if (body.HasBuff(AggroToolsPlugin.priorityAggro))
                 return AggroPriority.HighAggro;

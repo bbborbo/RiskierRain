@@ -40,6 +40,7 @@ namespace Ror2AggroTools
         public const float highPriorityAggroWeight = 100;
         public const float priorityAggroDuration = 10;
 
+        public static BuffDef killethAggro;
         public static BuffDef priorityAggro;
         public static ModdedDamageType AggroOnHit;
 
@@ -56,6 +57,12 @@ namespace Ror2AggroTools
             priorityAggro.isHidden = true;
             priorityAggro.isDebuff = false;
             R2API.ContentAddition.AddBuffDef(priorityAggro);
+
+            killethAggro = ScriptableObject.CreateInstance<BuffDef>();
+            killethAggro.canStack = false;
+            killethAggro.isHidden = true;
+            killethAggro.isDebuff = false;
+            R2API.ContentAddition.AddBuffDef(killethAggro);
 
             On.RoR2.GlobalEventManager.ProcessHitEnemy += AggroOnHitHook;
         }

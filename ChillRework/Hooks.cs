@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 using static R2API.DamageAPI;
 using static R2API.RecalculateStatsAPI;
 
@@ -34,10 +35,33 @@ namespace ChillRework
         public void ChillHooks()
         {
             On.RoR2.GlobalEventManager.ProcessHitEnemy += ChillOnHitHook;
-            On.RoR2.CharacterBody.AddBuff_BuffIndex += CapChillStacks;
+            On.RoR2.CharacterBody.FixedUpdate += ChillOnFixedUpdate;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += IceRingMultiChill;
             //IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
             GetStatCoefficients += ChillStats;
+        }
+
+        private void ChillOnFixedUpdate(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
+        {
+            orig(self);
+            if (self.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax)
+            {
+                if (NetworkServer.active)
+                {
+                    self.ClearTimedBuffs(RoR2Content.Buffs.Slow80.buffIndex);
+                    SetStateOnHurt component = self.healthComponent.GetComponent<SetStateOnHurt>();
+                    if (component != null)
+                    {
+                        component.SetFrozen(2f);
+                    }
+                }
+
+                GameObject lastAttacker = self.healthComponent.lastHitAttacker;
+                if (lastAttacker != null && lastAttacker.TryGetComponent(out CharacterBody aBody))
+                {
+                    OnMaxChill?.Invoke(aBody, self);
+                }
+            }
         }
 
         private void ChillStats(CharacterBody sender, StatHookEventArgs args)
@@ -148,27 +172,6 @@ namespace ChillRework
                 }
             }
             orig(self, damageInfo, victim);
-        }
-
-        private void CapChillStacks(On.RoR2.CharacterBody.orig_AddBuff_BuffIndex orig, CharacterBody vBody, BuffIndex buffType)
-        {
-            if (buffType == RoR2Content.Buffs.Slow80.buffIndex && vBody.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax - 1)
-            {
-                vBody.ClearTimedBuffs(RoR2Content.Buffs.Slow80.buffIndex);
-                SetStateOnHurt component = vBody.healthComponent.GetComponent<SetStateOnHurt>();
-                if (component != null)
-                {
-                    component.SetFrozen(2f);
-                }
-
-                GameObject lastAttacker = vBody.healthComponent.lastHitAttacker;
-                if(lastAttacker != null && lastAttacker.TryGetComponent(out CharacterBody aBody))
-                {
-                    OnMaxChill?.Invoke(aBody, vBody);
-                }
-                return;
-            }
-            orig(vBody, buffType);
         }
         #endregion
     }

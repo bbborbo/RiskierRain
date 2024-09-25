@@ -141,6 +141,7 @@ namespace ChillRework
 
         public static float CalculateChillSlowCoefficient(int chillStacks, float baseSlowCoefficient = 0.8f)
         {
+            chillStacks = Mathf.Min(chillStacks, chillStacksMax);
             return Mathf.Lerp(0, baseSlowCoefficient * 2, chillStacks / chillStacksMax);
         }
         #endregion

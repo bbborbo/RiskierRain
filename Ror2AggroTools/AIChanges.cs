@@ -116,7 +116,7 @@ namespace Ror2AggroTools
 
         private static void BaseAI_OnBodyDamaged(On.RoR2.CharacterAI.BaseAI.orig_OnBodyDamaged orig, RoR2.CharacterAI.BaseAI self, DamageReport damageReport)
         {
-            if(damageReport.damageInfo == null || damageReport.damageInfo.attacker == null || damageReport.damageInfo.attacker == self.body.gameObject)
+            if(damageReport.damageInfo == null || damageReport.damageInfo.attacker == null || (self.body != null && damageReport.damageInfo.attacker == self.body.gameObject))
             {
                 orig(self, damageReport);
                 return;

@@ -182,7 +182,7 @@ namespace RiskierRainContent.CoreModules
             harpoonDebuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 harpoonDebuff.buffColor = new Color(0.9f, 0.7f, 0.1f);
-                harpoonDebuff.canStack = false;
+                harpoonDebuff.canStack = true;
                 harpoonDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion();
                 harpoonDebuff.isDebuff = true;
                 harpoonDebuff.name = "HarpoonTargetDebuff";

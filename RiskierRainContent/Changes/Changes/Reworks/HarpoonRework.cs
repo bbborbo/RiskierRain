@@ -141,13 +141,13 @@ namespace RiskierRainContent
             Transform modelTransform = enemyBody.modelLocator?.modelTransform;
             if(modelTransform != null)
             {
-                var temporaryOverlay = modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                TemporaryOverlayInstance temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                 temporaryOverlay.duration = RiskierRainContent.harpoonTargetTime;
                 temporaryOverlay.animateShaderAlpha = true;
                 temporaryOverlay.alphaCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);// AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                 temporaryOverlay.destroyComponentOnEnd = true;
                 temporaryOverlay.originalMaterial = RiskierRainContent.harpoonTargetMaterial;
-                temporaryOverlay.AddToCharacerModel(modelTransform.GetComponent<CharacterModel>());
+                temporaryOverlay.AddToCharacterModel(modelTransform.GetComponent<CharacterModel>());
             }
         }
 

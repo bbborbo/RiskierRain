@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
 using static BorboStatUtils.BorboStatUtils;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -67,8 +68,6 @@ namespace RiskierRain.SurvivorTweaks
             TeleporterInteraction.onTeleporterFinishGlobal += OnAdvanceStageSaveTokens;
             ShowReport.OnEnter += ResetTokens;
 
-            On.RoR2.HealthComponent.TakeDamageProcess += ShredApply;
-
             //On.RoR2.CharacterBody.RecalculateStats += BackstabPassiveCritChance;
             On.RoR2.CharacterBody.Start += BackstabPassiveCritChance;
             LanguageAPI.Add("BANDIT2_PASSIVE_DESCRIPTION", "All attacks from <style=cIsDamage>behind</style> are <style=cIsDamage>Critical Strikes</style>. " +
@@ -90,33 +89,6 @@ namespace RiskierRain.SurvivorTweaks
                     }
                 }
             }
-        }
-
-        private void ShredApply(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
-        {
-            CharacterBody vBody = self.body;
-            CharacterBody aBody = null;
-            if (damageInfo.attacker != null)
-                aBody = damageInfo.attacker.GetComponent<CharacterBody>();
-
-            if (vBody != null && aBody != null && damageInfo.procCoefficient != 0)
-            {
-                if (aBody.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
-                {
-                    if (damageInfo.damageType.damageType.HasFlag(DamageType.BypassArmor))
-                    {
-                        float baseShredDuration = 10f;
-                        damageInfo.damageType = damageInfo.damageType & ~DamageType.BypassArmor;
-
-                        self.body.AddTimedBuffAuthority(CoreModules.Assets.banditShredDebuff.buffIndex, baseShredDuration);
-                        if (damageInfo.crit || BackstabManager.IsBackstab(self.transform.position - damageInfo.position, self.body))
-                        {
-                            self.body.AddTimedBuffAuthority(CoreModules.Assets.banditShredDebuff.buffIndex, baseShredDuration * 2);
-                        }
-                    }
-                }
-            }
-            orig(self, damageInfo);
         }
 
         #region Desperado
@@ -379,7 +351,7 @@ namespace RiskierRain.SurvivorTweaks
                 desperadoExecutionDebuff.canStack = false;
                 desperadoExecutionDebuff.isDebuff = true;
                 desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
-                desperadoExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+                desperadoExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             }
             CoreModules.Assets.buffDefs.Add(desperadoExecutionDebuff);
             lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
@@ -388,7 +360,7 @@ namespace RiskierRain.SurvivorTweaks
                 lightsoutExecutionDebuff.canStack = false;
                 lightsoutExecutionDebuff.isDebuff = true;
                 lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
-                lightsoutExecutionDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+                lightsoutExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             }
             CoreModules.Assets.buffDefs.Add(lightsoutExecutionDebuff);
         }

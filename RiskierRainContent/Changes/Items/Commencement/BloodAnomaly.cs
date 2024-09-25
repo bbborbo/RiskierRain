@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -167,7 +168,7 @@ namespace RiskierRainContent.Items
                 bloodBuff.buffColor = Color.red;
                 bloodBuff.canStack = true;
                 bloodBuff.isDebuff = true;
-                bloodBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
+                bloodBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(bloodBuff);
         }

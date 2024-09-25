@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static RiskierRainContent.CoreModules.StatHooks;
@@ -131,7 +132,7 @@ namespace RiskierRainContent.Items
                 watchCritBuff.canStack = true;
                 watchCritBuff.isDebuff = false;
                 watchCritBuff.name = "DelicateWatchCritChance";
-                watchCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
+                watchCritBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(watchCritBuff);
         }

@@ -21,7 +21,7 @@ namespace RiskierRainContent.Items
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;
-        public static Sprite mochaCustomSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon"); //Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.png").WaitForCompletion(); //
+        public static Sprite mochaCustomSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
 
         public static int stageDuration = 90;
         public static int pickupDuration = 20;
@@ -108,17 +108,14 @@ namespace RiskierRainContent.Items
             orig(self);
             if (NetworkServer.active)
             {
-                if (self.master)
-                {
-                    int itemCount = GetCount(self);
+                int itemCount = GetCount(self);
                     
-                    BorboMochaBehavior mochaBehavior = self.GetComponent<BorboMochaBehavior>(); 
-                    if (mochaBehavior && mochaBehavior.stack < itemCount)
-                    {
-                        mochaBehavior.UpdateTime(pickupDuration);
-                    }
-                    self.AddItemBehavior<BorboMochaBehavior>(itemCount);
+                BorboMochaBehavior mochaBehavior = self.GetComponent<BorboMochaBehavior>(); 
+                if (mochaBehavior && mochaBehavior.stack < itemCount)
+                {
+                    mochaBehavior.UpdateTime(pickupDuration);
                 }
+                self.AddItemBehavior<BorboMochaBehavior>(itemCount);
             }
         }
 

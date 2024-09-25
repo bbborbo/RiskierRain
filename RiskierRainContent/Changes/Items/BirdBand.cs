@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static RiskierRainContent.CoreModules.StatHooks;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -116,7 +117,7 @@ namespace RiskierRainContent.Items
                 birdBuff.buffColor = Color.green;
                 birdBuff.canStack = false;
                 birdBuff.isDebuff = false;
-                birdBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsReadyIcon");
+                birdBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(birdBuff);
             birdDebuff = ScriptableObject.CreateInstance<BuffDef>();
@@ -125,7 +126,7 @@ namespace RiskierRainContent.Items
                 birdDebuff.buffColor = Color.blue;
                 birdDebuff.canStack = true;
                 birdDebuff.isDebuff = true;
-                birdDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsCooldownIcon");
+                birdDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsCooldownIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(birdDebuff);
         }

@@ -127,31 +127,20 @@ namespace RiskierRain.CoreModules
         public override void Init()
         {
             CreateVoidtouchedSingularity();
-            CreateMiredUrnTarball();
 
+            AddCaptainCooldownBuff();
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
-            AddTrophyHunterDebuffs();
-            AddShredDebuff();
-            AddCooldownBuff();
             AddAspdPenaltyDebuff();
-            AddHopooDamageBuff();
-            AddCombatTelescopeCritChance();
             AddVoidCradleCurse();
             AddJetpackSpeedBoost();
             AddShockDebuff();
             AddShockCooldown();
-            AddPlanulaChargeBuff();
-            AddMaskHauntAssets();
             AddCommanderRollBuff();
 
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
             On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
             On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
-
-
-            LanguageAPI.Add(shredKeywordToken, $"<style=cKeywordName>Shred</style>" +
-                $"<style=cSub>Apply a stacking debuff that increases ALL damage taken by {shredArmorReduction}% per stack. Critical Strikes apply more Shred.</style>");
         }
 
         private void OnAddSpreadBloom(On.RoR2.CharacterBody.orig_AddSpreadBloom orig, CharacterBody self, float value)
@@ -175,45 +164,11 @@ namespace RiskierRain.CoreModules
             {
                 commandoRollBuff.buffColor = new Color(0.8f, 0.6f, 0.1f);
                 commandoRollBuff.canStack = false;
-                commandoRollBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                commandoRollBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
                 commandoRollBuff.isDebuff = false;
                 commandoRollBuff.name = "CommandoDualieRoll";
             }
             Assets.buffDefs.Add(commandoRollBuff);
-        }
-
-        #region happiest mask
-        public static BuffDef hauntDebuff;
-        public static GameObject hauntEffectPrefab;
-        private void AddMaskHauntAssets()
-        {
-            hauntDebuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                hauntDebuff.buffColor = new Color(0.9f, 0.7f, 1.0f);
-                hauntDebuff.canStack = false;
-                hauntDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
-                hauntDebuff.isDebuff = true;
-                hauntDebuff.name = "HappiestMaskHauntDebuff";
-            }
-            Assets.buffDefs.Add(hauntDebuff);
-
-            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
-        }
-        #endregion
-
-        public static GameObject miredUrnTarball;
-        private void CreateMiredUrnTarball()
-        {
-            miredUrnTarball = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarSeeker.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
-
-            ProjectileImpactExplosion pie = miredUrnTarball.GetComponent<ProjectileImpactExplosion>();
-            if (pie)
-            {
-                pie.lifetime = 2;
-            }
-
-            R2API.ContentAddition.AddProjectile(miredUrnTarball);
         }
 
         public static GameObject voidtouchedSingularityDelay;
@@ -249,20 +204,6 @@ namespace RiskierRain.CoreModules
             R2API.ContentAddition.AddNetworkedObject(voidtouchedSingularityDelay);
         }
 
-        public static BuffDef planulaChargeBuff;
-        private void AddPlanulaChargeBuff()
-        {
-            planulaChargeBuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                planulaChargeBuff.buffColor = new Color(0.8f, 0.6f, 0.1f);
-                planulaChargeBuff.canStack = true;
-                planulaChargeBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
-                planulaChargeBuff.isDebuff = false;
-                planulaChargeBuff.name = "PlanulaChargeBuff";
-            }
-            Assets.buffDefs.Add(planulaChargeBuff);
-        }
-
         public static BuffDef jetpackSpeedBoost;
         private void AddJetpackSpeedBoost()
         {
@@ -270,7 +211,7 @@ namespace RiskierRain.CoreModules
             {
                 jetpackSpeedBoost.buffColor = new Color(0.9f, 0.2f, 0.2f);
                 jetpackSpeedBoost.canStack = false;
-                jetpackSpeedBoost.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                jetpackSpeedBoost.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
                 jetpackSpeedBoost.isDebuff = false;
                 jetpackSpeedBoost.name = "MageJetpackSpeedBoost";
             }
@@ -286,48 +227,10 @@ namespace RiskierRain.CoreModules
                 voidCradleCurse.canStack = false;
                 voidCradleCurse.isDebuff = false;
                 voidCradleCurse.name = "VoidCradleCurse";
-                voidCradleCurse.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffVoidFog");
+                voidCradleCurse.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffVoidFog.tif").WaitForCompletion();
             }
             buffDefs.Add(voidCradleCurse);
         }
-
-        public static BuffDef hopooDamageBuff;
-        public static BuffDef hopooDamageBuffTemporary;
-        private void AddHopooDamageBuff()
-        {
-            hopooDamageBuff = CreateHopooDamageBuff("Permanent");
-            hopooDamageBuffTemporary = CreateHopooDamageBuff("Temporary");
-            buffDefs.Add(hopooDamageBuff);
-            buffDefs.Add(hopooDamageBuffTemporary);
-        }
-        private BuffDef CreateHopooDamageBuff(string suffix)
-        {
-            BuffDef hopoo = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                hopoo.buffColor = Color.cyan;
-                hopoo.canStack = true;
-                hopoo.isDebuff = false;
-                hopoo.name = "HopooFeatherDamageBuff" + suffix;
-                hopoo.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            }
-            return hopoo;
-        }
-
-        public static BuffDef banditShredDebuff;
-        public static int shredArmorReduction = 15;
-        private void AddShredDebuff()
-        {
-            banditShredDebuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                banditShredDebuff.buffColor = Color.red;
-                banditShredDebuff.canStack = true;
-                banditShredDebuff.isDebuff = true;
-                banditShredDebuff.name = "BanditShredDebuff";
-                banditShredDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffCrippleIcon");
-            }
-            buffDefs.Add(banditShredDebuff);
-        }
-
 
         public static BuffDef shockMarker;
         public static int shockMarkerDuration = 4;
@@ -373,11 +276,6 @@ namespace RiskierRain.CoreModules
             {
                 self.attackSpeed *= (1 - Assets.aspdPenaltyPercent);
             }
-            int shredBuffCount = self.GetBuffCount(Assets.banditShredDebuff);
-            if (shredBuffCount > 0)
-            {
-                self.armor -= shredBuffCount * shredArmorReduction;
-            }
             if (self.HasBuff(captainCdrBuff))
             {
                 SkillLocator skillLocator = self.skillLocator;
@@ -402,7 +300,7 @@ namespace RiskierRain.CoreModules
                 aspdPenaltyDebuff.canStack = false;
                 aspdPenaltyDebuff.isDebuff = false;
                 aspdPenaltyDebuff.name = "AttackSpeedPenalty";
-                aspdPenaltyDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
+                aspdPenaltyDebuff.iconSprite = null;// LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffSlow50Icon");
             }
             buffDefs.Add(aspdPenaltyDebuff);
         }
@@ -411,7 +309,7 @@ namespace RiskierRain.CoreModules
         public static BuffDef captainCdrBuff;
         public static float captainCdrPercent = 0.25f;
 
-        private void AddCooldownBuff()
+        private void AddCaptainCooldownBuff()
         {
             captainCdrBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
@@ -419,7 +317,7 @@ namespace RiskierRain.CoreModules
                 captainCdrBuff.canStack = false;
                 captainCdrBuff.isDebuff = false;
                 captainCdrBuff.name = "CaptainBeaconCdr";
-                captainCdrBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                captainCdrBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
             }
             buffDefs.Add(captainCdrBuff);
         }
@@ -427,31 +325,6 @@ namespace RiskierRain.CoreModules
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;
         public static float harvestExecutionThreshold = 0.2f;
-
-        public static BuffDef bossHunterDebuff;
-        public static BuffDef bossHunterDebuffWithScalpel;
-        private void AddTrophyHunterDebuffs()
-        {
-            bossHunterDebuff = ScriptableObject.CreateInstance<BuffDef>();
-
-            bossHunterDebuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
-            bossHunterDebuff.canStack = false;
-            bossHunterDebuff.isDebuff = true;
-            bossHunterDebuff.name = "TrophyHunterDebuff";
-            bossHunterDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
-
-            buffDefs.Add(bossHunterDebuff);
-
-            bossHunterDebuffWithScalpel = ScriptableObject.CreateInstance<BuffDef>();
-
-            bossHunterDebuffWithScalpel.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
-            bossHunterDebuffWithScalpel.canStack = false;
-            bossHunterDebuffWithScalpel.isDebuff = true;
-            bossHunterDebuffWithScalpel.name = "TrophyHunterScalpelDebuff";
-            bossHunterDebuffWithScalpel.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
-
-            buffDefs.Add(bossHunterDebuffWithScalpel);
-        }
 
         public static BuffDef shatterspleenSpikeBuff;
         private void AddShatterspleenSpikeBuff()
@@ -462,7 +335,7 @@ namespace RiskierRain.CoreModules
             shatterspleenSpikeBuff.canStack = true;
             shatterspleenSpikeBuff.isDebuff = false;
             shatterspleenSpikeBuff.name = "ShatterspleenSpikeCharge";
-            shatterspleenSpikeBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
+            shatterspleenSpikeBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
 
             buffDefs.Add(shatterspleenSpikeBuff);
         }
@@ -476,103 +349,9 @@ namespace RiskierRain.CoreModules
             noRazorwire.canStack = false;
             noRazorwire.isDebuff = true;
             noRazorwire.name = "NoRazorwire";
-            noRazorwire.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffEntangleIcon");
+            noRazorwire.iconSprite = null;//LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffEntangleIcon");
 
             buffDefs.Add(noRazorwire);
-        }
-
-        public static BuffDef combatTelescopeCritChance;
-        private void AddCombatTelescopeCritChance()
-        {
-            combatTelescopeCritChance = ScriptableObject.CreateInstance<BuffDef>();
-
-            combatTelescopeCritChance.buffColor = Color.red;
-            combatTelescopeCritChance.canStack = false;
-            combatTelescopeCritChance.isDebuff = false;
-            combatTelescopeCritChance.name = "CombatTelescopeCrit";
-            combatTelescopeCritChance.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
-
-            buffDefs.Add(combatTelescopeCritChance);
-        }
-
-
-
-        private void AddExecutionThreshold(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int thresholdPosition = 0;
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdcR4(float.NegativeInfinity),
-                x => x.MatchStloc(out thresholdPosition)
-                );
-            
-            c.GotoNext(MoveType.Before,
-                x => x.MatchLdarg(0),
-                x => x.MatchCallOrCallvirt<HealthComponent>("get_isInFrozenState")
-                );
-
-            c.Emit(OpCodes.Ldloc, thresholdPosition);
-            c.Emit(OpCodes.Ldarg, 0);
-            c.EmitDelegate<Func<float, HealthComponent, float>>((currentThreshold, hc) =>
-            {
-                float newThreshold = currentThreshold;
-
-                newThreshold = GetExecutionThreshold(currentThreshold, hc);
-
-                return newThreshold;
-            });
-            c.Emit(OpCodes.Stloc, thresholdPosition);
-        }
-
-        static float GetExecutionThreshold(float currentThreshold, HealthComponent healthComponent)
-        {
-            float newThreshold = currentThreshold;
-            CharacterBody body = healthComponent.body;
-
-            if (body != null)
-            {
-                if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ImmuneToExecutes))
-                {
-                    //bandit specials (finisher)
-                    /*bool hasBanditExecutionBuff = body.HasBuff(desperadoExecutionDebuff) || body.HasBuff(lightsoutExecutionDebuff);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);*/
-                    
-                    //rex harvest (finisher)
-                    /*bool hasRexHarvestBuff = body.HasBuff(RoR2Content.Buffs.Fruiting);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, survivorExecuteThreshold, hasRexHarvestBuff);*/
-
-                    /*bool hasHauntBuff = body.HasBuff(hauntDebuff);
-                    newThreshold = ModifyExecutionThreshold(newThreshold, hauntExecutionThreshold, hasHauntBuff);*/
-
-                    //guillotine
-                    /*int executionBuffCount = body.GetBuffCount(executionDebuffIndex);
-                    float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-                    newThreshold = ModifyExecutionThreshold(newThreshold, threshold, executionBuffCount > 0);*/
-                }
-            }
-
-            return newThreshold;
-        }
-
-        public static float ModifyExecutionThreshold(float currentThreshold, float newThreshold, bool condition)
-        {
-            if (condition)
-            {
-                return Mathf.Max(currentThreshold, newThreshold);
-            }
-            //else...
-            return currentThreshold;
-        }
-
-        private HealthComponent.HealthBarValues DisplayExecutionThreshold(On.RoR2.HealthComponent.orig_GetHealthBarValues orig, HealthComponent self)
-        {
-            HealthComponent.HealthBarValues values = orig(self);
-
-            values.cullFraction = Mathf.Clamp01(GetExecutionThreshold(values.cullFraction, self));
-
-            return values;
         }
 
         #region shaders lol

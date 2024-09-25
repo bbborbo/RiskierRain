@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -94,7 +95,7 @@ namespace RiskierRainContent.Items
 	            frozenShellArmorBuff.buffColor = Color.cyan;
 	            frozenShellArmorBuff.canStack = true;//false
 	            frozenShellArmorBuff.isDebuff = false;
-                frozenShellArmorBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
+                frozenShellArmorBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(frozenShellArmorBuff);
         }

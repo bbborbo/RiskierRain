@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -91,7 +92,7 @@ namespace RiskierRainContent.Items
                 spiritBuff.buffColor = Color.cyan;
                 spiritBuff.canStack = true;
                 spiritBuff.isDebuff = false;
-                spiritBuff.iconSprite = Resources.Load<Sprite>("textures/bufficons/texMovespeedBuffIcon");
+                spiritBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(spiritBuff);
         }

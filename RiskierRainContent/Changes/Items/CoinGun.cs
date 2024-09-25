@@ -125,10 +125,7 @@ What happened to all of our gold?";
             orig(self);
             if (NetworkServer.active)
             {
-                if (self.master)
-                {
-                    CoinGunBehavior GgBehavior = self.AddItemBehavior<CoinGunBehavior>(GetCount(self));
-                }
+                CoinGunBehavior GgBehavior = self.AddItemBehavior<CoinGunBehavior>(GetCount(self));
             }
         }
 
@@ -191,25 +188,24 @@ What happened to all of our gold?";
             GenerateCoinDamageBuff(ref silverDamageBuff, "Silver", new Color(0.6f, 0.6f, 0.6f));
             GenerateCoinDamageBuff(ref goldDamageBuff, "Gold", new Color(1.0f, 0.8f, 0.15f));
             GenerateCoinDamageBuff(ref platinumDamageBuff, "Platinum", new Color(0.9f, 0.9f, 1.0f));
-        }
 
-        static string baseName = "CoinGunDamageBoost";
-        static Sprite defaultSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
-        //Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.png").WaitForCompletion();
-        BuffDef GenerateCoinDamageBuff(ref BuffDef coinBuff, string coinType, Color color, Sprite sprite = null)
-        {
-            coinBuff = ScriptableObject.CreateInstance<BuffDef>();
+            BuffDef GenerateCoinDamageBuff(ref BuffDef coinBuff, string coinType, Color color, Sprite sprite = null)
             {
-                coinBuff.name = baseName + coinType;
-                coinBuff.iconSprite = (sprite == null) ? defaultSprite : sprite;
-                coinBuff.buffColor = color;
-                coinBuff.canStack = true;
-                coinBuff.isDebuff = false;
-            };
-            CoreModules.Assets.buffDefs.Add(coinBuff);
+                coinBuff = ScriptableObject.CreateInstance<BuffDef>();
+                {
+                    coinBuff.name = "CoinGunDamageBoost" + coinType;
+                    coinBuff.iconSprite = (sprite == null) ? defaultSprite : sprite;
+                    coinBuff.buffColor = color;
+                    coinBuff.canStack = true;
+                    coinBuff.isDebuff = false;
+                };
+                CoreModules.Assets.buffDefs.Add(coinBuff);
 
-            return coinBuff;
+                return coinBuff;
+            }
         }
+
+        static Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion();
     }
     public class CoinGunBehavior : CharacterBody.ItemBehavior
     {
@@ -220,6 +216,8 @@ What happened to all of our gold?";
 
         private void FixedUpdate()
         {
+            if (master == null)
+                return;
             if (currentMoney == master.money)
                 return;
 
@@ -227,7 +225,12 @@ What happened to all of our gold?";
             if (CoinGun.includeDeploys)
             {
                 var deployable = master.GetComponent<Deployable>();
-                if (deployable) currentMoney += deployable.ownerMaster.money;
+                if (deployable)
+                {
+                    uint ownerMoney = deployable.ownerMaster.money;
+                    if (ownerMoney > currentMoney)
+                        currentMoney = ownerMoney;
+                }
             }
 
             int newBuffCount = Mathf.Clamp((int)(currentMoney / fixedBaseChestCost), 0, CoinGun.maxPlatinum);

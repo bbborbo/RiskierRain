@@ -14,13 +14,14 @@ using UnityEngine.Networking;
 using static BorboStatUtils.BorboStatUtils;
 using System.Linq;
 using System.Collections;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {
-        public static BuffDef luckBuffIndex;
-        public static BuffDef executionDebuffIndex;
+        public static BuffDef luckBuff;
+        public static BuffDef executionDebuff;
         public static float newExecutionThresholdBase = 0.15f;
         public static float newExecutionThresholdStack = 0.10f;
 
@@ -84,39 +85,39 @@ namespace RiskierRainContent.Equipment
         #region assets
         private void AddExecutionDebuff()
         {
-            executionDebuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+            executionDebuff = ScriptableObject.CreateInstance<BuffDef>();
 
-            executionDebuffIndex.buffColor = Color.white;
-            executionDebuffIndex.canStack = true;
-            executionDebuffIndex.isDebuff = false;
-            executionDebuffIndex.name = "ExecutionDebuffStackable";
-            executionDebuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+            executionDebuff.buffColor = Color.white;
+            executionDebuff.canStack = true;
+            executionDebuff.isDebuff = false;
+            executionDebuff.name = "ExecutionDebuffStackable";
+            executionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Nullifier/texBuffNullifiedIcon.tif").WaitForCompletion();
 
-            CoreModules.Assets.buffDefs.Add(executionDebuffIndex);
+            CoreModules.Assets.buffDefs.Add(executionDebuff);
         }
         private void AddLuckBuff()
         {
-            luckBuffIndex = ScriptableObject.CreateInstance<BuffDef>();
+            luckBuff = ScriptableObject.CreateInstance<BuffDef>();
 
-            luckBuffIndex.buffColor = Color.green;
-            luckBuffIndex.canStack = true;
-            luckBuffIndex.isDebuff = false;
-            luckBuffIndex.name = "LuckBuffStackable";
-            luckBuffIndex.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffNullifiedIcon");
+            luckBuff.buffColor = Color.green;
+            luckBuff.canStack = true;
+            luckBuff.isDebuff = false;
+            luckBuff.name = "LuckBuffStackable";
+            luckBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Nullifier/texBuffNullifiedIcon.tif").WaitForCompletion();
 
-            CoreModules.Assets.buffDefs.Add(luckBuffIndex);
+            CoreModules.Assets.buffDefs.Add(luckBuff);
         }
         #endregion
 
         #region stats
         private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
         {
-            luck += sender.GetBuffCount(luckBuffIndex);
+            luck += sender.GetBuffCount(luckBuff);
         }
 
         private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
         {
-            int executionBuffCount = sender.GetBuffCount(executionDebuffIndex);
+            int executionBuffCount = sender.GetBuffCount(executionDebuff);
 
             float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
             executeThreshold = ModifyExecutionThreshold(executeThreshold, threshold, executionBuffCount > 0);
@@ -130,9 +131,9 @@ namespace RiskierRainContent.Equipment
             if (attackerBody && victimBody)
             {
                 SkillLocator skillLocator = attackerBody.skillLocator;
-                if (victimBody.HasBuff(executionDebuffIndex))
+                if (victimBody.HasBuff(executionDebuff))
                 {
-                    attackerBody.AddTimedBuffAuthority(luckBuffIndex.buffIndex, luckDuration);
+                    attackerBody.AddTimedBuffAuthority(luckBuff.buffIndex, luckDuration);
 
                     if (skillLocator != null)
                     {
@@ -269,7 +270,7 @@ namespace RiskierRainContent.Equipment
                     if (hurtBox && hurtBox.healthComponent && hurtBox.healthComponent.body)
                     {
                         bool isElite = hurtBox.healthComponent.body.isElite;
-                        if (isElite && !hurtBox.healthComponent.body.HasBuff(executionDebuffIndex))
+                        if (isElite && !hurtBox.healthComponent.body.HasBuff(executionDebuff))
                         {
                             source = hurtBox;
                             break;
@@ -315,7 +316,7 @@ namespace RiskierRainContent.Equipment
 
                         for(int i = 0; i < executeCount; i++)
                         {
-                            targetBody.AddTimedBuff(executionDebuffIndex, executeDuration);
+                            targetBody.AddTimedBuff(executionDebuff, executeDuration);
                         }
                         damage = attackerBody.damage * guillotineDamageCoefficient;
                     }

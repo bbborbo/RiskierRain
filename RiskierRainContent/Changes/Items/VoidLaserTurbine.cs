@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace RiskierRainContent.Items
@@ -101,7 +102,7 @@ namespace RiskierRainContent.Items
             turbineChargeBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 turbineChargeBuff.name = "VoidTurbineChargeBuff";
-                turbineChargeBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("texbuffelementalringsreadyicon");
+                turbineChargeBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
                 turbineChargeBuff.buffColor = new Color(0.5f, 0.0f, 0.4f);
                 turbineChargeBuff.canStack = true;
                 turbineChargeBuff.isDebuff = false;
@@ -110,7 +111,7 @@ namespace RiskierRainContent.Items
             turbineReadyBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 turbineReadyBuff.name = "VoidTurbineReadyBuff";
-                turbineReadyBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("texbuffelementalringsreadyicon");
+                turbineReadyBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
                 turbineReadyBuff.buffColor = new Color(0.9f, 0.2f, 0.8f);
                 turbineReadyBuff.canStack = false;
                 turbineReadyBuff.isDebuff = false;

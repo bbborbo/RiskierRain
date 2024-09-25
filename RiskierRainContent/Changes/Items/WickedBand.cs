@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static RiskierRainContent.CoreModules.StatHooks;
 
@@ -129,7 +130,7 @@ namespace RiskierRainContent.Items
                 wickedCooldown.buffColor = Color.gray;
                 wickedCooldown.canStack = false;
                 wickedCooldown.isDebuff = true;
-                wickedCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffElementalRingsReadyIcon");
+                wickedCooldown.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(wickedCooldown);
         }

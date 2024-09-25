@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace RiskierRainContent.Items
@@ -110,7 +111,7 @@ namespace RiskierRainContent.Items
             scugBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 scugBuff.name = "ScugBuff";
-                scugBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("texbuffelementalringsreadyicon");
+                scugBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
                 scugBuff.buffColor = new Color(0.9f, 0.8f, 0.0f);
                 scugBuff.canStack = false;
                 scugBuff.isDebuff = false;

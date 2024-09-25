@@ -10,6 +10,7 @@ using UnityEngine.Networking;
 using static RiskierRainContent.CoreModules.StatHooks;
 using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -123,7 +124,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
                 dangerCritBuff.canStack = false;
                 dangerCritBuff.isDebuff = false;
                 dangerCritBuff.name = "NewLopperCritBonus";
-                dangerCritBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffFullCritIcon");
+                dangerCritBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(dangerCritBuff);
         }

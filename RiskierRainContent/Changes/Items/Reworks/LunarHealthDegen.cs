@@ -121,7 +121,7 @@ namespace RiskierRainContent.Items
                 lunarLuckBuff.buffColor = Color.blue;
                 lunarLuckBuff.canStack = true;
                 lunarLuckBuff.isDebuff = false;
-                lunarLuckBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
+                lunarLuckBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion();
             };
             lunarLuckBarrierCooldown = ScriptableObject.CreateInstance<BuffDef>();
             {
@@ -130,7 +130,7 @@ namespace RiskierRainContent.Items
                 lunarLuckBarrierCooldown.canStack = false;
                 lunarLuckBarrierCooldown.isDebuff = false;
                 lunarLuckBarrierCooldown.isCooldown = true;
-                lunarLuckBarrierCooldown.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffGenericShield");
+                lunarLuckBarrierCooldown.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(lunarLuckBuff);
             CoreModules.Assets.buffDefs.Add(lunarLuckBarrierCooldown);

@@ -10,6 +10,7 @@ using UnityEngine.Networking;
 using On.RoR2.Items;
 using RoR2.Orbs;
 using RoR2.ExpansionManagement;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRainContent.Items
 {
@@ -130,7 +131,7 @@ Of course, you can always buy the premium version for unlimited discounts~
             greedyRingBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 greedyRingBuff.name = "GreedyCouponBuff";
-                greedyRingBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("texbuffelementalringsreadyicon");
+                greedyRingBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
                 greedyRingBuff.buffColor = new Color(0.9f, 0.8f, 0.0f);
                 greedyRingBuff.canStack = true;
                 greedyRingBuff.isDebuff = false;

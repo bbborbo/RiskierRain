@@ -40,7 +40,7 @@ namespace BossDropRework
             bossHunterDebuff.canStack = false;
             bossHunterDebuff.isDebuff = true;
             bossHunterDebuff.name = "TrophyHunterDebuff";
-            bossHunterDebuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffLunarDetonatorIcon");
+            bossHunterDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
 
             R2API.ContentAddition.AddBuffDef(bossHunterDebuff);
 

@@ -138,7 +138,7 @@ namespace RiskierRainContent.Items
             brewActiveBuff = ScriptableObject.CreateInstance<BuffDef>();
             {
                 brewActiveBuff.name = "BerserkerBrewActive";
-                brewActiveBuff.iconSprite = LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texmovespeedbufficon");
+                brewActiveBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
                 brewActiveBuff.buffColor = new Color(1f, 0.3f, 0.1f);
                 brewActiveBuff.canStack = false;
                 brewActiveBuff.isDebuff = false;

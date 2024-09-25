@@ -186,7 +186,7 @@ namespace RiskierRain
                 MonsterToothDurationBuff();
             }
             //infusion
-            if (GetConfigBool(true, "Infusion"))
+            if (false)//GetConfigBool(true, "Infusion"))
             {
                 this.FuckingFixInfusion();
             }

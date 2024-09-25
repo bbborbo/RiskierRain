@@ -254,12 +254,6 @@ namespace RiskierRain
                 this.FixJellyNuke();
             }
 
-            // planula
-            if (GetConfigBool(true, "Planula"))
-            {
-                this.ReworkPlanula();
-            }
-
             // shatterspleen, INT
             if (GetConfigBool(true, "Shatterspleen"))
             {

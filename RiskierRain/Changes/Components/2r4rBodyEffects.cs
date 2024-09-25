@@ -15,9 +15,7 @@ namespace RiskierRain.Changes.Components
 
         void Update()
         {
-            UpdateSingleTemporaryVisualEffect(ref happiestMaskHauntEffect,
-                CoreModules.Assets.hauntEffectPrefab, body.radius,
-                body.HasBuff(CoreModules.Assets.hauntDebuff), "");
+
         }
 
         private void UpdateSingleTemporaryVisualEffect(ref TemporaryVisualEffect tempEffect, GameObject obj, float effectRadius, bool active, string childLocatorOverride = "")

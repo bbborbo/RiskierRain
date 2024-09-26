@@ -52,7 +52,7 @@ namespace RiskierRainContent.Equipment
 
         public override string EquipmentPickupDesc => "I can't believe we left this in the game!";
 
-        public override string EquipmentFullDescription => "Fires a projectile for <style=cIsDamage>100% damage</style>.";
+        public override string EquipmentFullDescription => "Fires a projectile.";
 
         public override string EquipmentLore => "";
 
@@ -76,6 +76,7 @@ namespace RiskierRainContent.Equipment
             Hooks();
             CreateEquipment();
             CreateLang();
+            EquipDef.canBeRandomlyTriggered = true;
 
             zapinatorDropTable = ScriptableObject.CreateInstance<BasicPickupDropTable>();
             zapinatorDropTable.tier1Weight = 1;

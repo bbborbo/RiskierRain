@@ -50,11 +50,11 @@ namespace RiskierRainContent.Equipment
 
         public override string EquipmentLangTokenName => "BROKENZAPINATOR";
 
-        public override string EquipmentPickupDesc => "It might be broken...";
+        public override string EquipmentPickupDesc => "I can't believe we left this in the game!";
 
         public override string EquipmentFullDescription => "Fires a projectile for <style=cIsDamage>100% damage</style>.";
 
-        public override string EquipmentLore => "I can't believe we left this in the game!";
+        public override string EquipmentLore => "";
 
         public override GameObject EquipmentModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 

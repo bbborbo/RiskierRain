@@ -125,7 +125,6 @@ namespace RiskierRainContent.CoreModules
         public static List<GameObject> bodyPrefabs = new List<GameObject>();
 
         public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
-        public static string shredKeywordToken = "DUCK_SHRED_KEYWORD";
 
         public override void Init()
         {

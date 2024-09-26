@@ -48,10 +48,10 @@ namespace RiskierRainContent.Items
         {
             GetStatCoefficients += CrystalStats;
             On.RoR2.GlobalEventManager.OnCrit += EnergyCrystalCrit;
-            On.RoR2.GlobalEventManager.OnHitAll += EnergyCrystalHit;
+            On.RoR2.GlobalEventManager.OnHitAllProcess += EnergyCrystalHit;
         }
 
-        private void EnergyCrystalHit(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
+        private void EnergyCrystalHit(On.RoR2.GlobalEventManager.orig_OnHitAllProcess orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
         {
             orig(self, damageInfo, hitObject);
             if (!damageInfo.crit) return;

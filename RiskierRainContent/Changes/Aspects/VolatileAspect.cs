@@ -55,7 +55,7 @@ namespace RiskierRainContent.Equipment
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnHitAll += VolatileOnHit;
+            On.RoR2.GlobalEventManager.OnHitAllProcess+= VolatileOnHit;
             //On.RoR2.CharacterBody.FixedUpdate += VolatileMortar;
             On.RoR2.CharacterBody.AddBuff_BuffIndex += VolatileBuffCheck;
             On.RoR2.GlobalEventManager.OnCharacterDeath += SpiteOnDeath;
@@ -159,7 +159,7 @@ namespace RiskierRainContent.Equipment
             }
         }
 
-        private void VolatileOnHit(On.RoR2.GlobalEventManager.orig_OnHitAll orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private void VolatileOnHit(On.RoR2.GlobalEventManager.orig_OnHitAllProcess orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             if (damageInfo.attacker)
             {

@@ -126,7 +126,7 @@ namespace RiskierRain
             bombPie.lifetime = 1.2f;
 
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
-            IL.RoR2.GlobalEventManager.OnHitAll += OverloadingBombDamage;
+            IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
         }
 
         private void OverloadingBombDamage(ILContext il)

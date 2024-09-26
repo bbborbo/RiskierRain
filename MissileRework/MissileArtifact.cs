@@ -165,7 +165,7 @@ namespace MissileRework
             orig(self);
             if (self.isAuthority)
             {
-                if (!self.hasBoost)
+                if (!self.hasBoost && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
                 {
                     Ray aimRay = self.GetAimRay();
 

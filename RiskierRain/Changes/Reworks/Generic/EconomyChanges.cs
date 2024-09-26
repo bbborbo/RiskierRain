@@ -176,6 +176,7 @@ namespace RiskierRain
             if (self.bonusDirector)
             {
                 self.bonusDirector.expRewardCoefficient *= teleporterEnemyRewardCoefficient;
+                self.bonusDirector.goldRewardCoefficient *= teleporterEnemyRewardCoefficient;
             }
         }
 

@@ -267,7 +267,7 @@ namespace RiskierRain
             if (casinoChest != null)
             {
                 casinoChest.cost = casinoChestTypeCost;
-                casinoChest.displayNameToken = "Double Chest";//doesnt work
+                //casinoChest.displayNameToken = "Double Chest";//doesnt work
             }
             if (chanceShrine != null)
             {
@@ -317,13 +317,14 @@ namespace RiskierRain
                 PurchaseInteraction cradleInteraction = voidCradlePrefab.GetComponent<PurchaseInteraction>();
                 if (cradleInteraction)
                 {
+                    cradleInteraction.costType = CostTypeIndex.SoulCost;
                     cradleInteraction.cost = (int)(cradleHealthCost * 100);
                     cradleInteraction.setUnavailableOnTeleporterActivated = true;
                 }
-                voidCradlePrefab.AddComponent<InteractableCurseController>();
+                //voidCradlePrefab.AddComponent<InteractableCurseController>();
             }
-            On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
-            GetStatCoefficients += VoidCradleCurse;
+            //On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
+            //GetStatCoefficients += VoidCradleCurse;
         }
 
         private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)

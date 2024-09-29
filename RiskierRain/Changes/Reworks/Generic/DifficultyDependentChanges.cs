@@ -468,12 +468,12 @@ namespace RiskierRain
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 0.2f;//1
+        public static float fastDirectorEliteBias = 0.5f;//1
         public static float fastDirectorCreditMultiplier = 1f;//0.75f
-        public static float slowDirectorEliteBias = 0.2f;//1
+        public static float slowDirectorEliteBias = 1f;//0.2f;//1
         public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
 
-        public static float teleLesserEliteBias = 0.2f;//1
+        public static float teleLesserEliteBias = 0.5f;//0.2f;//1
         public static float teleLesserCreditMultiplier = 2f;//1f
         public static float teleBossEliteBias = 1f;//1
         public static float teleBossCreditMultiplier = 1f;//1f
@@ -501,22 +501,23 @@ namespace RiskierRain
             GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
             AdjustTeleporterDirectors(teleporterDefault.GetComponents<CombatDirector>());
             AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
-        }
-        void AdjustTeleporterDirectors(CombatDirector[] directors)
-        {
-            if(directors != null && directors.Length > 0)
+
+            void AdjustTeleporterDirectors(CombatDirector[] directors)
             {
-                foreach (CombatDirector director in directors)
+                if (directors != null && directors.Length > 0)
                 {
-                    if (director.customName == "Boss")
+                    foreach (CombatDirector director in directors)
                     {
-                        director.eliteBias = teleBossEliteBias;
-                        director.creditMultiplier = teleBossCreditMultiplier;
-                    }
-                    if (director.customName == "Monsters")
-                    {
-                        director.eliteBias = teleLesserEliteBias;
-                        director.creditMultiplier = teleLesserCreditMultiplier;
+                        if (director.customName == "Boss")
+                        {
+                            director.eliteBias = teleBossEliteBias;
+                            director.creditMultiplier = teleBossCreditMultiplier;
+                        }
+                        if (director.customName == "Monsters")
+                        {
+                            director.eliteBias = teleLesserEliteBias;
+                            director.creditMultiplier = teleLesserCreditMultiplier;
+                        }
                     }
                 }
             }

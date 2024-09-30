@@ -63,9 +63,6 @@
     <Reference Include="Wwise">
       <HintPath>libs\Wwise.dll</HintPath>
     </Reference>
-    <Reference Include="Decalicious">
-      <HintPath>libs\Decalicious.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

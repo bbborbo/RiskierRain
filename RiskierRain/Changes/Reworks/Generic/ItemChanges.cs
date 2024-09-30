@@ -554,8 +554,9 @@ namespace RiskierRain
 
             int fuelCell = 0;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out fuelCell)
                 );
 

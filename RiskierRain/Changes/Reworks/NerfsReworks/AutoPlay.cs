@@ -352,8 +352,9 @@ namespace RiskierRain
 
 			int countLoc = -1;
 			c.GotoNext(MoveType.After,
-				x => x.MatchLdsfld("RoR2.RoR2Content/Items", "ExplodeOnDeath"),
-				x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+				x => x.MatchLdsfld("RoR2.RoR2Content/Items", "ExplodeOnDeath")
+				);
+			c.GotoNext(MoveType.After,
 				x => x.MatchStloc(out countLoc)
 				);
 
@@ -388,11 +389,11 @@ namespace RiskierRain
 
 			int countLoc = -1;
 			c.GotoNext(MoveType.Before,
-				x => x.MatchLdsfld("RoR2.DLC1Content/Items", "ExplodeOnDeathVoid"),
-				x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+				x => x.MatchLdsfld("RoR2.DLC1Content/Items", "ExplodeOnDeathVoid")
+				);
+			c.GotoNext(MoveType.Before,
 				x => x.MatchStloc(out countLoc)
 				);
-			c.Index += 2;
 			c.EmitDelegate<Func<int, int>>((itemCountIn) =>
 			{
 				if(itemCountIn > 0)

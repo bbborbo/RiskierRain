@@ -102,8 +102,9 @@ namespace ChillRework
             int itemCountLocation = 51;
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out itemCountLocation)
                 );
 

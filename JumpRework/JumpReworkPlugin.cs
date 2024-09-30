@@ -179,8 +179,9 @@ namespace JumpRework
 
             int featherCountLoc = 0;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out featherCountLoc)
                 );
 

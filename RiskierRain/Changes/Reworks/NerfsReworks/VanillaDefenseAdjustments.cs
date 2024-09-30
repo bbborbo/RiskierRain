@@ -79,8 +79,9 @@ namespace RiskierRain
 
             int countLoc = 14;
             c.GotoNext(MoveType.AfterLabel,
-                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "BearVoid"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "BearVoid")
+                );
+            c.GotoNext(MoveType.AfterLabel,
                 x => x.MatchStloc(out countLoc)
                 );
             c.GotoNext(MoveType.Before,
@@ -127,8 +128,9 @@ namespace RiskierRain
 
             int countLoc = 6;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Hoof"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Hoof")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -168,8 +170,9 @@ namespace RiskierRain
 
             int countLoc = -1;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "SprintBonus"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "SprintBonus")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -233,8 +236,9 @@ namespace RiskierRain
 
             int countLoc = -1;
             c.GotoNext(MoveType.AfterLabel,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -267,11 +271,13 @@ namespace RiskierRain
 
             int countLoc = -1;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out countLoc)
                 );
 
+            //match to flat heal location
             c.GotoNext(MoveType.Before,
                 x => x.MatchStloc(out _)
                 );
@@ -284,6 +290,7 @@ namespace RiskierRain
             });
 
 
+            //match to percent heal location
             c.GotoNext(MoveType.Before,
                 x => x.MatchStloc(out _)
                 );
@@ -301,8 +308,9 @@ namespace RiskierRain
 
             int countLoc = -1;
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "HealOnCrit"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "HealOnCrit")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out countLoc)
                 );
             c.GotoNext(MoveType.Before,

@@ -50,8 +50,9 @@ namespace RiskierRain
             int cooldownTrackerLocation = 51;
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out itemCountLocation)
                 );
 
@@ -113,8 +114,9 @@ namespace RiskierRain
             int totalDamageMultiplierLocation = 85;
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "IceRing")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out itemCountLocation)
                 );
 
@@ -150,8 +152,9 @@ namespace RiskierRain
             int totalDamageMultiplierLocation = 91;
 
             c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "FireRing"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount)),
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "FireRing")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchStloc(out itemCountLocation)
                 );
 

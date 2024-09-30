@@ -60,7 +60,7 @@ namespace MissileRework
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.Before,
+            c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Missile"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
                 );

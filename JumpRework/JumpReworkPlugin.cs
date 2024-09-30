@@ -24,6 +24,7 @@ namespace JumpRework
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(DynamicJump.DynamicJumpPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition))]
@@ -34,7 +35,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.0.5";
+        public const string version = "1.1.0";
         #endregion
         public static bool IsMissileArtifactEnabled()
         {
@@ -94,7 +95,6 @@ namespace JumpRework
         {
             IL.RoR2.CharacterBody.RecalculateStats += JumpReworkJumpCount;
             On.EntityStates.GenericCharacterMain.ApplyJumpVelocity += DoJumpEvent;
-            IL.RoR2.CharacterMotor.PreMove += DynamicJump;
             IL.EntityStates.GenericCharacterMain.ProcessJump += FeatherNerf;
 
             FeatherRework();
@@ -130,47 +130,6 @@ namespace JumpRework
                 );
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, doubleJumpVerticalBonus);
-        }
-
-
-        public static float dynamicJumpAscentHoldGravity = 0.8f; //1f
-        public static float dynamicJumpAscentReleaseGravity = 1.3f; //1f
-        public static float dynamicJumpDescentGravity = 1f; //1f
-        private void DynamicJump(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<UnityEngine.Physics>("get_gravity"),
-                x => x.MatchLdfld<Vector3>("y")
-                );
-
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<float, CharacterMotor, float>>((gravityIn, motor) =>
-            {
-                float gravityOut = gravityIn;
-
-                if (!motor.disableAirControlUntilCollision)
-                {
-                    if (motor.velocity.y >= 0)
-                    {
-                        if (motor.body.inputBank.jump.down)
-                        {
-                            gravityOut *= dynamicJumpAscentHoldGravity;
-                        }
-                        else
-                        {
-                            gravityOut *= dynamicJumpAscentReleaseGravity;
-                        }
-                    }
-                    else
-                    {
-                        gravityOut *= dynamicJumpDescentGravity;
-                    }
-                }
-
-                return gravityOut;
-            });
         }
 
         private void JumpReworkJumpCount(ILContext il)

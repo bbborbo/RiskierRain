@@ -591,15 +591,11 @@ namespace RiskierRain
             }
 
             //printer
-            if (GetConfigBool(true, "Economy: Printer"))
+            if (GetConfigBool(true, "Economy: Printers and Scrappers"))
             {
-                DirectorAPI.InteractableActions += PrinterOccurrenceHook;
-            }
-
-            //scrapper
-            if (GetConfigBool(true, "Economy: Scrapper"))
-            {
-                DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
+                //DirectorAPI.InteractableActions += PrinterOccurrenceHook;
+                //DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
+                DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook;
             }
 
             //equipment barrels and shops

@@ -482,23 +482,38 @@ namespace RiskierRain
         public int printerRedLimit = 1;//-1
         public int printerRedWeightS5 = 1000;//1
         public int printerRedLimitS5 = 2;//-1
+        private void PrinterScrapperOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
+        {
+            string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();
+            string printerGreen = DirectorAPI.Helpers.InteractableNames.Printer3DLarge.ToLowerInvariant();//.ToLower();
+            string printerRed = DirectorAPI.Helpers.InteractableNames.PrinterMiliTech.ToLowerInvariant();//.ToLower();
+            string scrapper = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();
+
+            bool isStageFive = IsStageFive(currentStage.stage);
+
+            ChangeInteractableWeightForPool(pool, printerGreen, printerGreenWeight, printerGreenLimit);
+            if (isStageFive)
+            {
+                ChangeInteractableWeightForPool(pool, printerRed, printerRedWeightS5, printerRedLimitS5);
+                RemoveExistingInteractable(pool, scrapper);
+            }
+            else
+            {
+                ChangeInteractableWeightForPool(pool, printerRed, printerRedWeight, printerRedLimit);
+            }
+        }
         private void PrinterOccurrenceHook(DccsPool pool, DirectorAPI.StageInfo currentStage)
         {
             string printerWhite = DirectorAPI.Helpers.InteractableNames.Printer3D.ToLowerInvariant();//.ToLower();
             string printerGreen = DirectorAPI.Helpers.InteractableNames.Printer3DLarge.ToLowerInvariant();//.ToLower();
             string printerRed = DirectorAPI.Helpers.InteractableNames.PrinterMiliTech.ToLowerInvariant();//.ToLower();
+            string scrapper = DirectorAPI.Helpers.InteractableNames.Scrapper.ToLowerInvariant();
 
             bool isPrinterStage = OnPrinterStage(currentStage.stage);
             //Debug.Log(currentStage.stage.ToString() + " Is Printer Stage: " + isPrinterStage);
-
             if (isPrinterStage)
             {
                 //ChangeInteractableWeightForPool(printerWhite, 12 /*idk what it is in vanilla*/, pool);
-                ChangeInteractableWeightForPool(pool, printerGreen, printerGreenWeight, printerGreenLimit);
-                if (currentStage.stage == DirectorAPI.Stage.SkyMeadow)
-                    ChangeInteractableWeightForPool(pool, printerRed, printerRedWeightS5, printerRedLimitS5);
-                else
-                    ChangeInteractableWeightForPool(pool, printerRed, printerRedWeight, printerRedLimit);
             }
             else if (!currentStage.CheckStage(DirectorAPI.Stage.Custom, "") || IsModdedScrapperStage(currentStage.stage))
             {
@@ -553,6 +568,11 @@ namespace RiskierRain
             return stage == DirectorAPI.Stage.RallypointDelta
                 || stage == DirectorAPI.Stage.ScorchedAcres
                 || stage == DirectorAPI.Stage.SulfurPools;
+        }
+        private bool IsStageFive(DirectorAPI.Stage stage)
+        {
+            return stage == DirectorAPI.Stage.SkyMeadow
+                || stage == DirectorAPI.Stage.HelminthHatchery;
         }
         private bool IsModdedPrinterStage(DirectorAPI.Stage stage)//this shit dont work im goin to bed
         {

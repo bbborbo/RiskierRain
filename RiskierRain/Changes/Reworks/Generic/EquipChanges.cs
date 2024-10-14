@@ -82,28 +82,29 @@ namespace RiskierRain
 
         public void MakeEnemiesuseEquipment()
         {
+            Debug.Log("Enemies using equipment needs to be fixed");
             On.RoR2.EquipmentSlot.FixedUpdate += TryUseEquip;
         }
 
         private void TryUseEquip(On.RoR2.EquipmentSlot.orig_FixedUpdate orig, EquipmentSlot self)
         {
             orig(self);
-            if (!self.characterBody.isPlayerControlled)
+            if (!self.characterBody.isPlayerControlled && self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
             {
-                    if (!self.characterBody.outOfCombat)
+                if (!self.characterBody.outOfCombat)
+                {
+                    //self.ExecuteIfReady(EquipmentCatalog.GetEquipmentDef(self.equipmentIndex));
+                    bool isEquipmentActivationAllowed = self.characterBody.isEquipmentActivationAllowed;
+                    if (isEquipmentActivationAllowed /**&& self.hasEffectiveAuthority*/)
                     {
-                        //self.ExecuteIfReady(EquipmentCatalog.GetEquipmentDef(self.equipmentIndex));
-                        bool isEquipmentActivationAllowed = self.characterBody.isEquipmentActivationAllowed;
-                        if (isEquipmentActivationAllowed /**&& self.hasEffectiveAuthority*/)
+                        if (NetworkServer.active)
                         {
-                            if (NetworkServer.active)
-                            {
-                                self.ExecuteIfReady();
-                                return;
-                            }
-                            self.CallCmdExecuteIfReady();
+                            self.ExecuteIfReady();
+                            return;
                         }
+                        self.CallCmdExecuteIfReady();
                     }
+                }
              
             }
         }

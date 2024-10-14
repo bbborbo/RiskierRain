@@ -19,7 +19,7 @@ namespace RiskierRainContent.Changes.Aspects
 
         public override string EliteAffixToken => "AFFIX_WHIRLWIND";
 
-        public override string EliteModifier => "Churning"; //churning, gyrating, swirling, winding
+        public override string EliteModifier => "Howling"; //churning, gyrating, swirling, winding
 
         public override string EliteEquipmentName => "Twisted Stare";
 

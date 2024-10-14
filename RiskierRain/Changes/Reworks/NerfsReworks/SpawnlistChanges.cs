@@ -17,8 +17,17 @@ namespace RiskierRain
             //roost
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.DistantRoost);
 
-            Helpers.AddNewMonsterToStage(DirectorCards.Vulture, MonsterCategory.Minibosses, DirectorAPI.Stage.DistantRoost);
+#pragma warning disable CS0618 // It tells me its obsolete but its just easier to do it this way
+
             Helpers.AddNewMonsterToStage(DirectorCards.RoboBall, MonsterCategory.Champions, DirectorAPI.Stage.DistantRoost); //roost needed a loop boss and i couldnt think of anything better
+            
+            //included an example of using it the right way though
+            var monsterCardHolder = new DirectorCardHolder
+            {
+                Card = DirectorCards.Vulture,
+                MonsterCategory = MonsterCategory.Minibosses
+            };
+            Helpers.AddNewMonsterToStage(monsterCardHolder, false, DirectorAPI.Stage.DistantRoost);
 
             //plains
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
@@ -90,6 +99,7 @@ namespace RiskierRain
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.XiConstruct, DirectorAPI.Stage.SkyMeadow);
 
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SkyMeadow);
+#pragma warning restore CS0618 // Type or member is obsolet
         }
         public void AddMonsterCardToSpawnlist(DirectorCardCategorySelection categorySelection, DirectorCard directorCard, MonsterCategory monsterCategory)
         {

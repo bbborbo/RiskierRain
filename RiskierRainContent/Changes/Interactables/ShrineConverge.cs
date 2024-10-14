@@ -36,7 +36,7 @@ namespace RiskierRainContent.Interactables
 
         public override float voidSeedWeight => 0;
 
-        public override int normalWeight => 8;
+        public override int normalWeight => 12;
 
         public override int favoredWeight => 300000;
 
@@ -44,9 +44,9 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 15;
 
-        public override CostTypeIndex costTypeIndex => CostTypeIndex.Money;
+        public override CostTypeIndex costTypeIndex => CostTypeIndex.None;
 
-        public override int costAmount => 1;
+        public override int costAmount => 0;
 
         public override int interactableMinimumStageCompletions => 3;
 

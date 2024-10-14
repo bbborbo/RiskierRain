@@ -35,7 +35,7 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 20;
 
-        public override CostTypeIndex costTypeIndex => CostTypeIndex.Money;
+        public override CostTypeIndex costTypeIndex => CostTypeIndex.None;
 
         public override int costAmount => 0;
 

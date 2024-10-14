@@ -14,6 +14,7 @@ using UnityEngine.Networking;
 using System.Linq;
 using RoR2.Hologram;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables
 {
@@ -31,40 +32,68 @@ namespace RiskierRainContent.Interactables
 
 	public abstract class InteractableBase
     {
-		public abstract string interactableName { get; }
-		public abstract string interactableContext { get; }
-		public abstract string interactableLangToken { get; }
-		public abstract GameObject interactableModel { get; }
+		public abstract string InteractableName { get; }
+		public abstract string InteractableContext { get; }
+		public abstract string InteractableLangToken { get; }
+		public abstract GameObject InteractableModel { get; }
 
 		//janky solutions inbound!!! dorry :(
 		public abstract string modelName { get; }
 		public abstract string prefabName { get; }//???? fuck
-		public abstract bool modelIsCloned { get; }
+		public abstract bool ShouldCloneModel { get; }
 		public GameObject model;
 
 		public CustomInteractable customInteractable = new CustomInteractable();
+
+		public PurchaseInteraction InteractionComponent;
+
+		public abstract float voidSeedWeight { get; }
+		public abstract int normalWeight { get; }
+		public abstract int favoredWeight { get; }
+		public abstract DirectorAPI.InteractableCategory category { get; }
+		public abstract int spawnCost { get; }
+		public static GameObject interactableBodyModelPrefab;
+		public static InteractableSpawnCard interactableSpawnCard;
+		public abstract CostTypeIndex costTypeIndex { get; }
+		public abstract int costAmount { get; }
+		public static DirectorCard interactableDirectorCard;
+		public bool hasAddedInteractable;
+
+		public abstract int interactableMinimumStageCompletions { get; }
+		public abstract bool automaticallyScaleCostWithDifficulty { get; }
+		public abstract bool setUnavailableOnTeleporterActivated { get; }
+		public abstract bool isShrine { get; }
+
+		//public static float floorOffset;
+		public abstract bool orientToFloor { get; }
+		public abstract bool skipSpawnWhenSacrificeArtifactEnabled { get; }
+		public abstract float weightScalarWhenSacrificeArtifactEnabled { get; }
+		public abstract int maxSpawnsPerStage { get; }
+
+		//stages to spawn on (help me)
+
 		public abstract void Init(ConfigFile config);
 		protected void CreateLang()
 		{
-			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME", this.interactableName);
-			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT", this.interactableContext);
+			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME", this.InteractableName);
+			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.InteractableLangToken + "_CONTEXT", this.InteractableContext);
 		}
-
+		public abstract UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction);
 		public void CreateInteractable()
         {
-			if (interactableModel == null)
+			if (InteractableModel == null)
 			{
 				Debug.Log("interactableModel null :(");
 				return;
 			}
 			bool hajabaja = modelName == prefabName;
-			if (!modelIsCloned)
+			if (!ShouldCloneModel)
             {
-				model = interactableModel;
+				model = InteractableModel;
             }
             else
             {
-				model = interactableModel.InstantiateClone("model", true); 
+				model = InteractableModel.InstantiateClone(prefabName, true); 
             }
 			interactableBodyModelPrefab = this.model;
 			interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
@@ -73,40 +102,61 @@ namespace RiskierRainContent.Interactables
             {
 				GameObject.Destroy(oldPurchaseInteraction);
             }
-			PurchaseInteraction purchaseInteraction = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
+			InteractionComponent = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
 
-			purchaseInteraction.displayNameToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
-			purchaseInteraction.contextToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_CONTEXT";
-			purchaseInteraction.costType = (CostTypeIndex)costTypeIndex;
-			purchaseInteraction.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
-			purchaseInteraction.cost = costAmount;
-			purchaseInteraction.available = true;
-			purchaseInteraction.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
-			purchaseInteraction.isShrine = isShrine;
-			purchaseInteraction.isGoldShrine = false;
+			InteractionComponent.displayNameToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
+			InteractionComponent.contextToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_CONTEXT";
+			InteractionComponent.costType = (CostTypeIndex)costTypeIndex;
+			InteractionComponent.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
+			InteractionComponent.cost = costAmount;
+			InteractionComponent.available = true;
+			InteractionComponent.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
+			InteractionComponent.isShrine = isShrine;
+			InteractionComponent.isGoldShrine = false;
+			InteractionComponent.onPurchase = new PurchaseEvent();
+			UnityAction<Interactor> onPurchaseAction = GetInteractionAction(InteractionComponent);
+			if(onPurchaseAction != null)
+			{
+				Debug.Log("adding purchase action for " + InteractableName);
+				InteractionComponent.onPurchase.AddListener(onPurchaseAction);
+			}
 
-			PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
-			pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
-			GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
-			genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.GetComponent<PingInfoProvider>();
+			if (pingInfoProvider == null)
+			{
+				pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
+				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
+				
+			}
+
+			GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.GetComponent<GenericDisplayNameProvider>();
+			if (genericDisplayNameProvider == null)
+			{
+				genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
+			}
+			genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
+
+			if (normalWeight > 0 || favoredWeight > 0)
+			{
+				On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
+			}
+			if(voidSeedWeight > 0)
+			{
+				On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
+			}
+
+
 			Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
-
 			if (childCollider == null)
             {
 				Debug.Log("child null");
 				return;
             }
-			GameObject childGameObject = childCollider.gameObject;
-			if (childGameObject == null)
-            {
-				Debug.Log("childobject null");
-				return;
-            }
-			EntityLocator entityLocator = childGameObject.GetComponent<EntityLocator>();
+			EntityLocator entityLocator = interactableBodyModelPrefab.GetComponent<EntityLocator>();
 			if (entityLocator == null)
 			{
 				Debug.Log("entitylocator null, adding component");
-				entityLocator = childGameObject.AddComponent<EntityLocator>();
+				entityLocator = interactableBodyModelPrefab.AddComponent<EntityLocator>();
 			}
 			if (entityLocator != null)
 			{
@@ -116,9 +166,6 @@ namespace RiskierRainContent.Interactables
                 {
 					Debug.Log("modellocator null, adding component");
 					modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
-                }
-				if (modelLocator != null)
-                {
 					modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
 					modelLocator.modelBaseTransform = modelLocator.modelTransform;
 					modelLocator.dontDetatchFromParent = true;
@@ -133,19 +180,19 @@ namespace RiskierRainContent.Interactables
 					if (component != null)
 					{
 
-					component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+						component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
 													where x.gameObject.name.Contains(modelName)
 													select x).First<MeshRenderer>();
 
-					component.strength = 1f;
+						component.strength = 1f;
 						component.highlightColor = Highlight.HighlightColor.interactive;
 					}
 					HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
 					if (hologramProjector == null)
-                            {
+					{
 						Debug.Log("hologramProjector null, adding component");
 						hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
-                            }
+					}
 					if (hologramProjector != null)
 					{
 						hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
@@ -153,14 +200,14 @@ namespace RiskierRainContent.Interactables
 						hologramProjector.disableHologramRotation = false;
 					}
 					ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
-						
+
 					if (childLocator == null)
-                            {
+					{
 						Debug.Log("childLocator null, adding component");
 						childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
 					}
 					if (childLocator != null)
-                            {
+					{
 						childLocator.transformPairs = new ChildLocator.NameTransformPair[]
 						{
 							new ChildLocator.NameTransformPair
@@ -169,11 +216,11 @@ namespace RiskierRainContent.Interactables
 								transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
 							}
 						};
-						PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
 						Debug.Log("interactable registered");
-					}								
-				}							
+					}
+				}
 			}
+			PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
 		}
 		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard()
         {
@@ -190,7 +237,7 @@ namespace RiskierRainContent.Interactables
 			interactableSpawnCard.hullSize = HullClassification.Human;
 			interactableSpawnCard.prefab = model;
 			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
-			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
 
 			interactableDirectorCard = new DirectorCard
 			{
@@ -199,7 +246,7 @@ namespace RiskierRainContent.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard.spawnCard.name + ", " + interactableSpawnCard.name);
+			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" + "; " + interactableDirectorCard.spawnCard.name + ", " + interactableSpawnCard.name);
 
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
@@ -218,7 +265,7 @@ namespace RiskierRainContent.Interactables
 			interactableSpawnCard.hullSize = HullClassification.Human;
 			interactableSpawnCard.prefab = model;
 			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
-			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME";
+			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
 
 			interactableDirectorCard = new DirectorCard
 			{
@@ -227,53 +274,8 @@ namespace RiskierRainContent.Interactables
 				preventOverhead = false,
 				minimumStageCompletions = interactableMinimumStageCompletions
 			};
-			Debug.Log("Created favored spawncard for" + "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
+			Debug.Log("Created favored spawncard for" + "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
-		}
-
-
-		public CharacterBody LastActivator;
-		public PurchaseInteraction PurchaseInteraction;
-
-		public abstract float voidSeedWeight { get; }
-		public abstract int normalWeight { get; }
-		public abstract int favoredWeight { get; }
-		public abstract DirectorAPI.InteractableCategory category { get; }
-		public abstract int spawnCost { get; }
-		public static GameObject interactableBodyModelPrefab;
-		public static InteractableSpawnCard interactableSpawnCard;
-		public abstract CostTypeDef costTypeDef { get; }
-		public abstract int costTypeIndex { get; }
-		public abstract int costAmount { get; }
-		public static DirectorCard interactableDirectorCard;
-		public bool hasAddedInteractable;
-
-		public abstract  int interactableMinimumStageCompletions { get; }
-		public abstract bool automaticallyScaleCostWithDifficulty { get; }
-		public abstract bool setUnavailableOnTeleporterActivated { get; }
-		public abstract bool isShrine { get; }
-
-		//public static float floorOffset;
-		public abstract bool orientToFloor { get; }
-		public abstract bool skipSpawnWhenSacrificeArtifactEnabled { get; }
-		public abstract float weightScalarWhenSacrificeArtifactEnabled { get; }
-		public abstract int maxSpawnsPerStage { get; }
-
-		//stages to spawn on (help me)
-
-		public string InteractableName(On.RoR2.PurchaseInteraction.orig_GetDisplayName orig, PurchaseInteraction self)
-		{
-			string result;
-			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" )
-			{
-				result = this.interactableName;
-			}
-			else
-			{
-				Debug.Log("uh oh");
-				result = orig.Invoke(self);
-			}
-			return result;
 		}
 
 		public DirectorCard VoidCampAddInteractable(On.RoR2.CampDirector.orig_SelectCard orig, CampDirector self, WeightedSelection<DirectorCard> deck, int maxCost)
@@ -333,7 +335,10 @@ namespace RiskierRainContent.Interactables
 		public string[] favoredScenes;
 		public bool hasFavoredStages = false;
 		public ExpansionDef requiredExpansionDef = null;
+		public CustomInteractable()
+        {
 
+        }
 		public CustomInteractable CreateCustomInteractable(InteractableSpawnCard spawnCard, DirectorCard directorCard, string[] validScenes)
         {
 			this.spawnCard = spawnCard;

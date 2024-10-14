@@ -9,8 +9,12 @@ namespace RiskierRainContent.Interactables
 {
     static class CombatEncounterHelper
     {
-
-        public static GameObject MethodOne(PurchaseInteraction purchaseInteraction, Interactor activator,int credits, int value = 0) // RENAME LATER
+        public enum CustomDirectorType
+        {
+            GalleryDirector = 1,
+            ConstructDirector = 2
+        }
+        public static GameObject MethodOne(PurchaseInteraction purchaseInteraction, Interactor activator,int credits, CustomDirectorType directorType) // RENAME LATER
         {
             Vector3 vector = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
@@ -30,7 +34,7 @@ namespace RiskierRainContent.Interactables
             NetworkServer.Spawn(gameObject2);
             CombatDirector component6 = gameObject2.GetComponent<CombatDirector>();
             //component6.gameObject.AddComponent<RiskierRainCombatDirector>();
-            ParseDirectorType(component6.gameObject, value);
+            ParseDirectorType(component6.gameObject, directorType);
             if (!(component6 && Stage.instance))
             {
                 return null;
@@ -47,7 +51,7 @@ namespace RiskierRainContent.Interactables
                     rotation = rotation
                 };
 
-                if (value == 1)
+                if (directorType == CustomDirectorType.ConstructDirector)
                 {
                     GameObject monstersOnShrineUse = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MonstersOnShrineUse");
                     EffectManager.SpawnEffect(monstersOnShrineUse, effectData, true);
@@ -59,14 +63,14 @@ namespace RiskierRainContent.Interactables
         }
 
 
-        public static void ParseDirectorType(GameObject obj, int value)
+        public static void ParseDirectorType(GameObject obj, CustomDirectorType value)
         {
             switch (value)
             {
-                case 1:
+                case CustomDirectorType.GalleryDirector:
                     obj.AddComponent<GalleryDirector>();
                     break;
-                case 2:
+                case CustomDirectorType.ConstructDirector:
                     obj.AddComponent<ConstructDirector>();
                     break;
                 default:

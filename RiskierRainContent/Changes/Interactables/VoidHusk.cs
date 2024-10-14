@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRainContent.Changes.Components;
 using RiskierRainContent.CoreModules;
 using RiskierRainContent.Items;
 using RoR2;
@@ -7,25 +8,26 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables
 {
     class VoidHusk : InteractableBase<VoidHusk>
     {
         #region abstract
-        public override string interactableName => "Fractured Husk";
+        public override string InteractableName => "Fractured Husk";
 
-        public override string interactableContext => "Break open";
+        public override string InteractableContext => "Break open";
 
-        public override string interactableLangToken => "VOID_HUSK";
+        public override string InteractableLangToken => "VOID_HUSK";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/VoidHusk.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/VoidHusk.prefab");
 
         public override string modelName => "mdlVoidHusk";
 
         public override string prefabName => "VoidHusk";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0.4f;
 
@@ -37,9 +39,8 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 20;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.VoidCoin);
 
-        public override int costTypeIndex => 14;
+        public override CostTypeIndex costTypeIndex => CostTypeIndex.VoidCoin;
 
         public override int costAmount => 1;
 
@@ -79,10 +80,6 @@ namespace RiskierRainContent.Interactables
         {
 
             hasAddedInteractable = false;
-            On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
-            On.RoR2.PurchaseInteraction.OnInteractionBegin += VoidHuskBehavior;
-            On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
@@ -93,7 +90,7 @@ namespace RiskierRainContent.Interactables
         private void VoidHuskBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
             {
                 HuskReward(self.gameObject);
                 GameObject.Destroy(self.gameObject);
@@ -109,13 +106,22 @@ namespace RiskierRainContent.Interactables
             dropletOrigin = gameObject.transform;
             PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f);
         }
-        private void GenerateWeightedSelection()
+        private WeightedSelection<PickupIndex> GenerateWeightedSelection()
         {
-            weightedSelection = new WeightedSelection<PickupIndex>();
+            WeightedSelection<PickupIndex> weightedSelection = new WeightedSelection<PickupIndex>();
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(VoidIchorRed.instance.ItemsDef.itemIndex), 1f);
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(VoidIchorViolet.instance.ItemsDef.itemIndex), 1f);
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(VoidIchorYellow.instance.ItemsDef.itemIndex), 1f);
+            return weightedSelection;
         }
+
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+            InteractableDropPickup idp = interaction.gameObject.AddComponent<InteractableDropPickup>();
+            idp.dropTable = GenerateWeightedSelection();
+            return idp.OnInteractionBegin;
+        }
+
         WeightedSelection<PickupIndex> weightedSelection;
         private Xoroshiro128Plus rng;
         public Transform dropletOrigin;

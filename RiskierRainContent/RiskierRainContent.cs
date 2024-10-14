@@ -662,10 +662,17 @@ namespace RiskierRainContent
         internal static void AIBlacklistSingleItem(string name)
         {
             ItemDef itemDef = LoadItemDef(name);
-            List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
-            itemTags.Add(ItemTag.AIBlacklist);
+            if(itemDef != null)
+            {
+                List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
+                itemTags.Add(ItemTag.AIBlacklist);
 
-            itemDef.tags = itemTags.ToArray();
+                itemDef.tags = itemTags.ToArray();
+            }
+            else
+            {
+                Debug.LogError($"ItemDef {name} failed to load - unable to blacklist");
+            }
         }
     }
 }

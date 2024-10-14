@@ -7,23 +7,25 @@ using UnityEngine;
 using RiskierRainContent.Items;
 using R2API;
 using RiskierRainContent.CoreModules;
+using UnityEngine.Events;
+using RiskierRainContent.Changes.Components;
 
 namespace RiskierRainContent.Interactables
 {
     class CurseStatue : InteractableBase<CurseStatue>
     {
-        public override string interactableName => "Curse Statue";
+        public override string InteractableName => "Curse Statue";
 
-        public override string interactableContext => "Curse yourself";
+        public override string InteractableContext => "Curse yourself";
 
-        public override string interactableLangToken => "CURSE_STATUE";
+        public override string InteractableLangToken => "CURSE_STATUE";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/curseStatue.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/curseStatue.prefab");
         public override string modelName => "mdlCurseStatue";
 
         public override string prefabName => "curseStatue";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0;
 
@@ -35,9 +37,7 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 0;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
-
-        public override int costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => 0;
 
         public override int costAmount => 0;
 
@@ -85,27 +85,26 @@ namespace RiskierRainContent.Interactables
         public override void Init(ConfigFile config)
         {
             hasAddedInteractable = false;
-            //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
-            On.RoR2.PurchaseInteraction.OnInteractionBegin += CurseStatueBehavior;
-            On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
         }
 
-        private void CurseStatueBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
-        {//TODO: make it give a lunar coin the first time its used, and also make it a menu instead of what it is rn
-            orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
-            {
-                PickupIndex pickupIndex = PickupCatalog.FindPickupIndex(Items.Helpers.EnemyHealthUp.instance.ItemsDef.itemIndex);
-
-                dropletOrigin = self.gameObject.transform;
-                PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
-            }
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+            InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
+            idi.dropTable = new WeightedSelection<PickupIndex>();
+            idi.dropTable.AddChoice(PickupCatalog.FindPickupIndex(Items.Helpers.EnemyHealthUp.instance.ItemsDef.itemIndex), 1f);
+            idi.destroyOnUse = false;
+            return idi.OnInteractionBegin;
         }
+        private WeightedSelection<PickupIndex> GenerateWeightedSelection()
+        {
+            WeightedSelection<PickupIndex> weightedSelection = new WeightedSelection<PickupIndex>();
+            return weightedSelection;
+        }
+
         public Transform dropletOrigin;
     }
 }

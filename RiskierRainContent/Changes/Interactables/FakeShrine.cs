@@ -13,6 +13,8 @@ using UnityEngine.AddressableAssets;
 using System.Linq;
 //using UnityEngine.SceneManagement;
 using static RoR2.PickupDropTable;
+using UnityEngine.Events;
+using RiskierRainContent.Changes.Components;
 
 namespace RiskierRainContent.Interactables
 {
@@ -22,8 +24,7 @@ namespace RiskierRainContent.Interactables
 		public override int normalWeight => 15;
 		public override int spawnCost => 20;
 		public override int costAmount => 1;
-		public override int costTypeIndex => 9; //lunaritemorequipment
-		public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment);
+		public override CostTypeIndex costTypeIndex => CostTypeIndex.LunarItemOrEquipment; //lunaritemorequipment
 
         public override int interactableMinimumStageCompletions => 1;
 		public override bool automaticallyScaleCostWithDifficulty => false;
@@ -36,17 +37,17 @@ namespace RiskierRainContent.Interactables
 		public override float weightScalarWhenSacrificeArtifactEnabled => 1;
 		public override int maxSpawnsPerStage => 1;
 
-        public override string interactableName => "Shrine Mimic";
+        public override string InteractableName => "Shrine Mimic";
 
-        public override string interactableContext => "Trade with shrine mimic";//make this good later
+        public override string InteractableContext => "Trade with shrine mimic";//make this good later
 
-        public override string interactableLangToken => "FAKE_SHRINE";
+        public override string InteractableLangToken => "FAKE_SHRINE";
 
-        public override GameObject interactableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion();
+        public override GameObject InteractableModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion();
 		public BasicPickupDropTable dropTable;
 		//public GameObject voidChest;
 
-        public override bool modelIsCloned => true;
+        public override bool ShouldCloneModel => true;
 
         public override string modelName => "mdlShrineChance";
 
@@ -83,10 +84,7 @@ namespace RiskierRainContent.Interactables
         public override void Init(ConfigFile config)
         {
 			hasAddedInteractable = false;
-			On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-			On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
 			On.RoR2.PurchaseInteraction.OnInteractionBegin += FakeShrineBehavior;
-			On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
 			CreateLang();
 			CreateInteractable();
 			var cards = CreateInteractableSpawnCard();
@@ -97,7 +95,7 @@ namespace RiskierRainContent.Interactables
 		private void FakeShrineBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+			if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
             {                
 				PickupIndex pickupIndex = PickupIndex.none;
 				this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
@@ -108,7 +106,67 @@ namespace RiskierRainContent.Interactables
 				self.SetAvailable(false);								
 			}
         }
-		private Xoroshiro128Plus rng;
+
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+			ShrineChanceBehavior shrineBehavior = interaction.gameObject.GetComponent<ShrineChanceBehavior>();
+			//shrineBehavior.dropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/Common/dtVoidChest.asset").WaitForCompletion();
+			//shrineBehavior.
+			GameObject.Destroy(shrineBehavior);
+			FakeShrineBehavior chestBehavior = interaction.gameObject.AddComponent<FakeShrineBehavior>();
+			chestBehavior.dropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/Common/dtVoidChest.asset").WaitForCompletion();
+
+			return chestBehavior.OnInteractionBegin;
+        }
+
+        private Xoroshiro128Plus rng;
 		public Transform dropletOrigin;
+	}
+
+	public class FakeShrineBehavior : CustomChestBehavior
+    {
+        public override void OnInteractionBegin(Interactor activator)
+        {
+            base.OnInteractionBegin(activator);
+			Transform symbolTransform = this.transform.Find("Symbol");
+			if(symbolTransform != null)
+				symbolTransform.gameObject.SetActive(false);
+
+			CallRpcSetPingable(false);
+		}
+		protected static void InvokeRpcRpcSetPingable(NetworkBehaviour obj, NetworkReader reader)
+		{
+			if (!NetworkClient.active)
+			{
+				Debug.LogError("RPC RpcSetPingable called on server.");
+				return;
+			}
+		   ((FakeShrineBehavior)obj).RpcSetPingable(reader.ReadBoolean());
+		}
+
+		public void CallRpcSetPingable(bool value)
+		{
+			if (!NetworkServer.active)
+			{
+				Debug.LogError("RPC Function RpcSetPingable called on client.");
+				return;
+			}
+			NetworkWriter networkWriter = new NetworkWriter();
+			networkWriter.Write(0);
+			networkWriter.Write((short)((ushort)2));
+			networkWriter.WritePackedUInt32((uint)ShrineBehavior.kRpcRpcSetPingable);
+			networkWriter.Write(base.GetComponent<NetworkIdentity>().netId);
+			networkWriter.Write(value);
+			this.SendRPCInternal(networkWriter, 0, "RpcSetPingable");
+		}
+		[ClientRpc]
+		protected virtual void RpcSetPingable(bool value)
+		{
+			NetworkIdentity component = base.GetComponent<NetworkIdentity>();
+			if (component)
+			{
+				component.isPingable = value;
+			}
+		}
 	}
 }

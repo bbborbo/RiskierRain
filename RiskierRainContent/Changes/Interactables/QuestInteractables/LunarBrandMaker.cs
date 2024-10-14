@@ -6,24 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables
 {
     class LunarBrandMaker : InteractableBase<LunarBrandMaker>
     {
-        public override string interactableName => "Strange Object";
+        public override string InteractableName => "Strange Object";
 
-        public override string interactableContext => "yea";
+        public override string InteractableContext => "Charge with Flame Orb";
 
-        public override string interactableLangToken => "LUNARBRANDMAKER";
+        public override string InteractableLangToken => "LUNARBRANDMAKER";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarBrandMaker.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarBrandMaker.prefab");
 
         public override string modelName => "mdlLunarBrandMaker";
 
         public override string prefabName => "lunarBrandMaker";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0;
 
@@ -35,11 +36,10 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 1;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment);
 
-        public override int costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => CostTypeIndex.None;
 
-        public override int costAmount => 0;
+        public override int costAmount => 1;
 
         public override int interactableMinimumStageCompletions => 0;
 
@@ -67,9 +67,9 @@ namespace RiskierRainContent.Interactables
 
         public override void Init(ConfigFile config)
         {
+            Debug.LogError("Lunar brand maker needs fixes");
             hasAddedInteractable = false;
             //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
             On.RoR2.PurchaseInteraction.OnInteractionBegin += LunarBrandMakerBehavior;
             On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
@@ -78,13 +78,13 @@ namespace RiskierRainContent.Interactables
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
 
             On.RoR2.CostTypeDef.PayCost += LunarBrandMakerPayCostHook;
-
         }
+        CostTypeDef customCostType;
 
         private CostTypeDef.PayCostResults LunarBrandMakerPayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
         {
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
-            if (purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" && activatorBody != null)
+            if (purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" && activatorBody != null)
             {
                 cost = 0;
                 Inventory  activatorInventory = activatorBody.inventory;
@@ -109,11 +109,16 @@ namespace RiskierRainContent.Interactables
         private void LunarBrandMakerBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
             {
                 Debug.Log("uhhh yeag");
                 GameObject.Destroy(self.gameObject);
             }
+        }
+
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+            return null;
         }
         //public Transform dropletOrigin;
     }

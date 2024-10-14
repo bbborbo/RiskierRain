@@ -1,29 +1,31 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRainContent.Changes.Components;
 using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables
 {
     class SpineAltar : InteractableBase<SpineAltar>
     {
-        public override string interactableName => "Malachite Spine";
+        public override string InteractableName => "Malachite Spine";
 
-        public override string interactableContext => "yea";
+        public override string InteractableContext => "Pick up";
 
-        public override string interactableLangToken => "SPINEINTERACTABLE";
+        public override string InteractableLangToken => "SPINEINTERACTABLE";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineInteractable.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineInteractable.prefab");
 
         public override string modelName => "mdlSpineInteractable";
 
         public override string prefabName => "spineInteractable";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0;
 
@@ -31,13 +33,12 @@ namespace RiskierRainContent.Interactables
 
         public override int favoredWeight => 0;
 
-        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Shrines;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Barrels;
 
         public override int spawnCost => 1;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
 
-        public override int costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => 0;
 
         public override int costAmount => 0;
 
@@ -86,7 +87,6 @@ namespace RiskierRainContent.Interactables
         {
             hasAddedInteractable = false;
             //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
             On.RoR2.PurchaseInteraction.OnInteractionBegin += SpineAltarBehavior;
             On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
@@ -98,7 +98,7 @@ namespace RiskierRainContent.Interactables
         private void SpineAltarBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
             {
                 PickupIndex pickupIndex = PickupCatalog.FindPickupIndex(Items.MalachiteSpine.instance.ItemsDef.itemIndex);
 
@@ -107,6 +107,15 @@ namespace RiskierRainContent.Interactables
                 GameObject.Destroy(self.gameObject);
             }
         }
+
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+            InteractableDropPickup idp = interaction.gameObject.AddComponent<InteractableDropPickup>();
+            idp.dropTable = new WeightedSelection<PickupIndex>();
+            idp.dropTable.AddChoice(PickupCatalog.FindPickupIndex(Items.MalachiteSpine.instance.ItemsDef.itemIndex), 1f);
+            return idp.OnInteractionBegin;
+        }
+
         public Transform dropletOrigin;
     }
 }

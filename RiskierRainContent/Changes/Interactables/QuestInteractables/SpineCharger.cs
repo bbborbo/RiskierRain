@@ -6,24 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables
 {
     class SpineCharger : InteractableBase<SpineCharger>
     {
-        public override string interactableName => "Broken Reactor";
+        public override string InteractableName => "Broken Reactor";
 
-        public override string interactableContext => "yea";
+        public override string InteractableContext => "Charge a Malachite Spine";
 
-        public override string interactableLangToken => "SPINECHARGER";
+        public override string InteractableLangToken => "SPINECHARGER";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineCharger.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/spineCharger.prefab");
 
         public override string modelName => "mdlSpineCharger";
 
         public override string prefabName => "spineCharger";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0;
 
@@ -35,9 +36,7 @@ namespace RiskierRainContent.Interactables
 
         public override int spawnCost => 1;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
-
-        public override int costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => 0;
 
         public override int costAmount => 0;
 
@@ -86,7 +85,6 @@ namespace RiskierRainContent.Interactables
         {
             hasAddedInteractable = false;
             //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
             On.RoR2.PurchaseInteraction.OnInteractionBegin += SpineChargerBehavior;
             On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
@@ -101,7 +99,7 @@ namespace RiskierRainContent.Interactables
         private CostTypeDef.PayCostResults SpineChargerPayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
         {
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
-            if (purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME" && activatorBody != null)
+            if (purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" && activatorBody != null)
             {
                 cost = 0;
                 Inventory activatorInventory = activatorBody.inventory;
@@ -126,10 +124,15 @@ namespace RiskierRainContent.Interactables
         private void SpineChargerBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
         {
             orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
+            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
             {
                 Debug.Log("woaa");
             }
+        }
+
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
+        {
+            return null;
         }
         //public Transform dropletOrigin;
     }

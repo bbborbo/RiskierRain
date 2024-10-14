@@ -1,30 +1,32 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RiskierRainContent.Changes.Components;
 using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RiskierRainContent.Interactables.QuestInteractables
 {
     class EnergyCrystalAltar : InteractableBase<EnergyCrystalAltar>
     {
         #region abstract
-        public override string interactableName => "Energy Crystal";
+        public override string InteractableName => "Energy Crystal";
 
-        public override string interactableContext => "Pick up";
+        public override string InteractableContext => "Pick up";
 
-        public override string interactableLangToken => "ENERGY_CRYSTAL_ALTAR";
+        public override string InteractableLangToken => "ENERGY_CRYSTAL_ALTAR";
 
-        public override GameObject interactableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/CrystalInteractable.prefab");
+        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/CrystalInteractable.prefab");
 
         public override string modelName => "energyCrystal";
 
         public override string prefabName => "CrystalInteractable";
 
-        public override bool modelIsCloned => false;
+        public override bool ShouldCloneModel => false;
 
         public override float voidSeedWeight => 0;
 
@@ -32,13 +34,11 @@ namespace RiskierRainContent.Interactables.QuestInteractables
 
         public override int favoredWeight => 0;
 
-        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Chests;
+        public override DirectorAPI.InteractableCategory category => DirectorAPI.InteractableCategory.Barrels;
 
         public override int spawnCost => 30;
 
-        public override CostTypeDef costTypeDef => CostTypeCatalog.GetCostTypeDef(CostTypeIndex.None);
-
-        public override int costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => 0;
 
         public override int costAmount => 0;
 
@@ -70,27 +70,20 @@ namespace RiskierRainContent.Interactables.QuestInteractables
         {
             hasAddedInteractable = false;
             //On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
-            On.RoR2.PurchaseInteraction.GetDisplayName += new On.RoR2.PurchaseInteraction.hook_GetDisplayName(InteractableName);
-            On.RoR2.PurchaseInteraction.OnInteractionBegin += CrystalAltarBehavior;
-            On.RoR2.ClassicStageInfo.RebuildCards += AddInteractable;
             CreateLang();
             CreateInteractable();
             var cards = CreateInteractableSpawnCard();
             customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
         }
 
-        private void CrystalAltarBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
+        public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
         {
-            orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.interactableLangToken + "_NAME")
-            {
-                PickupIndex pickupIndex = PickupCatalog.FindPickupIndex(Items.EnergyCrystal.instance.ItemsDef.itemIndex);
-
-                dropletOrigin = self.gameObject.transform;
-                PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
-                GameObject.Destroy(self.gameObject);
-            }
+            InteractableDropPickup idp = interaction.gameObject.AddComponent<InteractableDropPickup>();
+            idp.dropTable = new WeightedSelection<PickupIndex>();
+            idp.dropTable.AddChoice(PickupCatalog.FindPickupIndex(Items.EnergyCrystal.instance.ItemsDef.itemIndex), 1f);
+            return idp.OnInteractionBegin;
         }
+
         public Transform dropletOrigin;
 
     }

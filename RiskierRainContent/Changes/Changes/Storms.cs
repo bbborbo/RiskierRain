@@ -86,7 +86,7 @@ namespace RiskierRainContent
                     cd.teamIndex = TeamIndex.Monster;
 
                     directorInstanceFound = true;
-                    cd.onSpawnedServer.AddListener(new UnityEngine.Events.UnityAction<GameObject>(OnStormDirectorSpawnServer));
+                    cd.onSpawnedServer.AddListener(OnStormDirectorSpawnServer);
 
                 }
                 else

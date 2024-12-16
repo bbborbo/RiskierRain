@@ -638,9 +638,19 @@ namespace MissileRework
                     forward = raycastHit.point - position;
                 }
                 float baseDamage = self.ownerCharacterBody ? self.ownerCharacterBody.damage : 1f;
-                ProjectileManager.instance.FireProjectile(self.projectilePrefab, position,
-                    Util.QuaternionSafeLookRotation(forward), self.owner, self.damageCoefficient * baseDamage,
-                    self.damageForce, self.isCrit, DamageColorIndex.Default, null, -1f);
+
+                ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                {
+                    crit = self.isCrit,
+                    damage = self.damageCoefficient * baseDamage,
+                    damageColorIndex = DamageColorIndex.Default,
+                    force = self.damageForce,
+                    owner = self.owner,
+                    position = position,
+                    projectilePrefab = self.projectilePrefab,
+                    rotation = Util.QuaternionSafeLookRotation(forward),
+                    target = null
+                });
 
                 Vector3 rhs = Vector3.Cross(Vector3.up, forward);
                 Vector3 axis = Vector3.Cross(forward, rhs);

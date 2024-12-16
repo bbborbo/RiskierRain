@@ -54,9 +54,11 @@ namespace RiskierRainContent.Items
             //On.RoR2.HealthComponent.UpdateLastHitTime += WatchBreak;
         }
 
-        private void WatchBreak(On.RoR2.HealthComponent.orig_UpdateLastHitTime orig, HealthComponent self, float damageValue, Vector3 damagePosition, bool damageIsSilent, GameObject attacker)
+        private void WatchBreak(On.RoR2.HealthComponent.orig_UpdateLastHitTime orig, HealthComponent self, 
+            float damageValue, Vector3 damagePosition, bool damageIsSilent, GameObject attacker, 
+            bool delayedDamage, bool firstHitOfDelayedDamage)
         {
-            orig(self, damageValue, damagePosition, damageIsSilent, attacker);
+            orig(self, damageValue, damagePosition, damageIsSilent, attacker, delayedDamage, firstHitOfDelayedDamage);
 
             CharacterBody body = self.body;
             if (NetworkServer.active && body && damageValue > 0f)

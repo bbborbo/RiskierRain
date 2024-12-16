@@ -64,10 +64,7 @@ namespace MissileRework
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Missile"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
                 );
-            c.Index--;
-            c.Remove();
-            c.Remove();
-            c.Remove();
+            c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }
         #endregion

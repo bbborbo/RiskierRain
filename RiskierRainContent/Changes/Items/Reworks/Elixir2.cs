@@ -83,7 +83,8 @@ namespace RiskierRainContent.Items
         }
 
         private void ElixirHook(On.RoR2.HealthComponent.orig_UpdateLastHitTime orig, RoR2.HealthComponent self, 
-            float damageValue, Vector3 damagePosition, bool damageIsSilent, GameObject attacker)
+            float damageValue, Vector3 damagePosition, bool damageIsSilent, GameObject attacker, 
+            bool delayedDamage, bool firstHitOfDelayedDamage)
         {
             CharacterBody body = self.body;
             if (NetworkServer.active && body && damageValue > 0f)
@@ -109,7 +110,7 @@ namespace RiskierRainContent.Items
                     EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/HealingPotionEffect"), effectData, true);
                 }
             }
-            orig(self, damageValue, damagePosition, damageIsSilent, attacker);
+            orig(self, damageValue, damagePosition, damageIsSilent, attacker, delayedDamage, firstHitOfDelayedDamage);
         }
 
         private void TransformPotions(int count, CharacterBody body)

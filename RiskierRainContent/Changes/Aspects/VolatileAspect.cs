@@ -70,8 +70,17 @@ namespace RiskierRainContent.Equipment
                 if (victimBody.HasBuff(EliteBuffDef))
                 {
                     Vector3 spawnPosition = Util.GetCorePosition(victimBody);
-                    ProjectileManager.instance.FireProjectile(volatileLandminePrefab, spawnPosition, Util.QuaternionSafeLookRotation(Vector3.up), 
-                        victimBody.gameObject, (1 + 0.3f * victimBody.level) * volatileLandmineDamage, 400, Util.CheckRoll(victimBody.crit, victimBody.master));
+
+                    ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                    {
+                        projectilePrefab = volatileLandminePrefab,
+                        position = spawnPosition,
+                        rotation = Util.QuaternionSafeLookRotation(Vector3.up),
+                        owner = victimBody.gameObject,
+                        damage = (1 + 0.3f * victimBody.level) * volatileLandmineDamage,
+                        force = 400,
+                        crit = Util.CheckRoll(victimBody.crit, victimBody.master)
+                    });
 
                     /*List<BombArtifactManager.BombRequest> bombRequests = new List<BombArtifactManager.BombRequest>();
 
@@ -361,9 +370,19 @@ namespace RiskierRainContent.Equipment
                             float currentYaw = (projectileCount == 1) ? 0 : (yawPerProjectile * (i + 1)) - maxYawSpread;
                             Vector3 forward2 = (projectileCount == 1) ? forward : Util.ApplySpread(forward, 2, 10, 1f, 1f, currentYaw, 0);
                             Vector3 fireDirection = forward2 + Vector3.up * 1.2f;
-                            ProjectileManager.instance.FireProjectile(projectilePrefab, body.corePosition,
-                                Util.QuaternionSafeLookRotation(fireDirection), body.gameObject, body.damage * mortarDamageCoefficient, 0f,
-                                Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
+
+                            ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                            {
+                                projectilePrefab = projectilePrefab,
+                                position = body.corePosition,
+                                rotation = Util.QuaternionSafeLookRotation(fireDirection),
+                                owner = body.gameObject,
+                                damage = body.damage * mortarDamageCoefficient,
+                                force = 0f,
+                                crit = Util.CheckRoll(body.crit, body.master),
+                                damageColorIndex = DamageColorIndex.Default,
+                                target = null
+                            });
                         }
                     }
                 }

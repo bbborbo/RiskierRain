@@ -25,7 +25,12 @@ namespace RiskierRain
 
         public static float timeDifficultyScaling = 1.6f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
-        public static float loopDifficultyScaling = 1.4f; //1.0f, exponential
+        public static float loopDifficultyScaling = 1.3f; //1.0f, exponential
+        public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
+        public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
+        public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
+        public static float difficultySpawnRateFactor = 0.5f;//0.4f, additive
+        public static int ambientLevelCap = 999;//99
 
         public static float easyTeleParticleRadius = 1f;
         public static float normalTeleParticleRadius = 0.8f;
@@ -119,9 +124,31 @@ namespace RiskierRain
         void AmbientLevelDifficulty()
         {
             useAmbientLevel = true;
-            Run.ambientLevelCap = 999;
+            Run.ambientLevelCap = ambientLevelCap;
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
+            IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
+        }
+
+        private void DirectorCreditGainChanges(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _));
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, 1 - playerSpawnRateFactor);
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _));
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, playerSpawnRateFactor);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchStloc(out _),
+                x => x.MatchLdcR4(out _));
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, difficultySpawnRateFactor);
         }
 
         private void AmbientLevelChanges(ILContext il)
@@ -187,20 +214,22 @@ namespace RiskierRain
         {
             float runTimer = self.GetRunStopwatch();
             DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty);
-            float minutesFactor = Mathf.Floor(runTimer * 0.0166666675f * timeDifficultyScaling); //seconds to minutes
-            float playerBaseFactor = 0.7f + (float)self.participatingPlayerCount * 0.3f;
-            float playerScaleFactor = 0.0506f * difficultyDef.scalingValue * Mathf.Pow((float)self.participatingPlayerCount, 0.2f);
+            float minutesFactor = Mathf.Floor(runTimer * 0.016666668f * timeDifficultyScaling); //seconds to minutes
+            float playerBaseFactor = 1 + playerBaseDifficultyFactor * (float)(self.participatingPlayerCount - 1);
+            float playerScaleFactor = Mathf.Pow((float)self.participatingPlayerCount, playerScalingDifficultyFactor);
+            float scalingFactor = 0.0506f * difficultyDef.scalingValue * playerScaleFactor;
 
             float stageFactor = Mathf.Pow(stageDifficultyScaling, (float)self.stageClearCount); //1^loops
             int totalLoops = Mathf.FloorToInt(self.stageClearCount / 5);
-            if (Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)// && self.stageClearCount % 5 == 1)
+            if (self.stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
                 totalLoops -= 1;
             float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops); //1.5^loops
-            float difficultyCoefficient = (playerBaseFactor + playerScaleFactor * minutesFactor) * stageFactor * loopFactor;
+            float difficultyCoefficient = (playerBaseFactor + scalingFactor * minutesFactor) * stageFactor;
 
-            self.compensatedDifficultyCoefficient = difficultyCoefficient;
-            self.difficultyCoefficient = difficultyCoefficient;
-            self.ambientLevel = Mathf.Min((difficultyCoefficient - playerBaseFactor) / 0.33f + 1f + GetAmbientLevelBoost(), (float)Run.ambientLevelCap);
+            self.difficultyCoefficient = difficultyCoefficient * loopFactor;
+            self.compensatedDifficultyCoefficient = difficultyCoefficient * loopFactor;
+            self.oneOverCompensatedDifficultyCoefficientSquared = 1 / (self.compensatedDifficultyCoefficient * self.compensatedDifficultyCoefficient);
+            self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + 3f * (difficultyCoefficient - playerBaseFactor), (float)Run.ambientLevelCap);
 
             int ambientLevelFloor = self.ambientLevelFloor;
             self.ambientLevelFloor = Mathf.FloorToInt(self.ambientLevel);
@@ -227,13 +256,15 @@ namespace RiskierRain
                 if (selectedDifficulty >= DifficultyIndex.Hard)
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
+
+                    args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 4f;
                     if (sender.isChampion)
                     {
-                        args.armorAdd += 2 * compensatedLevel;
+                        args.armorAdd += 3 * compensatedLevel;
                     }
                     else
                     {
-                        args.attackSpeedMultAdd += Mathf.Min(0.05f * compensatedLevel, 2f);
+                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 3f;
                     }
                 }
             }

@@ -240,7 +240,7 @@ namespace RiskierRain
             if(smallChest != null)
             {
                 LanguageAPI.Add("CHEST1_NAME", $"{discountChestPrefix} Chest");
-                LanguageAPI.Add("CHEST1_CONTEXT", $"Open bargain chest");
+                LanguageAPI.Add("CHEST1_CONTEXT", $"Open discounted chest");
                 smallChest.cost = smallChestTypeCost;
             }
             if (smallShop != null)
@@ -261,8 +261,8 @@ namespace RiskierRain
             }
             if (bigChest != null)
             {
-                LanguageAPI.Add("CHEST2_NAME", $"Large Bargain Chest");
-                LanguageAPI.Add("CHEST2_CONTEXT", $"Open large bargain chest");
+                LanguageAPI.Add("CHEST2_NAME", $"Large {discountChestPrefix} Chest");
+                LanguageAPI.Add("CHEST2_CONTEXT", $"Open discounted large chest");
                 bigChest.cost = bigChestTypeCost;
             }
             if (bigShop != null)

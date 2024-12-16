@@ -18,13 +18,13 @@ namespace RiskierRainContent.Items
     {
         int xpDivisor = 10;
         int xpFlat = 1;
-        public override string ItemName => "Metamorphic Ichor (violet)";
+        public override string ItemName => "Metamorphic Ichor (Violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
 
         public override string ItemPickupDesc => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
 
         public override string ItemLore => "";
 

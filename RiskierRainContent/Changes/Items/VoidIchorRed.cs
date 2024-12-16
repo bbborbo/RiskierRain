@@ -15,13 +15,13 @@ namespace RiskierRainContent.Items
     {
         int damageBase = 5;
         int damageStack = 5;
-        public override string ItemName => "Metamorphic Ichor (red)";
+        public override string ItemName => "Metamorphic Ichor (Red)";
 
         public override string ItemLangTokenName => "ICHORRED";
 
         public override string ItemPickupDesc => "Retaliate with flat damage when hit. Corrupts all Replusion Armor Plates.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => "Retaliate with flat damage when hit. Corrupts all Replusion Armor Plates.";
 
         public override string ItemLore => "";
 

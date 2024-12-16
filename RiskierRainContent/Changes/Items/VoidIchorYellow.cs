@@ -15,13 +15,13 @@ namespace RiskierRainContent.Items
     {
         float regenBase = .6f;
         float regenStack = .6f;
-        public override string ItemName => "Metamorphic Ichor (yellow)";
+        public override string ItemName => "Metamorphic Ichor (Yellow)";
 
         public override string ItemLangTokenName => "ICHORYELLOW";
 
         public override string ItemPickupDesc => "Gain health regeneration. Corrupts all Soldier's Syringes.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => "Gain health regeneration. Corrupts all Soldier's Syringes.";
 
         public override string ItemLore => "";
 

@@ -51,10 +51,10 @@ namespace RiskierRain
 
         string discountChestPrefix = "Bargain";
         int smallChestTypeCost = 20; //25
-        int smallShopTypeCost = 40; //25
+        int smallShopTypeCost = 35; //25
         int smallCategoryChestTypeCost = 25; //30
         int bigChestTypeCost = 45; //50
-        int bigShopTypeCost = 90; //50
+        int bigShopTypeCost = 70; //50
         int bigCategoryChestTypeCost = 50; //60
         int goldChestTypeCost = 200; //400
         int bigDroneTypeCost = 160; //250

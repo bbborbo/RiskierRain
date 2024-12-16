@@ -49,7 +49,7 @@ namespace RiskierRain
         MultiShopController bigShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopLarge/TripleShopLarge.prefab").WaitForCompletion().GetComponent<MultiShopController>();
         MultiShopController equipmentShop = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TripleShopEquipment/TripleShopEquipment.prefab").WaitForCompletion().GetComponent<MultiShopController>();
 
-
+        string discountChestPrefix = "Bargain";
         int smallChestTypeCost = 20; //25
         int smallShopTypeCost = 40; //25
         int smallCategoryChestTypeCost = 25; //30
@@ -239,6 +239,8 @@ namespace RiskierRain
         {
             if(smallChest != null)
             {
+                LanguageAPI.Add("CHEST1_NAME", $"{discountChestPrefix} Chest");
+                LanguageAPI.Add("CHEST1_CONTEXT", $"Open bargain chest");
                 smallChest.cost = smallChestTypeCost;
             }
             if (smallShop != null)
@@ -259,6 +261,8 @@ namespace RiskierRain
             }
             if (bigChest != null)
             {
+                LanguageAPI.Add("CHEST2_NAME", $"Large Bargain Chest");
+                LanguageAPI.Add("CHEST2_CONTEXT", $"Open large bargain chest");
                 bigChest.cost = bigChestTypeCost;
             }
             if (bigShop != null)
@@ -269,6 +273,10 @@ namespace RiskierRain
             {
                 casinoChest.cost = casinoChestTypeCost;
                 //casinoChest.displayNameToken = "Double Chest";//doesnt work
+                LanguageAPI.Add("CASINOCHEST_NAME", $"Double Chest");
+                LanguageAPI.Add("CASINOCHEST_CONTEXT", $"Open double chest");
+                LanguageAPI.Add("CASINOCHEST_DESCRIPTION", $"Costs gold to activate and will display a Common item for a short time. " +
+                    $"Purchase again to buy two copies, or wait for it to turn to scrap.");
             }
             if (chanceShrine != null)
             {

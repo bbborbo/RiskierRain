@@ -23,7 +23,7 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 9;
 
-        public static float timeDifficultyScaling = 1.6f; //1f, linear
+        public static float timeDifficultyScaling = 1.7f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
         public static float loopDifficultyScaling = 1.3f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear

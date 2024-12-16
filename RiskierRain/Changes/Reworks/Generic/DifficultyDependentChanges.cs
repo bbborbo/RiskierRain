@@ -136,10 +136,12 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdcR4(out _));
+            c.Index--;
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, 1 - playerSpawnRateFactor);
             c.GotoNext(MoveType.After,
                 x => x.MatchLdcR4(out _));
+            c.Index--;
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, playerSpawnRateFactor);
 
@@ -147,6 +149,7 @@ namespace RiskierRain
                 x => x.MatchLdcR4(out _),
                 x => x.MatchStloc(out _),
                 x => x.MatchLdcR4(out _));
+            c.Index--;
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, difficultySpawnRateFactor);
         }

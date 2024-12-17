@@ -29,7 +29,7 @@ namespace BossDropRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBossDrops";
-        public const string version = "1.0.1";
+        public const string version = "1.0.4";
         #endregion
 
         public void Awake()

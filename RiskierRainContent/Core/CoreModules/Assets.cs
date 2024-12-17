@@ -148,6 +148,7 @@ namespace RiskierRainContent.CoreModules
                 hauntDebuff.canStack = false;
                 hauntDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(); //replace me
                 hauntDebuff.isDebuff = true;
+                hauntDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 hauntDebuff.name = "HappiestMaskHauntDebuff";
             }
             Assets.buffDefs.Add(hauntDebuff);
@@ -168,6 +169,7 @@ namespace RiskierRainContent.CoreModules
                 harpoonDebuff.canStack = true;
                 harpoonDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion();
                 harpoonDebuff.isDebuff = true;
+                harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 harpoonDebuff.name = "HarpoonTargetDebuff";
             }
             Assets.buffDefs.Add(harpoonDebuff);
@@ -225,6 +227,7 @@ namespace RiskierRainContent.CoreModules
             bossHunterDebuffWithScalpel.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
             bossHunterDebuffWithScalpel.canStack = false;
             bossHunterDebuffWithScalpel.isDebuff = true;
+            bossHunterDebuffWithScalpel.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             bossHunterDebuffWithScalpel.name = "TrophyHunterScalpelDebuff";
             bossHunterDebuffWithScalpel.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
 

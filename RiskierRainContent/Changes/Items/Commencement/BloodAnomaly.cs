@@ -167,7 +167,7 @@ namespace RiskierRainContent.Items
                 bloodBuff.name = "BloodRetaliateBuff";
                 bloodBuff.buffColor = Color.red;
                 bloodBuff.canStack = true;
-                bloodBuff.isDebuff = true;
+                bloodBuff.isDebuff = false;
                 bloodBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(bloodBuff);

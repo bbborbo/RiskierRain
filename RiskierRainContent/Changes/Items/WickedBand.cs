@@ -130,6 +130,7 @@ namespace RiskierRainContent.Items
                 wickedCooldown.buffColor = Color.gray;
                 wickedCooldown.canStack = false;
                 wickedCooldown.isDebuff = true;
+                wickedCooldown.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 wickedCooldown.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(wickedCooldown);

@@ -39,6 +39,7 @@ namespace BossDropRework
             bossHunterDebuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
             bossHunterDebuff.canStack = false;
             bossHunterDebuff.isDebuff = true;
+            bossHunterDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             bossHunterDebuff.name = "TrophyHunterDebuff";
             bossHunterDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
 

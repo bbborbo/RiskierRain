@@ -89,7 +89,8 @@ namespace RiskierRainContent.Equipment
 
             executionDebuff.buffColor = Color.white;
             executionDebuff.canStack = true;
-            executionDebuff.isDebuff = false;
+            executionDebuff.isDebuff = true;
+            executionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             executionDebuff.name = "ExecutionDebuffStackable";
             executionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Nullifier/texBuffNullifiedIcon.tif").WaitForCompletion();
 

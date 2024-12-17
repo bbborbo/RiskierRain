@@ -126,6 +126,7 @@ namespace RiskierRainContent.Items
                 birdDebuff.buffColor = Color.blue;
                 birdDebuff.canStack = true;
                 birdDebuff.isDebuff = true;
+                birdDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 birdDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsCooldownIcon.tif").WaitForCompletion();
             };
             CoreModules.Assets.buffDefs.Add(birdDebuff);

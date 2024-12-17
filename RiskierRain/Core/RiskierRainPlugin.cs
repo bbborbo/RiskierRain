@@ -352,7 +352,6 @@ namespace RiskierRain
 
             // razorwire
             RazorwireReworks();
-            On.RoR2.Orbs.LightningOrb.Begin += NerfRazorwireOrb;
 
             // damage
             this.NerfBands();
@@ -627,7 +626,7 @@ namespace RiskierRain
             {
                 VoidCradleRework();
             }
-
+            
             //void cradle
             if (GetConfigBool(true, "Economy: Crowdfunder Funny Money"))
             {

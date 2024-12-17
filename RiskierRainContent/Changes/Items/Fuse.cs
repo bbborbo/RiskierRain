@@ -129,6 +129,7 @@ namespace RiskierRainContent.Items
                 fuseRecharge.buffColor = Color.cyan;
                 fuseRecharge.canStack = false;
                 fuseRecharge.isDebuff = true;
+                fuseRecharge.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 fuseRecharge.iconSprite = Resources.Load<Sprite>("textures/bufficons/texBuffTeslaIcon");
             };
             CoreModules.Assets.buffDefs.Add(fuseRecharge);

@@ -244,6 +244,7 @@ namespace RiskierRain.CoreModules
                 shockMarker.buffColor = new Color(0f, 0f, 0.6f);
                 shockMarker.canStack = false;
                 shockMarker.isDebuff = true;
+                shockMarker.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 shockMarker.isHidden = true;
                 shockMarker.iconSprite = null;// RiskierRainPlugin.mainAssetBundle.LoadAsset<Sprite>("RoR2/Base/ShockNearby/texBuffTeslaIcon.png");
             };
@@ -348,6 +349,7 @@ namespace RiskierRain.CoreModules
             noRazorwire.buffColor = Color.black;
             noRazorwire.canStack = false;
             noRazorwire.isDebuff = true;
+            noRazorwire.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             noRazorwire.name = "NoRazorwire";
             noRazorwire.iconSprite = null;//LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffEntangleIcon");
 

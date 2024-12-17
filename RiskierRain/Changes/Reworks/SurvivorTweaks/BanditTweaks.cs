@@ -350,6 +350,7 @@ namespace RiskierRain.SurvivorTweaks
                 desperadoExecutionDebuff.buffColor = Color.black;
                 desperadoExecutionDebuff.canStack = false;
                 desperadoExecutionDebuff.isDebuff = true;
+                desperadoExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
                 desperadoExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             }
@@ -359,6 +360,7 @@ namespace RiskierRain.SurvivorTweaks
                 lightsoutExecutionDebuff.buffColor = Color.black;
                 lightsoutExecutionDebuff.canStack = false;
                 lightsoutExecutionDebuff.isDebuff = true;
+                lightsoutExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
                 lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
                 lightsoutExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
             }

@@ -350,9 +350,6 @@ namespace RiskierRain
             // EQUIPMENT: Broken Zapinator 
             // ENEMIES: 
 
-            // razorwire
-            RazorwireReworks();
-
             // damage
             this.NerfBands();
 

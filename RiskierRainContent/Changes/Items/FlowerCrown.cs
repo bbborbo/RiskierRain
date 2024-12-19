@@ -7,32 +7,33 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using static RiskierRainContent.CoreModules.StatHooks;
 
 namespace RiskierRainContent.Items
 {
     class FlowerCrown : ItemBase<FlowerCrown>
     {
-        float maxHealthIncreaseBase = 0.15f;
-        float maxHealthIncreaseStack = 0.1f;
-        float maxShieldIncreaseBase = 0.15f;
-        float maxShieldIncreaseStack = 0.03f;
-        float regenIncreaseBase = 1f;
-        float regenIncreaseStack = 1f;
-        float moveSpeedIncreaseBase = 0.1f;
-        float moveSpeedIncreaseStack = 0.1f;
+        public static float shieldPercentBase = 0.08f;
+        public static float rechargeRateIncrease = 1f;
+
+        float moveSpeedIncreaseBase = 0.15f;
+        float moveSpeedIncreaseStack = 0.15f;
+        int armorIncreaseBase = 22;
+        int armorIncreaseStack = 22;
 
         public override string ItemName => "Flower Crown";
 
         public override string ItemLangTokenName => "FLOWERCROWN";
 
-        public override string ItemPickupDesc => "Gain a boost to ALL health stats.";
+        public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, increase armor and movement speed.";
 
-        public override string ItemFullDescription => $"Increases your <style=cIsHealing>maximum health</style> by <style=cIsHealing>{Tools.ConvertDecimal(maxHealthIncreaseBase)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(maxHealthIncreaseStack)} per stack)</style>, " +
-            $"<style=cIsHealing>maximum shield</style> by <style=cIsHealing>{Tools.ConvertDecimal(maxShieldIncreaseBase)}</style> of max health " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(maxShieldIncreaseStack)} per stack)</style>, " +
-            $"<style=cIsHealing>base health regeneration</style> by <style=cIsHealing>{regenIncreaseBase} hp/s</style> " +
-            $"<style=cStack>(+{regenIncreaseStack} hp/s per stack)</style>, " +
+        public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
+            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health " +
+            $"Reduces <style=cIsHealing>shield recharge delay</style> " +
+            $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style> " +
+            $"While shields are active, increase <style=cIsHealing>armor</style> " +
+            $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase} hp/s</style> " +
+            $"<style=cStack>(+{armorIncreaseStack} hp/s per stack)</style>, " +
             $"and <style=cIsHealing>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 
@@ -53,6 +54,7 @@ Thank you for always sending us gifts. I made some of them into this flower crow
 
         public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLOWERCROWN.png");
 
+
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
@@ -62,18 +64,36 @@ Thank you for always sending us gifts. I made some of them into this flower crow
 
         public override void Hooks()
         {
+            GetShieldRechargeStat += FlowerCrownRecharge;
             GetStatCoefficients += FlowerCrownStats;
+            //On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
+            //IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
+        }
+
+        private void FlowerCrownRecharge(CharacterBody sender, ShieldRechargeHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.reductionInSeconds += rechargeRateIncrease;
+            }
         }
 
         private void FlowerCrownStats(CharacterBody sender, StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            if(itemCount > 0)
+            if (itemCount > 0)
             {
-                args.healthMultAdd += maxHealthIncreaseBase + maxHealthIncreaseStack * (itemCount - 1);
-                args.baseShieldAdd += (maxShieldIncreaseBase + maxShieldIncreaseStack * (itemCount - 1)) * sender.maxHealth;
-                args.baseRegenAdd += regenIncreaseBase + regenIncreaseStack * (itemCount - 1);
-                args.moveSpeedMultAdd += moveSpeedIncreaseBase + moveSpeedIncreaseStack * (itemCount - 1);
+                HealthComponent hc = sender.healthComponent;
+                if (hc != null)
+                {
+                    args.baseShieldAdd += sender.maxHealth * shieldPercentBase;//(shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
+
+                    if (Fuse.HasShield(hc))
+                    {
+                        args.armorAdd += armorIncreaseBase + armorIncreaseStack * (itemCount - 1);
+                        args.moveSpeedMultAdd += moveSpeedIncreaseBase + moveSpeedIncreaseStack * (itemCount - 1);
+                    }
+                }
             }
         }
 

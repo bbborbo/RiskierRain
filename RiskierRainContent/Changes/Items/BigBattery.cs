@@ -10,14 +10,14 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using static RiskierRainContent.CoreModules.StatHooks;
 
 namespace RiskierRainContent.Items
 {
     class BigBattery : ItemBase<BigBattery>
     {
-        public static float shieldPercentBase = 0.02f;
-        public static float shieldPercentStack = 0.02f;
-        public static float rechargeRateIncrease = 0.15f;
+        public static float shieldPercentBase = 0.04f;
+        public static float rechargeRateIncrease = 1f;
         public static float aspdIncrease = 0.2f;
 
         public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
@@ -29,10 +29,8 @@ namespace RiskierRainContent.Items
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
             $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(shieldPercentStack)} per stack)</style>. " +
-            $"Increases <style=cIsHealing>shield recharge rate</style> " +
-            $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(rechargeRateIncrease)} per stack)</style>. " +
+            $"Reduces <style=cIsHealing>shield recharge delay</style> " +
+            $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style> " +
             $"While shields are active, increase <style=cIsDamage>attack speed</style> " +
             $"by <style=cIsDamage>{Tools.ConvertDecimal(aspdIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(aspdIncrease)} per stack)</style>.";
@@ -96,11 +94,45 @@ You know?";
             return null;
         }
 
+        public override void Init(ConfigFile config)
+        {
+            CreateItem();
+            CreateLang();
+            Hooks();
+        }
+
         public override void Hooks()
         {
+            GetShieldRechargeStat += BatteryRecharge;
             GetStatCoefficients += BatteryAspd;
-            On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
-            IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
+            //On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
+            //IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
+        }
+
+        private void BatteryRecharge(CharacterBody sender, ShieldRechargeHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.reductionInSeconds += rechargeRateIncrease;
+            }
+        }
+
+        private void BatteryAspd(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = GetCount(sender);
+            if (itemCount > 0)
+            {
+                HealthComponent hc = sender.healthComponent;
+                if (hc != null)
+                {
+                    args.baseShieldAdd += sender.maxHealth * shieldPercentBase;//(shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
+
+                    if (Fuse.HasShield(hc))
+                    {
+                        args.attackSpeedMultAdd += aspdIncrease * itemCount;
+                    }
+                }
+            }
         }
 
         private void BatteryRechargeIncrease(ILContext il)
@@ -135,36 +167,12 @@ You know?";
             int batteryCount = GetCount(self);
             if (batteryCount > 0)
             {
-                float rateIncreaseTotal = Mathf.Min(6f, rechargeRateIncrease * batteryCount);
+                //float rateIncreaseTotal = Mathf.Min(6f, rechargeRateIncrease * batteryCount);
+                float rateIncreaseTotal = 1 - (7 - rechargeRateIncrease) / 7;
                 self.outOfDangerStopwatch = outOfDangerStopwatch + rateIncreaseTotal * Time.fixedDeltaTime;
             }
 
             orig(self);
-        }
-
-        private void BatteryAspd(CharacterBody sender, StatHookEventArgs args)
-        {
-            int itemCount = GetCount(sender);
-            if(itemCount > 0)
-            {
-                HealthComponent hc = sender.healthComponent;
-                if (hc != null)
-                {
-                    args.baseShieldAdd += sender.maxHealth * (shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
-
-                    if (Fuse.HasShield(hc))
-                    {
-                        args.attackSpeedMultAdd += aspdIncrease * itemCount;
-                    }
-                }
-            }
-        }
-
-        public override void Init(ConfigFile config)
-        {
-            CreateItem();
-            CreateLang();
-            Hooks();
         }
     }
 }

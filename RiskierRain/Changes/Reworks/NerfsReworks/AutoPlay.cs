@@ -48,10 +48,6 @@ namespace RiskierRain
 		private static float gasBaseDamage = 0.5f;
 		private static float gasStackDamage = 0;
 
-		private static float razorwireDamage = 3.6f;
-		private static float razorwireProcCoeff = 0.2f;
-		private static float razorwireCooldown = 1f;
-
 		public static bool useNkuhanaKnockbackSlow = false;
 		public static bool useDiscipleKnockbackSlow = false;
 
@@ -119,15 +115,6 @@ namespace RiskierRain
             EntityStates.LaserTurbine.FireMainBeamState.mainBeamProcCoefficient = 0;
         }
 
-        private void RazorwireReworks()
-        {
-            IL.RoR2.HealthComponent.TakeDamageProcess += RazorwireNerf;
-            LanguageAPI.Add("ITEM_THORNS_DESC",
-                $"Getting hit causes you to explode in a burst of razors, " +
-                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(razorwireDamage)} damage</style>. " +
-                $"Hits up to <style=cIsDamage>5</style> <style=cStack>(+2 per stack)</style> targets " +
-                $"in a <style=cIsDamage>25m</style> <style=cStack>(+10m per stack)</style> radius");
-        }
 
         #region nkuhana
         float nkuhanaNewDamageMultiplier = 3.5f; //2.5
@@ -157,43 +144,7 @@ namespace RiskierRain
 		}
 		#endregion
 
-		private void RazorwireNerf(ILContext il)
-        {
-			ILCursor c = new ILCursor(il);
-
-			c.GotoNext(MoveType.After,
-				x => x.MatchLdflda<HealthComponent>("itemCounts"),
-				x => x.MatchLdfld<HealthComponent./*private*/ItemCounts>("thorns"),
-				x => x.MatchLdcI4(0)
-				);
-			c.Index--;
-			c.Emit(OpCodes.Ldarg_0);
-			c.EmitDelegate<Func<Int32, HealthComponent, Int32>>((itemCount, hc) =>
-			{
-				CharacterBody body = hc.body;
-                if (body.HasBuff(CoreModules.Assets.noRazorwire))
-                {
-					itemCount = 0;
-                }
-                else if (itemCount > 0)
-                {
-					body.AddTimedBuffAuthority(CoreModules.Assets.noRazorwire.buffIndex, razorwireCooldown);
-                }
-
-				return itemCount;
-			});
-
-			c.GotoNext(MoveType.Before,
-				x => x.MatchLdcR4(out _),
-				x => x.MatchLdarg(0),
-				x => x.MatchLdfld<HealthComponent>("body")
-				//,x => x.MatchCallOrCallvirt<CharacterBody>("damage")
-				);
-			c.Remove();
-			c.Emit(OpCodes.Ldc_R4, razorwireDamage);
-        }
-
-        private void NerfDiscipleDamage(ILContext il)
+		private void NerfDiscipleDamage(ILContext il)
 		{
 			ILCursor c = new ILCursor(il);
 
@@ -445,20 +396,6 @@ namespace RiskierRain
 					self.procCoefficient = 0;
 					break;
 			}
-			orig(self);
-		}
-		private void NerfRazorwireOrb(On.RoR2.Orbs.LightningOrb.orig_Begin orig, LightningOrb self)
-		{
-            switch (self.lightningType)
-            {
-				case LightningOrb.LightningType.Tesla:
-					//self.procCoefficient = 0;
-					break;
-				case LightningOrb.LightningType.RazorWire:
-					if (!Tools.isLoaded("Rein.GeneralFixes")) self.procCoefficient = razorwireProcCoeff;
-					break;
-            }
-
 			orig(self);
 		}
 		private void NerfChargedPerforatorOrb(On.RoR2.Orbs.SimpleLightningStrikeOrb.orig_Begin orig, SimpleLightningStrikeOrb self)

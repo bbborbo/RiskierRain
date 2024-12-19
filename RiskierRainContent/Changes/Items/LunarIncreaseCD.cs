@@ -13,6 +13,7 @@ using static R2API.RecalculateStatsAPI;
 using static RiskierRainContent.CoreModules.StatHooks;
 using UnityEngine.AddressableAssets;
 using System.Collections;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRainContent.Items
 {

@@ -91,6 +91,7 @@ namespace RiskierRainContent.Items
         {
             foodPoisoning = ScriptableObject.CreateInstance<BuffDef>();
 
+            foodPoisoning.name = "FoodPoisoningRegenPenalty";
             foodPoisoning.buffColor = Color.gray;
             foodPoisoning.isDebuff = true;
             foodPoisoning.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Croco/texBuffRegenBoostIcon.tif").WaitForCompletion();

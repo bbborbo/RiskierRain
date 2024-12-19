@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using static RiskierRainContent.CoreModules.StatHooks;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRainContent.Items
 {

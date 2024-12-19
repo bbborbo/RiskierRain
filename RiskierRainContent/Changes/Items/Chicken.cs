@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,7 @@ namespace RiskierRainContent.Items
         public static float baseRegenPenalty = 3f;
         public static float stackRegenPenalty = 3f;
         public static float regenPenaltyChance = 40f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Raw Chicken";
 
         public override string ItemLangTokenName => "CHICKEN";

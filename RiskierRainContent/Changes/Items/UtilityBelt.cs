@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2.Skills;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRainContent.Items
 {
@@ -19,6 +20,7 @@ namespace RiskierRainContent.Items
 
         public static float castBarrierBase = 0.02f;
         public static float castBarrierStack = 0.005f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Utility Knife";
 
         public override string ItemLangTokenName => "UTILITYBARRIER";

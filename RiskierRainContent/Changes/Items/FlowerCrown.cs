@@ -18,8 +18,8 @@ namespace RiskierRainContent.Items
 
         float moveSpeedIncreaseBase = 0.15f;
         float moveSpeedIncreaseStack = 0.15f;
-        int armorIncreaseBase = 22;
-        int armorIncreaseStack = 22;
+        int armorIncreaseBase = 30;
+        int armorIncreaseStack = 30;
 
         public override string ItemName => "Flower Crown";
 

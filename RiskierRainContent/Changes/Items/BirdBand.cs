@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static RiskierRainContent.CoreModules.StatHooks;
 using UnityEngine.AddressableAssets;
+using RoR2.ExpansionManagement;
 
 namespace RiskierRainContent.Items
 {
@@ -19,6 +20,7 @@ namespace RiskierRainContent.Items
         public float regenDurationBase = 0.3f;
         public float regenDurationStack = 0.3f;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Dev\u2019s Item";
 
         public override string ItemLangTokenName => "BIRDBAND";

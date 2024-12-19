@@ -21,6 +21,7 @@ namespace RiskierRainContent.Items
         public const float minGroundTimeForMinBuff = 1;
         public const float buffPerSecond = 5;
         public const float ungroundedLossRate = 1;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Aglet";
 
         public override string ItemLangTokenName => "AGLET";
@@ -41,7 +42,6 @@ namespace RiskierRainContent.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

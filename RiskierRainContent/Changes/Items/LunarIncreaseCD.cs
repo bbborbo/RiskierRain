@@ -28,6 +28,7 @@ namespace RiskierRainContent.Items
         float shardsPerSecondBase = 0.5f;
         float shardsPerSecondStack = 0;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
 
         public override string ItemName => "Elegy of Extinction";
 

@@ -2,6 +2,7 @@
 using R2API;
 using RiskierRainContent.CoreModules;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,7 @@ namespace RiskierRainContent.Items
         float freezeDamageHealthFraction = 0.05f;
         float freezeProcCoefficient = 0.75f;
 
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Permafrost";
 
         public override string ItemLangTokenName => "GOODEXECUTIONITEM";

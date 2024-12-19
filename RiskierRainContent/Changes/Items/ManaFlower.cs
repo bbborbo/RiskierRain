@@ -15,6 +15,7 @@ namespace RiskierRainContent.Items
     {
         public static float cdrAmtBase = 0.08f;
         public static float cdrAmtStack = 0.06f;
+        public override ExpansionDef RequiredExpansion => RiskierRainContent.expansionDef;
         public override string ItemName => "Nature\u2019s Gift";
 
         public override string ItemLangTokenName => "BORBOMANAFLOWER";

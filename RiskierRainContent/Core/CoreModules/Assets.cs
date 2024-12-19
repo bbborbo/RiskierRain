@@ -135,7 +135,23 @@ namespace RiskierRainContent.CoreModules
 
             AddMaskHauntAssets();
             AddHarpoonAssets();
+            AddRazorwireAssets();
         }
+
+        #region razorwire
+        public static BuffDef razorChargeBuff;
+        private void AddRazorwireAssets()
+        {
+            razorChargeBuff = ScriptableObject.CreateInstance<BuffDef>();
+            razorChargeBuff.buffColor = new Color(1, 1, 1);
+            razorChargeBuff.canStack = true;
+            razorChargeBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(); //replace me
+            razorChargeBuff.isDebuff = false;
+            razorChargeBuff.isCooldown = true;
+            razorChargeBuff.name = "bdRazorChargeBuff";
+            Assets.buffDefs.Add(razorChargeBuff);
+        }
+        #endregion
 
         #region happiest mask
         public static BuffDef hauntDebuff;

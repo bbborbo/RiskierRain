@@ -145,6 +145,10 @@ namespace RiskierRainContent
         {
             BurnReworks();
             MakePillarsFun();
+            if(GetConfigBool(true, "Core: Razorwire"))
+            {
+                RazorwireRework();
+            }
             if (GetConfigBool(true, "Core: Laser Scope Rework (Combat Telescope)"))
             {
                 ReworkLaserScope();

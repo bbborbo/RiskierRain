@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 
 namespace RiskierRainContent.Items
@@ -30,7 +31,7 @@ namespace RiskierRainContent.Items
             $"<style=cIsHealing>{Tools.ConvertDecimal(baseMaxHealth)}</style> <style=cStack>(+{Tools.ConvertDecimal(stackMaxHealth)} per stack)</style>. " +
             $"At the start of each stage, has a <style=cIsHealing>{regenPenaltyChance}%</style> chance to inflict " +
             $"<style=cIsHealing>food poisoning</style>, reducing your <style=cIsHealing>base health regeneration</style> " +
-            $"by <style=cIsHealing>-{baseRegenPenalty} hp/s</style> (-{baseRegenPenalty} hp/s per stack)</style>.";
+            $"by <style=cIsHealing>-{baseRegenPenalty} hp/s</style> <style=cStack>(-{baseRegenPenalty} hp/s per stack)</style>.";
 
         public override string ItemLore => "";
 
@@ -50,7 +51,22 @@ namespace RiskierRainContent.Items
         public override void Hooks()
         {
             GetStatCoefficients += ChickenStats;
-            On.RoR2.CharacterBody.Start += DoFoodPoisoning;
+            //On.RoR2.CharacterBody.Start += DoFoodPoisoning;
+            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+        }
+
+        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        {
+            orig(self);
+            if (NetworkServer.active)
+            {
+                if (self.master)
+                {
+                    int itemCount = GetCount(self);
+
+                    self.AddItemBehavior<ChickenBehavior>(itemCount);
+                }
+            }
         }
 
         private void DoFoodPoisoning(On.RoR2.CharacterBody.orig_Start orig, CharacterBody self)
@@ -59,13 +75,6 @@ namespace RiskierRainContent.Items
             int chickenCount = GetCount(self);
             if(chickenCount > 0)
             {
-                if(!Util.CheckRoll(100 - regenPenaltyChance, self.master))
-                {
-                    for(int i = 0; i < chickenCount; i++)
-                    {
-                        self.AddBuff(foodPoisoning.buffIndex);
-                    }
-                }
             }
         }
 
@@ -98,6 +107,22 @@ namespace RiskierRainContent.Items
             foodPoisoning.canStack = true;
 
             CoreModules.Assets.buffDefs.Add(foodPoisoning);
+        }
+    }
+    public class ChickenBehavior : CharacterBody.ItemBehavior
+    {
+        private void Start()
+        {
+            if (body)
+            {
+                if (!Util.CheckRoll(100 - Chicken.regenPenaltyChance, body.master))
+                {
+                    for (int i = 0; i < this.stack; i++)
+                    {
+                        body.AddBuff(Chicken.foodPoisoning.buffIndex);
+                    }
+                }
+            }
         }
     }
 }

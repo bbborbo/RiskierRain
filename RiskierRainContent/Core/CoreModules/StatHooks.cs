@@ -46,7 +46,7 @@ namespace RiskierRainContent.CoreModules
 
 
             float h = 7 / Mathf.Max(7 - shieldStatMods.reductionInSeconds, 0.1f);
-            self.outOfDangerStopwatch += Mathf.Max((h - 1) * Time.fixedDeltaTime, 0);
+            self.outOfDangerStopwatch += Mathf.Max((h - 1) * Time.fixedDeltaTime, -1);
 
             orig(self);
         }

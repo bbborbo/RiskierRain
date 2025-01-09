@@ -28,9 +28,9 @@ namespace RiskierRainContent.Items
         public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, gain an attack speed bonus.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
-            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health " +
-            $"Reduces <style=cIsHealing>shield recharge delay</style> " +
-            $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style> " +
+            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +
+            $"Reduces <style=cIsUtility>shield recharge delay</style> " +
+            $"by <style=cIsUtility>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style>. " +
             $"While shields are active, increase <style=cIsDamage>attack speed</style> " +
             $"by <style=cIsDamage>{Tools.ConvertDecimal(aspdIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(aspdIncrease)} per stack)</style>.";

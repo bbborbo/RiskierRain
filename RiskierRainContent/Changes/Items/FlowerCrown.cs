@@ -14,7 +14,7 @@ namespace RiskierRainContent.Items
     class FlowerCrown : ItemBase<FlowerCrown>
     {
         public static float shieldPercentBase = 0.08f;
-        public static float rechargeRateIncrease = 1f;
+        public static float rechargeRateIncrease = 1.5f;
 
         float moveSpeedIncreaseBase = 0.15f;
         float moveSpeedIncreaseStack = 0.15f;
@@ -28,13 +28,13 @@ namespace RiskierRainContent.Items
         public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, increase armor and movement speed.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
-            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health " +
-            $"Reduces <style=cIsHealing>shield recharge delay</style> " +
-            $"by <style=cIsHealing>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style> " +
+            $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +
+            $"Reduces <style=cIsUtility>shield recharge delay</style> " +
+            $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
             $"While shields are active, increase <style=cIsHealing>armor</style> " +
             $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase} hp/s</style> " +
             $"<style=cStack>(+{armorIncreaseStack} hp/s per stack)</style>, " +
-            $"and <style=cIsHealing>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
+            $"and <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 
         public override string ItemLore => @"Order: Flower Crown

@@ -77,6 +77,10 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.ClayApothecary, MonsterCategory.Minibosses, DirectorAPI.Stage.SulfurPools);
             Helpers.AddNewMonsterToStage(DirectorCards.Parent, MonsterCategory.Minibosses, DirectorAPI.Stage.SulfurPools);
 
+            //treeborn
+            Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.TreebornColony);
+            Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.GoldenDieback);
+
             //abyssal
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
 

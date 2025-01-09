@@ -68,6 +68,7 @@ namespace RiskierRain.CoreModules
         public static CharacterSpawnCard Grovetender;
         public static CharacterSpawnCard RoboBall;
         public static CharacterSpawnCard XiConstruct;
+        public static CharacterSpawnCard Grandparent;
 
         public static CharacterSpawnCard OverloadingWorm;
 
@@ -112,6 +113,7 @@ namespace RiskierRain.CoreModules
             ImpOverlord = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscimpboss");
             Grovetender = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscgravekeeper");
             RoboBall = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscroboballboss");
+            Grandparent = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/Base/Grandparent/cscGrandparent.asset").WaitForCompletion();
 
             OverloadingWorm = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscelectricworm");
 
@@ -171,6 +173,7 @@ namespace RiskierRain.CoreModules
         public static DirectorCard ImpOverlord;
         public static DirectorCard Grovetender;
         public static DirectorCard RoboBall;
+        public static DirectorCard Grandparent;
 
         public static DirectorCard OverloadingWorm;
 
@@ -225,6 +228,7 @@ namespace RiskierRain.CoreModules
             Grovetender = BuildDirectorCard(SpawnCards.Grovetender);
             RoboBall = BuildDirectorCard(SpawnCards.RoboBall, 1, 3, DirectorCore.MonsterSpawnDistance.Standard);
             MagmaWorm = BuildDirectorCard(SpawnCards.MagmaWorm, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);
+            Grandparent = BuildDirectorCard(SpawnCards.Grandparent, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);
 
             OverloadingWorm = BuildDirectorCard(SpawnCards.OverloadingWorm);
 

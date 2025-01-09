@@ -41,7 +41,7 @@ namespace RiskierRain
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(RiskierRainContent.RiskierRainContent.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(SwanSongExtended.SwanSongPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.HardDependency)]

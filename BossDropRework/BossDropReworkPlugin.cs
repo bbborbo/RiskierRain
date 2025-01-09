@@ -29,7 +29,7 @@ namespace BossDropRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBossDrops";
-        public const string version = "1.0.4";
+        public const string version = "1.1.0";
         #endregion
 
         public void Awake()
@@ -45,14 +45,14 @@ namespace BossDropRework
 
             R2API.ContentAddition.AddBuffDef(bossHunterDebuff);
 
-            RoR2Application.onLoad += ReworkBossItemDrops;
+            WakeOfVulturesRework();
+            BossesDropBossItems();
+            TricornRework();
+            DirectorAPI.InteractableActions += DeleteYellowPrinters;
         }
 
         void ReworkBossItemDrops()
         {
-            BossesDropBossItems();
-            TricornRework();
-            DirectorAPI.InteractableActions += DeleteYellowPrinters;
         }
         public static GameObject overgrownPrinterPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/chest/DuplicatorWild");
         public static bool affectAurelionite = true;

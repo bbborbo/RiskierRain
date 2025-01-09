@@ -781,5 +781,27 @@ namespace RiskierRain
             return orig(purchaseInteraction);
         }
         #endregion
+
+        #region halcyonite shrine
+        public static int halcyoniteShrineLowGoldCost = 60;//75
+        public static int halcyoniteShrineMidGoldCost = 120;//150
+        public static int halcyoniteShrineMaxGoldCost = 200;//300
+
+
+        void ChangeHalcyoniteShrineGoldRequirements()
+        {
+            GameObject halcyoniteShrinePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/ShrineHalcyonite.prefab").WaitForCompletion();
+            if (halcyoniteShrinePrefab)
+            {
+                HalcyoniteShrineInteractable hsi = halcyoniteShrinePrefab.GetComponent<HalcyoniteShrineInteractable>();
+                if (hsi)
+                {
+                    hsi.lowGoldCost = halcyoniteShrineLowGoldCost;
+                    hsi.midGoldCost = halcyoniteShrineMidGoldCost;
+                    hsi.maxGoldCost = halcyoniteShrineMaxGoldCost;
+                }
+            }
+        }
+        #endregion
     }
 }

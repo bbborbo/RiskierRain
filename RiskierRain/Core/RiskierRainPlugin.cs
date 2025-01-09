@@ -678,6 +678,12 @@ namespace RiskierRain
                 GupChanges();
             }
 
+            //halcyonite shrine
+            if(GetConfigBool(true, "Economy: Halcyonite Shrine"))
+            {
+                ChangeHalcyoniteShrineGoldRequirements();
+            }
+
             LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
             // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
 

@@ -57,9 +57,9 @@ namespace BossDropRework
         public static GameObject overgrownPrinterPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/chest/DuplicatorWild");
         public static bool affectAurelionite = true;
 
-        public static float baseDropChance = 4;
-        public static float specialDropChance = 7;
-        public static float eliteBonusDropChance = 3;
+        public static float baseDropChance = 6;
+        public static float specialDropChance = 9;
+        public static float eliteBonusDropChance = 4;
 
         void BossesDropBossItems()
         {

@@ -57,8 +57,8 @@ namespace SwanSongExtended.Equipment
         public override string EquipmentPickupDesc => "Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
 
         public override string EquipmentFullDescription => $"Target a monster, allowing them to be " +
-            $"{RedText("instantly killed")} at or below {RedText("{baseThreshold} max health")} " +
-            $"{StackText($"(+{stackThreshold} per Elite tier)")}. " +
+            $"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +
+            $"{StackColor($"(+{stackThreshold} per Elite tier)")}. " +
             $"Executing them in this manner will {DamageColor("empower you")}, " +
             $"resetting {UtilityColor("all skill cooldowns")} and {UtilityColor($"increasing Luck for {luckDuration} seconds")}.";
 

@@ -17,7 +17,7 @@ namespace SwanSongExtended.Equipment
 {
     class BrokenZapinator : EquipmentBase
     {
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
 
         #region config
         public override string ConfigName => "Equipment : Zapinator";
@@ -61,9 +61,9 @@ namespace SwanSongExtended.Equipment
 
         public override string EquipmentLore => "";
 
-        public override GameObject EquipmentModel => SwanSongPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
+        public override GameObject EquipmentModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 
-        public override Sprite EquipmentIcon => SwanSongPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
         public override float BaseCooldown => 35f;
         public override bool EnigmaCompatible => true;
         public override bool CanBeRandomlyActivated => true;

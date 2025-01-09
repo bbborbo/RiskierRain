@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -45,10 +46,13 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Increases armor and regen while enemies are nearby.";
 
-        public override string ItemFullDescription => $"Increases base health regeneration by +{opalRegenBase} (+{opalRegenBase} per stack) " +
-			$"and armor by {opalArmorBase} (+{opalArmorBase} per stack). For each enemy within {opalAreaRadius}m, also gain " +
-			$"+{opalRegenPerBuff} (+{opalRegenPerBuff} per stack) base health regeneration and {opalArmorPerBuff} (+{opalArmorPerBuff} per stack) armor, " +
-			$"up to {opalMaxBuff} times.";
+        public override string ItemFullDescription => $"Increases base health regeneration by " +
+			$"{HealingColor($"+{opalRegenBase} hp/s")} {StackText($"+{opalRegenBase} hp/s")} " +
+			$"and armor by {HealingColor($"+{opalArmorBase}")} {StackText("+" + opalArmorBase)}. " +
+			$"For each enemy within {UtilityColor(opalAreaRadius.ToString() +"m")}, also gain " +
+			$"{HealingColor($"+{opalRegenPerBuff} hp/s")} {StackText($"+{opalRegenPerBuff} hp/s")} " +
+			$"base health regeneration and {HealingColor($"+{opalArmorPerBuff}")} {StackText("+" + opalArmorPerBuff)}" +
+			$" armor, up to {UtilityColor(opalMaxBuff.ToString())} times.";
 
         public override string ItemLore => "<style=cMono>//--AUTO-TRANSCRIPTION FROM UES [Redacted] --//</style>\n\n\"...You think this planet is as bad as they say?\"\n\nLiz sat in silence among her fellow soldiers. She, like the rest of her squadron, had been taken from the middle of a firefight in the galactic outback and brought before an old UES veteran. Liz was used to debriefing by now, it all blended together in her head. Something about monsters, and the missing UES Contact Light.\n\n\"...Dunno.\" Liz murmured as she turned a small, oddly-shaped hunk of opal in her hand. It was one of the only things she had that reminded her of Parker. Of when things were calm, and peaceful.\n\n\"...Heh, I don't think a shiny rock will do much,\" A soldier joked. Liz's brow furrowed under her helmet. \"Yeah, probably not... but...\"\n\nLiz took a deep breath and slipped the opal back into her pocket. \"It just helps.\"";
 

@@ -17,7 +17,7 @@ namespace SwanSongExtended.Equipment
 {
     class NinjaGear : EquipmentBase<NinjaGear>
     {
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
         static GameObject novaEffectPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
 
         #region config
@@ -53,9 +53,9 @@ namespace SwanSongExtended.Equipment
 
         public override string EquipmentLore => "";
 
-        public override GameObject EquipmentModel => SwanSongPlugin.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
+        public override GameObject EquipmentModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
 
-        public override Sprite EquipmentIcon => SwanSongPlugin.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
 
         public override float BaseCooldown => 7f;
         public override bool EnigmaCompatible => true;

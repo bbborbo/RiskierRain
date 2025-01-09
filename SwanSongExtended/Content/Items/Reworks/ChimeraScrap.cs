@@ -39,10 +39,10 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => $"Prioritized when used with {RedText("ANY")} 3D Printer. Creates extra items for lower tiers.";
 
         public override string ItemFullDescription => $"Does nothing. Prioritized when used with " +
-                $"{RedText("ALL")} 3D Printers. Creates {StackText("(")} " +
-                $"{regenScrapCommonCredit} {StackText("/")} " +
-                $"{HealingColor(regenScrapUncommonCredit.ToString())} {StackText("/")} " +
-                $"{RedText(regenScrapRareCredit.ToString())} {StackText(")")} items, " +
+                $"{RedText("ALL")} 3D Printers. Creates {StackColor("(")} " +
+                $"{regenScrapCommonCredit} {StackColor("/")} " +
+                $"{HealingColor(regenScrapUncommonCredit.ToString())} {StackColor("/")} " +
+                $"{RedText(regenScrapRareCredit.ToString())} {StackColor(")")} items, " +
                 $"{UtilityColor("depending on the quality of the printer")}.";
 
         public override string ItemLore => "<style=cMono>//--AUTO-TRANSCRIPTION FROM UES [Redacted] --//</style>\n\n\"Hey, Joe, how's the work in engineering?\"\n\n\"Terrible. We have a shipment of this... weird, prototype material. Some kind of metal? They want us to make stuff out of it, which isn't too bad. Thing is, no matter how much I take, there always seems to be more. Did you know I made twenty-five hundred units of .300 caliber rounds from a 10 kilo crate of metal?\"\n\n\"How much!?\"\n\n\"Right!? I feel like I'm losing my mind. It's not even half-way empty. Hell, I bet there's more in there than when I started!\"\n\n\"Well, at least you won't have to worry about running out...\"";

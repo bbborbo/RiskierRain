@@ -50,7 +50,7 @@ namespace SwanSongExtended.Items
         public override string ItemFullDescription => $"For <style=cIsUtility>{stageDuration}</style> seconds after entering any stage, " +
             $"or <style=cIsUtility>{pickupDuration}</style> seconds after picking up a new copy of the item, increase " +
             $"<style=cIsDamage>attack speed</style> and " +
-            $"<style=cIsDamage>movement speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(spdBoostBuff)}</style>" +
+            $"<style=cIsDamage>movement speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(spdBoostBuff)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(spdBoostBuff)} per stack)</style>, " +
             $"and reduce <style=cIsUtility>skill cooldowns</style> by <style=cIsUtility>-{Tools.ConvertDecimal(cdrBoostBuff)}</style> " +
             $"<style=cStack>(-{Tools.ConvertDecimal(cdrBoostBuff)} per stack)</style>.";

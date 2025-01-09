@@ -152,6 +152,8 @@ namespace SwanSongExtended.Modules
 
         private static object DualBindToConfig(Type t, string section, ConfigFile config, string configName, object defaultValue, string configDesc)
         {
+            if (string.IsNullOrWhiteSpace(section) || string.IsNullOrWhiteSpace(configName))
+                return defaultValue;
             ConfigDescription desc = new ConfigDescription(configDesc);
 
             //get the method for binding to a config file

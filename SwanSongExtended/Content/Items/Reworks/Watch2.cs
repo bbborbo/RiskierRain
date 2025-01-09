@@ -47,9 +47,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[]{ ItemTag.Damage };
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/FragileDamageBonus/PickupDelicateWatch.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/FragileDamageBonus/texDelicateWatchIcon.png").WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

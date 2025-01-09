@@ -10,6 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -28,9 +29,10 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Summon a sun during the teleporter event.";
 
-        public override string ItemFullDescription => $"{3} seconds after beginning the teleporter event, " +
-            $"summon a sun overhead that lasts for {sunDurationBase} seconds (+{sunDurationStack} per stack). " +
-            $"All enemies and allies burn near the sun.";
+        public override string ItemFullDescription => $"After beginning the teleporter event, " +
+            $"{DamageColor("summon a sun overhead")} that lasts for " +
+            $"{DamageColor(sunDurationBase.ToString())} seconds {StackText($"+{sunDurationStack}")}. " +
+            $"{HealthColor("All enemies and allies burn near the sun")}.";
 
         public override string ItemLore => "Placeholder";
 

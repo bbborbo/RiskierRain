@@ -238,7 +238,7 @@ namespace SwanSongExtended
                 }
             }
 
-            if(fileName != String.Empty)
+            if (!string.IsNullOrEmpty(fileName))
                 Modules.Language.TryPrintOutput(fileName);
         }
 

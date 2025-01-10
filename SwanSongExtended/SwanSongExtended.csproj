@@ -43,9 +43,7 @@
 
   <ItemGroup>
     <Folder Include="Content\Interactables\Interactables\" />
-    <Folder Include="Content\Items\Helpers\" />
     <Folder Include="Content\Items\Items\" />
-    <Folder Include="Content\Items\QuestItems\" />
   </ItemGroup>
 
 </Project>

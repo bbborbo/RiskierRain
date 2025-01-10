@@ -37,9 +37,9 @@ namespace RiskierRain.SurvivorTweaks
 
         public static int slideStock = 1; //1
         public static float slideCooldown = 8f; //4f
-        public static float slideMaxDuration = 5f; //1f
+        public static float slideMaxDuration = 4f; //1f
         public static float slideSpeedMultiplier = 0.6f; //1f
-        public static float slideStrafeMultiplier = 0.01f; //1f
+        public static float slideStrafeMultiplier = 0.02f; //1f
         public static float slideJumpDuration = 0.6f; //0.6f
         public static float slideJumpMultiplier = 1.2f; //1f
 

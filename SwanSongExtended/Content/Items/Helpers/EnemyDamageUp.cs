@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -72,13 +71,6 @@ namespace SwanSongExtended.Items
         {
             enemySpawned = orig(self, directorSpawnRequest);
             return enemySpawned;
-        }
-
-        public override void Init(ConfigFile config)
-        {
-            CreateLang();
-            CreateItem();
-            Hooks();
         }
 
         GameObject enemySpawned;

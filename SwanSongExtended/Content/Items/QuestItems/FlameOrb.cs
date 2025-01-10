@@ -1,13 +1,12 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRainContent.Items
+namespace SwanSongExtended.Items
 {
     class FlameOrb : ItemBase<FlameOrb>
     {
@@ -32,9 +31,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.Cleansable };
 
-        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarStar.prefab");
+        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarStar.prefab");
 
-        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -122,11 +121,5 @@ namespace RiskierRainContent.Items
         }
         private static readonly SphereSearch flameSphereSearch = new SphereSearch();
         private static readonly List<HurtBox> flameOnKillHurtBoxBuffer = new List<HurtBox>();
-        public override void Init(ConfigFile config)
-        {
-            CreateItem();
-            CreateLang();
-            Hooks();
-        }
     }
 }

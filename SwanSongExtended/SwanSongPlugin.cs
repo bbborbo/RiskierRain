@@ -17,7 +17,7 @@ using RoR2.ExpansionManagement;
 using System.Runtime.CompilerServices;
 using RoR2;
 using MissileRework;
-using RiskierRainContent.Interactables;
+using SwanSongExtended.Interactables;
 using SwanSongExtended.Elites;
 using SwanSongExtended.Artifacts;
 using SwanSongExtended.Scavengers;
@@ -97,6 +97,7 @@ namespace SwanSongExtended
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
+            Modules.AllyCaps.Init();
             this.InitializeStorms();
 
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);

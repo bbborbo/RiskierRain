@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRainContent.Items
+namespace SwanSongExtended.Items
 {
     class ChargedSpine : ItemBase<ChargedSpine>
     {
@@ -26,9 +25,9 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable };
 
-        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChargedSpine.prefab");
+        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChargedSpine.prefab");
 
-        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_CHARGED_MALACHITE_SPINE.png");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_CHARGED_MALACHITE_SPINE.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -79,13 +78,6 @@ namespace RiskierRainContent.Items
         public static bool HasShield(HealthComponent hc)
         {
             return hc.shield > 1;
-        }
-
-        public override void Init(ConfigFile config)
-        {
-            CreateItem();
-            CreateLang();
-            Hooks();
         }
     }
 }

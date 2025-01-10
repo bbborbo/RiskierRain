@@ -2,7 +2,6 @@
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;

@@ -8,8 +8,7 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using R2API;
 using UnityEngine.Networking;
-using RiskierRainContent.Interactables;
-using RiskierRainContent;
+using SwanSongExtended.Interactables;
 
 namespace SwanSongExtended
 {

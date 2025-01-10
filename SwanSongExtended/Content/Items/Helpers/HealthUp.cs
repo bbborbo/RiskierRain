@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using System;
 using System.Collections.Generic;

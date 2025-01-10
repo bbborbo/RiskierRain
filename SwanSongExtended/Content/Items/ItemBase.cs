@@ -24,6 +24,10 @@ namespace SwanSongExtended.Items
 
     public abstract class ItemBase : SharedBase
     {
+        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
+        public override string ConfigName => "Items : " + ItemName;
+
+
         public static Dictionary<string, ItemDef> DefDictionary = new Dictionary<string, ItemDef>();
 
         public abstract string ItemName { get; }
@@ -40,7 +44,6 @@ namespace SwanSongExtended.Items
         public ItemDef ItemsDef;
 
         public virtual bool CanRemove { get; } = false;
-        public virtual bool IsDisabled { get; } = false;
         public virtual bool IsHidden { get; } = false;
         public virtual ExpansionDef RequiredExpansion { get; } = null;
 

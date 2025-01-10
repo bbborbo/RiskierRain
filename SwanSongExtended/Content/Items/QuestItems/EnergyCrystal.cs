@@ -1,14 +1,15 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
+using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 
-namespace RiskierRainContent.Items
+namespace SwanSongExtended.Items
 {
     class EnergyCrystal : ItemBase<EnergyCrystal>
     {
@@ -27,8 +28,8 @@ namespace RiskierRainContent.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.Cleansable, ItemTag.Healing, ItemTag.Damage };
 
-        public override GameObject ItemModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlEnergyCrystal.prefab");
-        public override Sprite ItemIcon => CoreModules.Assets.orangeAssetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
+        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlEnergyCrystal.prefab");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLAMEORB.png");
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -38,12 +39,22 @@ namespace RiskierRainContent.Items
         int barrierBase = 8;
         int barrierStack = 4;
 
-        float speedBoost = .5f;
+        float speedBoost = 3f;
         int durationBase = 2;
         int durationStack = 1;
 
         public static BuffDef energyBuff;
 
+        public override void Init()
+        {
+            energyBuff = Content.CreateAndAddBuff(
+                "bdCrystalEnergy",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), //replace me
+                new Color(1f, 0.9f, .7f),
+                false, false
+                );
+            base.Init();
+        }
         public override void Hooks()
         {
             GetStatCoefficients += CrystalStats;
@@ -89,25 +100,6 @@ namespace RiskierRainContent.Items
             int barrierToAdd = barrierBase + (barrierStack * (itemCount - 1));
             body.healthComponent.AddBarrierAuthority(barrierToAdd);          
             
-        }
-        void CreateBuff()
-        {
-            energyBuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                energyBuff.name = "energyBuff";
-                energyBuff.buffColor = new Color(1f, 0.9f, .7f);
-                energyBuff.canStack = false;
-                energyBuff.isDebuff = false;
-                energyBuff.iconSprite = CoreModules.Assets.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/Buff/texBuffCobaltShield.png");
-            };
-            CoreModules.Assets.buffDefs.Add(energyBuff);
-        }
-        public override void Init(ConfigFile config)
-        {
-            CreateItem();
-            CreateLang();
-            CreateBuff();
-            Hooks();
         }
     }
 }

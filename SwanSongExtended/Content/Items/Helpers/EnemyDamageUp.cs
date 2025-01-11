@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SwanSongExtended.Items
 {
@@ -27,7 +28,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.CannotSteal };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyDamageUp.prefab");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Core/NullModel.prefab").WaitForCompletion(); //assetBundle.LoadAsset<GameObject>("Assets/Prefabs/enemyDamageUp.prefab");
 
         public override Sprite ItemIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 

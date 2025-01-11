@@ -41,9 +41,4 @@
     <ProjectReference Include="..\BossDropRework\BossDropRework.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Content\Interactables\Interactables\" />
-    <Folder Include="Content\Items\Items\" />
-  </ItemGroup>
-
 </Project>

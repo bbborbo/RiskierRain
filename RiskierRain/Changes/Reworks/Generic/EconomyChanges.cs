@@ -18,7 +18,7 @@ using RiskierRain.Components;
 using static R2API.DirectorAPI;
 using System.Linq;
 using On.EntityStates.CaptainSupplyDrop;
-using RiskierRainContent;
+using SwanSongExtended;
 
 namespace RiskierRain
 {
@@ -30,7 +30,7 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 1.65f;
+        float costExponent = 1.7f;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();

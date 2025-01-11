@@ -1,5 +1,4 @@
 ﻿using BepInEx.Configuration;
-using RiskierRainContent.CoreModules;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;

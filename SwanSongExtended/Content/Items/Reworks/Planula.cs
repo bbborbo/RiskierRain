@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Reworks : Planula";
         [AutoConfig("Sun Duration Base", 10f)]
         public static float sunDurationBase = 10;
-        [AutoConfig("Sun Duration Base", 5f)]
+        [AutoConfig("Sun Duration Stack", 5f)]
         public static float sunDurationStack = 5;
 
         public override AssetBundle assetBundle => null;

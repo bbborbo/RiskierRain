@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using RiskierRainContent.CoreModules;
 using SwanSongExtended.Items;
 using RoR2;
 using System;

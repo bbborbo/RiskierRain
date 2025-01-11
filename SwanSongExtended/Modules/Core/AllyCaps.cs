@@ -6,12 +6,12 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RiskierRainContent.CoreModules
+namespace SwanSongExtended.Modules
 {
     //ill be real i basically stole this from chaotic skills 
-    class AllyCaps
+    public class AllyCaps
     {
-        public void Init()
+        public static void Init()
         {
             On.RoR2.CharacterBody.Start += HopooWhy;
         }

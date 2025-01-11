@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using RoR2;
 using UnityEngine.AddressableAssets;
-using RiskierRainContent.CoreModules;
 using EntityStates;
 using UnityEngine;
 using SwanSongExtended.Modules;

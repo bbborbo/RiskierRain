@@ -2,7 +2,6 @@
 using EntityStates;
 using EntityStates.Bandit2;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;

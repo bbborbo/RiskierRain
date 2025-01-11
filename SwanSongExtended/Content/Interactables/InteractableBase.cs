@@ -16,7 +16,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using SwanSongExtended;
 
-namespace RiskierRainContent.Interactables
+namespace SwanSongExtended.Interactables
 {
 	public abstract class InteractableBase<T> : InteractableBase where T : InteractableBase<T>
 	{

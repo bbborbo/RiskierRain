@@ -1,5 +1,4 @@
 ﻿using BepInEx.Configuration;
-using RiskierRainContent.CoreModules;
 using SwanSongExtended.States.Huntress;
 using R2API;
 using RoR2;

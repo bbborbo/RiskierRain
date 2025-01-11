@@ -73,6 +73,6 @@
     <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
     <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
     <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
-    <ProjectReference Include="..\RiskierRainContent\RiskierRainContent.csproj" />
+    <ProjectReference Include="..\SwanSongExtended\SwanSongExtended.csproj" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,6 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using On.RoR2.Items;
 using R2API;
-using RiskierRainContent.CoreModules;
 using RoR2;
 using RoR2.Orbs;
 using RoR2.Projectile;

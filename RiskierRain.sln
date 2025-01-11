@@ -51,7 +51,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossDropRework", "BossDropR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicJump", "DynamicJump\DynamicJump.csproj", "{28AAADB2-38F0-4D1E-AB68-69C649769E96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwanSongExtended", "SwanSongExtended\SwanSongExtended.csproj", "{A26E602F-96DF-4914-A513-8BFBF9630967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwanSongExtended", "SwanSongExtended\SwanSongExtended.csproj", "{A26E602F-96DF-4914-A513-8BFBF9630967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

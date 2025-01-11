@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using RiskierRainContent.CoreModules;
 using RoR2.ExpansionManagement;
 using static SwanSongExtended.Modules.Language.Styling;
 

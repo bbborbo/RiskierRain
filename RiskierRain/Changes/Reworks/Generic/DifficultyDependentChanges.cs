@@ -23,13 +23,13 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 9;
 
-        public static float timeDifficultyScaling = 1.7f; //1f, linear
+        public static float timeDifficultyScaling = 1.9f; //1f, linear
         public static float stageDifficultyScaling = 1.0f; //1.15f, exponential
         public static float loopDifficultyScaling = 1.3f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
-        public static float difficultySpawnRateFactor = 0.5f;//0.4f, additive
+        public static float difficultySpawnRateFactor = 0.4f;//0.4f, additive
         public static int ambientLevelCap = 999;//99
 
         public static float easyTeleParticleRadius = 1f;
@@ -260,14 +260,14 @@ namespace RiskierRain
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
 
-                    args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 4f;
+                    args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 5f;
                     if (sender.isChampion)
                     {
                         args.armorAdd += 3 * compensatedLevel;
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 3f;
+                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 6f;
                     }
                 }
             }

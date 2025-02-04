@@ -41,6 +41,7 @@ namespace ChillRework
         public const int chillStacksOnFreeze = 3;
         public const float chillProcDuration = 8f;
         public const int chillProcChance = 100;
+        public const float chillLimitInterval = 0.3f;
         public void Awake()
         {
             Debug.Log("Chill Rework initializing!");
@@ -60,6 +61,7 @@ namespace ChillRework
             ChillLimitBuff.isHidden = true;
             ChillLimitBuff.isCooldown = true;
             ChillLimitBuff.name = "bdMaxChillRestriction";
+            ContentAddition.AddBuffDef(ChillLimitBuff);
 
             ChillOnHit = ReserveDamageType();
             MultiChillOnHit = ReserveDamageType();
@@ -110,6 +112,7 @@ namespace ChillRework
             int chillLimitCount = vBody.GetBuffCount(ChillLimitBuff);
             //the cap on chill stacks, 10 by default but reduced by 3 per chill limit on the victim
             int chillCap = 10 - 3 * chillLimitCount;
+            Debug.Log(vBody.name + ", Current Cap: " + chillCap + ", Current Chill: " + chillCount);
             //if the current chill stacks is more than the cap, dont worry about applying more
             if (chillCount > chillCap)
                 return;

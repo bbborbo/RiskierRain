@@ -35,25 +35,35 @@ namespace ChillRework
         public void ChillHooks()
         {
             On.RoR2.GlobalEventManager.ProcessHitEnemy += ChillOnHitHook;
-            On.RoR2.CharacterBody.FixedUpdate += ChillOnFixedUpdate;
+            On.RoR2.CharacterBody.FixedUpdate += UpdateMaxChill;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += IceRingMultiChill;
             //IL.RoR2.CharacterBody.RecalculateStats += ChillStatRework;
             GetStatCoefficients += ChillStats;
         }
 
-        private void ChillOnFixedUpdate(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
+        private void UpdateMaxChill(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
         {
             orig(self);
             if (self.GetBuffCount(RoR2Content.Buffs.Slow80.buffIndex) >= chillStacksMax)
             {
                 if (NetworkServer.active)
                 {
+                    //clear current chill stacks
                     self.ClearTimedBuffs(RoR2Content.Buffs.Slow80.buffIndex);
+                    //set to frozen for 2 seconds
                     SetStateOnHurt component = self.healthComponent.GetComponent<SetStateOnHurt>();
                     if (component != null)
                     {
                         component.SetFrozen(2f);
                     }
+
+                    //add 3 stacks of chill limiter, this will cap chill at 1 for 0.2 seconds, then 4 for 0.2, then 7 for 0.2, then 10
+                    for(int i = 1; i < 4; i++)
+                    {
+                        self.AddTimedBuff(ChillLimitBuff, 0.2f * i);
+                    }
+                    //apply a single stack of chill just to maintain synergies
+                    ApplyChillStacks(self, 100);
                 }
 
                 GameObject lastAttacker = self.healthComponent.lastHitAttacker;

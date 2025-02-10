@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 using static SwanSongExtended.Modules.HitHooks;
 using static SwanSongExtended.Modules.Language.Styling;
 using RoR2.ExpansionManagement;

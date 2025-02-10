@@ -48,8 +48,7 @@ namespace SwanSongExtended.Items
             $"<style=cIsHealth>{Tools.ConvertDecimal(0.25f)} health</style> " +
             $"<style=cIsUtility>consumes</style> this item, " +
             $"instantly granting <style=cIsHealing>{Tools.ConvertDecimal(barrierFraction)}</style> " +
-            $"of maximum health in <style=cIsHealing>barrier</style>, " +
-            $"<style=cIsUtility>cleansing</style> all debuffs, " +
+            $"of maximum health in <style=cIsHealing>barrier</style> " +
             $"and <style=cIsUtility>resetting</style> all cooldowns. " +
             $"Each empty bottle increases attack speed by <style=cIsDamage>{Tools.ConvertDecimal(attackSpeedBuff)}</style>, " +
             $"movement speed by <style=cIsDamage>{Tools.ConvertDecimal(moveSpeedBuff)}</style>, " +

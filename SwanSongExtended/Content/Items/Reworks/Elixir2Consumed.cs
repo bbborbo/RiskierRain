@@ -13,6 +13,7 @@ namespace SwanSongExtended.Items
 {
     class Elixir2Consumed : ItemBase<Elixir2Consumed>
     {
+        public override bool lockEnabled => true;
         public static float moveSpeedBuff => Elixir2.moveSpeedBuff;
         public static float attackSpeedBuff => Elixir2.attackSpeedBuff;
         public static float cooldownReduction => Elixir2.cooldownReduction;

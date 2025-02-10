@@ -1,5 +1,4 @@
-﻿using BepInEx;
-using Mono.Cecil.Cil;
+﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using R2API.Utils;
@@ -7,34 +6,10 @@ using RoR2;
 using System;
 using UnityEngine;
 
-namespace BorboStatUtils
+namespace RainrotSharedUtils
 {
-    [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-
-    [BepInPlugin(guid, modName, version)]
-    [R2APISubmoduleDependency(nameof(LanguageAPI))]
-    public class BorboStatUtils : BaseUnityPlugin
+    public static class StatHooks
     {
-        #region plugin info
-        public static PluginInfo PInfo { get; private set; }
-        public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "HouseOfFruits";
-        public const string modName = "2R4RStatUtils";
-        public const string version = "1.0.2";
-        #endregion
-
-        public const string executeKeywordToken = "2R4R_EXECUTION_KEYWORD";
-        public const float survivorExecuteThreshold = 0.15f;
-
-        public void Awake()
-        {
-            LanguageAPI.Add(executeKeywordToken,
-                $"<style=cKeywordName>Finisher</style>" +
-                $"<style=cSub>Enemies targeted by this skill can be " +
-                $"<style=cIsHealth>instantly killed</style> if below " +
-                $"<style=cIsHealth>{survivorExecuteThreshold  * 100}% health</style>.</style>");
-        }
-
         #region luck
         // i basically copied how this delegate stuff works from RecalculateStatsAPI
         internal static void SetLuckHooks()
@@ -51,7 +26,11 @@ namespace BorboStatUtils
         {
             add
             {
-                SetLuckHooks();
+                if (_modifyLuckStat == null ||
+                    _modifyLuckStat.GetInvocationList()?.Length == 0)
+                {
+                    SetLuckHooks();
+                }
 
                 _modifyLuckStat += value;
             }
@@ -128,7 +107,11 @@ namespace BorboStatUtils
         {
             add
             {
-                SetExecutionHooks();
+                if (_getExecutionThreshold == null ||
+                    _getExecutionThreshold.GetInvocationList()?.Length == 0)
+                {
+                    SetExecutionHooks();
+                }
 
                 _getExecutionThreshold += value;
             }

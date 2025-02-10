@@ -12,8 +12,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 using UnityEngine.AddressableAssets;
+using RainrotSharedUtils;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -370,7 +371,7 @@ namespace RiskierRain.SurvivorTweaks
         private void BanditFinisher(CharacterBody sender, ref float executeThreshold)
         {
             bool hasBanditExecutionBuff = sender.HasBuff(desperadoExecutionDebuff) || sender.HasBuff(lightsoutExecutionDebuff);
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, survivorExecuteThreshold, hasBanditExecutionBuff);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, SharedUtilsPlugin.survivorExecuteThreshold, hasBanditExecutionBuff);
         }
 
         private void ModifyLightsOutDamage(On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmResetRevolver self, BulletAttack bulletAttack)

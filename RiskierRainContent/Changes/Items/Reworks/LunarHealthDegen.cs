@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 
 namespace RiskierRainContent.Items
 {

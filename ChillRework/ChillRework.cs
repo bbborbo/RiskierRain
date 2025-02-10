@@ -112,7 +112,6 @@ namespace ChillRework
             int chillLimitCount = vBody.GetBuffCount(ChillLimitBuff);
             //the cap on chill stacks, 10 by default but reduced by 3 per chill limit on the victim
             int chillCap = 10 - 3 * chillLimitCount;
-            Debug.Log(vBody.name + ", Current Cap: " + chillCap + ", Current Chill: " + chillCount);
             //if the current chill stacks is more than the cap, dont worry about applying more
             if (chillCount > chillCap)
                 return;

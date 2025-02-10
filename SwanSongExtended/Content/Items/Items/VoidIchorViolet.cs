@@ -9,19 +9,20 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
+using static SwanSongExtended.Modules.HitHooks;
 
 
 namespace SwanSongExtended.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
-        int xpDivisor = 10;
-        int xpFlat = 1;
+        int barrierBase = 20;
+        int barrierStack = 20;
         public override string ItemName => "Metamorphic Ichor (Violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
 
-        public override string ItemPickupDesc => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
+        public override string ItemPickupDesc => "Gain barrier when hurt.";
 
         public override string ItemFullDescription => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
 
@@ -42,52 +43,20 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += IchorXPGain;
-            On.RoR2.CharacterBody.OnInventoryChanged += IchorPickup;
+            GetHitBehavior += VioletIchorOnHit;
+
         }
 
-        private void IchorPickup(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
+        private void VioletIchorOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
-            orig(self);
-
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    int ichorCount = GetCount(self);
-
-                    VoiletIchorBehavior itemBehavior = self.GetComponent<VoiletIchorBehavior>();
-                    if (itemBehavior && itemBehavior.stack < ichorCount)
-                    {
-                        itemBehavior.PickupXP();
-                    }
-                    self.AddItemBehavior<VoiletIchorBehavior>(ichorCount);
-                }
-            }
+            int itemCount = GetCount(attackerBody);
         }
 
-        private void IchorXPGain(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            orig(self, damageReport);
-            if (damageReport.attackerBody == null || damageReport.attackerMaster == null)
-            {
-                return;
-            }
-            int itemCount = GetCount(damageReport.attackerBody);
-            if (itemCount <= 0)
-            {
-                return;
-            }
-            CharacterMaster xpRecipient = damageReport.attackerMaster;
-            ulong xpToGive = (ulong)xpFlat * TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex) * (ulong)(itemCount);
-            xpRecipient.GiveExperience(xpToGive);
-            Debug.Log($"gave {xpToGive} xp!!; {xpFlat} flat * {TeamManager.instance.GetTeamLevel(xpRecipient.teamIndex)} level * {itemCount} items");
-        }
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
         {
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
-                itemDef1 = RoR2Content.Items.Tooth, //consumes monster tooth
+                itemDef1 = RoR2Content.Items.Medkit, //consumes medkit
                 itemDef2 = instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
@@ -100,24 +69,5 @@ namespace SwanSongExtended.Items
             orig();
         }
     }
-    public class VoiletIchorBehavior : CharacterBody.ItemBehavior
-    {
-        int xpDivisor = 10;
-
-        private void Start()
-        {
-            PickupXP();
-        }
-        public void PickupXP()
-        {
-            
-            CharacterMaster xpRecipient = body.master;
-            ulong percentXP = TeamManager.instance.GetTeamNextLevelExperience(xpRecipient.teamIndex);// * (ulong)xpFraction;
-            percentXP /= (ulong)xpDivisor;
-            ulong xpToGive = (ulong)Mathf.Max(percentXP, 1) * (ulong)(stack);
-            xpRecipient.GiveExperience(xpToGive);
-            Debug.Log($"gave {xpToGive} xp!!; {percentXP}");
-
-        }
-    }
+    
 }

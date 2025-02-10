@@ -200,15 +200,16 @@ namespace RiskierRainContent.CoreModules
         {
             squidBlasterBall = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarSeeker.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
 
-            ProjectileSteerTowardTarget pstt = squidBlasterBall.GetComponent<ProjectileSteerTowardTarget>(); //no homing
-            if (pstt)
-            {
-                UnityEngine.Object.Destroy(pstt);
-            }
+            //ProjectileSteerTowardTarget pstt = squidBlasterBall.GetComponent<ProjectileSteerTowardTarget>(); //no homing
+            //if (pstt)
+            //{
+            //    UnityEngine.Object.Destroy(pstt);
+            //}
             ProjectileDirectionalTargetFinder pdtf = squidBlasterBall.GetComponent<ProjectileDirectionalTargetFinder>();
             if (pdtf)
             {
                 pdtf.ignoreAir = false;
+                pdtf.flierAltitudeTolerance = 100;
             }
             //ProjectileCharacterController pcc = squidBlasterBall.GetComponent<ProjectileCharacterController>();
             //if (pcc)
@@ -223,7 +224,7 @@ namespace RiskierRainContent.CoreModules
             ProjectileImpactExplosion pie = squidBlasterBall.GetComponent<ProjectileImpactExplosion>();
             if (pie)
             {
-                pie.lifetime = 1;
+                pie.lifetime = .7f;
                 pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballExplosion.prefab").WaitForCompletion();
             }
 

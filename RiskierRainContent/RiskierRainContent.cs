@@ -22,7 +22,7 @@ using ThreeEyedGames;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
-using BorboStatUtils;
+using RainrotSharedUtils;
 using ChillRework;
 using MissileRework;
 using RoR2.ExpansionManagement;
@@ -47,7 +47,7 @@ namespace RiskierRainContent
     [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BarrierRework.BarrierReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(BorboStatUtils.BorboStatUtils.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.Borbo.ArtifactGesture", BepInDependency.DependencyFlags.SoftDependency)]

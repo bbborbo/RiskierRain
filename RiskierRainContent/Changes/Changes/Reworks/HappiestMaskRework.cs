@@ -15,7 +15,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 
 namespace RiskierRainContent
 {

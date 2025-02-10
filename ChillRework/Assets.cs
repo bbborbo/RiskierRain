@@ -80,7 +80,7 @@ namespace ChillRework
             DelayBlast component = blast.GetComponent<DelayBlast>();
             component.crit = false;
             component.procCoefficient = 1.0f;
-            component.maxTimer = 0.25f;
+            component.maxTimer = 0.2f;
             component.falloffModel = BlastAttack.FalloffModel.None;
             component.explosionEffect = this.CreateIceExplosionEffect();
             component.delayEffect = this.CreateIceDelayEffect();

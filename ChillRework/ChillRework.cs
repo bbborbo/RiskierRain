@@ -29,10 +29,11 @@ namespace ChillRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "ChillRework";
-        public const string version = "1.3.0";
+        public const string version = "1.3.4";
         #endregion
 
         public static BuffDef ChillBuff;
+        public static BuffDef ChillLimitBuff;
         public static ModdedDamageType ChillOnHit;
         public static ModdedDamageType MultiChillOnHit;
         public const string chillKeywordToken = "2R4R_KEYWORD_CHILL";
@@ -40,6 +41,7 @@ namespace ChillRework
         public const int chillStacksOnFreeze = 3;
         public const float chillProcDuration = 8f;
         public const int chillProcChance = 100;
+        public const float chillLimitInterval = 0.3f;
         public void Awake()
         {
             Debug.Log("Chill Rework initializing!");
@@ -53,8 +55,17 @@ namespace ChillRework
         {
             ChillBuff = Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Common/bdSlow80.asset").WaitForCompletion();
             ChillBuff.canStack = true;
+
+            ChillLimitBuff = ScriptableObject.CreateInstance<BuffDef>();
+            ChillLimitBuff.canStack = true;
+            ChillLimitBuff.isHidden = true;
+            ChillLimitBuff.isCooldown = true;
+            ChillLimitBuff.name = "bdMaxChillRestriction";
+            ContentAddition.AddBuffDef(ChillLimitBuff);
+
             ChillOnHit = ReserveDamageType();
             MultiChillOnHit = ReserveDamageType();
+
             ChillHooks();
         }
         public void LangFixes()
@@ -93,9 +104,21 @@ namespace ChillRework
         {
             ApplyChillStacks(vBody, procChance, chillCount, chillDuration, attackerMaster ? attackerMaster.luck : 1);
         }
-        public static void ApplyChillStacks(CharacterBody vBody, float procChance, float chillCount = 1, float chillDuration = chillProcDuration, float luck = 1)
+        public static void ApplyChillStacks(CharacterBody vBody, float procChance, float totalChillToApply = 1, float chillDuration = chillProcDuration, float luck = 1)
         {
-            for (int i = 0; i < chillCount; i++)
+            //the current chill stack on the victim
+            int chillCount = vBody.GetBuffCount(ChillBuff);
+
+            int chillLimitCount = vBody.GetBuffCount(ChillLimitBuff);
+            //the cap on chill stacks, 10 by default but reduced by 3 per chill limit on the victim
+            int chillCap = 10 - 3 * chillLimitCount;
+            //if the current chill stacks is more than the cap, dont worry about applying more
+            if (chillCount > chillCap)
+                return;
+
+            //cap the chill stacks applied to the difference between chill cap and chill count
+            totalChillToApply = Mathf.Min(totalChillToApply, chillCap - chillCount);
+            for (int i = 0; i < totalChillToApply; i++)
             {
                 if (Util.CheckRoll(procChance, luck))
                 {

@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChillRework", "ChillRework\ChillRework.csproj", "{8EF62317-2F3A-4AF5-98DE-6CF766BB529A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BorboStatUtils", "BorboStatUtils\BorboStatUtils.csproj", "{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RainrotSharedUtils", "BorboStatUtils\RainrotSharedUtils.csproj", "{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NegativeRegenFix", "NegativeRegenFix\NegativeRegenFix.csproj", "{08B8379B-E045-4F59-B9F7-18D66AE32433}"
 EndProject

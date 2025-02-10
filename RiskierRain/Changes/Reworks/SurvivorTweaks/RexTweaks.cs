@@ -2,12 +2,13 @@
 using EntityStates.Treebot.Weapon;
 using R2API;
 using R2API.Utils;
+using RainrotSharedUtils;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using UnityEngine;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 
 namespace RiskierRain.SurvivorTweaks
 {
@@ -59,7 +60,7 @@ namespace RiskierRain.SurvivorTweaks
         private void HarvestFinisher(CharacterBody sender, ref float executeThreshold)
         {
             bool hasRexHarvestBuff = sender.HasBuff(RoR2Content.Buffs.Fruiting);
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, survivorExecuteThreshold, hasRexHarvestBuff);
+            executeThreshold = ModifyExecutionThreshold(executeThreshold, SharedUtilsPlugin.survivorExecuteThreshold, hasRexHarvestBuff);
         }
 
         private void NerfSyringe(On.EntityStates.Treebot.Weapon.FireSyringe.orig_OnEnter orig, FireSyringe self)

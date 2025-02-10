@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static BorboStatUtils.BorboStatUtils;
+using static RainrotSharedUtils.StatHooks;
 using System.Linq;
 using System.Collections;
 using UnityEngine.AddressableAssets;

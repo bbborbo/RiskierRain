@@ -17,9 +17,7 @@ namespace SwanSongExtended.Items
     class Egg : ItemBase<Egg>
     {
         public override bool lockEnabled => true;
-        public int eggHealth = 4;
-        public float eggRegen = 0.2f;
-        public float eggDamage = 0.2f;
+        public int eggHealth = 5;
 
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
@@ -27,12 +25,10 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "EGG";
 
-        public override string ItemPickupDesc => "Slightly increase health, regeneration, and damage. Start an egg hunt. " +
+        public override string ItemPickupDesc => "Slightly increase health. Start an egg hunt." +
             "<style=cIsVoid>Corrupts most edible and animal matter.</style>";
 
         public override string ItemFullDescription => $"Gain <style=cIsHealing>{eggHealth} max health, " +
-            $"{eggRegen} hp/s regeneration,</style> and " +
-            $"<style=cIsDamage>{eggDamage} damage</style>. " +
             $"<style=cIsUtility>Start an egg hunt.</style> " +
             "<style=cIsVoid> Corrupts all Infusion, Bison Steak, and Alien Heads.</style>";
 
@@ -97,8 +93,6 @@ namespace SwanSongExtended.Items
             if (itemCount > 0)
             {
                 args.baseHealthAdd += eggHealth * itemCount;
-                args.baseRegenAdd += eggRegen * itemCount;
-                args.baseDamageAdd += eggDamage * itemCount; 
             }
         }
 
@@ -166,6 +160,8 @@ namespace SwanSongExtended.Items
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
         {
+            //to add: -chocolate egg
+            //compat: -donut (mystics) -probably a bunch of ss2 stuff
             ItemDef.Pair transformation2 = new ItemDef.Pair()
             {
                 itemDef1 = RoR2Content.Items.Infusion, //consumes infusion

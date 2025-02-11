@@ -24,7 +24,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Gain barrier when hurt.";
 
-        public override string ItemFullDescription => "Gain bonus experience immediately and when killing enemies. Corrupts all Monster Teeth.";
+        public override string ItemFullDescription => "Gain barrier when hurt";
 
         public override string ItemLore => "";
 
@@ -49,7 +49,17 @@ namespace SwanSongExtended.Items
 
         private void VioletIchorOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
-            int itemCount = GetCount(attackerBody);
+            if (victimBody.healthComponent == null)
+            {
+                return;
+            }
+            int itemCount = GetCount(victimBody);
+            if (itemCount > 0)
+            {
+                //add a check for self damage, maybe? needs testing!
+                int barrierToAdd = barrierBase + barrierStack * (itemCount - 1);
+                victimBody.healthComponent.AddBarrier(barrierToAdd);
+            }
         }
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)

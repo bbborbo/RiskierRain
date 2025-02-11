@@ -54,6 +54,11 @@ namespace SwanSongExtended.Items
             return IDR;
         }
 
+        public override void Init()
+        {
+            CreateChocolate();
+            base.Init();
+        }
         public override void Hooks()
         {
             GetHitBehavior += ChocolateCoinOnHit;
@@ -61,13 +66,16 @@ namespace SwanSongExtended.Items
 
         private void CreateChocolate()
         {
-            chocolate = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Treebot/TreebotFruitPack.prefab").WaitForCompletion().InstantiateClone("MeatChunk", true);
+            chocolate = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Tooth/HealPack.prefab").WaitForCompletion().InstantiateClone("Chocolate", true);
 
-            HealthPickup healthPickup = chocolate.GetComponentInChildren<HealthPickup>();
-            if (healthPickup)
+            foreach(Transform child in chocolate.transform)
             {
-                healthPickup.fractionalHealing = healFraction;
-                healthPickup.flatHealing = healFlatBase;
+                if (child.gameObject.GetComponent<HealthPickup>() != null)
+                {
+                    MoneyPickup chocolateMoney = child.gameObject.AddComponent<MoneyPickup>();
+                    chocolateMoney.baseGoldReward = 1;
+                    chocolateMoney.shouldScale = false;
+                }
             }
 
             DestroyOnTimer destroyTimer = chocolate.GetComponentInChildren<DestroyOnTimer>();
@@ -79,6 +87,28 @@ namespace SwanSongExtended.Items
         private void ChocolateCoinOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
             int itemCount = GetCount(attackerBody);
+            if(itemCount <= 0)
+            {
+                return;
+            }
+            GameObject chocolateInstance = UnityEngine.Object.Instantiate<GameObject>(chocolate, damageInfo.position + UnityEngine.Random.insideUnitSphere * victimBody.radius * 0.5f, UnityEngine.Random.rotation); //stolen from chef which was stolen from rex lmao
+            TeamFilter chocolateInstanceTeamFilter = chocolateInstance.GetComponent <TeamFilter>();
+            if (chocolateInstanceTeamFilter)
+            {
+                chocolateInstanceTeamFilter.teamIndex = attackerBody.teamComponent.teamIndex;
+            }
+            HealthPickup chocolatePickup = chocolateInstance.GetComponentInChildren<HealthPickup>();
+            if (chocolatePickup)
+            {
+                chocolatePickup.fractionalHealing = healFraction;
+                chocolatePickup.flatHealing = healFlatBase + healFlatStack * (itemCount - 1);
+            }
+            MoneyPickup chocolateGold = chocolateInstance.GetComponent<MoneyPickup>();
+            if (chocolateGold)
+            {
+                chocolateGold.baseGoldReward = goldBase + goldStack * (itemCount - 1);
+            }
+
         }
     }
 }

@@ -137,7 +137,7 @@ namespace SwanSongExtended.Items
                         float bonusPitch = UnityEngine.Random.Range(-1f, 1f);
                         float projectileSpeed = 200 * (0.3f * (i + 1));
 
-                        Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw * shardCount, bonusPitch * i);
+                        Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw * i, bonusPitch * i);
                         ProjectileManager.instance.FireProjectile(lunarShardProjectile, aimRay.origin,
                             Util.QuaternionSafeLookRotation(forward), self.gameObject,
                             self.damage * lunarShardDamageCoefficient, 0f,

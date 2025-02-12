@@ -35,12 +35,12 @@ namespace RiskierRain
         {
             if (NetworkServer.active && TeamComponent.GetObjectTeam(other.gameObject) == self.teamFilter.teamIndex)
             {
-                if (self./*private*/gravitateTarget)
+                if (self.gravitateTarget)
                 {
-                    if (other.gameObject.transform == self./*private*/gravitateTarget)
+                    if (other.gameObject.transform == self.gravitateTarget)
                         return;
 
-                    HealthComponent targetHealthComponent = self./*private*/gravitateTarget.GetComponent<HealthComponent>();
+                    HealthComponent targetHealthComponent = self.gravitateTarget.GetComponent<HealthComponent>();
                     if (targetHealthComponent && targetHealthComponent.body.isPlayerControlled)
                         return;
                 }
@@ -50,16 +50,16 @@ namespace RiskierRain
                 {
                     if (component.body.isPlayerControlled)
                     {
-                        self./*private*/gravitateTarget = other.gameObject.transform;
+                        self.gravitateTarget = other.gameObject.transform;
                         return;
                     }
                 }
 
-                if (!self./*private*/gravitateTarget)
+                if (!self.gravitateTarget)
                 {
                     if (self.gravitateAtFullHealth)
                     {
-                        self./*private*/gravitateTarget = other.gameObject.transform;
+                        self.gravitateTarget = other.gameObject.transform;
                     }
                 }
             }

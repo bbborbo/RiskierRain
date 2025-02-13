@@ -22,7 +22,6 @@ namespace SwanSongExtended.Items
 
         public override string ConfigName => "Items : Chocolate Coin";
         GameObject chocolate;
-        int fruitChanceBase = 1;
         int goldBase = 1;
         int goldStack = 2;
         float healFraction = 0.00f;
@@ -45,9 +44,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Utility };
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/pickupmodels/PickupGoldOnHurt");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("prefabs/pickupmodels/PickupGoldOnHurt").WaitForCompletion();
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/itemicons/texGoldOnHurtIcon");
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("textures/itemicons/texGoldOnHurtIcon").WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -72,9 +71,14 @@ namespace SwanSongExtended.Items
             {
                 if (child.gameObject.GetComponent<HealthPickup>() != null)
                 {
+                    Debug.Log("chooclate money");
                     MoneyPickup chocolateMoney = child.gameObject.AddComponent<MoneyPickup>();
                     chocolateMoney.baseGoldReward = 1;
                     chocolateMoney.shouldScale = false;
+                }
+                else
+                {
+                    Debug.Log("chocolate no money :(");
                 }
             }
 

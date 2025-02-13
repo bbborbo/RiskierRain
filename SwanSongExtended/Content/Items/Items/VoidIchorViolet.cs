@@ -43,8 +43,25 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            GetHitBehavior += VioletIchorOnHit;
+            On.RoR2.HealthComponent.TakeDamageProcess += VioletIchorOnTakeDamage;
+            //GetHitBehavior += VioletIchorOnHit;
+        }
 
+        private void VioletIchorOnTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            orig(self, damageInfo);
+
+            CharacterBody body = self.body;
+            if(body != null)
+            {
+                int itemCount = GetCount(body);
+                if (itemCount > 0)
+                {
+                    //add a check for self damage, maybe? needs testing!
+                    int barrierToAdd = barrierBase + barrierStack * (itemCount - 1);
+                    self.AddBarrier(barrierToAdd);
+                }
+            }
         }
 
         private void VioletIchorOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)

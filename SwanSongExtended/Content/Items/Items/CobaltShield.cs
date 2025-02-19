@@ -34,7 +34,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "CUCKLER";
 
-        public override string ItemPickupDesc => "Become immune to knockback. Greatly reduces incoming damage while stationary.";
+        public override string ItemPickupDesc => "Negate all knockback. Reduce incoming damage and gain barrier while stationary.";
 
         public override string ItemFullDescription => $"Negates {UtilityColor("ALL knockback")}. Increase {HealingColor("armor")} " +
             $"by {HealingColor(baseArmor.ToString())} {StackText("+ " + stackArmor)} and " +

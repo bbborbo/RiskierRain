@@ -8,6 +8,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
+using static SwanSongExtended.Modules.Language.Styling;
+using static BarrierRework.BarrierReworkPlugin;
+using BarrierRework;
 
 namespace SwanSongExtended.Items
 {
@@ -18,19 +21,25 @@ namespace SwanSongExtended.Items
         public static BuffDef cobaltDefense;
         public static float cobaltWaitTime = 0.25f;
 
-        public static int baseArmor = 60;
-        public static int baseStationaryArmor = 60;
-        public static int stackStationaryArmor = 80;
+        [AutoConfig("Armor Base", 20)]
+        public static int baseArmor = 20;
+        [AutoConfig("Armor Stack", 20)]
+        public static int stackArmor = 20;
+        [AutoConfig("Barrier Generation Base", 6f)]
+        public static float baseBarrierGen = 6f;
+        [AutoConfig("Barrier Generation Stack", 6f)]
+        public static float stackBarrierGen = 6f;
+        public static int stationaryStatMultiplier = 5;
         public override string ItemName => "Cobalt Shield";
 
         public override string ItemLangTokenName => "CUCKLER";
 
-        public override string ItemPickupDesc => "Become immune to knockback. Greatly reduces incoming damage while stationary.";
+        public override string ItemPickupDesc => "Negate all knockback. Reduce incoming damage and gain barrier while stationary.";
 
-        public override string ItemFullDescription => $"Become <style=cIsUtility>immune to ALL knockback</style>, and <style=cIsHealing>increase armor</style> " +
-            $"by <style=cIsHealing>{baseArmor}</style> <style=cStack>(+{baseArmor} per stack)</style>. " +
-            $"While stationary, gain " +
-            $"<style=cIsHealing>{baseStationaryArmor}</style> <style=cStack>(+{stackStationaryArmor} per stack)</style> additional armor.";
+        public override string ItemFullDescription => $"Negates {UtilityColor("ALL knockback")}. Increase {HealingColor("armor")} " +
+            $"by {HealingColor(baseArmor.ToString())} {StackText("+ " + stackArmor)} and " +
+            $"<style=cIsHealing>barrier generation</style> by {HealingColor(baseBarrierGen.ToString() + " hp/s")} {StackText($"+ {baseBarrierGen.ToString()} hp/s")}. " +
+            $"While stationary, these effects are {UtilityColor("quintupled")}.";
 
         public override string ItemLore => "<style=cIsHealth>I cannot let you enter until you free me of my curse.</style>";
 
@@ -55,10 +64,41 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
+            GetBarrierStats += CobaltBarrierGen;
             GetStatCoefficients += CobaltArmorBuff;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
             On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
+        }
+
+        private void CobaltBarrierGen(CharacterBody body, BarrierStats barrierStats)
+        {
+            int itemCount = GetCount(body);
+            if (itemCount > 0)
+            {
+                float barrierGen = baseBarrierGen + stackBarrierGen * (itemCount - 1);
+                if (body.HasBuff(cobaltDefense))
+                {
+                    barrierGen *= stationaryStatMultiplier;
+                }
+
+                barrierStats.barrierGenPerSecondFlat += barrierGen;
+            }
+        }
+
+        private void CobaltArmorBuff(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = GetCount(sender);
+            if (itemCount > 0)
+            {
+                int armor = baseArmor + stackArmor * (itemCount - 1);
+                if (sender.HasBuff(cobaltDefense))
+                {
+                    armor *= stationaryStatMultiplier;
+                }
+
+                args.armorAdd += armor;
+            }
         }
 
         private void RemoveDamageForce(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
@@ -89,21 +129,6 @@ namespace SwanSongExtended.Items
             if (NetworkServer.active)
             {
                 self.AddItemBehavior<ShieldItemBehavior>(GetCount(self));
-            }
-        }
-
-        private void CobaltArmorBuff(CharacterBody sender, StatHookEventArgs args)
-        {
-            int itemCount = GetCount(sender);
-            if(itemCount > 0)
-            {
-                int armor = baseArmor * itemCount;
-                if (sender.HasBuff(cobaltDefense))
-                {
-                    armor += baseStationaryArmor + stackStationaryArmor * (itemCount - 1);
-                }
-
-                args.armorAdd += armor;
             }
         }
     }

@@ -111,7 +111,7 @@ namespace SwanSongExtended.Items
 
         private void WigglePear(int i, HealthComponent a)
         {
-            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius, UnityEngine.Random.rotation);
+            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 5/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
             TeamFilter pearFilter = pearInstance.GetComponent<TeamFilter>();
             if (pearFilter)
             {

@@ -15,7 +15,7 @@ namespace BarrierRework
     public partial class BarrierReworkPlugin
     {
         public static float aegisBarrierFraction = 0.1f;
-        public static float aegisBarrierFlat = 60;
+        public static float _aegisBarrierFlat = 60;
         public static BuffDef aegisDecayBuff;
 
         protected void ReworkAegis()
@@ -27,7 +27,7 @@ namespace BarrierRework
             LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_PICKUP", "Gain barrier on any interaction. While out of danger, barrier stops decaying.");
             LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_DESC", 
                 $"Using any interactable grants a <style=cIsHealing>temporary barrier</style> " +
-                $"for <style=cIsHealing>{aegisBarrierFlat} health</style> <style=cStack>(+{aegisBarrierFlat} per stack)</style>. " +
+                $"for <style=cIsHealing>{AegisBarrierFlat.Value} health</style> <style=cStack>(+{AegisBarrierFlat.Value} per stack)</style>. " +
                 $"While outside of danger, <style=cIsUtility>barrier will not decay</style>.");
         }
 
@@ -58,8 +58,14 @@ namespace BarrierRework
         {
             MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
             MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase; 
-            On.RoR2.CharacterBody.RecalculateStats += AegisBarrierDecay;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            GetBarrierStats += AegisDecayFreeze;
+        }
+
+        private void AegisDecayFreeze(CharacterBody body, BarrierStats barrierStats)
+        {
+            if(body.HasBuff(aegisDecayBuff))
+                barrierStats.barrierFreezeCount += 1;
         }
 
         private void OnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
@@ -81,13 +87,6 @@ namespace BarrierRework
             {
                 self.AddItemBehavior<AegisDecayBehavior>(self.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal));
             }
-        }
-
-        private void AegisBarrierDecay(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            if (self.HasBuff(aegisDecayBuff))
-                self.barrierDecayRate = 0;
         }
 
         private void AegisBarrierGrant(CostTypeDef.PayCostContext context)

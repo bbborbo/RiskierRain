@@ -50,7 +50,8 @@ namespace SwanSongExtended.Items
         #endregion
         public static BuffDef pearBuff;
         GameObject pear;
-
+        float pearLifetime = 5;
+        float gravRadius = 4f;
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -65,7 +66,33 @@ namespace SwanSongExtended.Items
 
         private void CreatePear()
         {
-            pear = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Tooth/HealPack.prefab").WaitForCompletion().InstantiateClone("Pear", true);           
+            pear = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Tooth/HealPack.prefab").WaitForCompletion().InstantiateClone("Pear", true);
+
+            GravitatePickup gravPickup = pear.GetComponentInChildren<GravitatePickup>();
+            if (gravPickup != null)
+            {
+                gravPickup.gravitateAtFullHealth = true;
+                Collider gravitateTrigger = gravPickup.gameObject.GetComponent<Collider>();
+                if (gravitateTrigger.isTrigger)
+                {
+                    gravitateTrigger.transform.localScale = Vector3.one * gravRadius;
+                }
+            }
+            else
+            {
+                Debug.Log("No gravitatepickup");
+            }
+
+            DestroyOnTimer destroyTimer = pear.GetComponentInChildren<DestroyOnTimer>();
+            if (destroyTimer)
+            {
+                destroyTimer.duration = pearLifetime;
+                BeginRapidlyActivatingAndDeactivating braad = pear.GetComponent<BeginRapidlyActivatingAndDeactivating>();
+                if (braad)
+                {
+                    braad.delayBeforeBeginningBlinking = pearLifetime - 2f;
+                }
+            }
         }
         private void PearWigglerOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
@@ -123,6 +150,7 @@ namespace SwanSongExtended.Items
                 pearPickup.fractionalHealing = 0;
                 pearPickup.flatHealing = healingBase + healingStack * i;
             }
+            NetworkServer.Spawn(pearInstance);
             //for (int b = 0; b > )
             a.AddBarrier(barrierBase + (barrierStack * i));
         }

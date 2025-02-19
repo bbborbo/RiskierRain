@@ -15,20 +15,21 @@ namespace SwanSongExtended
 {
     public partial class SwanSongPlugin
     {
-        public int scopeBaseCrit = 15;
+        public int scopeBaseCrit = 5;
         public int scopeStackCrit = 0;
-        public int scopeBaseStationaryCrit = 50;
+        public int scopeBaseStationaryCrit = 40;
         public int scopeStackStationaryCrit = 0;
 		public void ReworkLaserScope()
         {
             //IL.RoR2.CharacterBody.RecalculateStats += RevokeScopeRights;
+            RetierItem("CritDamage", ItemTier.Tier2);
             GetStatCoefficients += ScopeCritChance;
             On.RoR2.CharacterBody.OnInventoryChanged += AddScopeItemBehavior;
 
             LanguageAPI.Add("ITEM_CRITDAMAGE_NAME", "Combat Telescope");
             LanguageAPI.Add("ITEM_CRITDAMAGE_PICKUP", "Increases 'Critical Strike' chance and damage while stationary.");
             LanguageAPI.Add("ITEM_CRITDAMAGE_DESC", 
-                $"<style=cIsDamage>Critical Strikes</style> deal an additional <style=cIsDamage>100% damage</style><style=cStack>(+100% per stack)</style>. " +
+                $"<style=cIsDamage>Critical Strikes</style> deal an additional <style=cIsDamage>100% damage</style> <style=cStack>(+100% per stack)</style>. " +
                 $"Gain <style=cIsDamage>{scopeBaseCrit}% critical chance</style>, " +
                 $"or <style=cIsDamage>{scopeBaseStationaryCrit}%</style> after standing still " +
                 $"for <style=cIsUtility>{CombatTelescopeBehavior.combatTelescopeWaitTime}</style> seconds.");

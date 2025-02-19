@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
     class CobaltShield : ItemBase
     {
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
-        public override string ConfigName => "Items : Raw Chicken";
+        public override string ConfigName => "Items : Cobalt Shield";
         public static BuffDef cobaltDefense;
         public static float cobaltWaitTime = 0.25f;
 

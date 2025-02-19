@@ -80,7 +80,7 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
         private void StarVeilTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             orig(self, damageInfo);
-            if (!damageInfo.rejected && damageInfo.procCoefficient > 0)
+            if (!damageInfo.rejected)
             {
                 int itemCount = GetCount(self.body);
                 if (itemCount > 0 && !self.body.HasBuff(RoR2Content.Buffs.Immune) && !damageInfo.damageType.damageType.HasFlag(DamageType.Silent))
@@ -88,21 +88,24 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
                     float iframes = GetStackValue(iframeDurationBase, iframeDurationStack, itemCount);
                     self.body.AddTimedBuffAuthority(RoR2Content.Buffs.Immune.buffIndex, iframes);
 
-                    MeteorStormController stormController =
-                        UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/NetworkedObjects/MeteorStorm"),
-                        self.body.corePosition, Quaternion.identity).GetComponent<MeteorStormController>();
+                    if(damageInfo.procCoefficient > 0)
+                    {
+                        MeteorStormController stormController =
+                            UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/NetworkedObjects/MeteorStorm"),
+                            self.body.corePosition, Quaternion.identity).GetComponent<MeteorStormController>();
 
-                    stormController.owner = self.gameObject;
-                    stormController.ownerDamage = self.body.damage;
-                    stormController.isCrit = Util.CheckRoll(self.body.crit, self.body.master);
-                    stormController.waveCount = (int)GetStackValue(stormWavesBase, stormWavesStack, itemCount);
-                    stormController.impactDelay = 1;// Mathf.Min(iframes, 2);
-                    stormController.blastRadius = 6f;
-                    stormController.waveMinInterval = 0.2f;
-                    stormController.waveMaxInterval = 0.4f;
-                    stormController.blastDamageCoefficient = stormDamageCoefficient;
+                        stormController.owner = self.gameObject;
+                        stormController.ownerDamage = self.body.damage;
+                        stormController.isCrit = Util.CheckRoll(self.body.crit, self.body.master);
+                        stormController.waveCount = (int)GetStackValue(stormWavesBase, stormWavesStack, itemCount);
+                        stormController.impactDelay = 1;// Mathf.Min(iframes, 2);
+                        stormController.blastRadius = 6f;
+                        stormController.waveMinInterval = 0.2f;
+                        stormController.waveMaxInterval = 0.4f;
+                        stormController.blastDamageCoefficient = stormDamageCoefficient;
 
-                    NetworkServer.Spawn(stormController.gameObject);
+                        NetworkServer.Spawn(stormController.gameObject);
+                    }
                 }
             }
         }

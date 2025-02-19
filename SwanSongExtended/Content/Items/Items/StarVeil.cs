@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
         static int stormWavesBase = 3;
         static int stormWavesStack = 2;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Star Veil";
 
         public override string ItemLangTokenName => "STARVEIL";

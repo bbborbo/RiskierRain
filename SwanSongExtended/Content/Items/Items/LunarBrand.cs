@@ -26,7 +26,7 @@ namespace SwanSongExtended.Items
         public static float cauterizeProcCoef = 0f;
         public static int burnThreshold = 5;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Starfire Brand";
 
         public override string ItemLangTokenName => "LUNARBRAND";

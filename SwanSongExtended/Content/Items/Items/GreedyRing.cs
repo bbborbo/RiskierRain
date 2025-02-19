@@ -23,7 +23,7 @@ namespace SwanSongExtended.Items
         int discountAmountBase = 8;
         int discountAmountStack = 2;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Greedy Ring";
 
         public override string ItemLangTokenName => "BORBODISCOUNT";

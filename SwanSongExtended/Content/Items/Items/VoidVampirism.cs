@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
         int maxBleedBonusBase = 9;
         int maxBleedBonusStack = 5;
         float bonusDamagePerBleed = 0.04f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override string ItemName => "Bloodsucking Coralite";
 

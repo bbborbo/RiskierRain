@@ -42,7 +42,9 @@ namespace SwanSongExtended
         public const string modName = "SwanSongExtended";
         public const string version = "1.0.0";
         public const string expansionName = "Swan Song";
+        public const string expansionName2 = "Secrets of the Scug";
         public const string expansionToken = "EXPANSION2R4R";
+        public const string expansionToken2 = "EXPANSIONSOTS";
 
         public const string DEVELOPER_PREFIX = "FRUIT";
 
@@ -50,7 +52,8 @@ namespace SwanSongExtended
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
         public static AssetBundle orangeAssetBundle => CommonAssets.orangeAssetBundle;
 
-        public static ExpansionDef expansionDef;
+        public static ExpansionDef expansionDefSS2;
+        public static ExpansionDef expansionDefSOTS;
 
         #region asset paths
         public const string iconsPath = "";
@@ -117,13 +120,20 @@ namespace SwanSongExtended
 
         private void CreateExpansionDef()
         {
-            expansionDef = ScriptableObject.CreateInstance<ExpansionDef>();
-            expansionDef.nameToken = expansionToken + "_NAME";
-            expansionDef.descriptionToken = expansionToken + "_DESCRIPTION";
+            expansionDefSS2 = ScriptableObject.CreateInstance<ExpansionDef>();
+            expansionDefSS2.nameToken = expansionToken + "_NAME";
+            expansionDefSS2.descriptionToken = expansionToken + "_DESCRIPTION";
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
 
-            Content.AddExpansionDef(expansionDef);
+            Content.AddExpansionDef(expansionDefSS2);
+            expansionDefSOTS = ScriptableObject.CreateInstance<ExpansionDef>();
+            expansionDefSOTS.nameToken = expansionToken2 + "_NAME";
+            expansionDefSOTS.descriptionToken = expansionToken2 + "_DESCRIPTION";
+            LanguageAPI.Add(expansionToken2 + "_NAME", expansionName);
+            LanguageAPI.Add(expansionToken2 + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
+
+            Content.AddExpansionDef(expansionDefSS2);
         }
 
         private void InitializeContent()

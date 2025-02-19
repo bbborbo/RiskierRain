@@ -22,7 +22,7 @@ namespace SwanSongExtended.Items
         public static float attackSpeedBonus = 0.04f;
         public static float cdrBonus = 0.04f;
         public static float luckBonusDuration = 9;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Gamma Knife";
 
         public override string ItemLangTokenName => "GAMMAKNIFE";

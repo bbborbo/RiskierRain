@@ -21,7 +21,7 @@ namespace SwanSongExtended.Items
         internal static float smokeBombRadius = 13f;
         static float smokeBombDamageCoefficient = 1f;
         static float smokeBombProcCoefficient = 1f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Cloud In A Bottle";
 
         public override string ItemLangTokenName => "CLOUDBOTTLE";

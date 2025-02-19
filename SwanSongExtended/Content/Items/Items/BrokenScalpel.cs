@@ -13,7 +13,7 @@ namespace SwanSongExtended.Items
     {
         public override bool lockEnabled => true;
         public override string ConfigName => "Items : Broken Scalpel";
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Broken Scalpel";
 
         public override string ItemLangTokenName => "BROKENSCALPEL";

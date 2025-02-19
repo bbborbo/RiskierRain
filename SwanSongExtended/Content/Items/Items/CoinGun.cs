@@ -35,7 +35,7 @@ namespace SwanSongExtended.Items
 
         string damageBoostPerChestPerStack = Tools.ConvertDecimal(bonusDamagePerChunk);
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Coin Gun";
 
         public override string ItemLangTokenName => "ECONOMYWEAPON";

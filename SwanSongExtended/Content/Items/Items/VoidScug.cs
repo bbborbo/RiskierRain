@@ -21,7 +21,7 @@ namespace SwanSongExtended.Items
         public static float durationBase = 6;
         public static float durationStack = 3;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Curious Scug";
 
         public override string ItemLangTokenName => "VOIDSCUG";

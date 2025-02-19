@@ -24,7 +24,7 @@ namespace SwanSongExtended.Items
 
         public static float minStunDuration = 0.5f;
         public static float maxStunDuration = 4f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override string ItemName => "Volatile Fuse";
 

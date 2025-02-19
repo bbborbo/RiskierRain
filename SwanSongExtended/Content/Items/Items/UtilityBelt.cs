@@ -18,7 +18,7 @@ namespace SwanSongExtended.Items
 
         public static float castBarrierBase = 0.02f;
         public static float castBarrierStack = 0.005f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Utility Knife";
 
         public override string ItemLangTokenName => "UTILITYBARRIER";

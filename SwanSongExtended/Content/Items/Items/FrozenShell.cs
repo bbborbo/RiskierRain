@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
         internal static int maxBonusArmor = 50; //(100 / 3)
         public static int maxBuffCount = 10;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Frozen Turtle Shell";
 
         public override string ItemLangTokenName => "FROZENSHELL";

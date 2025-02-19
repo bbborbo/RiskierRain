@@ -26,7 +26,7 @@ namespace SwanSongExtended.Items
         #endregion
 
         public static BuffDef agletSpeed;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Aglet";
 
         public override string ItemLangTokenName => "AGLET";

@@ -49,7 +49,7 @@ namespace SwanSongExtended.Equipment
         int multiShotBonus = 3;
 
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string EquipmentName => "Orange Zapinator";
 
         public override string EquipmentLangTokenName => "BROKENZAPINATOR";

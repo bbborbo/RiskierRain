@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
         float refundChanceCourtesy = 5;
         float endChanceMultiplier = 0.5f;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Magic Quiver";
 
         public override string ItemLangTokenName => "MAGICQUIVER";

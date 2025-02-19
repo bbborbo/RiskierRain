@@ -15,7 +15,7 @@ namespace SwanSongExtended.Items
     class GoldenEgg : ItemBase<GoldenEgg>
     {
         public override bool lockEnabled => true;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Golden Egg";
 
         public override string ItemLangTokenName => "GOLDEN_EGG";

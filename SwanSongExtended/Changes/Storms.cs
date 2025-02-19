@@ -64,11 +64,11 @@ namespace SwanSongExtended
             StormsRunBehaviorPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Common/DLC1RunBehavior.prefab").WaitForCompletion().InstantiateClone("2R4RExpansionRunBehavior", true);
 
             ExpansionRequirementComponent erc = StormsRunBehaviorPrefab.GetComponent<ExpansionRequirementComponent>();
-            erc.requiredExpansion = SwanSongPlugin.expansionDef;
+            erc.requiredExpansion = SwanSongPlugin.expansionDefSS2;
 
             StormsRunBehaviorPrefab.AddComponent<StormRunBehaviorController>();
 
-            SwanSongPlugin.expansionDef.runBehaviorPrefab = StormsRunBehaviorPrefab;
+            SwanSongPlugin.expansionDefSS2.runBehaviorPrefab = StormsRunBehaviorPrefab;
 
             StormsControllerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion().InstantiateClone("2R4RStormController", true);
             MonoBehaviour[] components = StormsControllerPrefab.GetComponentsInChildren<MonoBehaviour>();

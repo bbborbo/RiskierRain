@@ -60,7 +60,7 @@ namespace SwanSongExtended.Equipment
         public override bool EnigmaCompatible => true;
         public override bool CanBeRandomlyActivated => false;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

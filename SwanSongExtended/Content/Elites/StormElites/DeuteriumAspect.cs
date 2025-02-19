@@ -49,7 +49,7 @@ namespace SwanSongExtended.Elites
         public override bool CanDrop { get; } = false;
 
         public override float Cooldown { get; } = 0f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

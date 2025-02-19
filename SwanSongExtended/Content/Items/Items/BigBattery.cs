@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
         public static float rechargeRateIncrease = 1f;
         public static float aspdIncrease = 0.2f;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "AAAAAAA Battery";
 
         public override string ItemLangTokenName => "BORBOBIGBATTERY";

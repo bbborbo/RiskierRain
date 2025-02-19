@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
         public int eggHealth = 5;
 
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Egg";
 
         public override string ItemLangTokenName => "EGG";

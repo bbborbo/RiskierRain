@@ -28,7 +28,7 @@ namespace SwanSongExtended.Items
         static float fartStackDamageCoefficient = 1f;
         static float fartZoneDuration = 5f; //7
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Sealed Pestilence";
 
         public override string ItemLangTokenName => "FARTBOTTLE";

@@ -28,7 +28,7 @@ namespace SwanSongExtended.Items
         float shardsPerSecondBase = 0.5f;
         float shardsPerSecondStack = 0;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override string ItemName => "Elegy of Extinction";
 

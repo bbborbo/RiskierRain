@@ -22,7 +22,7 @@ namespace SwanSongExtended.Items
 		public static BasicPickupDropTable voidT2DropTable;
 		public static BasicPickupDropTable voidT3DropTable;
 		public static BasicPickupDropTable voidBossDropTable;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Quantum Codex";
 
         public override string ItemLangTokenName => "VOIDGHORS";

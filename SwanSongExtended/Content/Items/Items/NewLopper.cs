@@ -27,7 +27,7 @@ namespace SwanSongExtended.Items
 
         public static BuffDef dangerCritBuff;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "The New Lopper";
 
         public override string ItemLangTokenName => "DANGERCRIT";

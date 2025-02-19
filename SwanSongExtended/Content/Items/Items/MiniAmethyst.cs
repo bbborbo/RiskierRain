@@ -15,7 +15,7 @@ namespace SwanSongExtended.Items
         public override bool isEnabled => false;
         public override string ConfigName => "Items : Amethyst";
         public static float equipmentCooldownFractionToGiveAsRecharge = 0.10f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Amethyst Fragment";
 
         public override string ItemLangTokenName => "AMETHYST";

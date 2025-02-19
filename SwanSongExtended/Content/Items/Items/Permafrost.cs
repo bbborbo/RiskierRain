@@ -16,7 +16,7 @@ namespace SwanSongExtended.Items
         float freezeDamageHealthFraction = 0.05f;
         float freezeProcCoefficient = 0.75f;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Permafrost";
 
         public override string ItemLangTokenName => "GOODEXECUTIONITEM";

@@ -21,7 +21,7 @@ namespace SwanSongExtended.Items
         public static float baseRegenPenalty = 5f;
         public static float stackRegenPenalty = 5f;
         public static float regenPenaltyChance = 40f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Raw Chicken";
 
         public override string ItemLangTokenName => "CHICKEN";

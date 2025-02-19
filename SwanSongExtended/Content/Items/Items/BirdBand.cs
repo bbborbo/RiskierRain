@@ -22,7 +22,7 @@ namespace SwanSongExtended.Items
         public float regenDurationStack = 0.5f;
         public int cooldownTime = 7;
 
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Dev\u2019s Item";
 
         public override string ItemLangTokenName => "BIRDBAND";

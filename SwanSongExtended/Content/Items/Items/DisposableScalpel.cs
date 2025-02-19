@@ -16,7 +16,7 @@ namespace SwanSongExtended.Items
     {
         public override string ConfigName => "Items : Scalpel";
         public static int bonusDropChance = 50;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Obsidian Scalpel";
 
         public override string ItemLangTokenName => "BOSSITEMCONSUMABLE";

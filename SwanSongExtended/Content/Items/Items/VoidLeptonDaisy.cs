@@ -30,7 +30,7 @@ namespace SwanSongExtended.Items
         float cdrStack = 1 - aspdBoostStack;
         //public static float mspdBoostBase = 0.25f;
         //public static float mspdBoostStack = 0.25f;
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDef;
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Phrygian Lily";
 
         public override string ItemLangTokenName => "PHRYGIANLILY";

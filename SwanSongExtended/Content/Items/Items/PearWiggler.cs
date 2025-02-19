@@ -51,7 +51,7 @@ namespace SwanSongExtended.Items
         public static BuffDef pearBuff;
         GameObject pear;
         float pearLifetime = 5;
-        float gravRadius = 4f;
+        float gravRadius = 2f;
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -138,7 +138,7 @@ namespace SwanSongExtended.Items
 
         private void WigglePear(int i, HealthComponent a)
         {
-            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 5/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
+            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 20/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
             TeamFilter pearFilter = pearInstance.GetComponent<TeamFilter>();
             if (pearFilter)
             {

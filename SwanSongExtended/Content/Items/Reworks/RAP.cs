@@ -40,8 +40,8 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility};
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/pickupmodels/PickupArmorPlate");
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/itemicons/texArmorPlate");
+        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ArmorPlate/PickupRepulsionArmorPlate.prefab").WaitForCompletion();
+        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ArmorPlate/texRepulsionArmorPlateIcon.png").WaitForCompletion();//Resources.Load<Sprite>("textures/itemicons/texGoldOnHurtIcon");
 
         #endregion
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();

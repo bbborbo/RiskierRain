@@ -99,7 +99,7 @@ namespace BarrierRework
                 if (aegisCount > 0 && hc != null)
                 {
                     //float barrierGrant = aegisCount * aegisBarrierFraction * hc.fullCombinedHealth;
-                    float barrierGrant = aegisCount * aegisBarrierFlat;
+                    float barrierGrant = aegisCount * _aegisBarrierFlat;
                     hc.AddBarrierAuthority(barrierGrant);
                 }
             }

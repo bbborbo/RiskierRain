@@ -79,7 +79,7 @@ namespace SwanSongExtended
                 {
                     cd.creditMultiplier = 0.5f;
                     cd.expRewardCoefficient = 1f;
-                    cd.goldRewardCoefficient = 1f;
+                    cd.goldRewardCoefficient = 0f;
                     cd.minRerollSpawnInterval = 15f;
                     cd.maxRerollSpawnInterval = 25f;
                     cd.teamIndex = TeamIndex.Monster;
@@ -503,8 +503,8 @@ namespace SwanSongExtended
             public override StormState stormState => StormState.Active;
 
             //all the projectile/prefab stuff
-            public float waveMinInterval = 1f;
-            public float waveMaxInterval = 2f;
+            public float waveMinInterval = 2f;
+            public float waveMaxInterval = 4f;
 
             private List<MeteorStormController.Meteor> meteorsToDetonate;
             private List<MeteorStormController.MeteorWave> meteorWaves;

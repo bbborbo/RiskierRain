@@ -75,7 +75,7 @@ namespace SwanSongExtended.Items
             {
                 MoneyPickup chocolateMoney = healthPickup.gameObject.AddComponent<MoneyPickup>();
                 chocolateMoney.baseGoldReward = 1;
-                chocolateMoney.shouldScale = false;
+                chocolateMoney.shouldScale = true;//idk
                 chocolateMoney.teamFilter = teamFilter;
             }
 

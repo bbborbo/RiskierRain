@@ -69,8 +69,8 @@ namespace SwanSongExtended.Items
                 orig(self, damageInfo);
                 return;
             }
-            //damageInfo.damage = 0;
-            damageInfo.rejected = true;
+            damageInfo.damage = 0;//janky hack mate
+            //damageInfo.rejected = true;
             orig(self, damageInfo);
             ShellShieldBarrier(self, itemCount);
         }

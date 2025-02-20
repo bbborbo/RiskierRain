@@ -17,14 +17,14 @@ namespace SwanSongExtended.Items
     class PearWiggler : ItemBase<PearWiggler>
     {
         #region config
-        [AutoConfig("Healing Base", 4)]
-        public static int healingBase = 4;
-        [AutoConfig("Healing Stack", 4)]
-        public static int healingStack = 4;
-        [AutoConfig("Barrier Base", 8)]
-        public static int barrierBase = 8;
-        [AutoConfig("Barrier Stack", 8)]
-        public static int  barrierStack = 8;
+        [AutoConfig("Healing Base", 8)]
+        public static int healingBase = 8;
+        [AutoConfig("Healing Stack", 8)]
+        public static int healingStack = 8;
+        [AutoConfig("Barrier Base", 16)]
+        public static int barrierBase = 16;
+        [AutoConfig("Barrier Stack", 16)]
+        public static int  barrierStack = 16;
 
         public override string ConfigName => "Item: " + ItemName;
         #endregion
@@ -121,7 +121,7 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
-            int percentLost = (int)Math.Round((damageInfo.damage / self.fullCombinedHealth) * 100);
+            int percentLost = (int)Math.Round((damageInfo.damage / self.fullCombinedHealth) * 20);
             WigglePears(itemCount --, percentLost, body, self);
         }
 

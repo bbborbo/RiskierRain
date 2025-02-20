@@ -19,8 +19,8 @@ namespace SwanSongExtended.Items
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
         public static float slungusWaitTime = 0.6f;
-        public float damageIncreaseBase = 0.2f;
-        public float damageIncreaseStack = 0.3f;
+        public float movespeedIncreaseBase = 0.2f;
+        public float movespeedIncreaseStack = 0.3f;
 
         public static float radiusBase = 24f;
         public static float radiusStack = 0f;
@@ -39,8 +39,8 @@ namespace SwanSongExtended.Items
             //$"enemies by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style> " +
             //$"and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";
             $"enemes and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>. " +
-            $"Deal {Tools.ConvertDecimal(damageIncreaseBase)} more damage " +
-            $"<style=cStack>({Tools.ConvertDecimal(damageIncreaseStack)} per stack) until the next time you get hit.";
+            $"Deal {Tools.ConvertDecimal(movespeedIncreaseBase)} more damage " +
+            $"<style=cStack>({Tools.ConvertDecimal(movespeedIncreaseStack)} per stack) until the next time you get hit.";
 
         public override string ItemLore =>
 @"Order: Lay-Z Mushroom Travel Buddy
@@ -129,7 +129,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
             if (inv && sender.HasBuff(slungusBuff))
             {
                 int slungusCount = GetCount(sender);
-                args.damageMultAdd += damageIncreaseBase + damageIncreaseStack * (slungusCount - 1);
+                args.moveSpeedMultAdd += movespeedIncreaseBase + movespeedIncreaseStack * (slungusCount - 1);
             }
         }
 

@@ -50,8 +50,8 @@ namespace SwanSongExtended.Items
         #endregion
         public static BuffDef pearBuff;
         GameObject pear;
-        float pearLifetime = 5;
-        float gravRadius = 2f;
+        float pearLifetime = 10;
+        float gravRadius = 1f;
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

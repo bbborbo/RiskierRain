@@ -61,19 +61,6 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnSkillActivated += PeashooterOnSkill;
-            peashooterBuff = Content.CreateAndAddBuff("PeashooterBuff", null, Color.green, true, false);
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-        }
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    PeashooterBehavior peashooterBehavior = self.AddItemBehavior<PeashooterBehavior>(GetCount(self));
-                }
-            }
         }
         private void PeashooterOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
         {
@@ -87,15 +74,12 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
-            if (self.GetBuffCount(peashooterBuff) >= 1)
-            {
-                FirePeashooter(self);
-            }
+            FirePeashooter(self);
+
         }
 
         private void FirePeashooter(CharacterBody body)
         {
-            body.RemoveBuff(peashooterBuff);
 
             Vector3 forward = body.inputBank.aimDirection;
             forward.y = 0;
@@ -150,27 +134,6 @@ namespace SwanSongExtended.Items
             poa.overlapProcCoefficient = procCoefficient;
 
             Content.AddProjectilePrefab(peashooterPrefab);
-        }
-    }
-    public class PeashooterBehavior : CharacterBody.ItemBehavior
-    {
-        public static float cooldownDuration = 6;
-        float cooldownTimer = 0;
-        private void FixedUpdate()
-        {
-            if (cooldownTimer > 0)
-            {
-                cooldownTimer -= Time.fixedDeltaTime;
-            }
-            else if (body.GetBuffCount(Peashooter.peashooterBuff) <= 3 + stack--)//make this not hardcoded
-            {
-                RechargeBuff();
-            }
-        }
-        private void RechargeBuff()
-        {
-            body.AddBuff(Peashooter.peashooterBuff);
-            cooldownTimer = cooldownDuration;
         }
     }
 }

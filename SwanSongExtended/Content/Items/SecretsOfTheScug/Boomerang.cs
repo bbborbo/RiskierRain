@@ -21,15 +21,13 @@ namespace SwanSongExtended.Items
         public static float maxFlyOutTime = 0.3f; //0.6f
         [AutoConfig("Boomerang Scale Factor", 0.3f)]
         public static float boomerangScale = 0.3f; //1.0f
-        [AutoConfig("Boomerang Speed", 90f)]
-        public static float boomerangSpeed = 10f; //1.0f
+        [AutoConfig("Boomerang Speed", 50f)]
+        public static float boomerangSpeed = 50f; //1.0f
 
         [AutoConfig("Damage Coefficient", 5f)]
         public static float damageCoefficient = 5f;
         [AutoConfig("Proc Coefficient", 0.8f)]
         public static float procCoefficient = 0.8f;
-        [AutoConfig("Base Duration", 1.35f)]
-        public static float baseDuration = 1.35f;
         [AutoConfig("Force", 150f)]
         public static float force = 150f;
         #endregion

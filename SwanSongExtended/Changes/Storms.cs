@@ -30,6 +30,32 @@ namespace SwanSongExtended
             CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
 
+            meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion().InstantiateClone("StormStrikePredictionEffect");
+            meteorWarningEffectPrefab.transform.localScale = Vector3.one * StormRunBehaviorController.meteorBlastRadius;
+            DestroyOnTimer DOT = meteorWarningEffectPrefab.GetComponent<DestroyOnTimer>();
+            if (DOT)
+            {
+                DOT.duration = StormRunBehaviorController.meteorImpactDelay + 0.5f;
+            }
+            Transform indicator = meteorWarningEffectPrefab.transform.Find("GroundSlamIndicator");
+            if (indicator)
+            {
+                AnimateShaderAlpha asa = indicator.GetComponent<AnimateShaderAlpha>();
+                if (asa)
+                {
+                    asa.timeMax = StormRunBehaviorController.meteorImpactDelay + 0.1f;
+                }
+                MeshRenderer meshRenderer = indicator.GetComponent<MeshRenderer>();
+                if (meshRenderer)
+                {
+                    Material mat = UnityEngine.Object.Instantiate(meshRenderer.material);
+                    meshRenderer.material = mat;
+                    mat.SetFloat("_Boost", 0.34f);
+                    mat.SetFloat("_AlphaBoost", 4.29f);
+                }
+            }
+            Content.CreateAndAddEffectDef(meteorWarningEffectPrefab);
+
             LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "Meteor Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
@@ -192,6 +218,18 @@ namespace SwanSongExtended
 
 
         internal List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
+
+
+        //meteors:
+        public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
+        public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
+        public static float waveMinInterval = 2f;
+        public static float waveMaxInterval = 3f;
+        public static float meteorTravelEffectDuration = 0f;
+        public static float meteorImpactDelay = 2.5f;
+        public static float meteorBlastDamageCoefficient = 10;
+        public static float meteorBlastRadius = 11;
+        public static float meteorBlastForce = 0;
 
         public void Start()
         {
@@ -503,21 +541,10 @@ namespace SwanSongExtended
             public override StormState stormState => StormState.Active;
 
             //all the projectile/prefab stuff
-            public float waveMinInterval = 2f;
-            public float waveMaxInterval = 4f;
 
             private List<MeteorStormController.Meteor> meteorsToDetonate;
             private List<MeteorStormController.MeteorWave> meteorWaves;
             private float waveTimer;
-
-            //meteors:
-            GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
-            GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
-            public float meteorTravelEffectDuration = 2;
-            public float meteorImpactDelay = 2f;
-            public float meteorBlastDamageCoefficient = 10;
-            public float meteorBlastRadius = 14;
-            public float meteorBlastForce = 0;
 
             public override void OnEnter()
             {
@@ -540,7 +567,7 @@ namespace SwanSongExtended
                 this.waveTimer -= Time.fixedDeltaTime;
                 if (this.waveTimer <= 0f)
                 {
-                    this.waveTimer = UnityEngine.Random.Range(this.waveMinInterval, this.waveMaxInterval);
+                    this.waveTimer = UnityEngine.Random.Range(StormRunBehaviorController.waveMinInterval, StormRunBehaviorController.waveMaxInterval);
                     MeteorStormController.MeteorWave item = new MeteorStormController.MeteorWave(CharacterBody.readOnlyInstancesList.ToArray<CharacterBody>(), base.transform.position);
                     this.meteorWaves.Add(item);
                 }
@@ -560,17 +587,17 @@ namespace SwanSongExtended
                         else if (nextMeteor.valid)
                         {
                             this.meteorsToDetonate.Add(nextMeteor);
-                            EffectManager.SpawnEffect(this.meteorWarningEffectPrefab, new EffectData
+                            EffectManager.SpawnEffect(StormRunBehaviorController.meteorWarningEffectPrefab, new EffectData
                             {
                                 origin = nextMeteor.impactPosition,
-                                scale = this.meteorBlastRadius
+                                scale = StormRunBehaviorController.meteorBlastRadius
                             }, true);
                         }
                     }
                 }
 
-                float num = Run.instance.time - this.meteorImpactDelay;
-                float num2 = num - this.meteorTravelEffectDuration;
+                float num = Run.instance.time - StormRunBehaviorController.meteorImpactDelay;
+                float num2 = num - StormRunBehaviorController.meteorTravelEffectDuration;
                 for (int j = this.meteorsToDetonate.Count - 1; j >= 0; j--)
                 {
                     MeteorStormController.Meteor meteor = this.meteorsToDetonate[j];
@@ -588,12 +615,12 @@ namespace SwanSongExtended
                 {
                     origin = meteor.impactPosition
                 };
-                EffectManager.SpawnEffect(this.meteorImpactEffectPrefab, effectData, true);
+                EffectManager.SpawnEffect(StormRunBehaviorController.meteorImpactEffectPrefab, effectData, true);
                 new BlastAttack
                 {
                     inflictor = base.gameObject,
-                    baseDamage = this.meteorBlastDamageCoefficient * Run.instance.ambientLevel,//multiplies by ambient level. if this is unsatisfactory change later
-                    baseForce = this.meteorBlastForce,
+                    baseDamage = StormRunBehaviorController.meteorBlastDamageCoefficient * Run.instance.ambientLevel,//multiplies by ambient level. if this is unsatisfactory change later
+                    baseForce = StormRunBehaviorController.meteorBlastForce,
                     attackerFiltering = AttackerFiltering.Default,
                     crit = false,
                     falloffModel = BlastAttack.FalloffModel.SweetSpot,

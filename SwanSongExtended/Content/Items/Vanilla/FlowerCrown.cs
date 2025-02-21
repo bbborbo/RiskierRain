@@ -17,8 +17,8 @@ namespace SwanSongExtended.Items
 
         float moveSpeedIncreaseBase = 0.15f;
         float moveSpeedIncreaseStack = 0.15f;
-        int armorIncreaseBase = 30;
-        int armorIncreaseStack = 30;
+        int armorIncreaseBase = 20;
+        int armorIncreaseStack = 20;
 
         public override string ItemName => "Flower Crown";
 
@@ -31,8 +31,8 @@ namespace SwanSongExtended.Items
             $"Reduces <style=cIsUtility>shield recharge delay</style> " +
             $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
             $"While shields are active, increase <style=cIsHealing>armor</style> " +
-            $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase} hp/s</style> " +
-            $"<style=cStack>(+{armorIncreaseStack} hp/s per stack)</style>, " +
+            $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase}</style> " +
+            $"<style=cStack>(+{armorIncreaseStack} per stack)</style>, " +
             $"and <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 

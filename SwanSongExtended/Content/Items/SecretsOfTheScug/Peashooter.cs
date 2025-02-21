@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace SwanSongExtended.Items
@@ -17,25 +18,24 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Peashooter";
 
         public static GameObject peashooterPrefab;
-        [AutoConfig("Max Peashooter Fly-Out Time", 0.3f)]
-        public static float maxFlyOutTime = 0.3f; //0.6f
+        [AutoConfig("Peashooter Lifetime", 5f)]
+        public static float lifetime = 5f; //0.6f
         [AutoConfig("Peashooter Scale Factor", 0.3f)]
         public static float peashooterScale = 0.3f; //1.0f
-        [AutoConfig("Peashooter Speed", 50f)]
-        public static float peashooterSpeed = 50f; //1.0f
+        [AutoConfig("Peashooter Speed", 90f)]
+        public static float peashooterSpeed = 90f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 5f)]
-        public static float damageCoefficient = 5f;
-        [AutoConfig("Proc Coefficient", 0.8f)]
-        public static float procCoefficient = 0.8f;
-        [AutoConfig("Force", 150f)]
-        public static float force = 150f;
+        [AutoConfig("Damage Coefficient", .2f)]
+        public static float damageCoefficient = .2f;
+        [AutoConfig("Proc Coefficient", 0.1f)]
+        public static float procCoefficient = 0.1f;
+        [AutoConfig("Force", 0f)]
+        public static float force = 0f;
         #endregion
-        public static BuffDef peashooterBuff;
         #region abstract
         public override string ItemName => "Peashooter";
 
-        public override string ItemLangTokenName => "BOOMERANG";
+        public override string ItemLangTokenName => "SNAILY_PEASHOOTER";
 
         public override string ItemPickupDesc => "";
 
@@ -43,7 +43,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLore => "";
 
-        public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTier Tier => ItemTier.Tier1;
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage};
 
@@ -65,7 +65,7 @@ namespace SwanSongExtended.Items
         private void PeashooterOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
         {
             orig (self, skill);          
-            if (!skill == self.skillLocator.primary)
+            if (!(skill == self.skillLocator.primary))
             {
                 return;
             }
@@ -82,8 +82,6 @@ namespace SwanSongExtended.Items
         {
 
             Vector3 forward = body.inputBank.aimDirection;
-            forward.y = 0;
-          
 
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
@@ -106,32 +104,16 @@ namespace SwanSongExtended.Items
         }
         private void CreateProjectile()
         {
-            peashooterPrefab = LegacyResourcesAPI.Load<GameObject>("RoR2/Base/LunarExploder/LunarExploderShardProjectile.prefab").InstantiateClone("SnailyPeashooter", true);
-            GameObject ghost = LegacyResourcesAPI.Load<GameObject>("RoR2/Base/LunarExploder/LunarExploderShardGhost.prefab ").InstantiateClone("SnailyPeashooterGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
+            peashooterPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/LunarExploder/LunarExploderShardProjectile.prefab").WaitForCompletion().InstantiateClone("SnailyPeashooter", true);
+            GameObject ghost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/LunarExploder/LunarExploderShardGhost.prefab").WaitForCompletion().InstantiateClone("SnailyPeashooterGhost", false);
             peashooterPrefab.transform.localScale = Vector3.one * peashooterScale;
 
-            BoomerangProjectile bp = peashooterPrefab.GetComponent<BoomerangProjectile>();
-            bp.travelSpeed = peashooterSpeed;
-            bp.transitionDuration = 0.8f;
-            bp.distanceMultiplier = maxFlyOutTime;
-            bp.canHitWorld = false;
+            ProjectileSimple ps = peashooterPrefab.GetComponent<ProjectileSimple>();
+            ps.desiredForwardSpeed = peashooterSpeed;
+            ps.lifetime = lifetime;
 
-            ProjectileController pc = bp.GetComponent<ProjectileController>();
+            ProjectileController pc = ps.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
-
-            //ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
-            //pd.damageType |= DamageType.BonusToLowHealth;
-
-            ProjectileDotZone pdz = peashooterPrefab.GetComponent<ProjectileDotZone>();
-            /*pdz.overlapProcCoefficient = 0.8f;
-            pdz.damageCoefficient = 1f;
-            pdz.resetFrequency = 1 / (maxFlyOutTime + bp.transitionDuration);
-            pdz.fireFrequency = 20f;*/
-            UnityEngine.Object.Destroy(pdz);
-
-            ProjectileOverlapAttack poa = peashooterPrefab.GetComponent<ProjectileOverlapAttack>();
-            poa.damageCoefficient = 1f;
-            poa.overlapProcCoefficient = procCoefficient;
 
             Content.AddProjectilePrefab(peashooterPrefab);
         }

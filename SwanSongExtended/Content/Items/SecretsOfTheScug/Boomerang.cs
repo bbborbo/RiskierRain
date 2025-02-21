@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace SwanSongExtended.Items
@@ -35,7 +36,7 @@ namespace SwanSongExtended.Items
         #region abstract
         public override string ItemName => "Boomerang";
 
-        public override string ItemLangTokenName => "BOOMERANG";
+        public override string ItemLangTokenName => "SNAILY_BOOMERANG";
 
         public override string ItemPickupDesc => "";
 
@@ -61,7 +62,7 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnSkillActivated += BoomerangOnSkill;
-            boomerangBuff = Content.CreateAndAddBuff("BoomerangBuff", null, Color.green, true, false);
+            boomerangBuff = Content.CreateAndAddBuff("BoomerangBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.green, true, false);
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -78,7 +79,7 @@ namespace SwanSongExtended.Items
         private void BoomerangOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
         {
             orig (self, skill);          
-            if (!skill == self.skillLocator.primary)
+            if (!(skill == self.skillLocator.primary))
             {
                 return;
             }
@@ -95,10 +96,12 @@ namespace SwanSongExtended.Items
 
         private void FireBoomerang(CharacterBody body)
         {
-            body.RemoveBuff(boomerangBuff);
+            if (body.GetBuffCount(boomerangBuff) > 0)
+            {
+                body.RemoveBuff(boomerangBuff);
+            }           
 
             Vector3 forward = body.inputBank.aimDirection;
-            forward.y = 0;
           
 
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
@@ -154,7 +157,7 @@ namespace SwanSongExtended.Items
     }
     public class BoomerangBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 6;
+        public static float cooldownDuration = 4;
         float cooldownTimer = 0;
         private void FixedUpdate()
         {
@@ -164,6 +167,7 @@ namespace SwanSongExtended.Items
             }
             else if (body.GetBuffCount(Boomerang.boomerangBuff) <= 3 + stack--)//make this not hardcoded
             {
+                Debug.Log("boomb");
                 RechargeBuff();
             }
         }

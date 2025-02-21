@@ -12,6 +12,7 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorRed : ItemBase<VoidIchorRed>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int damageBase = 5;
         int damageStack = 5;
         public override string ItemName => "Metamorphic Ichor (Red)";

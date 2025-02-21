@@ -125,8 +125,8 @@ namespace SwanSongExtended
             expansionDefSS2.descriptionToken = expansionToken + "_DESCRIPTION";
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
-
             Content.AddExpansionDef(expansionDefSS2);
+
             expansionDefSOTS = ScriptableObject.CreateInstance<ExpansionDef>();
             expansionDefSOTS.nameToken = expansionToken2 + "_NAME";
             expansionDefSOTS.descriptionToken = expansionToken2 + "_DESCRIPTION";

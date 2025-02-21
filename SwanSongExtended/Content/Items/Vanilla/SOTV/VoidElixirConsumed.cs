@@ -13,6 +13,7 @@ namespace SwanSongExtended.Items
 {
     class VoidElixirConsumed : ItemBase<VoidElixirConsumed>
     {
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
         public override bool lockEnabled => true;
         static float armorBoost => VoidElixir.armorBuff;
         static float regenBoost => VoidElixir.regenBuff;

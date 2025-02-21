@@ -10,12 +10,15 @@ using static SwanSongExtended.Modules.Language.Styling;
 using UnityEngine.AddressableAssets;
 using RainrotSharedUtils.Components;
 using UnityEngine.Networking;
+using RoR2.ExpansionManagement;
 
 namespace SwanSongExtended.Items
 {
     class VoidElixir : ItemBase<VoidElixir>
     {
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
         public static GameObject infernoAuraPrefab;
+        public override bool isEnabled => false;
 
         [AutoConfig("Inferno Duration", 20f)]
         public static float infernoDuration = 20f;

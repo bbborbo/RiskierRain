@@ -22,7 +22,7 @@ namespace SwanSongExtended.Items
         [AutoConfig("Boomerang Scale Factor", 0.3f)]
         public static float boomerangScale = 0.3f; //1.0f
         [AutoConfig("Boomerang Speed", 90f)]
-        public static float boomerangSpeed = 90f; //1.0f
+        public static float boomerangSpeed = 10f; //1.0f
 
         [AutoConfig("Damage Coefficient", 5f)]
         public static float damageCoefficient = 5f;
@@ -74,31 +74,34 @@ namespace SwanSongExtended.Items
                 if (self.master)
                 {
                     BoomerangBehavior boomerangBehavior = self.AddItemBehavior<BoomerangBehavior>(GetCount(self));
-                    boomerangBehavior.body = self;
                 }
             }
         }
         private void BoomerangOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
         {
-            orig (self, skill);
+            orig (self, skill);          
+            if (!skill == self.skillLocator.primary)
+            {
+                return;
+            }
             int boomerangCount = GetCount(self);
             if (boomerangCount <= 0)
             {
                 return;
             }
-            if (self.GetBuffCount(boomerangBuff) <= 0)
+            if (self.GetBuffCount(boomerangBuff) >= 1)
             {
-                return;
+                FireBoomerang(self);
             }
-            FireBoomerang(self);
         }
 
         private void FireBoomerang(CharacterBody body)
         {
+            body.RemoveBuff(boomerangBuff);
+
             Vector3 forward = body.inputBank.aimDirection;
             forward.y = 0;
-
-            Vector3 fireDirection = forward + Vector3.up * 0.5f;
+          
 
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
@@ -106,12 +109,11 @@ namespace SwanSongExtended.Items
                 crit = body.RollCrit(),
                 damageColorIndex = DamageColorIndex.Item,
                 position = body.corePosition,
-                //procChainMask = damageInfo.procChainMask,
-                force = 0,
+                force = force,
                 owner = body.gameObject,
                 projectilePrefab = boomerangPrefab,
-                rotation = Util.QuaternionSafeLookRotation(fireDirection),
-                //speedOverride = 20 //20
+                rotation = Util.QuaternionSafeLookRotation(forward),
+                speedOverride = boomerangSpeed //20
             });
         }
 
@@ -134,8 +136,8 @@ namespace SwanSongExtended.Items
             ProjectileController pc = bp.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
 
-            ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
-            pd.damageType |= DamageType.BonusToLowHealth;
+            //ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
+            //pd.damageType |= DamageType.BonusToLowHealth;
 
             ProjectileDotZone pdz = boomerangPrefab.GetComponent<ProjectileDotZone>();
             /*pdz.overlapProcCoefficient = 0.8f;
@@ -155,7 +157,6 @@ namespace SwanSongExtended.Items
     {
         public static float cooldownDuration = 6;
         float cooldownTimer = 0;
-        CharacterBody body;
         private void FixedUpdate()
         {
             if (cooldownTimer > 0)

@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,7 @@ namespace SwanSongExtended.Items
 {
     class FlameOrb : ItemBase<FlameOrb>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public static GameObject flameNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");//change this later
         const int flameRadius = 25;
         const float durationBase = 5;

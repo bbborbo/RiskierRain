@@ -103,7 +103,7 @@ namespace RiskierRain.EntityState.Commando
 					minSpread = 0f,
 					maxSpread = base.characterBody.spreadBloomAngle,
 					damage = CommandoTweaks.soupDamageCoeff * this.damageStat,
-					procCoefficient = 1.0f,
+					procCoefficient = CommandoTweaks.soupProcCoeff,
 					force = SoupFire.force,
 					tracerEffectPrefab = FireBarrage.tracerEffectPrefab,
 					muzzleName = targetMuzzle,

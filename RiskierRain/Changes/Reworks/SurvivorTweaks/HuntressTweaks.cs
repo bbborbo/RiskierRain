@@ -32,8 +32,8 @@ namespace RiskierRain.SurvivorTweaks
 
         static int arrowRainCooldown = 22; //12
         static float arrowRainRadius = 12; // 7.5f
-        static float arrowRainProcCoeff = 0.4f; //0.2f
-        static float arrowRainDamageCoeff = 0.35f; //0.5f
+        static float arrowRainProcCoeff = 0.5f; //0.2f
+        static float arrowRainDamageCoeff = 0.25f; //0.5f
         static float arrowRainHitFrequency = 4f; //3f
         static float arrowRainLifetime = 8f; //6f
 

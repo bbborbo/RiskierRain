@@ -41,4 +41,8 @@
     <ProjectReference Include="..\BossDropRework\BossDropRework.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Content\Items\Vanilla\SOTS\" />
+  </ItemGroup>
+
 </Project>

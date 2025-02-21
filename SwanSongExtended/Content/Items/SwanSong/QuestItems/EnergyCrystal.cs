@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace SwanSongExtended.Items
 {
     class EnergyCrystal : ItemBase<EnergyCrystal>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         #region abstract
         public override string ItemName => "Energy Crystal";
 

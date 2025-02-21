@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RoR2.ExpansionManagement;
 
 namespace SwanSongExtended.Items
 {
     class VoidIchorRed : ItemBase<VoidIchorRed>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int damageBase = 5;
         int damageStack = 5;
         public override string ItemName => "Metamorphic Ichor (Red)";

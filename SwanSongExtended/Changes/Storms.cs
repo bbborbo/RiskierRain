@@ -514,7 +514,7 @@ namespace SwanSongExtended
             GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
             GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
             public float meteorTravelEffectDuration = 2;
-            public float meteorImpactDelay = 2.5f;
+            public float meteorImpactDelay = 2f;
             public float meteorBlastDamageCoefficient = 10;
             public float meteorBlastRadius = 14;
             public float meteorBlastForce = 0;

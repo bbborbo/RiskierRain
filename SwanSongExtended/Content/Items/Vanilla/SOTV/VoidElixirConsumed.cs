@@ -8,11 +8,13 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using RoR2.ExpansionManagement;
 
 namespace SwanSongExtended.Items
 {
     class VoidElixirConsumed : ItemBase<VoidElixirConsumed>
     {
+        public override ExpansionDef RequiredExpansion => SotvExpansionDef();
         public override bool lockEnabled => true;
         static float armorBoost => VoidElixir.armorBuff;
         static float regenBoost => VoidElixir.regenBuff;

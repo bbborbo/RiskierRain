@@ -43,10 +43,11 @@ namespace RiskierRain.SurvivorTweaks
         public static float slideJumpDuration = 0.6f; //0.6f
         public static float slideJumpMultiplier = 1.2f; //1f
 
-        public static int soupMaxTargets = 6;
-        public static int soupBaseShots = 12; //6
-        public static float soupDamageCoeff = 1.6f; //1f
-        public static float soupCooldown = 11f; //9f
+        public static int soupMaxTargets = 4;
+        public static int soupBaseShots = 8; //6
+        public static float soupDamageCoeff = 1.8f; //1f
+        public static float soupProcCoeff = 0.7f; //1f
+        public static float soupCooldown = 13f; //9f
 
         public static float nadeRadius = 16f; //11f
         public static float nadeCooldown = 8f; //5f

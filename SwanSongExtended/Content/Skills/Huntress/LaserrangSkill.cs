@@ -17,7 +17,7 @@ namespace SwanSongExtended.Skills
 {
     class LaserrangSkill : SkillBase<LaserrangSkill>
     {
-        public override float BaseCooldown => 7f;
+        public override float BaseCooldown => 8f;
         public override InterruptPriority InterruptPriority => InterruptPriority.Skill;
 
         public override Type BaseSkillDef => typeof(SkillDef);
@@ -29,13 +29,13 @@ namespace SwanSongExtended.Skills
         public static GameObject boomerangPrefab;
         [AutoConfig("Max Boomerang Fly-Out Time", 0.3f)]
         public static float maxFlyOutTime = 0.3f; //0.6f
-        [AutoConfig("Boomerang Scale Factor", 0.3f)]
-        public static float boomerangScale = 0.3f; //1.0f
+        [AutoConfig("Boomerang Scale Factor", 0.4f)]
+        public static float boomerangScale = 0.4f; //1.0f
         [AutoConfig("Boomerang Speed", 90f)]
         public static float boomerangSpeed = 90f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 5f)]
-        public static float damageCoefficient = 5f;
+        [AutoConfig("Damage Coefficient", 4.5f)]
+        public static float damageCoefficient = 4.5f;
         [AutoConfig("Proc Coefficient", 0.8f)]
         public static float procCoefficient = 0.8f;
         [AutoConfig("Base Duration", 1.35f)]

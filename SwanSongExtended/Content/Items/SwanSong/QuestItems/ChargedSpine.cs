@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace SwanSongExtended.Items
 {
     class ChargedSpine : ItemBase<ChargedSpine>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Charged Malachite Spine";
 
         public override string ItemLangTokenName => "CHARGEDMALACHITESPINE";

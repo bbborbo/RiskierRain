@@ -10,12 +10,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using static SwanSongExtended.Modules.HitHooks;
+using RoR2.ExpansionManagement;
 
 
 namespace SwanSongExtended.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
+        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int barrierBase = 20;
         int barrierStack = 20;
         public override string ItemName => "Metamorphic Ichor (Violet)";

@@ -106,7 +106,7 @@ namespace SwanSongExtended.Items
                 damage = body.damage * damageCoefficient,
                 crit = body.RollCrit(),
                 damageColorIndex = DamageColorIndex.Item,
-                position = body.corePosition,
+                position = body.corePosition/* + Vector3.up * 3*/,
                 force = force,
                 owner = body.gameObject,
                 projectilePrefab = boomerangPrefab,
@@ -130,6 +130,7 @@ namespace SwanSongExtended.Items
             bp.travelSpeed = boomerangSpeed;
             bp.transitionDuration = 0.8f;
             bp.distanceMultiplier = maxFlyOutTime;
+            bp.canHitWorld = false;
 
             ProjectileController pc = bp.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;

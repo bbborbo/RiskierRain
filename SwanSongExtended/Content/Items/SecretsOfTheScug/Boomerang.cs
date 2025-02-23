@@ -22,11 +22,11 @@ namespace SwanSongExtended.Items
         public static float maxFlyOutTime = 0.3f; //0.6f
         [AutoConfig("Boomerang Scale Factor", 0.3f)]
         public static float boomerangScale = 0.3f; //1.0f
-        [AutoConfig("Boomerang Speed", 50f)]
-        public static float boomerangSpeed = 50f; //1.0f
+        [AutoConfig("Boomerang Speed", 60f)]
+        public static float boomerangSpeed = 60f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 5f)]
-        public static float damageCoefficient = 5f;
+        [AutoConfig("Damage Coefficient", 2f)]
+        public static float damageCoefficient = 2f;
         [AutoConfig("Proc Coefficient", 0.8f)]
         public static float procCoefficient = 0.8f;
         [AutoConfig("Force", 150f)]
@@ -62,7 +62,7 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnSkillActivated += BoomerangOnSkill;
-            boomerangBuff = Content.CreateAndAddBuff("BoomerangBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.green, true, false);
+            boomerangBuff = Content.CreateAndAddBuff("BoomerangBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.cyan, true, false);
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -161,11 +161,12 @@ namespace SwanSongExtended.Items
         float cooldownTimer = 0;
         private void FixedUpdate()
         {
+            Debug.Log(cooldownTimer);
             if (cooldownTimer > 0)
             {
-                cooldownTimer -= Time.fixedDeltaTime;
+                cooldownTimer -= Time.deltaTime;
             }
-            else if (body.GetBuffCount(Boomerang.boomerangBuff) <= 3 + stack--)//make this not hardcoded
+            if (cooldownTimer <= 0)//make this not hardcoded
             {
                 Debug.Log("boomb");
                 RechargeBuff();
@@ -173,7 +174,10 @@ namespace SwanSongExtended.Items
         }
         private void RechargeBuff()
         {
-            body.AddBuff(Boomerang.boomerangBuff);
+            if(body.GetBuffCount(Boomerang.boomerangBuff) <= 3 + stack)
+            {
+                body.AddBuff(Boomerang.boomerangBuff);
+            }
             cooldownTimer = cooldownDuration;
         }
     }

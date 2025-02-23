@@ -19,12 +19,12 @@ namespace SwanSongExtended.Items
         #region config
         [AutoConfig("Healing Base", 8)]
         public static int healingBase = 8;
-        [AutoConfig("Healing Stack", 8)]
-        public static int healingStack = 8;
-        [AutoConfig("Barrier Base", 16)]
-        public static int barrierBase = 16;
-        [AutoConfig("Barrier Stack", 16)]
-        public static int  barrierStack = 16;
+        [AutoConfig("Healing Stack", 4)]
+        public static int healingStack = 4;
+        [AutoConfig("Barrier Base", 8)]
+        public static int barrierBase = 8;
+        [AutoConfig("Barrier Stack", 4)]
+        public static int  barrierStack = 4;
 
         public override string ConfigName => "Item: " + ItemName;
         #endregion
@@ -60,7 +60,7 @@ namespace SwanSongExtended.Items
         {
             On.RoR2.HealthComponent.TakeDamageProcess += PearWigglerTakeDamage;
             GetHitBehavior += PearWigglerOnHit;
-            pearBuff = Content.CreateAndAddBuff("PearBuff", null, Color.green, true, false);
+            pearBuff = Content.CreateAndAddBuff("PearBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.green, true, false);
         }
 
 
@@ -105,6 +105,7 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
+            if (attackerBody.GetBuffCount(pearBuff) < pearCount * 3)//make this not hardcoded idgaf
             attackerBody.AddBuff(pearBuff);
         }
 
@@ -138,7 +139,7 @@ namespace SwanSongExtended.Items
 
         private void WigglePear(int i, HealthComponent a)
         {
-            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 20/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
+            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 30/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
             TeamFilter pearFilter = pearInstance.GetComponent<TeamFilter>();
             if (pearFilter)
             {

@@ -783,9 +783,9 @@ namespace RiskierRain
         #endregion
 
         #region halcyonite shrine
-        public static int halcyoniteShrineLowGoldCost = 60;//75
-        public static int halcyoniteShrineMidGoldCost = 120;//150
-        public static int halcyoniteShrineMaxGoldCost = 200;//300
+        public static int halcyoniteShrineLowGoldCost = 40;//75
+        public static int halcyoniteShrineMidGoldCost = 100;//150
+        public static int halcyoniteShrineMaxGoldCost = 150;//300
 
 
         void ChangeHalcyoniteShrineGoldRequirements()

@@ -260,14 +260,18 @@ namespace RiskierRain
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
 
-                    args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 5f;
+                    if(sender.baseNameToken != "JELLYFISH_BODY_NAME")
+                    {
+                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 5f;
+                    }
+
                     if (sender.isChampion)
                     {
                         args.armorAdd += 3 * compensatedLevel;
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 6f;
+                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 99f) * 4f;
                     }
                 }
             }

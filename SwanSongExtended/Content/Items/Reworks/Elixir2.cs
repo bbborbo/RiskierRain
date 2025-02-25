@@ -80,7 +80,7 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
-            SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.HealingPotion));
+            SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/HealingPotion/HealingPotion.asset").WaitForCompletion());
             brewActiveBuff = Content.CreateAndAddBuff(
                 "bdBerserkerBrewActive",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion(),//replace me

@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
+using UnityEngine.AddressableAssets;
 
 namespace SwanSongExtended
 {
@@ -22,7 +23,7 @@ namespace SwanSongExtended
 		public void ReworkLaserScope()
         {
             //IL.RoR2.CharacterBody.RecalculateStats += RevokeScopeRights;
-            RetierItem("CritDamage", ItemTier.Tier2);
+            RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/CritDamage/CritDamage.asset").WaitForCompletion(), ItemTier.Tier2);
             GetStatCoefficients += ScopeCritChance;
             On.RoR2.CharacterBody.OnInventoryChanged += AddScopeItemBehavior;
 

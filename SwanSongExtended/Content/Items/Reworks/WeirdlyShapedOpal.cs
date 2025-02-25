@@ -78,7 +78,7 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
-			SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.OutOfCombatArmor));
+			SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/OutOfCombatArmor/OutOfCombatArmor.asset").WaitForCompletion());
 			CreateAssets();
 		}
 

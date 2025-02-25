@@ -168,7 +168,7 @@ namespace SwanSongExtended.Equipment
 
         public override void Init()
         {
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.ExecuteLowHealthElite), ItemTier.NoTier);
+            SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/ExecuteLowHealthElite/ExecuteLowHealthElite.asset").WaitForCompletion());
             //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
 
             executionDebuff = Content.CreateAndAddBuff("bdExecutionDebuffStackable",

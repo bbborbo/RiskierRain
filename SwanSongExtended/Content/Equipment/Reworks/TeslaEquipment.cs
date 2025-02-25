@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using static SwanSongExtended.Modules.Language.Styling;
 
@@ -92,7 +93,7 @@ namespace SwanSongExtended.Equipment
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ShockNearby);
             On.RoR2.GlobalEventManager.OnCharacterDeath += GrantShieldOnKill;
             GetStatCoefficients += AddBonusShield;
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.ShockNearby), ItemTier.NoTier);
+            SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/ShockNearby/ShockNearby.asset").WaitForCompletion());
         }
 
         private void AddBonusShield(CharacterBody sender, StatHookEventArgs args)

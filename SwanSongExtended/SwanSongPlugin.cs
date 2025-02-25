@@ -129,7 +129,8 @@ namespace SwanSongExtended
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
             
             InitializeContent();
-            RoR2Application.onLoad += InitializeChanges;
+            InitializeChanges();
+            //RoR2Application.onLoad += InitializeChanges;
 
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
             Modules.Materials.SwapShadersFromMaterialsInBundle(orangeAssetBundle);

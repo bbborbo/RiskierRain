@@ -53,6 +53,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicJump", "DynamicJump\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwanSongExtended", "SwanSongExtended\SwanSongExtended.csproj", "{A26E602F-96DF-4914-A513-8BFBF9630967}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreStats", "MoreStats\MoreStats.csproj", "{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{A26E602F-96DF-4914-A513-8BFBF9630967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A26E602F-96DF-4914-A513-8BFBF9630967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A26E602F-96DF-4914-A513-8BFBF9630967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

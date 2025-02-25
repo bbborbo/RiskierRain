@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
 using RoR2.ExpansionManagement;
 
 

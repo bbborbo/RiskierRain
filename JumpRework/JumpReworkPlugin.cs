@@ -13,6 +13,7 @@ using System.Security.Permissions;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.DamageAPI;
+using static MoreStats.StatHooks;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -23,6 +24,7 @@ namespace JumpRework
 {
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(DynamicJump.DynamicJumpPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
@@ -59,52 +61,37 @@ namespace JumpRework
 
             RoR2Application.onLoad += JumpReworks;
         }
-        public static bool IsDoubleJump(CharacterMotor motor, CharacterBody body)
-        {
-            int maxJumpCount = body.maxJumpCount;
-            int baseJumpCount = body.baseJumpCount;
-            int timesJumped = motor.jumpCount + 1;
-
-            if (timesJumped > baseJumpCount)
-                return true;
-            return false;
-        }
-        public static bool IsBaseJump(CharacterMotor motor, CharacterBody body)
-        {
-            int maxJumpCount = body.maxJumpCount;
-            int baseJumpCount = body.baseJumpCount;
-            int timesJumped = motor.jumpCount + 1;
-
-            if (timesJumped <= baseJumpCount)
-                return true;
-            return false;
-        }
-        public static bool IsLastJump(CharacterMotor motor, CharacterBody body)
-        {
-            int maxJumpCount = body.maxJumpCount;
-            int baseJumpCount = body.baseJumpCount;
-            int timesJumped = motor.jumpCount + 1;
-
-            if (timesJumped == maxJumpCount)
-                return true;
-            return false;
-        }
-
-
         void JumpReworks()
         {
-            IL.RoR2.CharacterBody.RecalculateStats += JumpReworkJumpCount;
-            On.EntityStates.GenericCharacterMain.ApplyJumpVelocity += DoJumpEvent;
-            IL.EntityStates.GenericCharacterMain.ProcessJump += FeatherNerf;
+            GetMoreStatCoefficients += JumpCounts;
+            IL.EntityStates.GenericCharacterMain.ProcessJump += DoubleJumpStrengthNerf;
 
             FeatherRework();
             StompersRework();
             MiredUrnRework();
         }
 
+        private void JumpCounts(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            args.featherJumpCountBase = featherJumpCount;
+            args.featherJumpCountStack = 0;
+            Inventory inv = sender.inventory;
+            if (inv)
+            {
+                if (inv.GetItemCount(RoR2Content.Items.SiphonOnLowHealth) > 0)
+                {
+                    args.jumpCountAdd += urnJumpCount;
+                }
+                if (inv.GetItemCount(RoR2Content.Items.FallBoots) > 0)
+                {
+                    args.jumpCountAdd += fallBootsJumpCount;
+                }
+            }
+        }
+
         public static float doubleJumpVerticalBonus = 1.0f; //1.5f
         public static float doubleJumpHorizontalBonus = 1.1f; //1.3f; //1.5f
-        private void FeatherNerf(ILContext il)
+        private void DoubleJumpStrengthNerf(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
@@ -130,77 +117,6 @@ namespace JumpRework
                 );
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, doubleJumpVerticalBonus);
-        }
-
-        private void JumpReworkJumpCount(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int featherCountLoc = 0;
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather")
-                );
-            c.GotoNext(MoveType.After,
-                x => x.MatchStloc(out featherCountLoc)
-                );
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.baseJumpCount)),
-                x => x.MatchLdloc(featherCountLoc)
-                );
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<int, CharacterBody, int>>((featherCount, self) =>
-            {
-                int jumpCount = 0;
-                Inventory inv = self.inventory;
-                if (inv != null)
-                {
-                    if (featherCount > 0)
-                    {
-                        jumpCount += featherJumpCount;
-                    }
-                    if (inv.GetItemCount(RoR2Content.Items.SiphonOnLowHealth) > 0)
-                    {
-                        jumpCount += urnJumpCount;
-                    }
-                    if (inv.GetItemCount(RoR2Content.Items.FallBoots) > 0)
-                    {
-                        jumpCount += fallBootsJumpCount;
-                    }
-                    jumpCount += JumpStatHook.InvokeStatHook(self);
-                }
-
-                return jumpCount;
-            });
-        }
-
-        private void DoJumpEvent(On.EntityStates.GenericCharacterMain.orig_ApplyJumpVelocity orig,
-            CharacterMotor characterMotor, CharacterBody characterBody, float horizontalBonus, float verticalBonus, bool vault)
-        {
-            //OnJumpEvent?.Invoke(characterMotor, ref verticalBonus);
-            JumpStatHook.InvokeJumpHook(characterMotor, ref verticalBonus);
-            orig(characterMotor, characterBody, horizontalBonus, verticalBonus, vault);
-        }
-    }
-
-    public class JumpStatHook
-    {
-        public delegate void JumpStatHandler(CharacterBody sender, ref int jumpCount);
-        public static event JumpStatHandler JumpStatCoefficient;
-
-        public static int InvokeStatHook(CharacterBody self)
-        {
-            int jumpCount = 0;
-            JumpStatCoefficient?.Invoke(self, ref jumpCount);
-            return jumpCount;
-        }
-
-        public delegate void OnJumpHandler(CharacterMotor sender, ref float verticalBonus);
-        public static event OnJumpHandler OnJumpEvent;
-        public static float InvokeJumpHook(CharacterMotor self, ref float verticalBonus)
-        {
-            OnJumpEvent?.Invoke(self, ref verticalBonus);
-            return verticalBonus;
         }
     }
 }

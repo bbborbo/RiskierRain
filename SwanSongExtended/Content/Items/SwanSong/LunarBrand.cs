@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static SwanSongExtended.BurnStatHook;
+using static MoreStats.StatHooks;
 using static SwanSongExtended.Tools;
 using SwanSongExtended.Modules;
 using UnityEngine.AddressableAssets;
@@ -68,9 +68,17 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            BurnStatCoefficient += AddBurnChance;
+            GetMoreStatCoefficients += AddBurnChance;
             On.RoR2.GlobalEventManager.ProcessHitEnemy += BrandOnHit;
             On.RoR2.CharacterBody.RecalculateStats += CauterizeBuffBehavior;
+        }
+
+        private void AddBurnChance(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.burnChanceOnHit += SwanSongPlugin.brandBurnChance;
+            }
         }
 
         private void CauterizeBuffBehavior(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -141,14 +149,6 @@ namespace SwanSongExtended.Items
             DotController bleedDot = DotController.FindDotController(victim.gameObject);
             Tools.ClearDotStacksForType(bleedDot, DotController.DotIndex.Bleed);
             victim.AddTimedBuffAuthority(CauterizeBuff.buffIndex, duration + durationStack); //apply buff
-        }
-
-        private void AddBurnChance(CharacterBody sender, BurnEventArgs args)
-        {
-            if (GetCount(sender) > 0)
-            {
-                args.burnChance += SwanSongPlugin.brandBurnChance;
-            }
         }
     }
 }

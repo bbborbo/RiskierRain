@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static SwanSongExtended.Modules.Language.Styling;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;

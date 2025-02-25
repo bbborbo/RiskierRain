@@ -5,7 +5,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
 using static SwanSongExtended.Modules.Language;
 
 namespace SwanSongExtended

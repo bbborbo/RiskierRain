@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BepInEx.Configuration;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
 using R2API;
 using SwanSongExtended.Items;
 using RoR2;

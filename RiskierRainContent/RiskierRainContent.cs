@@ -156,7 +156,7 @@ namespace RiskierRainContent
             //happiest mask
             if (GetConfigBool(true, "Core: Happiest Mask"))
             {
-                HappiestMaskRework();
+                // HappiestMaskRework();
             }
             //happiest mask
             if (GetConfigBool(true, "Core: Hunters Harpoon"))

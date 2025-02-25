@@ -13,7 +13,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.BurnStatHook;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended
 {
@@ -29,15 +29,13 @@ namespace SwanSongExtended
         public static int brandBurnChance = 30;
         void BurnReworks()
         {
-            On.RoR2.GlobalEventManager.ProcessHitEnemy += BurnChanceHook;
-
             IgnitionTankRework();
         }
 
         #region ignition tank
         private void IgnitionTankRework()
         {
-            BurnStatCoefficient += IgnitionTankBurnChance;
+            GetMoreStatCoefficients += IgniTankBurnChance;
             On.RoR2.StrengthenBurnUtils.CheckDotForUpgrade += OverrideIgnitionBurn;
             LanguageAPI.Add("ITEM_STRENGTHENBURN_PICKUP", "Your ignite effects deal triple damage.");
             LanguageAPI.Add("ITEM_STRENGTHENBURN_DESC", 
@@ -46,6 +44,15 @@ namespace SwanSongExtended
                 $"<style=cStack>(+{Tools.ConvertDecimal(ignitionBurnDamage)} per stack)</style> more damage and last " +
                 $"<style=cIsUtility>+{Tools.ConvertDecimal(ignitionBurnDuration)}</style> " +
                 $"<style=cStack>(+{Tools.ConvertDecimal(ignitionBurnDuration)} per stack)</style> longer.");
+        }
+
+        private void IgniTankBurnChance(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            Inventory inv = sender.inventory;
+            if (inv && inv.GetItemCount(DLC1Content.Items.StrengthenBurn) > 0)
+            {
+                args.burnChanceOnHit += ignitionTankBurnChance;
+            }
         }
 
         private void OverrideIgnitionBurn(On.RoR2.StrengthenBurnUtils.orig_CheckDotForUpgrade orig, Inventory inventory, ref InflictDotInfo dotInfo)
@@ -72,102 +79,11 @@ namespace SwanSongExtended
                 }
             }
         }
-
-        private void IgnitionTankBurnChance(CharacterBody sender, BurnEventArgs args)
-        {
-            Inventory inv = sender.inventory;
-            if (inv && inv.GetItemCount(DLC1Content.Items.StrengthenBurn) > 0)
-            {
-                args.burnChance += ignitionTankBurnChance;
-            }
-        }
         #endregion
-        private void BurnChanceHook(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
-        {
-            if (damageInfo.attacker && damageInfo.procCoefficient > 0f)
-            {
-                CharacterBody victimBody = victim ? victim.GetComponent<CharacterBody>() : null;
-
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                Inventory inventory = attackerBody?.inventory;
-
-                if (attackerBody && victimBody && inventory)
-                {
-                    BurnStatHook.InvokeStatHook(attackerBody);
-
-                    uint? maxStacksFromAttacker = null;
-                    if ((damageInfo != null) ? damageInfo.inflictor : null)
-                    {
-                        ProjectileDamage component = damageInfo.inflictor.GetComponent<ProjectileDamage>();
-                        if (component && component.useDotMaxStacksFromAttacker)
-                        {
-                            maxStacksFromAttacker = new uint?(component.dotMaxStacksFromAttacker);
-                        }
-                    }
-
-                    int burnProcChance = BurnStatHook.GetBurnChance().burnChance;
-                    if (burnProcChance > 0)
-                    {
-                        //Debug.Log("Burn proc chance: " + burnProcChance);
-                        if (Util.CheckRoll(burnProcChance, attackerBody.master))
-                        {
-                            InflictDotInfo inflictDotInfo = new InflictDotInfo
-                            {
-                                attackerObject = damageInfo.attacker,
-                                victimObject = victim,
-                                totalDamage = new float?(damageInfo.damage * 0.5f),
-                                damageMultiplier = 1f,
-                                dotIndex = DotController.DotIndex.Burn,
-                                maxStacksFromAttacker = maxStacksFromAttacker
-                            };
-                            StrengthenBurnUtils.CheckDotForUpgrade(inventory, ref inflictDotInfo);
-                            DotController.InflictDot(ref inflictDotInfo);
-                        }
-                    }
-                }
-            }
-            orig(self, damageInfo, victim);
-        }
-
+        
         public static int GetBurnCount(CharacterBody victimBody)
         {
             return victimBody.GetBuffCount(RoR2Content.Buffs.OnFire) + victimBody.GetBuffCount(DLC1Content.Buffs.StrongerBurn);
-        }
-    }
-
-    public class BurnStatHook
-    {
-        public class BurnEventArgs : EventArgs
-        {
-            public int burnChance = 0;
-        }
-        private static BurnEventArgs BurnMods;
-
-        public delegate void StatHookEventHandler(CharacterBody sender, BurnEventArgs args);
-        public static event StatHookEventHandler BurnStatCoefficient;
-
-        public static BurnEventArgs GetBurnChance()
-        {
-            return BurnMods;
-        }
-
-        public static void InvokeStatHook(CharacterBody self)
-        {
-            BurnMods = new BurnEventArgs();
-            if(BurnStatCoefficient != null)
-            {
-                foreach (StatHookEventHandler @event in BurnStatCoefficient.GetInvocationList())
-                {
-                    try
-                    {
-                        @event(self, BurnMods);
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
         }
     }
 }

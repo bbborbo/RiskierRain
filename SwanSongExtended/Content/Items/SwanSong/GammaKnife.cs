@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static RainrotSharedUtils.StatHooks;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
+using static MoreStats.StatHooks;
 using static SwanSongExtended.Modules.Language.Styling;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
@@ -68,7 +68,15 @@ namespace SwanSongExtended.Items
             On.RoR2.GlobalEventManager.OnCharacterDeath += GammaKnifeOnKill;
             On.RoR2.CharacterBody.RecalculateStats += GammaKnifeCdr;
             GetStatCoefficients += GammaKnifeStatBoosts;
-            ModifyLuckStat += GammaKnifeLuck;
+            GetMoreStatCoefficients += GammaKnifeLuck;
+        }
+
+        private void GammaKnifeLuck(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.HasBuff(gammaKnifeTemporaryBuff))
+            {
+                args.luckAdd += GetCount(sender);
+            }
         }
 
         private void GammaKnifeCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
@@ -92,15 +100,6 @@ namespace SwanSongExtended.Items
                         Tools.ApplyCooldownScale(skillLocator.special, cdrBoost);
                     }
                 }
-            }
-        }
-
-        private void GammaKnifeLuck(CharacterBody sender, ref float luck)
-        {
-            bool hasBuff = sender.HasBuff(gammaKnifeTemporaryBuff);
-            if (hasBuff)
-            {
-                luck += GetCount(sender);
             }
         }
 

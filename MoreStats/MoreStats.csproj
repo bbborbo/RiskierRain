@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -29,21 +29,6 @@
     <Reference Include="Decalicious">
       <HintPath>libs\Decalicious.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BorboStatUtils\RainrotSharedUtils.csproj" />
-    <ProjectReference Include="..\ChillRework\ChillRework.csproj" />
-    <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
-    <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
-    <ProjectReference Include="..\JumpRework\JumpRework.csproj" />
-    <ProjectReference Include="..\BarrierRework\BarrierRework.csproj" />
-    <ProjectReference Include="..\BossDropRework\BossDropRework.csproj" />
-    <ProjectReference Include="..\MoreStats\MoreStats.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Content\Items\Vanilla\SOTS\" />
   </ItemGroup>
 
 </Project>

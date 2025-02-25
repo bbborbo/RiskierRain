@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.ShieldDelayHooks;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items
 {
@@ -95,17 +95,17 @@ You know?";
 
         public override void Hooks()
         {
-            GetShieldRechargeStat += BatteryRecharge;
+            GetMoreStatCoefficients += BatteryRecharge;
             GetStatCoefficients += BatteryAspd;
             //On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
             //IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
         }
 
-        private void BatteryRecharge(CharacterBody sender, ShieldRechargeHookEventArgs args)
+        private void BatteryRecharge(CharacterBody sender, MoreStatHookEventArgs args)
         {
             if (GetCount(sender) > 0)
             {
-                args.reductionInSeconds += rechargeRateIncrease;
+                args.shieldDelayIncreaseInSeconds -= rechargeRateIncrease;
             }
         }
 
@@ -125,46 +125,6 @@ You know?";
                     }
                 }
             }
-        }
-
-        private void BatteryRechargeIncrease(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdfld<RoR2.HealthComponent>(nameof(HealthComponent.body)),
-                x => x.MatchCallOrCallvirt<RoR2.CharacterBody>("get_maxShield"),
-                x => x.MatchLdcR4(out _)
-                );
-
-            c.Emit(OpCodes.Ldarg, 0);
-            c.EmitDelegate<Func<float, HealthComponent, float>>((baseFraction, healthComponent) =>
-            {
-                float endFraction = baseFraction; // baseFraction is the portion of MAX SHIELDS that gets healed per second
-                Inventory inv = healthComponent.body.inventory;
-
-                if(inv != null)
-                {
-                    endFraction = endFraction;
-                }
-
-                return endFraction;
-            });
-        }
-
-        private void BatteryDelayReduction(On.RoR2.CharacterBody.orig_FixedUpdate orig, CharacterBody self)
-        {
-            float outOfDangerStopwatch = self.outOfDangerStopwatch;
-
-            int batteryCount = GetCount(self);
-            if (batteryCount > 0)
-            {
-                //float rateIncreaseTotal = Mathf.Min(6f, rechargeRateIncrease * batteryCount);
-                float rateIncreaseTotal = 1 - (7 - rechargeRateIncrease) / 7;
-                self.outOfDangerStopwatch = outOfDangerStopwatch + rateIncreaseTotal * Time.fixedDeltaTime;
-            }
-
-            orig(self);
         }
     }
 }

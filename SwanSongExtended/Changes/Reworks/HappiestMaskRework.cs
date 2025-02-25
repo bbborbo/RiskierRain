@@ -14,7 +14,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
-using static RainrotSharedUtils.StatHooks;
+using static MoreStats.StatHooks;
 using SwanSongExtended.Modules;
 
 namespace SwanSongExtended
@@ -27,7 +27,7 @@ namespace SwanSongExtended
 
         public void HappiestMaskRework()
         {
-            GetExecutionThreshold += MaskExecution;
+            GetMoreStatCoefficients += MaskExecution;
             RoR2.GlobalEventManager.onServerCharacterExecuted += HappiestMaskGhostSpawn;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHappiestMaskRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddMaskBehavior;
@@ -58,10 +58,10 @@ namespace SwanSongExtended
                 "\r\n\r\nThe man cursed under his breath as he loaded his shotgun. \u201CThis planet, I tell you...\u201D");
         }
 
-        private void MaskExecution(CharacterBody sender, ref float executeThreshold)
+        private void MaskExecution(CharacterBody sender, MoreStatHookEventArgs args)
         {
             bool hasHauntBuff = sender.HasBuff(CommonAssets.hauntDebuff);
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, hauntExecutionThreshold, hasHauntBuff);
+            args.ModifyBaseExecutionThreshold(hauntExecutionThreshold, hasHauntBuff);
         }
 
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)

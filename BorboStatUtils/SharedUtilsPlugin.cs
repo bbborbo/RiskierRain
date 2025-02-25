@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace RainrotSharedUtils
 {
+    [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInPlugin(guid, modName, version)]

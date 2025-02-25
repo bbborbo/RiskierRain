@@ -8,8 +8,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static SwanSongExtended.BurnStatHook;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.StatHooks;
+using static MoreStats.OnHit;
 
 namespace SwanSongExtended.Items
 {
@@ -61,8 +61,16 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            BurnStatCoefficient += AddBurnChance;
+            GetMoreStatCoefficients += AddBurnChance;
             GetHitBehavior += MeatOnHit;
+        }
+
+        private void AddBurnChance(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.burnChanceOnHit += SwanSongPlugin.stacheBurnChance;
+            }
         }
         private void CreateMeatChunk()
         {
@@ -113,14 +121,6 @@ namespace SwanSongExtended.Items
                         NetworkServer.Spawn(meatInstance);
                     }
                 }
-            }
-        }
-
-        private void AddBurnChance(CharacterBody sender, BurnEventArgs args)
-        {
-            if(GetCount(sender) > 0)
-            {
-                args.burnChance += SwanSongPlugin.stacheBurnChance;
             }
         }
     }

@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static JumpRework.JumpStatHook;
 using EntityStates.Bandit2;
 using UnityEngine.Networking;
 using RoR2.ExpansionManagement;
 using JumpRework;
+using static MoreStats.StatHooks;
+using static MoreStats.OnJump;
 
 namespace SwanSongExtended.Items
 {
@@ -51,8 +52,16 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            JumpStatCoefficient += CloudJump;
+            GetMoreStatCoefficients += CloudJumpStat;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+        }
+
+        private void CloudJumpStat(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.jumpCountAdd += 1;
+            }
         }
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -64,14 +73,6 @@ namespace SwanSongExtended.Items
                 {
                     CloudBottleBehavior ringBehavior = self.AddItemBehavior<CloudBottleBehavior>(GetCount(self));
                 }
-            }
-        }
-
-        private void CloudJump(CharacterBody sender, ref int jumpCount)
-        {
-            if (GetCount(sender) > 0)
-            {
-                jumpCount += 1;
             }
         }
 
@@ -137,7 +138,7 @@ namespace SwanSongExtended.Items
             int maxJumpCount = body.maxJumpCount;
             int baseJumpCount = body.baseJumpCount;
 
-            if (JumpReworkPlugin.IsBaseJump(motor, body))
+            if (IsBaseJump(motor, body))
                 return;
 
 
@@ -168,7 +169,7 @@ namespace SwanSongExtended.Items
                 BottleCloud.CreateNinjaSmokeBomb(motor.body);
                 verticalBonus += BottleCloud.verticalBonusOnCloudJump;
             }
-            else if (JumpReworkPlugin.IsLastJump(motor, body))
+            else if (IsLastJump(motor, body))
             {
                 EffectManager.SpawnEffect(StealthMode.smokeBombEffectPrefab, new EffectData
                 {

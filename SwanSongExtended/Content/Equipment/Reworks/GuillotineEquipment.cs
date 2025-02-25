@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using static RainrotSharedUtils.StatHooks;
+using static MoreStats.StatHooks;
 using System.Linq;
 using System.Collections;
 using UnityEngine.AddressableAssets;
@@ -97,17 +97,14 @@ namespace SwanSongExtended.Equipment
         }
 
         #region stats
-        private void GuillotineLuckBuff(CharacterBody sender, ref float luck)
-        {
-            luck += sender.GetBuffCount(luckBuff);
-        }
 
-        private void GuillotineExecutionThreshold(CharacterBody sender, ref float executeThreshold)
+        private void GuillotineStats(CharacterBody sender, MoreStatHookEventArgs args)
         {
             int executionBuffCount = sender.GetBuffCount(executionDebuff);
-
             float threshold = newExecutionThresholdBase + newExecutionThresholdStack * executionBuffCount;
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, threshold, executionBuffCount > 0);
+            args.ModifyBaseExecutionThreshold(threshold, executionBuffCount > 0);
+
+            args.luckAdd += sender.GetBuffCount(luckBuff);
         }
 
         private void GuillotineExecuteBehavior(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
@@ -195,8 +192,8 @@ namespace SwanSongExtended.Equipment
             On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
             On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
-            GetExecutionThreshold += GuillotineExecutionThreshold;
-            ModifyLuckStat += GuillotineLuckBuff;
+
+            GetMoreStatCoefficients += GuillotineStats;
         }
 
         private void GuillotineTargetingOld(ILContext il)

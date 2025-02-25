@@ -11,6 +11,7 @@ using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using static BarrierRework.BarrierReworkPlugin;
 using BarrierRework;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items
 {
@@ -64,14 +65,14 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
-            GetBarrierStats += CobaltBarrierGen;
+            GetMoreStatCoefficients += CobaltBarrierGen;
             GetStatCoefficients += CobaltArmorBuff;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
             On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
         }
 
-        private void CobaltBarrierGen(CharacterBody body, BarrierStats barrierStats)
+        private void CobaltBarrierGen(CharacterBody body, MoreStatHookEventArgs args)
         {
             int itemCount = GetCount(body);
             if (itemCount > 0)
@@ -82,7 +83,7 @@ namespace SwanSongExtended.Items
                     barrierGen *= stationaryStatMultiplier;
                 }
 
-                barrierStats.barrierGenPerSecondFlat += barrierGen;
+                args.barrierGenPerSecondFlat += barrierGen;
             }
         }
 

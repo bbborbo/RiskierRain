@@ -11,6 +11,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
+using static MoreStats.OnJump;
 
 namespace JumpRework
 {
@@ -24,8 +25,8 @@ namespace JumpRework
         public float urnBallChance = 0.3f;
         private void MiredUrnRework()
         {
-
-            JumpStatHook.OnJumpEvent += UrnOnJump;
+            OnJumpEvent += UrnOnJump;
+            //JumpStatHook.OnJumpEvent += UrnOnJump;
             On.RoR2.Items.SiphonOnLowHealthItemBodyBehavior.OnEnable += VoidVanillaUrnBehavior;
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_PICKUP", "Triple jump. Jumping fires tar balls in front of you.");
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_DESC",

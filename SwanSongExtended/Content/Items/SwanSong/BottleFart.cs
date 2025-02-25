@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static JumpRework.JumpStatHook;
 using On.RoR2.Items;
 using HarmonyLib;
 using EntityStates.Bandit2;
@@ -14,6 +13,8 @@ using RoR2.Projectile;
 using UnityEngine.Networking;
 using RoR2.ExpansionManagement;
 using JumpRework;
+using static MoreStats.StatHooks;
+using static MoreStats.OnJump;
 
 namespace SwanSongExtended.Items
 {
@@ -65,9 +66,17 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
-            JumpStatCoefficient += FartJump;
+            GetMoreStatCoefficients += FartJumpCount;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+        }
+
+        private void FartJumpCount(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+            {
+                args.jumpCountAdd += 1;
+            }
         }
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -91,14 +100,6 @@ namespace SwanSongExtended.Items
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
             orig();
-        }
-
-        private void FartJump(CharacterBody sender, ref int jumpCount)
-        {
-            if (GetCount(sender) > 0)
-            {
-                jumpCount += 1;
-            }
         }
         
         private void CreateProjectile()
@@ -167,7 +168,7 @@ namespace SwanSongExtended.Items
             if (body && body.inventory?.GetItemCount(BottleFart.instance.ItemsDef) <= 0)
                 return;
 
-            if (!JumpReworkPlugin.IsDoubleJump(motor, body))
+            if (!IsDoubleJump(motor, body))
                 return;
 
 

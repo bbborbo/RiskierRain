@@ -12,7 +12,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.StatHooks;
-using static RainrotSharedUtils.StatHooks;
+using static MoreStats.StatHooks;
+using static MoreStats.OnHit;
 using UnityEngine.AddressableAssets;
 using RainrotSharedUtils;
 
@@ -176,7 +177,6 @@ namespace RiskierRain.SurvivorTweaks
 
         private void BanditTweaksTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
-            bool isAlreadyDead = (self.health <= 0 || !self.alive);
             CharacterBody attackerBody = null;
             if(damageInfo.attacker)
                 attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
@@ -190,21 +190,9 @@ namespace RiskierRain.SurvivorTweaks
                 damageInfo.damageType |= DamageType.NonLethal;
             }
 
-            if(!isAlreadyDead)
-            {
-                if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
-                {
-                    self.body.AddTimedBuffAuthority(lightsoutExecutionDebuff.buffIndex, 0.5f);
-                }
-                if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
-                {
-                    self.body.AddTimedBuffAuthority(desperadoExecutionDebuff.buffIndex, 0.5f);
-                }
-            }
-
             orig(self, damageInfo);
 
-            if((self.health <= 0 || !self.alive) && attackerBody != null && !isAlreadyDead)
+            if (NetworkServer.active && (self.health <= 0 || !self.alive) && attackerBody != null && attackerBody.bodyIndex == BodyCatalog.FindBodyIndexCaseInsensitive("Bandit2Body"))
             {
                 if (self.body.HasBuff(lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
                 {
@@ -324,13 +312,13 @@ namespace RiskierRain.SurvivorTweaks
         public static BuffDef lightsoutExecutionDebuff;
         void ChangeVanillaSpecials(SkillFamily family)
         {
-            GetExecutionThreshold += BanditFinisher;
-            AddBanditExecutionDebuff();
+            GetHitBehavior += BanditExecutionOnHit;
+            GetMoreStatCoefficients += BanditFinisher;
 
             //lights out
             On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.ModifyBullet += ModifyLightsOutDamage;
             family.variants[0].skillDef.baseRechargeInterval = lightsOutCooldown;
-            special.variants[0].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", CoreModules.Assets.executeKeywordToken };
+            special.variants[0].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", SharedUtilsPlugin.executeKeywordToken };
             LanguageAPI.Add("BANDIT2_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Slayer</style>. <style=cIsHealth>Finisher</style>. " +
                 $"Fire a revolver shot for <style=cIsDamage>{Tools.ConvertDecimal(lightsOutDamage)} damage</style>. " +
                 $"Kills <style=cIsUtility>reset all your cooldowns</style>.");
@@ -338,54 +326,45 @@ namespace RiskierRain.SurvivorTweaks
             //desperado
             On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.ModifyBullet += ModifyDesperadoDamage;
             family.variants[1].skillDef.baseRechargeInterval = desperadoCooldown;
-            special.variants[1].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", CoreModules.Assets.executeKeywordToken };
+            special.variants[1].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", SharedUtilsPlugin.executeKeywordToken };
             LanguageAPI.Add("BANDIT2_SPECIAL_ALT_DESCRIPTION", $"<style=cIsDamage>Slayer</style>. <style=cIsHealth>Finisher</style>. " +
                 $"Fire a revolver shot for <style=cIsDamage>{Tools.ConvertDecimal(desperadoDamage)} damage</style>. " +
                 $"Kills grant <style=cIsDamage>stacking tokens</style> for <style=cIsDamage>10%</style> more Desperado damage.");
         }
 
-        private void AddBanditExecutionDebuff()
+        private void BanditExecutionOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
-            desperadoExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            if (NetworkServer.active)
             {
-                desperadoExecutionDebuff.buffColor = Color.black;
-                desperadoExecutionDebuff.canStack = false;
-                desperadoExecutionDebuff.isDebuff = true;
-                desperadoExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-                desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
-                desperadoExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill) || (damageInfo.damageType & DamageType.ResetCooldownsOnKill) != 0UL)
+                {
+                    victimBody.AddTimedBuff(lightsoutExecutionDebuff, 0.6f);
+                }
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill) || (damageInfo.damageType & DamageType.GiveSkullOnKill) != 0UL)
+                {
+                    victimBody.AddTimedBuff(desperadoExecutionDebuff, 0.6f);
+                }
             }
-            CoreModules.Assets.buffDefs.Add(desperadoExecutionDebuff);
-            lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
-            {
-                lightsoutExecutionDebuff.buffColor = Color.black;
-                lightsoutExecutionDebuff.canStack = false;
-                lightsoutExecutionDebuff.isDebuff = true;
-                lightsoutExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-                lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
-                lightsoutExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
-            }
-            CoreModules.Assets.buffDefs.Add(lightsoutExecutionDebuff);
         }
 
-        private void BanditFinisher(CharacterBody sender, ref float executeThreshold)
+        private void BanditFinisher(CharacterBody sender, MoreStatHookEventArgs args)
         {
             bool hasBanditExecutionBuff = sender.HasBuff(desperadoExecutionDebuff) || sender.HasBuff(lightsoutExecutionDebuff);
-            executeThreshold = ModifyExecutionThreshold(executeThreshold, SharedUtilsPlugin.survivorExecuteThreshold, hasBanditExecutionBuff);
+            args.ModifyBaseExecutionThreshold(SharedUtilsPlugin.survivorExecuteThreshold, hasBanditExecutionBuff);
         }
 
         private void ModifyLightsOutDamage(On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmResetRevolver self, BulletAttack bulletAttack)
         {
             orig(self, bulletAttack);
             bulletAttack.damage = lightsOutDamage * self.damageStat;
-            bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
+            //bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
         }
 
         private void ModifyDesperadoDamage(On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver self, BulletAttack bulletAttack)
         {
             orig(self, bulletAttack);
             bulletAttack.damage = desperadoDamage * self.damageStat;
-            bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
+            //bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
 
             int num = 0;
             if (self.characterBody)

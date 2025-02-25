@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using static MoreStats.OnJump;
 
 namespace JumpRework
 {
@@ -20,7 +21,7 @@ namespace JumpRework
         float featherStackDuration = 0.5f;
         private void FeatherRework()
         {
-            JumpStatHook.OnJumpEvent += FeatherOnJump;
+            OnJumpEvent += FeatherOnJump;
             //On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
             //GetStatCoefficients += FeatherDamageBoost;
             LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Double jump. Jumping gives you a boost of movement speed.");

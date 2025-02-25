@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static RainrotSharedUtils.StatHooks;
+using static MoreStats.StatHooks;
 using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items
@@ -24,8 +24,8 @@ namespace SwanSongExtended.Items
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
 
-        public static float luckBase = 1;
-        public static float luckStack = 1; //maybe 1?
+        public static int luckBase = 1;
+        public static int luckStack = 1; //maybe 1?
 
         public static float healthRegenBase = -2;
         public static float healthRegenStack = -2;
@@ -84,14 +84,14 @@ namespace SwanSongExtended.Items
             On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
 
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
-            ModifyLuckStat += ElegyLuck;
+            GetMoreStatCoefficients += ElegyLuck;
         }
 
-        private void ElegyLuck(CharacterBody sender, ref float luck)
+        private void ElegyLuck(CharacterBody sender, MoreStatHookEventArgs args)
         {
             if (sender.GetBuffCount(lunarLuckBuff.buffIndex) >= 7)
             {
-                luck += luckBase + (luckStack * GetCount(sender));
+                args.luckAdd += luckBase + luckStack * (GetCount(sender) - 1);
             }
         }
 

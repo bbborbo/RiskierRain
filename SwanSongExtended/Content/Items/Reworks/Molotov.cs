@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static SwanSongExtended.Modules.HitHooks;
+using static MoreStats.OnHit;
 
 namespace SwanSongExtended.Items
 {

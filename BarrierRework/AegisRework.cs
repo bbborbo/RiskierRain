@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using R2API;
+using static MoreStats.StatHooks;
 
 namespace BarrierRework
 {
@@ -59,13 +60,13 @@ namespace BarrierRework
             MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
             MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase; 
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            GetBarrierStats += AegisDecayFreeze;
+            GetMoreStatCoefficients += AegisDecayFreeze;
         }
 
-        private void AegisDecayFreeze(CharacterBody body, BarrierStats barrierStats)
+        private void AegisDecayFreeze(CharacterBody body, MoreStatHookEventArgs args)
         {
             if(body.HasBuff(aegisDecayBuff))
-                barrierStats.barrierFreezeCount += 1;
+                args.barrierFreezeCount += 1;
         }
 
         private void OnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)

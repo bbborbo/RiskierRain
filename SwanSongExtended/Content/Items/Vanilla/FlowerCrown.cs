@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.ShieldDelayHooks;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items
 {
@@ -63,17 +63,17 @@ Thank you for always sending us gifts. I made some of them into this flower crow
 
         public override void Hooks()
         {
-            GetShieldRechargeStat += FlowerCrownRecharge;
+            GetMoreStatCoefficients += FlowerCrownRecharge;
             GetStatCoefficients += FlowerCrownStats;
             //On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
             //IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
         }
 
-        private void FlowerCrownRecharge(CharacterBody sender, ShieldRechargeHookEventArgs args)
+        private void FlowerCrownRecharge(CharacterBody sender, MoreStatHookEventArgs args)
         {
             if (GetCount(sender) > 0)
             {
-                args.reductionInSeconds += rechargeRateIncrease;
+                args.shieldDelayIncreaseInSeconds -= rechargeRateIncrease;
             }
         }
 

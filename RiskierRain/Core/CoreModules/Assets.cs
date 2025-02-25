@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static RiskierRain.CoreModules.StatHooks;
 using System.Linq;
+using RiskierRain.SurvivorTweaks;
 
 namespace RiskierRain.CoreModules
 {
@@ -121,13 +122,13 @@ namespace RiskierRain.CoreModules
         public static List<GameObject> masterPrefabs = new List<GameObject>();
         public static List<GameObject> bodyPrefabs = new List<GameObject>();
 
-        public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
         public static string shredKeywordToken = "DUCK_SHRED_KEYWORD";
 
         public override void Init()
         {
             CreateVoidtouchedSingularity();
 
+            AddBanditExecutionBuffs();
             AddCaptainCooldownBuff();
             AddShatterspleenSpikeBuff();
             AddRazorwireCooldown();
@@ -141,6 +142,30 @@ namespace RiskierRain.CoreModules
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
             On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
             On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
+        }
+
+        private void AddBanditExecutionBuffs()
+        {
+            BanditTweaks.desperadoExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                BanditTweaks.desperadoExecutionDebuff.buffColor = Color.black;
+                BanditTweaks.desperadoExecutionDebuff.canStack = false;
+                BanditTweaks.desperadoExecutionDebuff.isDebuff = true;
+                BanditTweaks.desperadoExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+                BanditTweaks.desperadoExecutionDebuff.name = "DesperadoExecutionDebuff";
+                BanditTweaks.desperadoExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
+            }
+            CoreModules.Assets.buffDefs.Add(BanditTweaks.desperadoExecutionDebuff);
+            BanditTweaks.lightsoutExecutionDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                BanditTweaks.lightsoutExecutionDebuff.buffColor = Color.black;
+                BanditTweaks.lightsoutExecutionDebuff.canStack = false;
+                BanditTweaks.lightsoutExecutionDebuff.isDebuff = true;
+                BanditTweaks.lightsoutExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+                BanditTweaks.lightsoutExecutionDebuff.name = "LightsOutExecutionDebuff";
+                BanditTweaks.lightsoutExecutionDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion();
+            }
+            CoreModules.Assets.buffDefs.Add(BanditTweaks.lightsoutExecutionDebuff);
         }
 
         private void OnAddSpreadBloom(On.RoR2.CharacterBody.orig_AddSpreadBloom orig, CharacterBody self, float value)

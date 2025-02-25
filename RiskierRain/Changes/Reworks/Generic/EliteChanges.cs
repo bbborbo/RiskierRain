@@ -286,7 +286,7 @@ namespace RiskierRain
                 break;
             }
             self.isTetheredToAtLeastOneObject = ((float)list2.Count > 0f);
-            if (self.tetherVfxOrigin)
+            if (self.tetherVfxOrigin && self.isTetheredToAtLeastOneObject)
             {
                 self.tetherVfxOrigin.SetTetheredTransforms(list2);
             }

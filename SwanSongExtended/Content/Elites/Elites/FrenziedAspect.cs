@@ -67,6 +67,60 @@ namespace SwanSongExtended.Elites
         {
             GetStatCoefficients += FrenziedStatBuff;
             On.RoR2.CharacterBody.RecalculateStats += FrenziedCooldownBuff;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += FrenziedTransferDeath;
+        }
+
+        public static float frenziedTransferDuration = 5f;
+        public static float overloadingSmiteCountBase = 1;
+        public static float overloadingSmiteCountPerRadius = 1f;
+        public static float overloadingSmiteRangeBase = 12f;
+        public static float overloadingSmiteRangePerRadius = 8f;
+        private void FrenziedTransferDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            CharacterBody victimBody = damageReport.victimBody;
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if (victimBody != null && attackerBody != null)
+            {
+                if (victimBody.HasBuff(EliteBuffDef))
+                {
+                    int maxTransferCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.radius * overloadingSmiteCountPerRadius);
+                    float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
+                    //procChainMask6.AddProc(ProcType.LightningStrikeOnHit);
+
+                    SphereSearch sphereSearch = new SphereSearch
+                    {
+                        mask = LayerIndex.entityPrecise.mask,
+                        origin = victimBody.transform.position,
+                        queryTriggerInteraction = QueryTriggerInteraction.Collide,
+                        radius = range
+                    };
+
+                    TeamMask teamMask = TeamMask.GetEnemyTeams(attackerBody.teamComponent.teamIndex);
+                    List<HurtBox> hurtBoxesList = new List<HurtBox>();
+
+                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().OrderCandidatesByDistance().GetHurtBoxes(hurtBoxesList);
+
+                    int hurtBoxCount = hurtBoxesList.Count;
+
+                    for(int i = 0; i < maxTransferCount; i++)
+                    {
+                        if (i >= hurtBoxCount)
+                            break;
+
+                        HurtBox targetHurtBox = hurtBoxesList[i];
+                        if(targetHurtBox == null)
+                            continue;
+
+                        HealthComponent healthComponent = targetHurtBox.healthComponent;
+                        CharacterBody enemyBody = healthComponent.body;
+                        if (enemyBody == null || enemyBody == victimBody || enemyBody.HasBuff(EliteBuffDef))
+                            continue;
+
+                        enemyBody.AddTimedBuff(EliteBuffDef, frenziedTransferDuration);
+                    }
+                }
+            }
+            orig(self, damageReport);
         }
 
         private void FrenziedCooldownBuff(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

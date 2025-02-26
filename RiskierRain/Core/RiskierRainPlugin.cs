@@ -537,6 +537,12 @@ namespace RiskierRain
                 ChangeDirectorStats();
             }
 
+            //eclipse changes
+            if (GetConfigBool(true, "Difficulty: Post-Charge TP Boss Weaken"))
+            {
+                AddTpBossWeaken();
+            }
+
             //overloading elite
             if (GetConfigBool(true, "Elite: Overloading Elite Rework"))
             {

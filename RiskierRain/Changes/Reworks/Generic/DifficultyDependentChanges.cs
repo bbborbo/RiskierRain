@@ -13,6 +13,7 @@ using BepInEx;
 using R2API;
 using System.Collections.ObjectModel;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 
 namespace RiskierRain
 {
@@ -557,6 +558,50 @@ namespace RiskierRain
                             director.creditMultiplier = teleLesserCreditMultiplier;
                         }
                     }
+                }
+            }
+        }
+        #endregion
+
+        #region tp boss weaken
+        public void AddTpBossWeaken()
+        {
+            On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += WeakenBossPostTpCharge;
+        }
+
+        static bool wasTpCharged = false;
+        private void WeakenBossPostTpCharge(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, BaseState baseState)
+        {
+            orig(baseState);
+            if (NetworkServer.active)
+            {
+                TeleporterInteraction.ChargingState self = baseState as TeleporterInteraction.ChargingState;
+                if(self.teleporterInteraction.holdoutZoneController.charge >= 1f)
+                {
+                    if (!wasTpCharged)
+                    {
+                        wasTpCharged = true;
+                        if (!self.teleporterInteraction.monstersCleared)
+                        {
+                            BossGroup bg = self.teleporterInteraction.bossGroup;
+                            foreach (BossGroup.BossMemory bossMemory in bg.bossMemories)
+                            {
+                                CharacterBody body = bossMemory.cachedBody;
+                                if(body == null && bossMemory.cachedMaster != null)
+                                {
+                                    body = bossMemory.cachedMaster.GetBody();
+                                }
+                                if(body != null)
+                                {
+                                    body.AddTimedBuff(RoR2Content.Buffs.Cripple, 9999);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    wasTpCharged = false;
                 }
             }
         }

@@ -126,11 +126,24 @@ namespace RiskierRain
             bombPie.blastRadius = 9;
             bombPie.lifetime = 1.2f;
 
+            IL.RoR2.CharacterBody.RecalculateStats += OverloadingShieldConversion;
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
             On.RoR2.GlobalEventManager.OnCharacterDeath += OverloadingSmiteDeath;
         }
 
+        private void OverloadingShieldConversion(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth")
+                );
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, overloadingShieldConversionFraction);
+        }
+
+        public static float overloadingShieldConversionFraction = 0.33f;
         public static float overloadingSmiteCountBase = 1;
         public static float overloadingSmiteCountPerRadius = 0.5f;
         public static float overloadingSmiteRangeBase = 12f;

@@ -15,6 +15,12 @@ namespace MoreStats
     /// </summary>
     public static class StatHooks
     {
+        /// <summary>
+        /// For reading processed stats
+        /// Please do not edit these stats directly; use GetMoreStatCoefficients
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
         public static MoreStatCoefficients GetMoreStatsFromBody(CharacterBody body)
         {
             if (body == null)

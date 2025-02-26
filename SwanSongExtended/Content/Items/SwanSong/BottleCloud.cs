@@ -126,13 +126,12 @@ namespace SwanSongExtended.Items
             OnJumpEvent -= CloudBottleJump;
         }
 
-        private void CloudBottleJump(CharacterMotor motor, ref float verticalBonus)
+        private void CloudBottleJump(CharacterMotor motor, CharacterBody body, ref float verticalBonus)
         {
             if (cooldownTimer > 0)
                 return;
 
-            CharacterBody body = motor.body;
-            if (body && body.inventory?.GetItemCount(BottleCloud.instance.ItemsDef) <= 0)
+            if (body.inventory?.GetItemCount(BottleCloud.instance.ItemsDef) <= 0)
                 return;
 
             int maxJumpCount = body.maxJumpCount;

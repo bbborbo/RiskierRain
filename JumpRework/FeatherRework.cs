@@ -31,45 +31,41 @@ namespace JumpRework
                 $"fading over <style=cIsUtility>{featherBaseDuration}</style> <style=cStack>(+{featherStackDuration} per stack)</style> seconds.");
         }
 
-        private void FeatherOnJump(CharacterMotor motor, ref float verticalBonus)
+        private void FeatherOnJump(CharacterMotor motor, CharacterBody body, ref float verticalBonus)
         {
-            CharacterBody body = motor.body;
-            if (body)
+            Inventory inv = body.inventory;
+            if (inv)
             {
-                Inventory inv = body.inventory;
-                if (inv)
+                int count = inv.GetItemCount(RoR2Content.Items.Feather);
+                if (count > 0 && IsDoubleJump(motor, body))
                 {
-                    int count = inv.GetItemCount(RoR2Content.Items.Feather);
-                    if (count > 0 && IsDoubleJump(motor, body))
+                    int increments = 5;
+                    float totalDuration = featherBaseDuration + (float)(count - 1) * featherStackDuration;
+                    body.ClearTimedBuffs(DLC1Content.Buffs.KillMoveSpeed);
+                    for (int l = 0; l < increments; l++)
                     {
-                        int increments = 5;
-                        float totalDuration = featherBaseDuration + (float)(count - 1) * featherStackDuration;
-                        body.ClearTimedBuffs(DLC1Content.Buffs.KillMoveSpeed);
-                        for (int l = 0; l < increments; l++)
-                        {
-                            body.AddTimedBuff(DLC1Content.Buffs.KillMoveSpeed, totalDuration * (float)(l + 1) / (float)increments);
-                        }
-                        EffectData effectData = new EffectData();
-                        effectData.origin = body.corePosition;
-                        CharacterMotor characterMotor = body.characterMotor;
-                        bool flag = false;
-                        if (characterMotor)
-                        {
-                            Vector3 moveDirection = characterMotor.moveDirection;
-                            if (moveDirection != Vector3.zero)
-                            {
-                                effectData.rotation = Util.QuaternionSafeLookRotation(moveDirection);
-                                flag = true;
-                            }
-                        }
-                        if (!flag)
-                        {
-                            effectData.rotation = body.transform.rotation;
-                        }
-                        EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MoveSpeedOnKillActivate"), effectData, true);
+                        body.AddTimedBuff(DLC1Content.Buffs.KillMoveSpeed, totalDuration * (float)(l + 1) / (float)increments);
                     }
-                    //body.AddBuff(Assets.hopooDamageBuff);
+                    EffectData effectData = new EffectData();
+                    effectData.origin = body.corePosition;
+                    CharacterMotor characterMotor = body.characterMotor;
+                    bool flag = false;
+                    if (characterMotor)
+                    {
+                        Vector3 moveDirection = characterMotor.moveDirection;
+                        if (moveDirection != Vector3.zero)
+                        {
+                            effectData.rotation = Util.QuaternionSafeLookRotation(moveDirection);
+                            flag = true;
+                        }
+                    }
+                    if (!flag)
+                    {
+                        effectData.rotation = body.transform.rotation;
+                    }
+                    EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/MoveSpeedOnKillActivate"), effectData, true);
                 }
+                //body.AddBuff(Assets.hopooDamageBuff);
             }
         }
     }

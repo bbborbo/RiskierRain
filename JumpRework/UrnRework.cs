@@ -58,9 +58,8 @@ namespace JumpRework
             Destroy(self);
         }
 
-        private void UrnOnJump(CharacterMotor motor, ref float verticalBonus)
+        private void UrnOnJump(CharacterMotor motor, CharacterBody body, ref float verticalBonus)
         {
-            CharacterBody body = motor.body;
             if (body.outOfDanger)
                 return;
 

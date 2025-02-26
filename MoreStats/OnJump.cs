@@ -50,13 +50,13 @@ namespace MoreStats
         }
 
 
-        public delegate void OnJumpHandler(CharacterMotor sender, ref float verticalBonus);
+        public delegate void OnJumpHandler(CharacterMotor sender, CharacterBody body, ref float verticalBonus);
         public static event OnJumpHandler OnJumpEvent;
         private static void CharacterMain_JumpVelocity(On.EntityStates.GenericCharacterMain.orig_ApplyJumpVelocity orig,
             CharacterMotor characterMotor, CharacterBody characterBody, float horizontalBonus, float verticalBonus, bool vault)
         {
             //OnJumpEvent?.Invoke(characterMotor, ref verticalBonus);
-            OnJumpEvent?.Invoke(characterMotor, ref verticalBonus);
+            OnJumpEvent?.Invoke(characterMotor, characterBody, ref verticalBonus);
             orig(characterMotor, characterBody, horizontalBonus, verticalBonus, vault);
         }
     }

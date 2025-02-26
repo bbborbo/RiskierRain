@@ -37,7 +37,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.1.0";
+        public const string version = "1.2.0";
         #endregion
         public static bool IsMissileArtifactEnabled()
         {

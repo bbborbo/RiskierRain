@@ -169,12 +169,12 @@ namespace RiskierRain
         }
 
         public static float overloadingShieldConversionFraction = 0.33f;
-        public static float overloadingSmiteCountBase = 1;
-        public static float overloadingSmiteCountPerRadius = 0.5f;
+        public static float overloadingSmiteCountBase = 2;
+        public static float overloadingSmiteCountPerRadius = 1f;
         public static float overloadingSmiteRangeBase = 12f;
-        public static float overloadingSmiteRangePerRadius = 6f;
-        public static float overloadingSmiteStartingDamage = 5f;
-        public static float overloadingSmiteDamagePerStrike = 5f;
+        public static float overloadingSmiteRangePerRadius = 8f;
+        public static float overloadingSmiteStartingDamage = 8f;
+        public static float overloadingSmiteDamagePerStrike = 4f;
         private void OverloadingSmiteDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             CharacterBody victimBody = damageReport.victimBody;

@@ -73,8 +73,8 @@ namespace SwanSongExtended.Elites
         public static float frenziedTransferDuration = 5f;
         public static float overloadingSmiteCountBase = 1;
         public static float overloadingSmiteCountPerRadius = 1f;
-        public static float overloadingSmiteRangeBase = 12f;
-        public static float overloadingSmiteRangePerRadius = 8f;
+        public static float overloadingSmiteRangeBase = 24f;
+        public static float overloadingSmiteRangePerRadius = 12f;
         private void FrenziedTransferDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             CharacterBody victimBody = damageReport.victimBody;
@@ -85,6 +85,7 @@ namespace SwanSongExtended.Elites
                 {
                     int maxTransferCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.radius * overloadingSmiteCountPerRadius);
                     float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
+
                     //procChainMask6.AddProc(ProcType.LightningStrikeOnHit);
 
                     SphereSearch sphereSearch = new SphereSearch
@@ -117,6 +118,11 @@ namespace SwanSongExtended.Elites
                             continue;
 
                         enemyBody.AddTimedBuff(EliteBuffDef, frenziedTransferDuration);
+                        EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova"), new EffectData
+                        {
+                            origin = enemyBody.corePosition,
+                            scale = 5
+                        }, true);
                     }
                 }
             }

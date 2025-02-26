@@ -171,7 +171,7 @@ namespace RiskierRain
         public static float overloadingShieldConversionFraction = 0.33f;
         public static float overloadingSmiteCountBase = 2;
         public static float overloadingSmiteCountPerRadius = 1f;
-        public static float overloadingSmiteRangeBase = 12f;
+        public static float overloadingSmiteRangeBase = 15f;
         public static float overloadingSmiteRangePerRadius = 8f;
         public static float overloadingSmiteStartingDamage = 8f;
         public static float overloadingSmiteDamagePerStrike = 4f;

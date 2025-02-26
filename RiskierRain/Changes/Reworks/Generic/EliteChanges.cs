@@ -136,6 +136,8 @@ namespace RiskierRain
         {
             ILCursor c = new ILCursor(il);
 
+            int shieldsTotalLoc = 72;
+            int overloadingShieldConversionLoc = 73;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Buffs", "AffixBlue")
                 );
@@ -144,6 +146,26 @@ namespace RiskierRain
                 );
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, overloadingShieldConversionFraction);
+            c.GotoNext(MoveType.After,
+                x => x.MatchStloc(out overloadingShieldConversionLoc)
+                );
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>("set_maxShield")
+                );
+            c.GotoPrev(MoveType.Before,
+                x => x.MatchLdloc(out shieldsTotalLoc)
+                );
+
+            c.GotoPrev(MoveType.Before,
+                x => x.MatchLdarg(0),
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth"),
+                x => x.MatchAdd(),
+                x => x.MatchStloc(shieldsTotalLoc)
+                );
+            c.Remove();
+            c.Remove();
+            c.Emit(OpCodes.Ldloc, overloadingShieldConversionLoc);
         }
 
         public static float overloadingShieldConversionFraction = 0.33f;
@@ -179,7 +201,7 @@ namespace RiskierRain
                     TeamMask teamMask = TeamMask.GetEnemyTeams(attackerBody.teamComponent.teamIndex);
                     List<HurtBox> hurtBoxesList = new List<HurtBox>();
 
-                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().OrderCandidatesByDistance().GetHurtBoxes(hurtBoxesList);
+                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
 
                     int hurtBoxCount = hurtBoxesList.Count;
                     int targetsSmited = 0;
@@ -190,14 +212,14 @@ namespace RiskierRain
                         HealthComponent healthComponent = targetHurtBox.healthComponent;
                         CharacterBody enemyBody = healthComponent.body;
 
-                        if (!enemyBody)
+                        if (!enemyBody || enemyBody == victimBody)
                         {
                             hurtBoxesList.Remove(hurtBoxesList[i]);
                             hurtBoxCount--;
                             continue;
                         }
 
-                        OrbManager.instance.AddOrb(new SimpleLightningStrikeOrb
+                        OrbManager.instance.AddOrb(new LightningStrikeOrb
                         {
                             attacker = attackerBody.gameObject,
                             damageColorIndex = DamageColorIndex.Default,
@@ -205,7 +227,8 @@ namespace RiskierRain
                             isCrit = damageReport.damageInfo.crit,
                             procChainMask = procChainMask6,
                             procCoefficient = 0.5f,
-                            target = targetHurtBox
+                            target = targetHurtBox,
+                            
                         });
                         targetsSmited++;
                         smiteDamageCoefficient += overloadingSmiteDamagePerStrike;

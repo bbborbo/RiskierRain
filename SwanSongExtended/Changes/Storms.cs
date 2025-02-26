@@ -185,11 +185,11 @@ namespace SwanSongExtended
             return st;
         }
 
-        public const float drizzleStormDelayMinutes = 8;
+        public const float drizzleStormDelayMinutes = 10;
         public const float drizzleStormWarningMinutes = 2;
-        public const float rainstormStormDelayMinutes = 6;
+        public const float rainstormStormDelayMinutes = 7;
         public const float rainstormStormWarningMinutes = 1;
-        public const float monsoonStormDelayMinutes = 3;
+        public const float monsoonStormDelayMinutes = 3.5f;
         public const float monsoonStormWarningMinutes = 0.5f;
 
         public enum StormType

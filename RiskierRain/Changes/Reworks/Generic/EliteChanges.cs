@@ -137,6 +137,9 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Buffs", "AffixBlue")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth")
                 );
             c.Remove();

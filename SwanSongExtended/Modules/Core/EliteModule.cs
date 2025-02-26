@@ -10,13 +10,13 @@ using R2API;
 
 namespace SwanSongExtended.Modules
 {
-    public class EliteModule
+    public static class EliteModule
     {
         //i love you nebby <3
         public static List<CustomEliteDef> Elites = new List<CustomEliteDef>();
         public static Texture defaultShaderRamp = CommonAssets.mainAssetBundle.LoadAsset<Texture>(CommonAssets.eliteMaterialsPath + "texRampFrenzied.tex");
 
-        public void Init()
+        public static void Init()
         {
             RoR2Application.onLoad += AddElites;
         }

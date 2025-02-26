@@ -123,6 +123,7 @@ namespace SwanSongExtended
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
+            Modules.EliteModule.Init();
             Modules.AllyCaps.Init();
             this.InitializeStorms();
 

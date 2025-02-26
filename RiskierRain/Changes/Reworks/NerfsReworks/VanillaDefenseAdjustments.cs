@@ -196,7 +196,7 @@ namespace RiskierRain
 
         #region healing
         public static float scytheBaseHeal = 0f; //4
-        public static float scytheStackHeal = 3f; //4
+        public static float scytheStackHeal = 5f; //4
 
         public static float monsterToothFlatHeal = 8;
         public static float monsterToothPercentHeal = 0.00f;

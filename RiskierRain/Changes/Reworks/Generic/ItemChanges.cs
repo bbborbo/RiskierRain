@@ -93,7 +93,7 @@ namespace RiskierRain
         #endregion
 
         #region glasses
-        float glassesNewCritChance = 7f;
+        float glassesNewCritChance = 10f;
         private void NerfCritGlasses()
         {
             IL.RoR2.CharacterBody.RecalculateStats += this.GlassesNerf;

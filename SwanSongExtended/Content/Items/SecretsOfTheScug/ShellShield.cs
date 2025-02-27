@@ -64,7 +64,7 @@ namespace SwanSongExtended.Items
 
             CharacterBody body = self?.body;
             int itemCount = GetCount(body);
-            if (itemCount <= 0 || body.notMovingStopwatch <= 0.5f || !body.outOfDanger)
+            if (itemCount <= 0 || body.notMovingStopwatch <= 0.1f || !body.outOfDanger)
             {
                 orig(self, damageInfo);
                 return;

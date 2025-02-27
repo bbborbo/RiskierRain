@@ -18,7 +18,7 @@ namespace SwanSongExtended.Items
     {
         public static GameObject slungusSlowFieldPrefab;
         public static BuffDef slungusBuff;
-        public static float slungusWaitTime = 0.6f;
+        public static float slungusWaitTime = 0.2f;
         public float movespeedIncreaseBase = 0.2f;
         public float movespeedIncreaseStack = 0.3f;
 

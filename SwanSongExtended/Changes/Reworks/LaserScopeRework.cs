@@ -78,7 +78,7 @@ namespace SwanSongExtended
 
 	public class CombatTelescopeBehavior : RoR2.CharacterBody.ItemBehavior
     {
-        public static float combatTelescopeWaitTime = 0.5f;
+        public static float combatTelescopeWaitTime = 0.2f;
         private void FixedUpdate()
         {
             if (NetworkServer.active)

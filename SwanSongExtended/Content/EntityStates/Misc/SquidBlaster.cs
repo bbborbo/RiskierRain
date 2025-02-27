@@ -86,7 +86,7 @@ namespace SwanSongExtended.States
                 damage = damageCoefficient * base.characterBody.damage,
                 force = force,
                 crit = Util.CheckRoll(this.critStat, base.characterBody.master),
-                speedOverride = 20,
+                speedOverride = 30,
                 useSpeedOverride = true,
             };
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);

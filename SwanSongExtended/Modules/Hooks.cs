@@ -10,25 +10,22 @@ namespace SwanSongExtended.Modules
     {
         public static void Init()
         {
-
-        }
-    }
-    public static class SquidHooks
-    {
-        public static void Init()
-        {
             On.RoR2.GlobalEventManager.OnCharacterDeath += SquidOnDeath;
         }
 
+        #region squid hooks
+
         private static void SquidOnDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
+            orig(self, damageReport);
             int squidCount = CountSquids(damageReport.victimBody);
-            if (squidCount <= 0) { return; }
+            if (squidCount == 0) { return; }
             SquidDeathBlast(damageReport.victimBody, squidCount);
         }
 
         private static void SquidDeathBlast(CharacterBody body, int squidCount)
         {
+            Debug.Log("sqwuib");
             //temp location. put somewhere good later! when you do that you can also 
             float radiusBase = 28f;
             //float durationBase = 12f;
@@ -40,7 +37,7 @@ namespace SwanSongExtended.Modules
             //ChillRework.ChillRework.ApplyChillSphere(body.corePosition, radiusBase, body.teamComponent.teamIndex, durationBase);
             BlastAttack squidNova = new BlastAttack()
             {
-                baseDamage = (4f + 1f * squidCount --)* body.damage, //400% to trigger those effects? i think???
+                baseDamage = (4f + 1f * (squidCount -1)) * body.damage, //400% to trigger those effects? i think???
                 radius = radiusBase,
                 procCoefficient = 1f,
                 position = body.transform.position,
@@ -64,14 +61,16 @@ namespace SwanSongExtended.Modules
                 while (enumerator.MoveNext())
                 {
                     int itemCount = enumerator.Current.inventory.GetItemCount(RoR2Content.Items.Squid);
-                    if (itemCount > 0)
+                    if (itemCount > 0 && enumerator.Current.teamIndex == team)
                     {
                         num += itemCount;
                     }
                 }
             }
-
+            Debug.Log(num + " squids counted");
             return num;
         }
+        #endregion
     }
+
 }

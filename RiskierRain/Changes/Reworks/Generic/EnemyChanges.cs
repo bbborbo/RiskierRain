@@ -10,6 +10,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using EntityStates.NullifierMonster;
+using RoR2.Skills;
+using EntityStates.BeetleQueenMonster;
 
 namespace RiskierRain
 {
@@ -123,6 +125,8 @@ namespace RiskierRain
                     acidDotZone.resetFrequency = acidDamageFrequency;
                 }
             }
+
+            SummonEggs.maxSummonCount = 2;
         }
         #endregion
         #region gup

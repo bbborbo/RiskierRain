@@ -95,7 +95,7 @@ namespace RiskierRain
             On.RoR2.CharacterBody.UpdateFireTrail += BlazingFireTrailChanges;
         }
 
-        public static float fireTrailDPS = 0.5f; //1.5f
+        public static float fireTrailDPS = 30f; //1.5f
         public static float fireTrailBaseRadius = 6f; //3f
         public static float fireTrailLifetime = 100f; //3f
         private void BlazingFireTrailChanges(On.RoR2.CharacterBody.orig_UpdateFireTrail orig, CharacterBody self)
@@ -106,7 +106,7 @@ namespace RiskierRain
             if (self.fireTrail)
             {
                 self.fireTrail.radius = fireTrailBaseRadius * self.radius;
-                self.fireTrail.damagePerSecond = self.damage * fireTrailDPS;
+                self.fireTrail.damagePerSecond = (1 + 0.2f * self.level) * fireTrailDPS;
                 //self.fireTrail.pointLifetime = fireTrailLifetime;
             }
         }
@@ -274,7 +274,7 @@ namespace RiskierRain
         #endregion
 
         #region voidtouched
-        public float voidtouchedNullifyBaseDuration = 15;
+        public float voidtouchedNullifyBaseDuration = 12;
         void VoidtouchedEliteChanges()
         {
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveVoidtouchedCollapse;
@@ -347,28 +347,28 @@ namespace RiskierRain
         #endregion
 
         #region mending
-
         void MendingEliteChanges()
         {
-            //IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
-            On.RoR2.HealNearbyController.Tick += BarrierTick;
+            IL.RoR2.HealNearbyController.Tick += ReplaceHealingWithBarrier;
+            //On.RoR2.HealNearbyController.Tick += BarrierTick;
         }
         private void BarrierTick(On.RoR2.HealNearbyController.orig_Tick orig, HealNearbyController self)
         {
-            if (!self.networkedBodyAttachment || !self.networkedBodyAttachment.attachedBody || !self.networkedBodyAttachment.attachedBodyObject)
+            if (!self.networkedBodyAttachment || !self.networkedBodyAttachment.attachedBody 
+                || !self.networkedBodyAttachment.attachedBodyObject || !self.networkedBodyAttachment.attachedBody.healthComponent.alive)
             {
                 return;
             }
-            List<HurtBox> list = CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
-            self.SearchForTargets(list);
+            List<HurtBox> possibleTargets = CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
+            self.SearchForTargets(possibleTargets);
             float amount = self.damagePerSecondCoefficient * self.networkedBodyAttachment.attachedBody.damage / self.tickRate;
-            List<Transform> list2 = CollectionPool<Transform, List<Transform>>.RentCollection();
+            List<Transform> chosenTargets = CollectionPool<Transform, List<Transform>>.RentCollection();
             int i = 0;
-            while (i < list.Count)
+            while (i < possibleTargets.Count)
             {
-                HurtBox hurtBox = list[i];
-                if (!hurtBox || !hurtBox.healthComponent || !self.networkedBodyAttachment.attachedBody.healthComponent.alive
-                    || /*hurtBox.healthComponent.health >= hurtBox.healthComponent.fullHealth ||*/ hurtBox.healthComponent.body.HasBuff(DLC1Content.Buffs.EliteEarth))
+                HurtBox hurtBox = possibleTargets[i];
+                if (!hurtBox || !hurtBox.healthComponent
+                    || hurtBox.healthComponent.body.HasBuff(DLC1Content.Buffs.EliteEarth))
                 {
                     goto IL_14A;
                 }
@@ -377,7 +377,7 @@ namespace RiskierRain
                 {
                     CharacterBody body = healthComponent.body;
                     Transform item = ((body != null) ? body.coreTransform : null) ?? hurtBox.transform;
-                    list2.Add(item);
+                    chosenTargets.Add(item);
                     if (NetworkServer.active)
                     {
                         //healthComponent.Heal(amount, default(ProcChainMask), true);
@@ -390,32 +390,44 @@ namespace RiskierRain
                 i++;
                 continue;
             IL_14A:
-                if (list2.Count < self.maxTargets)
+                if (chosenTargets.Count < self.maxTargets)
                 {
                     goto IL_158;
                 }
                 break;
             }
-            self.isTetheredToAtLeastOneObject = ((float)list2.Count > 0f);
-            if (self.tetherVfxOrigin && self.isTetheredToAtLeastOneObject)
+            self.isTetheredToAtLeastOneObject = ((float)chosenTargets.Count > 0f);
+            if (self.tetherVfxOrigin)
             {
-                self.tetherVfxOrigin.SetTetheredTransforms(list2);
+                self.tetherVfxOrigin.SetTetheredTransforms(chosenTargets);
             }
             if (self.activeVfx)
             {
                 self.activeVfx.SetActive(self.isTetheredToAtLeastOneObject);
             }
-            CollectionPool<Transform, List<Transform>>.ReturnCollection(list2);
-            CollectionPool<HurtBox, List<HurtBox>>.ReturnCollection(list);
+            CollectionPool<Transform, List<Transform>>.ReturnCollection(chosenTargets);
+            CollectionPool<HurtBox, List<HurtBox>>.ReturnCollection(possibleTargets);
         }
         
         private void ReplaceHealingWithBarrier(ILContext il)
         {
             ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdfld<HurtBox>(nameof(HurtBox.healthComponent)),
+                x => x.MatchCallOrCallvirt<HealthComponent>("get_fullHealth")
+                );
+            c.Index--;
+            c.Remove();
+            c.EmitDelegate<Func<HealthComponent, float>>((healthComponent) =>
+            {
+                return healthComponent.fullHealth * 2f;
+            });
         
             c.GotoNext(MoveType.Before,
                     x => x.MatchCallOrCallvirt<RoR2.HealthComponent>(nameof(HealthComponent.Heal))
                 );
+            c.Remove();
             c.Remove();
             //c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Action<HealthComponent, float, RoR2.ProcChainMask, bool/*, HealNearbyController*/>>((targetHealthComponent, healAmount, procChainMask, nonRegen/*, self*/) =>
@@ -432,8 +444,6 @@ namespace RiskierRain
                 //    targetHealthComponent.Heal(healAmount, procChainMask, isRegen);
                 //}
             });
-            c.Index++;
-            c.Remove();
         }
 
         

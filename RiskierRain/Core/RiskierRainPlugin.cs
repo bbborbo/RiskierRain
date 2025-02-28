@@ -132,9 +132,10 @@ namespace RiskierRain
         {
             IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
 
-            Hook ospHook = new Hook(
+            // removes one-shot protection (OSP)
+            Hook hookTuah = new Hook(
               typeof(CharacterBody).GetMethod("get_hasOneShotProtection", (BindingFlags)(-1)),
-              typeof(RiskierRainPlugin).GetMethod(nameof(FuckOsp), (BindingFlags)(-1))
+              typeof(RiskierRainPlugin).GetMethod(nameof(ReflectOnThatThang), (BindingFlags)(-1))
             );
 
             ///summary
@@ -728,7 +729,7 @@ namespace RiskierRain
             #endregion
         }
 
-        public static bool FuckOsp(orig_getHasOneShotProtection orig, CharacterBody self)
+        public static bool ReflectOnThatThang(orig_getHasOneShotProtection orig, CharacterBody self)
         {
             return false;
         }

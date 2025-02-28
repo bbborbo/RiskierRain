@@ -124,7 +124,7 @@ namespace RiskierRain
 
         #region Blood Shrines
         private static int teamMaxHealth;
-        private static int totalBloodGoldValue = 45; // amount of gold awarded for using the shrine all times
+        private static int totalBloodGoldValue = 60; // amount of gold awarded for using the shrine all times
         private const float totalHealthFraction = 2.18f; // health bars
         private static float chestsPerHealthBar = 2; // number of chest costs awarded per health bar
 
@@ -165,7 +165,7 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        private float teleporterEnemyRewardCoefficient = 0.2f;
+        private float teleporterEnemyRewardCoefficient = 0.02f;
         private void TeleporterEnemyRewards()
         {
             On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;

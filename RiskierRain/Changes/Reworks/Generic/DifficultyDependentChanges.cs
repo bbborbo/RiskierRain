@@ -24,7 +24,7 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 9;
 
-        public static float timeDifficultyScaling = 1.6f; //1f, linear
+        public static float timeDifficultyScaling = 1.5f; //1f, linear
         public static float stageDifficultyScaling = 1.10f; //1.15f, exponential
         public static float loopDifficultyScaling = 1.2f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
@@ -507,13 +507,13 @@ namespace RiskierRain
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 0.6f;//1
+        public static float fastDirectorEliteBias = 0.75f;//1
         public static float fastDirectorCreditMultiplier = 1f;//0.75f
         public static float slowDirectorEliteBias = 1f;//0.2f;//1
         public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
 
-        public static float teleLesserEliteBias = 1.5f;//0.2f;//1
-        public static float teleLesserCreditMultiplier = 1.5f;//1f
+        public static float teleLesserEliteBias = 1f;//0.2f;//1
+        public static float teleLesserCreditMultiplier = 1f;//1f
         public static float teleBossEliteBias = 1f;//1
         public static float teleBossCreditMultiplier = 1f;//1f
         void ChangeDirectorStats()

@@ -24,9 +24,18 @@ namespace RiskierRain
         public static float monsoonDifficultyBoost = 6;
         public static float eclipseDifficultyBoost = 9;
 
-        public static float timeDifficultyScaling = 1.5f; //1f, linear
-        public static float stageDifficultyScaling = 1.10f; //1.15f, exponential
-        public static float loopDifficultyScaling = 1.2f; //1.0f, exponential
+        /// <summary>
+        /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
+        /// </summary>
+        public static float difficultyIncreasePerMinute = 1.5f; //1f
+        /// <summary>
+        /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
+        /// </summary>
+        public static float difficultyIncreasePerStage = 1.10f; //1.15f, exponential
+        /// <summary>
+        /// exponential. works the same as difficultyIncreasePerStage, but only once per 5 stages
+        /// </summary>
+        public static float difficultyIncreasePerLoop = 1.2f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
@@ -169,7 +178,7 @@ namespace RiskierRain
                 x => x.MatchCallOrCallvirt<Mathf>("Floor")
                 );
             c.Index--;
-            c.Emit(OpCodes.Ldc_R4, timeDifficultyScaling);
+            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerMinute);
             c.Emit(OpCodes.Mul);
 
             //num9 (difficulty coefficient)
@@ -179,7 +188,7 @@ namespace RiskierRain
                 x => x.MatchLdfld<RoR2.Run>("stageClearCount")
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, stageDifficultyScaling);
+            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerStage);
 
             //num10 (ambient level)
             c.GotoNext(MoveType.After,
@@ -187,7 +196,7 @@ namespace RiskierRain
                 x => x.MatchLdcR4(out _),
                 x => x.MatchMul()
                 );
-            c.Emit(OpCodes.Ldc_R4, timeDifficultyScaling);
+            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerMinute);
             c.Emit(OpCodes.Mul);
 
             //num10 (ambient level)
@@ -197,7 +206,7 @@ namespace RiskierRain
                 x => x.MatchLdfld<RoR2.Run>("stageClearCount")
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, stageDifficultyScaling);
+            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerStage);
 
 
             c.GotoNext(MoveType.Before,
@@ -218,16 +227,16 @@ namespace RiskierRain
         {
             float runTimer = self.GetRunStopwatch();
             DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty);
-            float minutesFactor = Mathf.Floor(runTimer * 0.016666668f * timeDifficultyScaling); //seconds to minutes
+            float minutesFactor = Mathf.Floor(runTimer * 0.016666668f * difficultyIncreasePerMinute); //seconds to minutes
             float playerBaseFactor = 1 + playerBaseDifficultyFactor * (float)(self.participatingPlayerCount - 1);
             float playerScaleFactor = Mathf.Pow((float)self.participatingPlayerCount, playerScalingDifficultyFactor);
             float scalingFactor = 0.0506f * difficultyDef.scalingValue * playerScaleFactor;
 
-            float stageFactor = Mathf.Pow(stageDifficultyScaling, (float)self.stageClearCount); //1^loops
+            float stageFactor = Mathf.Pow(difficultyIncreasePerStage, (float)self.stageClearCount); //1^loops
             int totalLoops = Mathf.FloorToInt(self.stageClearCount / 5);
             if (self.stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
                 totalLoops -= 1;
-            float loopFactor = Mathf.Pow(loopDifficultyScaling, totalLoops); //1.5^loops
+            float loopFactor = Mathf.Pow(difficultyIncreasePerLoop, totalLoops); //1.5^loops
             float difficultyCoefficient = (playerBaseFactor + scalingFactor * minutesFactor) * stageFactor;
 
             self.difficultyCoefficient = difficultyCoefficient * loopFactor;

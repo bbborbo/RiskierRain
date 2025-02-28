@@ -115,7 +115,7 @@ namespace SwanSongExtended.Items
         private void MolotovOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victim)
         {
             int itemCount = GetCount(attackerBody);
-            if(itemCount > 0 && damageInfo.damageType.damageSource == DamageSource.SkillMask)
+            if(itemCount > 0 && damageInfo.damageType.IsDamageSourceSkillBased)
             {
                 if(Util.CheckRoll(procChance * damageInfo.procCoefficient, attackerBody.master))
                 {

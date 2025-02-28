@@ -94,6 +94,7 @@ namespace SwanSongExtended.Skills
 
             ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
             pd.damageType |= DamageType.BonusToLowHealth;
+            pd.damageType.damageSource = DamageSource.Secondary;
 
             ProjectileDotZone pdz = boomerangPrefab.GetComponent<ProjectileDotZone>();
             /*pdz.overlapProcCoefficient = 0.8f;

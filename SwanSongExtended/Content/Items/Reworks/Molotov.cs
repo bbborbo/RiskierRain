@@ -20,6 +20,10 @@ namespace SwanSongExtended.Items
     {
         #region config
         public override string ConfigName => "Reworks : Molotovs";
+
+        [AutoConfig("Disable Molotov Equipment", false)]
+        public static bool disableMolotovEquipment = false;
+
         [AutoConfig("Molotov Equipment Damage Coefficient", 2.5f)]
         public static float molotovEquipmentDamage = 2.5f;
         [AutoConfig("Molotov Equipment Damage Multiplier Per Second", 0.4f)]
@@ -86,11 +90,21 @@ namespace SwanSongExtended.Items
             CreateProjectile();
 
             Debug.LogWarning("Still need to replace the molotov equipment icon");
-            LanguageAPI.Add("EQUIPMENT_MOLOTOV_DESC",
-                $"Throw <style=cIsDamage>6</style> molotov cocktails that <style=cIsDamage>ignite</style> enemies for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage)} base damage</style>. " +
-                $"Each molotov leaves a burning area for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage * molotovEquipmentDotDamage * molotovEquipmentDotFrequency)} damage per second</style>.");
+            EquipmentDef equipDef = Addressables.LoadAssetAsync<EquipmentDef>("RoR2/DLC1/Molotov/Molotov.asset").WaitForCompletion();
+            if (disableMolotovEquipment)
+            {
+                equipDef.canDrop = false;
+                equipDef.enigmaCompatible = false;
+                equipDef.canBeRandomlyTriggered = false;
+            }
+            else
+            {
+                LanguageAPI.Add("EQUIPMENT_MOLOTOV_DESC",
+                    $"Throw <style=cIsDamage>6</style> molotov cocktails that <style=cIsDamage>ignite</style> enemies for " +
+                    $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage)} base damage</style>. " +
+                    $"Each molotov leaves a burning area for " +
+                    $"<style=cIsDamage>{Tools.ConvertDecimal(molotovEquipmentDamage * molotovEquipmentDotDamage * molotovEquipmentDotFrequency)} damage per second</style>.");
+            }
         }
         public override void Hooks()
         {
@@ -101,11 +115,10 @@ namespace SwanSongExtended.Items
         private void MolotovOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victim)
         {
             int itemCount = GetCount(attackerBody);
-            if(itemCount > 0 && !damageInfo.procChainMask.HasProc(ProcType.RepeatHeal))
+            if(itemCount > 0 && damageInfo.damageType.damageSource == DamageSource.SkillMask)
             {
                 if(Util.CheckRoll(procChance * damageInfo.procCoefficient, attackerBody.master))
                 {
-                    damageInfo.procChainMask.AddProc(ProcType.RepeatHeal);
                     float damageCoefficient = baseDamageCoefficient + stackDamageCoefficient * (itemCount - 1);
 
                     Vector3 forward = attackerBody.inputBank.aimDirection;

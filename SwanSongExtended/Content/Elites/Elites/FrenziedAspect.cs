@@ -70,7 +70,7 @@ namespace SwanSongExtended.Elites
             On.RoR2.GlobalEventManager.OnCharacterDeath += FrenziedTransferDeath;
         }
 
-        public static float frenziedTransferDuration = 5f;
+        public static float frenziedTransferDuration = 8f;
         public static float overloadingSmiteCountBase = 1;
         public static float overloadingSmiteCountPerRadius = 1f;
         public static float overloadingSmiteRangeBase = 24f;

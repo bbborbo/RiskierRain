@@ -124,7 +124,7 @@ namespace RiskierRain
 
             ProjectileImpactExplosion bombPie = overloadingBomb.GetComponent<ProjectileImpactExplosion>();
             bombPie.blastRadius = 9;
-            bombPie.lifetime = 1.2f;
+            bombPie.lifetime = 1.35f;
 
             IL.RoR2.CharacterBody.RecalculateStats += OverloadingShieldConversion;
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
@@ -173,8 +173,8 @@ namespace RiskierRain
         public static float overloadingSmiteCountPerRadius = 1f;
         public static float overloadingSmiteRangeBase = 15f;
         public static float overloadingSmiteRangePerRadius = 8f;
-        public static float overloadingSmiteStartingDamage = 8f;
-        public static float overloadingSmiteDamagePerStrike = 4f;
+        public static float overloadingSmiteStartingDamage = 10f;
+        public static float overloadingSmiteDamagePerStrike = 5f;
         private void OverloadingSmiteDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             CharacterBody victimBody = damageReport.victimBody;

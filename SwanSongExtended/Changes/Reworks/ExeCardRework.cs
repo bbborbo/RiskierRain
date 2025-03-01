@@ -1,4 +1,6 @@
 ﻿using EntityStates.CaptainSupplyDrop;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
 using System;
@@ -22,9 +24,26 @@ namespace SwanSongExtended
             LanguageAPI.Add("EQUIPMENT_MULTISHOPCARD_DESC", $"Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
                 $"If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>.");
 
-            On.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
+            IL.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
+            //On.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
             On.RoR2.EquipmentSlot.UpdateTargets += CardTargetInteractables;
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
+        }
+
+        private void FreezeCard(ILContext il)
+        {
+            // :}
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<Inventory>("get_currentEquipmentIndex")
+                );
+            c.Remove();
+            c.EmitDelegate<Func<Inventory, int>>((inv) => 
+            {
+                return (int)EquipmentIndex.None;
+            });
+
         }
 
         private bool PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
@@ -161,7 +180,7 @@ namespace SwanSongExtended
             }
         }
 
-        private void FreezeCard(On.RoR2.Items.MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
+        private void FreezeCardf(On.RoR2.Items.MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
         {
             // :)
         }

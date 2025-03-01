@@ -104,7 +104,7 @@ namespace SwanSongExtended.Items
         {
             Inventory inv = body.inventory;
             inv.RemoveItem(instance.ItemsDef, count);
-            inv.GiveItem(Elixir2Consumed.instance.ItemsDef, count);
+            inv.GiveItem(VoidElixirConsumed.instance.ItemsDef, count);
 
             CharacterMasterNotificationQueue.SendTransformNotification(
                 body.master, instance.ItemsDef.itemIndex,

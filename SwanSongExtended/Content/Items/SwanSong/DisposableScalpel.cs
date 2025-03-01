@@ -14,6 +14,7 @@ namespace SwanSongExtended.Items
 {
     class DisposableScalpel : ItemBase<DisposableScalpel>
     {
+        public static ItemDef brokenItemDef;
         public override string ConfigName => "Items : Scalpel";
         public static int bonusDropChance = 50;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
@@ -53,6 +54,13 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
         {
             return null;
         }
+        public override void Init()
+        {
+            brokenItemDef = CreateNewUntieredItem("BROKENSCALPEL",
+                assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_BROKENSCALPEL.png"));
+            DoLangForItem(brokenItemDef, "Broken Scalpel", "The blade has shattered into innumerous pieces.", "It is no longer usable.");
+            base.Init();
+        }
 
         public override void Hooks()
         {
@@ -88,9 +96,9 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
         public static void ConsumeScalpel(CharacterBody attackerBody)
         {
             attackerBody.inventory.RemoveItem(DisposableScalpel.instance.ItemsDef);
-            attackerBody.inventory.GiveItem(BrokenScalpel.instance.ItemsDef);
+            attackerBody.inventory.GiveItem(brokenItemDef);
             CharacterMasterNotificationQueue.PushItemTransformNotification(attackerBody.master,
-                DisposableScalpel.instance.ItemsDef.itemIndex, BrokenScalpel.instance.ItemsDef.itemIndex,
+                DisposableScalpel.instance.ItemsDef.itemIndex, brokenItemDef.itemIndex,
                 CharacterMasterNotificationQueue.TransformationType.Default);
         }
     }

@@ -15,6 +15,7 @@ namespace SwanSongExtended.Items
 {
     class Elixir2 : ItemBase<Elixir2>
     {
+        public static ItemDef brokenItemDef;
         #region config
         public override string ConfigName => "Reworks : Elixir";
 
@@ -80,6 +81,15 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
+            #region empty bottle
+            brokenItemDef = CreateNewUntieredItem("LEGALLYDISTINCTBOTTLE",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/HealingPotion/texHealingPotionConsumed.png").WaitForCompletion());
+            string fullDesc = $"Increases attack speed by {Tools.ConvertDecimal(attackSpeedBuff)} (+{Tools.ConvertDecimal(attackSpeedBuff)} per stack), " +
+            $"movement speed by {Tools.ConvertDecimal(moveSpeedBuff)} (+{Tools.ConvertDecimal(moveSpeedBuff)} per stack), " +
+            $"and reduces cooldowns by {Tools.ConvertDecimal(cooldownReduction)} (-{Tools.ConvertDecimal(cooldownReduction)} per stack). ";
+            DoLangForItem(brokenItemDef, "Empty Flask", "You feel lightweight.", fullDesc);
+            #endregion
+
             SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/HealingPotion/HealingPotion.asset").WaitForCompletion());
             brewActiveBuff = Content.CreateAndAddBuff(
                 "bdBerserkerBrewActive",
@@ -94,6 +104,53 @@ namespace SwanSongExtended.Items
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.HealingPotion);
             On.RoR2.HealthComponent.UpdateLastHitTime += ElixirHook;
             GetStatCoefficients += BerserkerBrewBuff;
+
+            On.RoR2.CharacterMaster.OnServerStageBegin += TryRegenerateElixir;
+            GetStatCoefficients += BerserkerBrewBuff;
+            On.RoR2.CharacterBody.RecalculateStats += BerserkerBrewCdr;
+        }
+        private void BerserkerBrewCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            int stack = GetCount(self);
+            if (stack > 0)
+            {
+                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
+                float cdrBoost = Mathf.Pow(1 - cooldownReduction, stack);
+
+                SkillLocator skillLocator = self.skillLocator;
+                if (skillLocator != null)
+                {
+                    Tools.ApplyCooldownScale(skillLocator.primary, cdrBoost);
+                    Tools.ApplyCooldownScale(skillLocator.secondary, cdrBoost);
+                    Tools.ApplyCooldownScale(skillLocator.utility, cdrBoost);
+                    Tools.ApplyCooldownScale(skillLocator.special, cdrBoost);
+                }
+            }
+        }
+
+        private void TryRegenerateElixir(On.RoR2.CharacterMaster.orig_OnServerStageBegin orig, CharacterMaster self, Stage stage)
+        {
+            orig(self, stage);
+            if (NetworkServer.active)
+            {
+                int count = GetCount(self);
+                if (count > 0)
+                {
+                    RegeneratePotions(count, self);
+                }
+            }
+        }
+        private void RegeneratePotions(int count, CharacterMaster master)
+        {
+            Inventory inv = master.inventory;
+            inv.RemoveItem(brokenItemDef, count);
+            inv.GiveItem(instance.ItemsDef, count);
+
+            CharacterMasterNotificationQueue.SendTransformNotification(
+                master, brokenItemDef.itemIndex,
+                instance.ItemsDef.itemIndex,
+                CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
         }
 
         private void BerserkerBrewBuff(CharacterBody sender, StatHookEventArgs args)
@@ -103,6 +160,15 @@ namespace SwanSongExtended.Items
                 args.armorAdd += armorBuff;
                 args.moveSpeedMultAdd += msBuff;
                 args.damageMultAdd += damageBuff;
+            }
+            if (sender.inventory)
+            {
+                int stack = sender.inventory.GetItemCount(brokenItemDef);
+                if (stack > 0)
+                {
+                    args.attackSpeedMultAdd += attackSpeedBuff * stack;
+                    args.moveSpeedMultAdd += attackSpeedBuff * stack;
+                }
             }
         }
 
@@ -141,11 +207,11 @@ namespace SwanSongExtended.Items
         {
             Inventory inv = body.inventory;
             inv.RemoveItem(instance.ItemsDef, count);
-            inv.GiveItem(Elixir2Consumed.instance.ItemsDef, count);
+            inv.GiveItem(brokenItemDef, count);
 
             CharacterMasterNotificationQueue.SendTransformNotification(
                 body.master, instance.ItemsDef.itemIndex,
-                Elixir2Consumed.instance.ItemsDef.itemIndex, 
+                brokenItemDef.itemIndex, 
                 CharacterMasterNotificationQueue.TransformationType.Default);
         }
     }

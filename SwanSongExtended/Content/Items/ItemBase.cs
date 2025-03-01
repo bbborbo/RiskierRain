@@ -103,10 +103,11 @@ namespace SwanSongExtended.Items
 
         public override void Lang()
         {
-            LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_NAME", ItemName);
-            LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_PICKUP", ItemPickupDesc);
-            LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_DESCRIPTION", ItemFullDescription);
-            LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_LORE", ItemLore);
+            DoLangForItem(ItemsDef, ItemName, ItemPickupDesc, ItemFullDescription, ItemLore);
+            //LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_NAME", ItemName);
+            //LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_PICKUP", ItemPickupDesc);
+            //LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_DESCRIPTION", ItemFullDescription);
+            //LanguageAPI.Add("ITEM_" + ItemLangTokenName + "_LORE", ItemLore);
         }
 
         public abstract ItemDisplayRuleDict CreateItemDisplayRules();
@@ -117,21 +118,7 @@ namespace SwanSongExtended.Items
             if (!tierNameString.Contains("Tier"))
                 tierNameString += "Tier";
 
-            ItemsDef = ScriptableObject.CreateInstance<ItemDef>();//new RoR2.ItemDef()
-            {
-                ItemsDef.name = "ITEM_" + ItemLangTokenName;
-                ItemsDef.nameToken = "ITEM_" + ItemLangTokenName + "_NAME";
-                ItemsDef.pickupToken = "ITEM_" + ItemLangTokenName + "_PICKUP";
-                ItemsDef.descriptionToken = "ITEM_" + ItemLangTokenName + "_DESCRIPTION";
-                ItemsDef.loreToken = "ITEM_" + ItemLangTokenName + "_LORE";
-                ItemsDef.pickupModelPrefab = ItemModel;
-                ItemsDef.pickupIconSprite = ItemIcon;
-                ItemsDef.tier = Tier;
-                ItemsDef.deprecatedTier = Tier;
-                ItemsDef.requiredExpansion = RequiredExpansion;
-                ItemsDef.hidden = IsHidden;
-            }
-            if (ItemTags.Length > 0) { ItemsDef.tags = ItemTags; }
+            ItemsDef = CreateNewItem(ItemLangTokenName, ItemModel, ItemIcon, Tier, ItemTags, RequiredExpansion, IsHidden);
 
             var itemDisplayRules = CreateItemDisplayRules();
             if (itemDisplayRules == null)
@@ -139,8 +126,47 @@ namespace SwanSongExtended.Items
                 itemDisplayRules = new ItemDisplayRuleDict();
             }
 
-            Content.AddItemDef(ItemsDef);
             //ItemAPI.Add(new CustomItem(ItemsDef, itemDisplayRules));
+        }
+
+        public static ItemDef CreateNewItem(string langTokenName, GameObject modelPrefab, Sprite iconSprite, ItemTier tier, 
+            ItemTag[] itemTags = null, ExpansionDef requiredExpansion = null, bool isHidden = false)
+        {
+            ItemDef itemDef = CreateNewUntieredItem(langTokenName, iconSprite, tier, itemTags, isHidden);
+            itemDef.pickupModelPrefab = modelPrefab;
+            itemDef.requiredExpansion = requiredExpansion;
+            return itemDef;
+        }
+
+        public static ItemDef CreateNewUntieredItem(string langTokenName, Sprite iconSprite, ItemTier tier = ItemTier.NoTier, 
+            ItemTag[] itemTags = null, bool isHidden = false)
+        {
+            ItemDef itemDef = ScriptableObject.CreateInstance<ItemDef>();
+
+            itemDef.name = "ITEM_" + langTokenName;
+            itemDef.nameToken = "ITEM_" + langTokenName + "_NAME";
+            itemDef.pickupToken = "ITEM_" + langTokenName + "_PICKUP";
+            itemDef.descriptionToken = "ITEM_" + langTokenName + "_DESCRIPTION";
+            itemDef.loreToken = "ITEM_" + langTokenName + "_LORE";
+            itemDef.pickupIconSprite = iconSprite;
+            itemDef.tier = tier;
+            itemDef.deprecatedTier = tier;
+            itemDef.hidden = isHidden;
+
+            if(itemTags != null && itemTags.Length > 0)
+            {
+                itemDef.tags = itemTags;
+            }
+
+            Content.AddItemDef(itemDef);
+            return itemDef;
+        }
+        public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc, string lore = "")
+        {
+            LanguageAPI.Add(itemDef.nameToken, name);
+            LanguageAPI.Add(itemDef.pickupToken, pickupDesc);
+            LanguageAPI.Add(itemDef.descriptionToken, fullDesc);
+            LanguageAPI.Add(itemDef.loreToken, lore);
         }
 
         public int GetCount(CharacterBody body)
@@ -174,6 +200,7 @@ namespace SwanSongExtended.Items
         {
             return baseValue + stackValue * (itemCount - 1);
         }
+
 
         public static GameObject LoadDropPrefab(string prefabName = "")
         {

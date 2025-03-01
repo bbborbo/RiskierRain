@@ -49,8 +49,8 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
-            base.Init();
             CreateItem();
+            base.Init();
         }
 
         internal static bool CheckDLC1Entitlement()

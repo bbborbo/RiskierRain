@@ -95,7 +95,7 @@ namespace RiskierRain
             On.RoR2.CharacterBody.UpdateFireTrail += BlazingFireTrailChanges;
         }
 
-        public static float fireTrailDPS = 30f; //1.5f
+        public static float fireTrailDPS = 80f; //1.5f
         public static float fireTrailBaseRadius = 6f; //3f
         public static float fireTrailLifetime = 100f; //3f
         private void BlazingFireTrailChanges(On.RoR2.CharacterBody.orig_UpdateFireTrail orig, CharacterBody self)

@@ -22,7 +22,7 @@ namespace SwanSongExtended.Items
 
         static float bonusDamageMin = 0.15f;
 
-        static float bonusDamagePerChunk = 0.03f;
+        static float bonusDamagePerChunk = 0.05f;
         float bonusGold = 0.1f;
         public static BuffDef bronzeDamageBuff;
         public static int maxBronze = 3;

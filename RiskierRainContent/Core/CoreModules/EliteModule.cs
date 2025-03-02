@@ -21,6 +21,12 @@ namespace RiskierRainContent.CoreModules
             RoR2Application.onLoad += AddElites;
         }
 
+        const int tier1NoHonor = 1;
+        const int tier1Honor = 2;
+        const int tier1PlusHonor = 3;
+        const int tier1PlusNoHonor = 4;
+        const int tier2 = 5;
+        const int lunar = 6;
         private static void AddElites()
         {
             foreach (CustomEliteDef eliteDef in Elites)
@@ -28,11 +34,16 @@ namespace RiskierRainContent.CoreModules
                 switch (eliteDef.eliteTier)
                 {
                     case EliteTiers.Tier1:
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[tier1NoHonor].eliteTypes, eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[tier1Honor].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[tier1PlusHonor].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[tier1PlusNoHonor].eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.Tier2:
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[tier2].eliteTypes, eliteDef.eliteDef);
+                        break;
+                    case EliteTiers.Lunar:
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[lunar].eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.StormT1:
                         HG.ArrayUtils.ArrayAppend(ref RiskierRainContent.StormT1.eliteTypes, eliteDef.eliteDef);
@@ -61,6 +72,7 @@ namespace RiskierRainContent.CoreModules
         {
             Tier1,
             Tier2,
+            Lunar,
             StormT1,
             StormT2,
             Other

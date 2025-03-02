@@ -19,6 +19,7 @@ using static R2API.DirectorAPI;
 using System.Linq;
 using On.EntityStates.CaptainSupplyDrop;
 using SwanSongExtended;
+using MonoMod.RuntimeDetour;
 
 namespace RiskierRain
 {
@@ -348,8 +349,36 @@ namespace RiskierRain
                 }
                 //voidCradlePrefab.AddComponent<InteractableCurseController>();
             }
+            //IL.RoR2.CostTypeCatalog.Init += FixSoulCost;
             //On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
             //GetStatCoefficients += VoidCradleCurse;
+            CostTypeDef ctd = CostTypeCatalog.GetCostTypeDef(CostTypeIndex.SoulCost);
+            var method = ctd.payCost.Method;
+            ILHook hook = new ILHook(method, FixSoulCost);
+        }
+
+        private void FixSoulCost(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
+                );
+            if (b)
+            {
+                c.Remove();
+                c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) =>
+                {
+                    for (int i = 0; i < buffCount; i++)
+                    {
+                        body.AddBuff((BuffIndex)buffIndex);
+                    }
+                });
+            }
+            else
+            {
+                Debug.LogError("Could not hook void cradle paycost");
+            }
         }
 
         private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)

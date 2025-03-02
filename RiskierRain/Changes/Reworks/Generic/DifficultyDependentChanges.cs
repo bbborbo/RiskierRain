@@ -272,7 +272,7 @@ namespace RiskierRain
 
                     if(sender.baseNameToken != "JELLYFISH_BODY_NAME")
                     {
-                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 300f) * 11f;
+                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 9f;
                     }
 
                     if (sender.isChampion)
@@ -281,7 +281,7 @@ namespace RiskierRain
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 300f) * 7f;
+                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 6f;
                     }
                 }
             }
@@ -517,11 +517,11 @@ namespace RiskierRain
 
         #region directors
         public static float fastDirectorEliteBias = 0.75f;//1
-        public static float fastDirectorCreditMultiplier = 1f;//0.75f
-        public static float slowDirectorEliteBias = 1f;//0.2f;//1
+        public static float fastDirectorCreditMultiplier = 0.75f;//0.75f
+        public static float slowDirectorEliteBias = 1f;//1
         public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
 
-        public static float teleLesserEliteBias = 1f;//0.2f;//1
+        public static float teleLesserEliteBias = 1f;//1
         public static float teleLesserCreditMultiplier = 1f;//1f
         public static float teleBossEliteBias = 1f;//1
         public static float teleBossCreditMultiplier = 1f;//1f

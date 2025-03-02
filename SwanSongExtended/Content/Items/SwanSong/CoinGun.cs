@@ -101,12 +101,12 @@ What happened to all of our gold?";
         }
         void CreateBuff()
         {
-            GenerateCoinDamageBuff(ref bronzeDamageBuff, "Bronze", new Color(0.7f, 0.5f, 0.2f));
-            GenerateCoinDamageBuff(ref silverDamageBuff, "Silver", new Color(0.6f, 0.6f, 0.6f));
-            GenerateCoinDamageBuff(ref goldDamageBuff, "Gold", new Color(1.0f, 0.8f, 0.15f));
-            GenerateCoinDamageBuff(ref platinumDamageBuff, "Platinum", new Color(0.9f, 0.9f, 1.0f));
+            bronzeDamageBuff = GenerateCoinDamageBuff   ("Bronze", new Color(0.7f, 0.5f, 0.2f));
+            silverDamageBuff = GenerateCoinDamageBuff   ("Silver", new Color(0.6f, 0.6f, 0.6f));
+            goldDamageBuff = GenerateCoinDamageBuff     ("Gold", new Color(1.0f, 0.8f, 0.15f));
+            platinumDamageBuff = GenerateCoinDamageBuff ("Platinum", new Color(0.9f, 0.9f, 1.0f));
 
-            BuffDef GenerateCoinDamageBuff(ref BuffDef coinBuff, string coinType, Color color, Sprite sprite = null)
+            BuffDef GenerateCoinDamageBuff(string coinType, Color color, Sprite sprite = null)
             {
                 return Content.CreateAndAddBuff(
                     "bdCoinDamageBoost" + coinType,

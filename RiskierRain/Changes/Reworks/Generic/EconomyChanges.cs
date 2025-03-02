@@ -38,6 +38,9 @@ namespace RiskierRain
         PurchaseInteraction smallCategoryChestHealing = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestHealing.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction smallCategoryChestUtility = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CategoryChest/CategoryChestUtility.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction bigChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest2/Chest2.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction bigCategoryChestDamage = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CategoryChest2/CategoryChest2Damage Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction bigCategoryChestHealing = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CategoryChest2/CategoryChest2Healing Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
+        PurchaseInteraction bigCategoryChestUtility = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CategoryChest2/CategoryChest2Utility Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction casinoChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/CasinoChest/CasinoChest.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction chanceShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChance.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
         PurchaseInteraction chanceShrineSnowy = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineChance/ShrineChanceSnowy Variant.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -259,6 +262,7 @@ namespace RiskierRain
             {
                 smallCategoryChestUtility.cost = smallCategoryChestTypeCost;
             }
+
             if (bigChest != null)
             {
                 LanguageAPI.Add("CHEST2_NAME", $"Large {discountChestPrefix} Chest");
@@ -269,6 +273,19 @@ namespace RiskierRain
             {
                 bigShop.baseCost = bigShopTypeCost;
             }
+            if (bigCategoryChestDamage != null)
+            {
+                bigCategoryChestDamage.cost = bigCategoryChestTypeCost;
+            }
+            if (bigCategoryChestHealing != null)
+            {
+                bigCategoryChestHealing.cost = bigCategoryChestTypeCost;
+            }
+            if (bigCategoryChestUtility != null)
+            {
+                bigCategoryChestUtility.cost = bigCategoryChestTypeCost;
+            }
+
             if (casinoChest != null)
             {
                 casinoChest.cost = casinoChestTypeCost;
@@ -284,7 +301,6 @@ namespace RiskierRain
                 chanceShrineSandy.cost = chanceShrineTypeCost;
                 chanceShrineSnowy.cost = chanceShrineTypeCost;
             }
-
         }
         #endregion
 

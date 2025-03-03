@@ -79,10 +79,6 @@ namespace MoreStats
                     if (Util.CheckRoll(remainder * 100, 0))
                         newLuck += 1;
                 }
-                if (newLuck > 0)
-                {
-                    Debug.Log($"base luck: {baseLuck} - new luck: {newLuck}");
-                }
                 return newLuck;
             });
         }
@@ -218,10 +214,6 @@ namespace MoreStats
                 CustomStats.ResetStats();
 
                 CustomStats.luckAdd = StatMods.luckAdd;
-                if(StatMods.luckAdd > 0)
-                {
-                    Debug.Log(StatMods.luckAdd);
-                }
 
                 //process shield recharge delay
                 CustomStats.shieldRechargeDelay = (MoreStatsPlugin.BaseShieldRechargeDelay + StatMods.shieldDelayIncreaseInSeconds) * StatMods.shieldDelayMultiplier;

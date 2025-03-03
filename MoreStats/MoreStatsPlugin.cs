@@ -18,7 +18,7 @@ namespace MoreStats
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "MoreStats";
-        public const string version = "1.0.0";
+        public const string version = "1.1.0";
         #endregion
 
         public const float BaseShieldRechargeDelay = 7f;

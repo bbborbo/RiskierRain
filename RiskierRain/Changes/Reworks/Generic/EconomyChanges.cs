@@ -848,5 +848,39 @@ namespace RiskierRain
             }
         }
         #endregion
+
+        #region soul shrine / shrine of shaping
+
+        public static int soulShrineLuckIncrease = 1;
+        GameObject soulShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/ShrineColossusAccess.prefab").WaitForCompletion();
+        void ReworkSoulShrine()
+        {
+            //if(soulShrine != null)
+            //{
+            //    PurchaseInteraction pi = soulShrine.GetComponent<PurchaseInteraction>();
+            //
+            //}
+
+            IL.RoR2.ShrineColossusAccessBehavior.ReviveAlliedPlayers += SoulShrineLuckBuff;
+            LanguageAPI.Add("SHRINE_COLOSSUS_DESCRIPTION",
+                "An offering of Soul reduces all living Survivors' health by 30%, but revives all dead Survivors and gives +1 extra Luck to all living Survivors.");
+        }
+
+        private void SoulShrineLuckBuff(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Buffs", "ExtraLifeBuff")
+                );
+            c.Remove();
+            c.Remove();
+            //c.Emit(OpCodes.Ldsfld, CoreModules.Assets.soulShrineLuckBuff);
+            c.EmitDelegate<Action<CharacterBody>>((body) =>
+            {
+                body.AddBuff(CoreModules.Assets.soulShrineLuckBuff);
+            });
+        }
+        #endregion
     }
 }

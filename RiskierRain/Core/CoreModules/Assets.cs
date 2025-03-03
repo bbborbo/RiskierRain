@@ -14,6 +14,7 @@ using UnityEngine.AddressableAssets;
 using static RiskierRain.CoreModules.StatHooks;
 using System.Linq;
 using RiskierRain.SurvivorTweaks;
+using static MoreStats.StatHooks;
 
 namespace RiskierRain.CoreModules
 {
@@ -139,9 +140,37 @@ namespace RiskierRain.CoreModules
             AddShockCooldown();
             AddCommanderRollBuff();
 
+            AddSoulShrineLuckBuff();
+
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
             On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
             On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
+        }
+
+        public static BuffDef soulShrineLuckBuff;
+        private void AddSoulShrineLuckBuff()
+        {
+            BuffDef extraLifeBuff = Addressables.LoadAssetAsync<BuffDef>("RoR2/DLC2/bdExtraLifeBuff.asset").WaitForCompletion();
+            soulShrineLuckBuff = ScriptableObject.CreateInstance<BuffDef>();
+            {
+                soulShrineLuckBuff.buffColor = extraLifeBuff.buffColor;
+                soulShrineLuckBuff.canStack = true;
+                soulShrineLuckBuff.isDebuff = extraLifeBuff.isDebuff;
+                soulShrineLuckBuff.flags = extraLifeBuff.flags;
+                soulShrineLuckBuff.name = "bdExtraLuckBuff";
+                soulShrineLuckBuff.iconSprite = extraLifeBuff.iconSprite;
+            }
+            CoreModules.Assets.buffDefs.Add(soulShrineLuckBuff);
+            GetMoreStatCoefficients += SoulShrineLuck;
+        }
+
+        private void SoulShrineLuck(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(soulShrineLuckBuff);
+            if (buffCount > 0)
+            {
+                args.luckAdd += buffCount * RiskierRainPlugin.soulShrineLuckIncrease;
+            }
         }
 
         private void AddBanditExecutionBuffs()

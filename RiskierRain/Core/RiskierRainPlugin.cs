@@ -472,6 +472,12 @@ namespace RiskierRain
             {
                 //ReworkStickyBomb();
             }
+
+            //soul shrine
+            if (GetConfigBool(true, "Shrine of Shaping"))
+            {
+                ReworkSoulShrine();
+            }
             //this.DoSadistScavenger();
             #endregion
 

@@ -73,7 +73,7 @@ namespace MoreStats
                 MoreStatCoefficients msc = GetMoreStatsFromBody(body);
                 float newLuck = baseLuck + msc.luckAdd;
                 float remainder = newLuck % 1;
-                if (remainder >= Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
+                if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
                 {
                     newLuck = Mathf.CeilToInt(newLuck);
                 }

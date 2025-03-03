@@ -1,9 +1,11 @@
 ﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using RoR2;
 using RoR2BepInExPack.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -50,7 +52,42 @@ namespace MoreStats
             // Execution
             IL.RoR2.HealthComponent.TakeDamageProcess += InterceptExecutionThreshold;
             On.RoR2.HealthComponent.GetHealthBarValues += DisplayExecutionThreshold;
+
+            ILHook luckHook = new ILHook(typeof(CharacterMaster).GetMethod("get_luck", (BindingFlags)(-1)), ModifyLuck);
         }
+
+        private static void ModifyLuck(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchRet()
+                );
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<Single, CharacterMaster, Single>>((baseLuck, master) =>
+            {
+                if (master == null || !master.hasBody)
+                    return baseLuck;
+
+                CharacterBody body = master.GetBody();
+                MoreStatCoefficients msc = GetMoreStatsFromBody(body);
+                float newLuck = baseLuck + msc.luckAdd;
+                float remainder = newLuck % 1;
+                if (remainder >= Single.Epsilon)
+                {
+                    newLuck = Mathf.FloorToInt(newLuck);
+                    if (Util.CheckRoll(remainder * 100, 0))
+                        newLuck += 1;
+                }
+                if (newLuck > 0)
+                {
+                    Debug.Log($"base luck: {baseLuck} - new luck: {newLuck}");
+                }
+                return newLuck;
+            });
+        }
+
+
 
         #region events
         public static FixedConditionalWeakTable<CharacterBody, MoreStatCoefficients> characterCustomStats = new FixedConditionalWeakTable<CharacterBody, MoreStatCoefficients>();
@@ -178,15 +215,13 @@ namespace MoreStats
             {
                 //get stats
                 CustomStats = characterCustomStats.GetOrCreateValue(body);
-                //subtract the stored luck value from master luck and reset so it doesnt get added multiple times
-                if(body.master != null)
-                    body.master.luck -= CustomStats.luckAdd;
                 CustomStats.ResetStats();
 
-                //record the new luck value and add it back to master luck 
                 CustomStats.luckAdd = StatMods.luckAdd;
-                if (body.master != null)
-                    body.master.luck += CustomStats.luckAdd;
+                if(StatMods.luckAdd > 0)
+                {
+                    Debug.Log(StatMods.luckAdd);
+                }
 
                 //process shield recharge delay
                 CustomStats.shieldRechargeDelay = (MoreStatsPlugin.BaseShieldRechargeDelay + StatMods.shieldDelayIncreaseInSeconds) * StatMods.shieldDelayMultiplier;

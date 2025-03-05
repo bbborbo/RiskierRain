@@ -32,7 +32,8 @@ namespace SwanSongExtended.Interactables
 
 	public abstract class InteractableBase : SharedBase
     {
-		public abstract string InteractableName { get; }
+		public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
+        public abstract string InteractableName { get; }
 		public abstract string InteractableContext { get; }
 		public abstract string InteractableLangToken { get; }
 		public abstract GameObject InteractableModel { get; }

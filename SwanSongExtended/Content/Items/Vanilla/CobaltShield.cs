@@ -83,7 +83,7 @@ namespace SwanSongExtended.Items
                     barrierGen *= stationaryStatMultiplier;
                 }
 
-                args.barrierGenPerSecondFlat += barrierGen;
+                args.barrierGenerationRateAddPostMult += barrierGen;
             }
         }
 

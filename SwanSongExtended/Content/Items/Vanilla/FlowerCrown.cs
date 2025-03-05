@@ -73,7 +73,7 @@ Thank you for always sending us gifts. I made some of them into this flower crow
         {
             if (GetCount(sender) > 0)
             {
-                args.shieldDelayIncreaseInSeconds -= rechargeRateIncrease;
+                args.shieldDelaySecondsIncreaseAddPreMult -= rechargeRateIncrease;
             }
         }
 

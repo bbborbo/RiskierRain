@@ -34,7 +34,7 @@ namespace BarrierRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBarrierDecay";
-        public const string version = "2.1.0";
+        public const string version = "2.1.1";
         #endregion
 
         private bool _useDynamicDecay = true;
@@ -89,8 +89,8 @@ namespace BarrierRework
 
         private void ChangeBarrierDecay(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            args.barrierBaseStaticDecayRateMaxHealthTime = BarrierDecayRateStatic.Value;
-            args.barrierBaseDynamicDecayRateHalfLife = BarrierDecayRateDynamic.Value;
+            args.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime = BarrierDecayRateStatic.Value;
+            args.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife = BarrierDecayRateDynamic.Value;
         }
     }
 }

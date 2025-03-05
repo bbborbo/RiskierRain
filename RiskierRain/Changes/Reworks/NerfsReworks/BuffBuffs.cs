@@ -12,6 +12,8 @@ using static R2API.RecalculateStatsAPI;
 using EntityStates;
 using RiskierRain.CoreModules;
 using System.Runtime.CompilerServices;
+using MonoMod.RuntimeDetour;
+using System.Reflection;
 
 namespace RiskierRain
 {
@@ -204,7 +206,8 @@ namespace RiskierRain
             if (!Tools.isLoaded("com.Skell.DeathMarkChange"))
             {
                 ChangeBuffStacking(nameof(RoR2Content.Buffs.DeathMark), true);
-                IL.RoR2.GlobalEventManager.ProcessHitEnemy += DeathMarkFix_Stacking;
+                //IL.RoR2.GlobalEventManager.ProcDeathMark += DeathMarkFix_Stacking;
+                ILHook dmfs = new ILHook(typeof(GlobalEventManager).GetMethod("ProcDeathMark", (BindingFlags)(-1)), DeathMarkFix_Stacking);
                 IL.RoR2.HealthComponent.TakeDamageProcess += DeathMarkFix_Damage;
                 LanguageAPI.Add("ITEM_DEATHMARK_DESC",
                     "Enemies with <style=cIsDamage>4</style> or more debuffs are <style=cIsDamage>marked for death</style>, " +

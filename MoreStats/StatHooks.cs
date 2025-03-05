@@ -53,7 +53,39 @@ namespace MoreStats
             IL.RoR2.HealthComponent.TakeDamageProcess += InterceptExecutionThreshold;
             On.RoR2.HealthComponent.GetHealthBarValues += DisplayExecutionThreshold;
 
+            // Healing
+            IL.RoR2.HealthComponent.Heal += ModifyHealing;
+
             ILHook luckHook = new ILHook(typeof(CharacterMaster).GetMethod("get_luck", (BindingFlags)(-1)), ModifyLuck);
+        }
+
+        private static void ModifyHealing(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(1),
+                x => x.MatchStloc(out _)
+                );
+            if (b)
+            {
+                c.Index++;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, HealthComponent, float>>((healAmt, healthComponent) =>
+                {
+                    CharacterBody body = healthComponent.body;
+                    MoreStatCoefficients msc = GetMoreStatsFromBody(body);
+                    if (msc.healingMult > 0)
+                    {
+                        return healAmt * msc.healingMult;
+                    }
+                    return healAmt;
+                });
+            }
+            else
+            {
+                Debug.LogError("MoreStats Healing Hook Failed!!!!");
+            }
         }
 
         private static void ModifyLuck(ILContext il)
@@ -73,6 +105,8 @@ namespace MoreStats
                 MoreStatCoefficients msc = GetMoreStatsFromBody(body);
                 float newLuck = baseLuck + msc.luckAdd;
                 float remainder = newLuck % 1;
+                if (remainder < 0)
+                    remainder += 1;
                 if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
                 {
                     newLuck = Mathf.CeilToInt(newLuck);
@@ -97,39 +131,55 @@ namespace MoreStats
             /// </summary>
             public int barrierFreezeCount = 0;
 
-            //multipliers
-            public float barrierDecayIncreaseMultiplier = 1;
-            public float barrierDecayDecreaseDivisor = 1;
+            /// <summary>
+            /// MULTIPLY to increase decay. Can be multiplied by values less than 1 if you want classic cooldown reduction style reduction.
+            /// BARRIER_DECAY_RATE = 
+            /// ([BASE_DECAY_RATE] + [barrierDecayPerSecondFlat])
+            /// * ([barrierDecayIncreaseMultiplier] / [barrierDecayDecreaseDivisor]) + barrierGenPerSecondFlat
+            /// </summary>
+            public float barrierDecayRatePercentIncreaseMult = 1;
+            /// <summary>
+            /// MULTIPLY to reduce decay.
+            /// BARRIER_DECAY_RATE = 
+            /// ([BASE_DECAY_RATE] + [barrierDecayPerSecondFlat])
+            /// * ([barrierDecayIncreaseMultiplier] / [barrierDecayDecreaseDivisor]) + barrierGenPerSecondFlat
+            /// </summary>
+            public float barrierDecayRatePercentDecreaseDiv = 1;
             public float barrierDecayMultiplier 
             {
                 get
                 {
-                    if (barrierDecayDecreaseDivisor <= 0 || barrierDecayIncreaseMultiplier <= 0)
+                    if (barrierDecayRatePercentDecreaseDiv <= 0 || barrierDecayRatePercentIncreaseMult <= 0)
                         return 0;
-                    return barrierDecayIncreaseMultiplier / barrierDecayDecreaseDivisor;
+                    return barrierDecayRatePercentIncreaseMult / barrierDecayRatePercentDecreaseDiv;
                 }
             }
 
             //flats
             /// <summary>
-            /// Added to barrier decay, i.e +25 means 25 barrier is generated per second
-            /// Does not get multiplied by barrier decay multipliers
+            /// ADD to reduce barrier decay rate. Generates barrier if above barrier decay rate; not affected by multipliers.
+            /// BARRIER_DECAY_RATE = 
+            /// ([BASE_DECAY_RATE] + [barrierDecayPerSecondFlat])
+            /// * ([barrierDecayIncreaseMultiplier] / [barrierDecayDecreaseDivisor]) + barrierGenPerSecondFlat
             /// </summary>
-            public float barrierGenPerSecondFlat = 0;
+            public float barrierGenerationRateAddPostMult = 0;
             /// <summary>
-            /// Subtracted from barrier decay, i.e +25 means 25 more barrier decays per second
+            /// ADD to increase barrier decay rate.
+            /// BARRIER_DECAY_RATE = 
+            /// ([BASE_DECAY_RATE] + [barrierDecayPerSecondFlat])
+            /// * ([barrierDecayIncreaseMultiplier] / [barrierDecayDecreaseDivisor]) + barrierGenPerSecondFlat
             /// </summary>
-            public float barrierDecayPerSecondFlat = 0;
+            public float barrierDecayRateAddPreMult = 0;
 
             //base decay
             /// <summary>
             /// pls dont touch this unless ur a rework mod
             /// </summary>
-            public float barrierBaseStaticDecayRateMaxHealthTime = 30;
+            public float FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime = 30;
             /// <summary>
             /// pls dont touch this unless ur a rework mod
             /// </summary>
-            public float barrierBaseDynamicDecayRateHalfLife = 0;
+            public float FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife = 0;
             #endregion
 
             #region jumps
@@ -142,11 +192,11 @@ namespace MoreStats
             /// <summary>
             /// pls dont touch this unless ur a rework mod
             /// </summary>
-            public int featherJumpCountBase = 1;
+            public int FOR_REWORK_MODS_featherJumpCountBase = 1;
             /// <summary>
             /// pls dont touch this unless ur a rework mod
             /// </summary>
-            public int featherJumpCountStack = 1;
+            public int FOR_REWORK_MODS_featherJumpCountStack = 1;
             #endregion
 
             #region on hit
@@ -154,21 +204,51 @@ namespace MoreStats
             /// Out of 100, ie +20 is 20% chance to ignite
             /// </summary>
             public float burnChanceOnHit = 0;
+            /// <summary>
+            /// Out of 100, ie +20 is 20% chance to chill
+            /// </summary>
+            //public float chillChanceOnHit = 0;
             #endregion
 
             #region shield delay
             /// <summary>
-            /// Subtract to reduce delay, add to increase
+            /// SUBTRACT to reduce delay, ADD to increase
+            /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
+            /// * ([shieldDelayPercentIncreaseMult] / [shieldDelayPercentDecreaseDiv]) + shieldDelaySecondsIncreaseAddPostMult
             /// </summary>
-            public float shieldDelayIncreaseInSeconds = 0f;
+            public float shieldDelaySecondsIncreaseAddPreMult = 0f;
             /// <summary>
-            /// Multiply by one minus your percentage reduction. Please don't let this stat reach zero.
+            /// SUBTRACT to reduce delay, ADD to increase
+            /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
+            /// * ([shieldDelayPercentIncreaseMult] / [shieldDelayPercentDecreaseDiv]) + shieldDelaySecondsIncreaseAddPostMult
             /// </summary>
-            public float shieldDelayMultiplier = 1f;
+            public float shieldDelaySecondsIncreaseAddPostMult = 0f;
+            /// <summary>
+            /// MULTIPLY to increase delay. Can be multiplied by values less than 1 if you want classic cooldown reduction style reduction
+            /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
+            /// * ([shieldDelayPercentIncreaseMult] / [shieldDelayPercentDecreaseDiv]) + shieldDelaySecondsIncreaseAddPostMult
+            /// </summary>
+            public float shieldDelayPercentIncreaseMult = 1f;
+            /// <summary>
+            /// MULTIPLY to reduce delay.
+            /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
+            /// * ([shieldDelayPercentIncreaseMult] / [shieldDelayPercentDecreaseDiv]) + shieldDelaySecondsIncreaseAddPostMult
+            /// </summary>
+            public float shieldDelayPercentDecreaseDiv = 1f;
+
+            public float shieldDelayMultiplier
+            {
+                get
+                {
+                    if (shieldDelayPercentDecreaseDiv <= 0 || shieldDelayPercentIncreaseMult <= 0)
+                        return 0;
+                    return shieldDelayPercentIncreaseMult / shieldDelayPercentDecreaseDiv;
+                }
+            }
             #endregion
 
             #region luck
-            public int luckAdd = 0;
+            public float luckAdd = 0;
             #endregion
 
             #region execution
@@ -196,6 +276,14 @@ namespace MoreStats
                 return selfExecutionThresholdBase;
             }
             #endregion
+
+            #region healing
+            /// <summary>
+            /// Just multiply this.
+            /// HEALING = [HEAL_AMT_IN] * [healingPercentIncreaseMult]
+            /// </summary>
+            public float healingPercentIncreaseMult = 1f;
+            #endregion
         }
         public delegate void MoreStatHookEventHandler(CharacterBody sender, MoreStatHookEventArgs args);
         #endregion
@@ -216,11 +304,18 @@ namespace MoreStats
                 CustomStats.ResetStats();
 
                 CustomStats.luckAdd = StatMods.luckAdd;
+                CustomStats.burnChance = StatMods.burnChanceOnHit;
+                //CustomStats.chillChance = StatMods.chillChanceOnHit;
+                CustomStats.healingMult = StatMods.healingPercentIncreaseMult;
 
                 //process shield recharge delay
-                CustomStats.shieldRechargeDelay = (MoreStatsPlugin.BaseShieldRechargeDelay + StatMods.shieldDelayIncreaseInSeconds) * StatMods.shieldDelayMultiplier;
-                //Debug.Log(stats.shieldRechargeDelay);
+                #region shield delay
+                float shieldDelay = (MoreStatsPlugin.BaseShieldDelaySeconds + StatMods.shieldDelaySecondsIncreaseAddPreMult) 
+                    * StatMods.shieldDelayMultiplier + StatMods.shieldDelaySecondsIncreaseAddPostMult;
+
+                CustomStats.shieldRechargeDelay = Mathf.Max(MoreStatsPlugin.MinShieldDelaySeconds, shieldDelay);
                 UpdateShieldRechargeReady(body, CustomStats);
+                #endregion
 
                 CustomStats.selfExecutionThresholdAdd = StatMods.selfExecutionThresholdAdd;
                 CustomStats.selfExecutionThresholdBase = StatMods.selfExecutionThresholdBase;
@@ -264,22 +359,22 @@ namespace MoreStats
                 //process barrier decay stats
                 float decayRate = 0;
                 bool decayFrozen = StatMods.barrierFreezeCount > 0;
-                float decayMultiplier = StatMods.barrierDecayDecreaseDivisor > 0 ? StatMods.barrierDecayIncreaseMultiplier / StatMods.barrierDecayDecreaseDivisor : 0;
+                float decayMultiplier = StatMods.barrierDecayRatePercentDecreaseDiv > 0 ? StatMods.barrierDecayRatePercentIncreaseMult / StatMods.barrierDecayRatePercentDecreaseDiv : 0;
 
-                CustomStats.barrierDecayFrozen = StatMods.barrierFreezeCount > 0;
-                CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? StatMods.barrierBaseDynamicDecayRateHalfLife / decayMultiplier : 0;
+                CustomStats.barrierDecayFrozen = decayFrozen;
+                CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? StatMods.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife / decayMultiplier : 0;
 
                 if (!decayFrozen && decayMultiplier > 0)
                 {
-                    decayRate = StatMods.barrierDecayPerSecondFlat;
-                    if (StatMods.barrierBaseStaticDecayRateMaxHealthTime > 0)
+                    decayRate = StatMods.barrierDecayRateAddPreMult;
+                    if (StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime > 0)
                     {
-                        decayRate += maxBarrier / StatMods.barrierBaseStaticDecayRateMaxHealthTime;
+                        decayRate += maxBarrier / StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime;
                     }
                     decayRate *= decayMultiplier;
                 }
 
-                decayRate -= StatMods.barrierGenPerSecondFlat;
+                decayRate -= StatMods.barrierGenerationRateAddPostMult;
                 //if(StatMods.barrierGenPerSecondFlat > 0)
                 //{
                 //    if(StatMods.barrierGenPerSecondFlat > decayRate)
@@ -336,7 +431,7 @@ namespace MoreStats
 
                 if (!stats.barrierDecayFrozen && stats.barrierDecayDynamicHalfLife > 0)
                 {
-                    barrierDecayRate += Mathf.Max(1 - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
+                    barrierDecayRate += Mathf.Max(MoreStatsPlugin.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
                 }
 
                 //healthComponent.AddBarrier(stats.barrierGenRate * Time.fixedDeltaTime);
@@ -372,11 +467,11 @@ namespace MoreStats
                     MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                     if (featherCount > 0)
                     {
-                        jumpCount += StatMods.featherJumpCountBase + StatMods.featherJumpCountStack * (featherCount - 1);
+                        jumpCount += StatMods.FOR_REWORK_MODS_featherJumpCountBase + StatMods.FOR_REWORK_MODS_featherJumpCountStack * (featherCount - 1);
                     }
                     jumpCount += StatMods.jumpCountAdd;
 
-                    return jumpCount;
+                    return Mathf.Max(jumpCount, 0);
                 });
             }
             else
@@ -499,15 +594,17 @@ namespace MoreStats
         public float barrierDecayDynamicHalfLife = 0;
         public float barrierGenRate = 0;
 
+        public float luckAdd = 0;
         public float burnChance = 0;
+        //public float chillChance = 0;
 
         public bool  shieldRechargeReady = true;
-        public float shieldRechargeDelay = MoreStatsPlugin.BaseShieldRechargeDelay;
+        public float shieldRechargeDelay = MoreStatsPlugin.BaseShieldDelaySeconds;
 
         public float selfExecutionThresholdAdd = 0;
         public float selfExecutionThresholdBase = Mathf.NegativeInfinity;
 
-        public int luckAdd = 0;
+        public float healingMult = 1;
 
         public void ResetStats()
         {
@@ -515,15 +612,17 @@ namespace MoreStats
             barrierDecayDynamicHalfLife = 0;
             barrierGenRate = 0;
 
+            luckAdd = 0;
             burnChance = 0;
-
+            //chillChance = 0;     
+            
             shieldRechargeReady = true;
-            shieldRechargeDelay = MoreStatsPlugin.BaseShieldRechargeDelay;
+            shieldRechargeDelay = MoreStatsPlugin.BaseShieldDelaySeconds;
 
             selfExecutionThresholdAdd = 0;
             selfExecutionThresholdBase = 0;
 
-            luckAdd = 0;
+            healingMult = 1;
         }
     }
 }

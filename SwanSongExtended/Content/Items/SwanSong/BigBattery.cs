@@ -105,7 +105,7 @@ You know?";
         {
             if (GetCount(sender) > 0)
             {
-                args.shieldDelayIncreaseInSeconds -= rechargeRateIncrease;
+                args.shieldDelaySecondsIncreaseAddPreMult -= rechargeRateIncrease;
             }
         }
 

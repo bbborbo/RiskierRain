@@ -37,7 +37,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.2.0";
+        public const string version = "1.2.1";
         #endregion
         public static bool IsMissileArtifactEnabled()
         {
@@ -73,8 +73,8 @@ namespace JumpRework
 
         private void JumpCounts(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            args.featherJumpCountBase = featherJumpCount;
-            args.featherJumpCountStack = 0;
+            args.FOR_REWORK_MODS_featherJumpCountBase = featherJumpCount;
+            args.FOR_REWORK_MODS_featherJumpCountStack = 0;
             Inventory inv = sender.inventory;
             if (inv)
             {

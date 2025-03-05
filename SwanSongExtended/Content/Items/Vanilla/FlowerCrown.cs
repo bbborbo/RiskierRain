@@ -30,7 +30,7 @@ namespace SwanSongExtended.Items
             $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +
             $"Reduces <style=cIsUtility>shield recharge delay</style> " +
             $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
-            $"While shields are active, increase <style=cIsHealing>armor</style> " +
+            $"While shields are active, increase " +
             $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase}</style> " +
             $"<style=cStack>(+{armorIncreaseStack} per stack)</style>, " +
             $"and <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +

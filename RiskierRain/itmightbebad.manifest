@@ -1,0 +1,79 @@
+ManifestFileVersion: 0
+CRC: 1784687306
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 815d3a63d0a728b7820219351b22ad6e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 1fe3abd029edb3522ae5dbbc711d0a74
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Models/Meshes/borboshield.fbx
+- Assets/Textures/Icons/Skill/ThermalCannon.png
+- Assets/Textures/Materials/Item/bean.png
+- Assets/Models/DropPrefabs/Item/Quiver.prefab
+- Assets/Textures/Materials/Elite/matLeeching.mat
+- Assets/Models/DropPrefabs/Item/CoinGun.prefab
+- Assets/Textures/Icons/Buff/texBuffCobaltShield.png
+- Assets/Textures/Materials/Item/beans.png
+- Assets/Textures/Materials/Item/coingun_Normal.png
+- Assets/Textures/Materials/Item/wickedring_wickedring_Emissive.png
+- Assets/Textures/Icons/Item/texIconNewLopper.png
+- Assets/Textures/Materials/Item/matQuiver.mat
+- Assets/Textures/Materials/Item/matBeans.mat
+- Assets/Models/DropPrefabs/Item/NewLopper.prefab
+- Assets/Models/Meshes/borbolopper.fbx
+- Assets/Textures/Icons/Item/texIconWickedBand.png
+- Assets/Models/DropPrefabs/Item/CobaltShield.prefab
+- Assets/Models/DropPrefabs/Item/Beans.prefab
+- Assets/Textures/Materials/Elite/matVolatile.mat
+- Assets/Textures/Materials/Item/quiver_quiver_Normal.png
+- Assets/Textures/Icons/Item/texIconQuiver.png
+- Assets/Models/DropPrefabs/Item/WickedBand.prefab
+- Assets/Textures/Materials/Item/borboshield_Diffuse.png
+- Assets/Textures/Materials/Item/quiver_quiver_BaseColor.png
+- Assets/Textures/Materials/Item/borbolopper_Diffuse.png
+- Assets/Textures/Icons/Item/texIconCobaltShield.png
+- Assets/Textures/Materials/Item/quiver_quiver_Emissive.png
+- Assets/Textures/Icons/Skill/PocketWormhole.png
+- Assets/Textures/Materials/Item/wickedring_wickedring_BaseColor.mat
+- Assets/Textures/Materials/Item/coingun_Diffuse.png
+- Assets/Textures/Materials/Elite/texRampLeeching.png
+- Assets/Textures/Materials/Item/borboshield_Normal.png
+- Assets/Textures/Materials/Item/borbolopper_Normal.png
+- Assets/Textures/Icons/Item/texIconCoinGun.png
+- Assets/Textures/Materials/Item/matLopper.mat
+- Assets/Textures/Icons/Item/texIconBeans.png
+- Assets/Models/DisplayPrefabs/Item/CobaltShieldDisplay.prefab
+- Assets/Textures/Materials/Elite/texRampVolatile.png
+- Assets/Textures/Materials/Elite/matFrenzied.mat
+- Assets/Models/DisplayPrefabs/Item/BeansDisplay.prefab
+- Assets/Textures/Materials/Item/matCobaltShield.mat
+- Assets/Textures/Materials/Item/matWickedBand.mat
+- Assets/Textures/Materials/Item/wickedring_wickedring_Normal.png
+- Assets/Textures/Materials/Item/matCoinGun.mat
+- Assets/Textures/Materials/Item/wickedring_wickedring_BaseColor.png
+- Assets/Textures/Materials/Elite/texRampFrenzied.png
+- Assets/Textures/Icons/Skill/VulcanSlug.png
+Dependencies: []

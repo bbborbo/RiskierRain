@@ -29,7 +29,7 @@ namespace SwanSongExtended.Items
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
             $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +
             $"Reduces <style=cIsUtility>shield recharge delay</style> " +
-            $"by <style=cIsUtility>{Tools.ConvertDecimal(rechargeRateIncrease)}s</style>. " +
+            $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
             $"While shields are active, increase <style=cIsDamage>attack speed</style> " +
             $"by <style=cIsDamage>{Tools.ConvertDecimal(aspdIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(aspdIncrease)} per stack)</style>.";

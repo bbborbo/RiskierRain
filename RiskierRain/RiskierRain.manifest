@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4158058964
+CRC: 518603202
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: borboitemicons
+      Name: itmightbebad
       Dependencies: {}
     Info_1:
-      Name: itmightbebad
+      Name: borboitemicons
       Dependencies: {}
     Info_2:
       Name: missilereworkassets

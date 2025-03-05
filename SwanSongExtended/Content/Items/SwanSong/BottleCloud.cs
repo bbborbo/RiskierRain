@@ -29,7 +29,8 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Gain an extra jump. Double jumping near enemies stuns them.";
 
-        public override string ItemFullDescription => $"Gain an extra jump. Double jumping within {smokeBombRadius}m of an enemy " +
+        public override string ItemFullDescription => $"Gain an extra jump. " +
+            $"Double jumping within <style=cIsUtility>{smokeBombRadius}m</style> of any enemy " +
             $"drops a <style=cIsUtility>smoke bomb</style>, <style=cIsDamage>stunning</style> them " +
             $"for <style=cIsDamage>{smokeBombProcCoefficient}</style> second. " +
             $"Cannot be reactivated for <style=cIsUtility>{CloudBottleBehavior.cooldownDuration}</style> seconds " +

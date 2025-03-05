@@ -417,15 +417,13 @@ namespace MoreStats
                 return minBarrier;
             });
 
-            c.GotoNext(MoveType.Before,
+            c.GotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_barrierDecayRate")
                 );
-            c.Remove();
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<CharacterBody, HealthComponent, float>>((body, healthComponent) =>
+            c.EmitDelegate<Func<float, HealthComponent, float>>((barrierDecayRate, healthComponent) =>
             {
-                float barrierDecayRate = body.barrierDecayRate;
-                MoreStatCoefficients stats = GetMoreStatsFromBody(body);
+                MoreStatCoefficients stats = GetMoreStatsFromBody(healthComponent.body);
                 if(stats == null)
                     return barrierDecayRate;
 

@@ -1,0 +1,26 @@
+ManifestFileVersion: 0
+CRC: 1927636462
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 809a8e1a3cdbe209306d97644fb59f87
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: c90fc19e2679e5295d10bd00f33cb4c3
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Textures/Icons/Item/turtleshell.png
+- Assets/Textures/Icons/Item/fuse.png
+- Assets/Textures/Icons/Item/flowercrown.png
+- Assets/Textures/Icons/Item/utilitybelt.png
+- Assets/Textures/Icons/Item/manaflower.png
+- Assets/Textures/Icons/Item/cobaltshield.png
+- Assets/Textures/Icons/Item/birdband.png
+- Assets/Textures/Icons/Item/bigbattery.png
+Dependencies: []

@@ -38,8 +38,8 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Negate all knockback. Reduce incoming damage and gain barrier while stationary.";
 
         public override string ItemFullDescription => $"Negates {UtilityColor("ALL knockback")}. Increase {HealingColor("armor")} " +
-            $"by {HealingColor(baseArmor.ToString())} {StackText("+ " + stackArmor)} and " +
-            $"<style=cIsHealing>barrier generation</style> by {HealingColor(baseBarrierGen.ToString() + " hp/s")} {StackText($"+ {baseBarrierGen.ToString()} hp/s")}. " +
+            $"by {HealingColor(baseArmor.ToString())} {StackText("+" + stackArmor)} and " +
+            $"<style=cIsHealing>barrier generation</style> by {HealingColor($"{baseBarrierGen} hp/s")} {StackText($"+{baseBarrierGen} hp/s")}. " +
             $"While stationary, these effects are {UtilityColor("quintupled")}.";
 
         public override string ItemLore => "<style=cIsHealth>I cannot let you enter until you free me of my curse.</style>";
@@ -47,9 +47,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags { get; } = new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>(CommonAssets.dropPrefabsPath + "Item/CobaltShield.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("CobaltShield");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>(CommonAssets.iconsPath + "Item/texIconCobaltShield.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconCobaltShield");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

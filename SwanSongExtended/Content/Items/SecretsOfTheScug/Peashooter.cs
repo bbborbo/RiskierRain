@@ -60,29 +60,13 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnSkillActivated += PeashooterOnSkill;
-        }
-        private void PeashooterOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
-        {
-            orig (self, skill);          
-            if (!(skill == self.skillLocator.primary))
-            {
-                return;
-            }
-            int peashooterCount = GetCount(self);
-            if (peashooterCount <= 0)
-            {
-                return;
-            }
-            FirePeashooter(self);
-
         }
 
-        private void FirePeashooter(CharacterBody body)
+        public static void FirePeashooter(CharacterBody body)
         {
-
+            if (body == null)
+                return;
             Vector3 forward = body.inputBank.aimDirection;
-
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
                 damage = body.damage * damageCoefficient,

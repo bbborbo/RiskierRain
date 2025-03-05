@@ -61,8 +61,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnSkillActivated += BoomerangOnSkill;
-            boomerangBuff = Content.CreateAndAddBuff("BoomerangBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.cyan, true, false);
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -76,34 +74,14 @@ namespace SwanSongExtended.Items
                 }
             }
         }
-        private void BoomerangOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
-        {
-            orig (self, skill);          
-            if (!(skill == self.skillLocator.primary))
-            {
-                return;
-            }
-            int boomerangCount = GetCount(self);
-            if (boomerangCount <= 0)
-            {
-                return;
-            }
-            if (self.GetBuffCount(boomerangBuff) >= 1)
-            {
-                FireBoomerang(self);
-            }
-        }
 
-        private void FireBoomerang(CharacterBody body)
+        public static void FireBoomerang(CharacterBody body)
         {
-            if (body.GetBuffCount(boomerangBuff) > 0)
-            {
-                body.RemoveBuff(boomerangBuff);
-            }           
+            if (body == null || body.GetBuffCount(boomerangBuff) <= 0)
+                return;
+            body.RemoveBuff(boomerangBuff);
 
             Vector3 forward = body.inputBank.aimDirection;
-          
-
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
                 damage = body.damage * damageCoefficient,
@@ -120,6 +98,13 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
+            boomerangBuff = Content.CreateAndAddBuff(
+                    "BoomerangBuff", 
+                    Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), 
+                    Color.cyan, 
+                    true, 
+                    false
+                );
             CreateProjectile();
             base.Init();
         }

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static MoreStats.OnHit;
+using SwanSongExtended.Items;
 
 namespace SwanSongExtended.Modules
 {
@@ -11,6 +13,25 @@ namespace SwanSongExtended.Modules
         public static void Init()
         {
             On.RoR2.GlobalEventManager.OnCharacterDeath += SquidOnDeath;
+
+            On.RoR2.CharacterBody.OnSkillActivated += SnailyOnSkill;
+        }
+
+        private static void SnailyOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
+        {
+            orig(self, skill);
+
+            if (skill != self.skillLocator.primary)
+                return;
+
+            if(Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
+            {
+                Boomerang.FireBoomerang(self);
+            }
+            else if(Peashooter.instance.isEnabled && Peashooter.instance.GetCount(self) > 0)
+            {
+                Peashooter.FirePeashooter(self);
+            }
         }
 
         #region squid hooks

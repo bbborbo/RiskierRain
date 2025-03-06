@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using static MoreStats.OnHit;
 using RoR2.ExpansionManagement;
-
+using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items
 {
@@ -41,7 +41,18 @@ namespace SwanSongExtended.Items
         {
             return null;
         }
-
+        //buff
+        public static BuffDef violetBuff;
+        public override void Init()
+        {
+            violetBuff = Content.CreateAndAddBuff(
+                "bdVioletCooldown",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
+                new Color(0.9f, 0.8f, 0.0f),
+                false, true);
+            violetBuff.isHidden = true;
+            base.Init();
+        }
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
@@ -54,31 +65,16 @@ namespace SwanSongExtended.Items
             orig(self, damageInfo);
 
             CharacterBody body = self.body;
-            if(body != null)
-            {
-                int itemCount = GetCount(body);
-                if (itemCount > 0)
-                {
-                    //add a check for self damage, maybe? needs testing!
-                    int barrierToAdd = barrierBase + barrierStack * (itemCount - 1);
-                    self.AddBarrier(barrierToAdd);
-                }
-            }
-        }
-
-        private void VioletIchorOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
-        {
-            if (victimBody.healthComponent == null)
-            {
-                return;
-            }
-            int itemCount = GetCount(victimBody);
-            if (itemCount > 0)
+            if (body == null)
+                return;            
+            int itemCount = GetCount(body);
+            if (itemCount > 0 && !body.HasBuff(violetBuff))
             {
                 //add a check for self damage, maybe? needs testing!
                 int barrierToAdd = barrierBase + barrierStack * (itemCount - 1);
-                victimBody.healthComponent.AddBarrier(barrierToAdd);
-            }
+                self.AddBarrier(barrierToAdd);
+                body.AddTimedBuffAuthority(violetBuff.buffIndex, 0.5f);//make this not hardcoded
+            }            
         }
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)

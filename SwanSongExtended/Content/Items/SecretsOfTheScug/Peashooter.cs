@@ -22,8 +22,8 @@ namespace SwanSongExtended.Items
         public static float lifetime = 5f; //0.6f
         [AutoConfig("Peashooter Scale Factor", 0.3f)]
         public static float peashooterScale = 0.3f; //1.0f
-        [AutoConfig("Peashooter Speed", 90f)]
-        public static float peashooterSpeed = 90f; //1.0f
+        [AutoConfig("Peashooter Speed", 100f)]
+        public static float peashooterSpeed = 100f; //1.0f
 
         [AutoConfig("Damage Coefficient", .2f)]
         public static float damageCoefficient = .2f;

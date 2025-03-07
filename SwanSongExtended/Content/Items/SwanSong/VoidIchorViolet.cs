@@ -18,8 +18,8 @@ namespace SwanSongExtended.Items
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
-        int barrierBase = 20;
-        int barrierStack = 20;
+        int barrierBase = 30;
+        int barrierStack = 30;
         public override string ItemName => "Metamorphic Ichor (Violet)";
 
         public override string ItemLangTokenName => "ICHORVIOLET";
@@ -73,7 +73,7 @@ namespace SwanSongExtended.Items
                 //add a check for self damage, maybe? needs testing!
                 int barrierToAdd = barrierBase + barrierStack * (itemCount - 1);
                 self.AddBarrier(barrierToAdd);
-                body.AddTimedBuffAuthority(violetBuff.buffIndex, 0.5f);//make this not hardcoded
+                body.AddTimedBuffAuthority(violetBuff.buffIndex, 2f);//make this not hardcoded
             }            
         }
 

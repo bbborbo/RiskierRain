@@ -12,31 +12,32 @@ using UnityEngine.Networking;
 
 namespace SwanSongExtended.Items
 {
-    class Boomerang : ItemBase<Boomerang>
+    class RainbowWave : ItemBase<RainbowWave>
     {
+
         #region config
-        public override string ConfigName => "Boomerang";
+        public override string ConfigName => "Rainbow Wave";
 
-        public static GameObject boomerangPrefab;
-        [AutoConfig("Max Boomerang Fly-Out Time", 0.3f)]
-        public static float maxFlyOutTime = 0.3f; //0.6f
-        [AutoConfig("Boomerang Scale Factor", 0.3f)]
-        public static float boomerangScale = 0.3f; //1.0f
-        [AutoConfig("Boomerang Speed", 60f)]
-        public static float boomerangSpeed = 60f; //1.0f
+        public static GameObject rainbowWavePrefab;
+        [AutoConfig("Max Rainbow Wave Fly-Out Time", 10f)]
+        public static float maxFlyOutTime = 010f; //0.6f
+        [AutoConfig("Rainbow Wave Scale Factor", 0.3f)]
+        public static float rainbowWaveScale = 5f; //1.0f
+        [AutoConfig("Rainbow Wave Speed", 100f)]
+        public static float rainbowWaveSpeed = 100f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 2f)]
-        public static float damageCoefficient = 2f;
-        [AutoConfig("Proc Coefficient", 0.8f)]
-        public static float procCoefficient = 0.8f;
+        [AutoConfig("Damage Coefficient", 8f)]
+        public static float damageCoefficient = 8f;
+        [AutoConfig("Proc Coefficient", 1f)]
+        public static float procCoefficient = 1f;
         [AutoConfig("Force", 150f)]
         public static float force = 150f;
         #endregion
-        public static BuffDef boomerangBuff;
+        public static BuffDef rainbowBuff;
         #region abstract
-        public override string ItemName => "Boomerang";
+        public override string ItemName => "Rainbow Wave";
 
-        public override string ItemLangTokenName => "SNAILY_BOOMERANG";
+        public override string ItemLangTokenName => "SNAILY_RAINBOW_WAVE";
 
         public override string ItemPickupDesc => "";
 
@@ -44,9 +45,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemLore => "";
 
-        public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTier Tier => ItemTier.Tier3;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage};
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
         public override GameObject ItemModel => LoadDropPrefab();
 
@@ -70,16 +71,16 @@ namespace SwanSongExtended.Items
             {
                 if (self.master)
                 {
-                    BoomerangBehavior boomerangBehavior = self.AddItemBehavior<BoomerangBehavior>(GetCount(self));
+                    RainbowWaveBehavior rainbowWaveBehavior = self.AddItemBehavior<RainbowWaveBehavior>(GetCount(self));
                 }
             }
         }
 
-        public static void FireBoomerang(CharacterBody body)
+        public static void FireRainbowWave(CharacterBody body)
         {
-            if (body == null || body.GetBuffCount(boomerangBuff) <= 0)
+            if (body == null || body.GetBuffCount(rainbowBuff) <= 0)
                 return;
-            body.RemoveBuff(boomerangBuff);
+            body.RemoveBuff(rainbowBuff);
 
             Vector3 forward = body.inputBank.aimDirection;
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
@@ -90,19 +91,19 @@ namespace SwanSongExtended.Items
                 position = body.corePosition/* + Vector3.up * 3*/,
                 force = force,
                 owner = body.gameObject,
-                projectilePrefab = boomerangPrefab,
+                projectilePrefab = rainbowWavePrefab,
                 rotation = Util.QuaternionSafeLookRotation(forward),
-                speedOverride = boomerangSpeed //20
+                speedOverride = rainbowWaveSpeed //20
             });
         }
 
         public override void Init()
         {
-            boomerangBuff = Content.CreateAndAddBuff(
-                    "BoomerangBuff", 
-                    Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), 
-                    Color.cyan, 
-                    true, 
+            rainbowBuff = Content.CreateAndAddBuff(
+                    "RainbowWaveBuff",
+                    Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
+                    Color.red,
+                    true,
                     false
                 );
             CreateProjectile();
@@ -110,39 +111,37 @@ namespace SwanSongExtended.Items
         }
         private void CreateProjectile()
         {
-            boomerangPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/Sawmerang").InstantiateClone("SnailyBoomerang", true);
-            GameObject ghost = LegacyResourcesAPI.Load<GameObject>("prefabs/projectileghosts/WindbladeProjectileGhost").InstantiateClone("SnailyBoomerangGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
-            boomerangPrefab.transform.localScale = Vector3.one * boomerangScale;
+            rainbowWavePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWave", true);
+            GameObject ghost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRampingGhost.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWaveGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
+            rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3 (0, 1, 1) * 10f;//testig :3
 
-            BoomerangProjectile bp = boomerangPrefab.GetComponent<BoomerangProjectile>();
-            bp.travelSpeed = boomerangSpeed;
-            bp.transitionDuration = 0.8f;
-            bp.distanceMultiplier = maxFlyOutTime;
-            bp.canHitWorld = false;
+            ProjectileSimple ps = rainbowWavePrefab.GetComponent<ProjectileSimple>();
+            ps.desiredForwardSpeed = rainbowWaveSpeed;
+            ps.lifetime = maxFlyOutTime;
 
-            ProjectileController pc = bp.GetComponent<ProjectileController>();
+            ProjectileController pc = ps.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
 
             //ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
             //pd.damageType |= DamageType.BonusToLowHealth;
 
-            ProjectileDotZone pdz = boomerangPrefab.GetComponent<ProjectileDotZone>();
+            ProjectileDotZone pdz = rainbowWavePrefab.GetComponent<ProjectileDotZone>();
             /*pdz.overlapProcCoefficient = 0.8f;
             pdz.damageCoefficient = 1f;
             pdz.resetFrequency = 1 / (maxFlyOutTime + bp.transitionDuration);
             pdz.fireFrequency = 20f;*/
             UnityEngine.Object.Destroy(pdz);
 
-            ProjectileOverlapAttack poa = boomerangPrefab.GetComponent<ProjectileOverlapAttack>();
+            ProjectileOverlapAttack poa = rainbowWavePrefab.GetComponent<ProjectileOverlapAttack>();
             poa.damageCoefficient = 1f;
             poa.overlapProcCoefficient = procCoefficient;
 
-            Content.AddProjectilePrefab(boomerangPrefab);
+            Content.AddProjectilePrefab(rainbowWavePrefab);
         }
     }
-    public class BoomerangBehavior : CharacterBody.ItemBehavior
+    public class RainbowWaveBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 4;
+        public static float cooldownDuration = 6;//for testing. increase later
         float cooldownTimer = 0;
         private void FixedUpdate()
         {
@@ -158,9 +157,9 @@ namespace SwanSongExtended.Items
         }
         private void RechargeBuff()
         {
-            if(body.GetBuffCount(Boomerang.boomerangBuff) <= 3 + stack)
+            if (body.GetBuffCount(RainbowWave.rainbowBuff) < stack)
             {
-                body.AddBuff(Boomerang.boomerangBuff);
+                body.AddBuff(RainbowWave.rainbowBuff);
             }
             cooldownTimer = cooldownDuration;
         }

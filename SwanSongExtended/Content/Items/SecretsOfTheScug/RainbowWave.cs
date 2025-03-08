@@ -114,6 +114,7 @@ namespace SwanSongExtended.Items
             rainbowWavePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWave", true);
             GameObject ghost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRampingGhost.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWaveGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
             rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3 (0, 1, 1) * 10f;//testig :3
+            ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(0, 1, 1) * 10f;//testig :3
 
             ProjectileSimple ps = rainbowWavePrefab.GetComponent<ProjectileSimple>();
             ps.desiredForwardSpeed = rainbowWaveSpeed;
@@ -141,7 +142,7 @@ namespace SwanSongExtended.Items
     }
     public class RainbowWaveBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 6;//for testing. increase later
+        public static float cooldownDuration = 12;//for testing. increase later
         float cooldownTimer = 0;
         private void FixedUpdate()
         {
@@ -151,7 +152,6 @@ namespace SwanSongExtended.Items
             }
             if (cooldownTimer <= 0)//make this not hardcoded
             {
-                Debug.Log("boomb");
                 RechargeBuff();
             }
         }

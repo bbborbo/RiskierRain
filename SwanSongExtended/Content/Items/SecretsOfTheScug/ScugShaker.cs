@@ -10,6 +10,7 @@ using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;
 using RoR2.Artifacts;
 using static R2API.DamageAPI;
+using HarmonyLib;
 
 namespace SwanSongExtended.Items
 {
@@ -51,7 +52,6 @@ namespace SwanSongExtended.Items
         public static BuffDef storedScugBuff;
         GameObject scugBomb;
         float pearLifetime = 10;
-        float gravRadius = 1f;
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -60,7 +60,8 @@ namespace SwanSongExtended.Items
         {
             On.RoR2.HealthComponent.TakeDamageProcess += ScugShakerTakeDamage;
             GetHitBehavior += ScugShakerOnHit;
-            storedScugBuff = Content.CreateAndAddBuff("StoredScugBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.green, true, false);
+            storedScugBuff = Content.CreateAndAddBuff("StoredScugBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), Color.black, true, false);
+            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
 
@@ -85,7 +86,7 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
-            if (attackerBody.GetBuffCount(storedScugBuff) < scugCount * 3)//make this not hardcoded idgaf
+            if (attackerBody.GetBuffCount(storedScugBuff) < scugCount * 10)//make this not hardcoded idgaf//for testing
                 attackerBody.AddBuff(storedScugBuff);
         }
 
@@ -119,7 +120,7 @@ namespace SwanSongExtended.Items
 
         private void ShakeScug(int i, HealthComponent a)
         {
-            Vector3 spawnPosition = a.body.corePosition;
+            Vector3 spawnPosition = a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 10;
             //stolen code. revisit
             Vector3 b = UnityEngine.Random.insideUnitSphere * (BombArtifactManager.bombSpawnBaseRadius + a.body.bestFitRadius * BombArtifactManager.bombSpawnRadiusCoefficient);
             float velocityY = UnityEngine.Random.Range(5f, 25f);
@@ -148,6 +149,17 @@ namespace SwanSongExtended.Items
         {
             CreateScug();
             base.Init();
+        }
+
+        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        {
+            ItemDef.Pair transformation = new ItemDef.Pair()
+            {
+                itemDef1 = PearWiggler.instance.ItemsDef, //consumes pear wiggler
+                itemDef2 = ScugShaker.instance.ItemsDef
+            };
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
+            orig();
         }
     }
 }

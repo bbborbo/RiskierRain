@@ -23,8 +23,11 @@ namespace SwanSongExtended.Modules
 
             if (skill != self.skillLocator.primary)
                 return;
-
-            if(Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
+            if(RainbowWave.instance.isEnabled && self.HasBuff(RainbowWave.rainbowBuff))
+            {
+                RainbowWave.FireRainbowWave(self);
+            }
+            else if(Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
             {
                 Boomerang.FireBoomerang(self);
             }

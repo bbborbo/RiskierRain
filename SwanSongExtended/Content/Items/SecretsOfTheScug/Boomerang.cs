@@ -152,7 +152,6 @@ namespace SwanSongExtended.Items
             }
             if (cooldownTimer <= 0)//make this not hardcoded
             {
-                Debug.Log("boomb");
                 RechargeBuff();
             }
         }

@@ -86,7 +86,7 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
-            if (attackerBody.GetBuffCount(storedScugBuff) < scugCount * 10)//make this not hardcoded idgaf//for testing
+            if (attackerBody.GetBuffCount(storedScugBuff) < scugCount * 3)//make this not hardcoded idgaf//for testing
                 attackerBody.AddBuff(storedScugBuff);
         }
 
@@ -120,29 +120,45 @@ namespace SwanSongExtended.Items
 
         private void ShakeScug(int i, HealthComponent a)
         {
-            Vector3 spawnPosition = a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 10;
+            Vector3 spawnPosition = a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 5;
             //stolen code. revisit
             Vector3 b = UnityEngine.Random.insideUnitSphere * (BombArtifactManager.bombSpawnBaseRadius + a.body.bestFitRadius * BombArtifactManager.bombSpawnRadiusCoefficient);
             float velocityY = UnityEngine.Random.Range(5f, 25f);
 
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(scugBomb, spawnPosition, UnityEngine.Random.rotation);
-            SpiteBombController component = gameObject.GetComponent<SpiteBombController>();
-            DelayBlast delayBlast = component.delayBlast;
-            TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
-            component.bouncePosition = spawnPosition + b;
-            component.initialVelocityY = velocityY;
-            delayBlast.position = spawnPosition;
-            delayBlast.baseDamage = damageBase + damageStack * i;
-            delayBlast.baseForce = 2300f;
-            delayBlast.attacker = a.gameObject;
-            delayBlast.radius = 7f;// BombArtifactManager.bombBlastRadius;
-            delayBlast.crit = a.body.RollCrit();
-            delayBlast.procCoefficient = 0.75f;
-            delayBlast.maxTimer = 8f;//BombArtifactManager.bombFuseTimeout;
-            delayBlast.timerStagger = 0f;
-            delayBlast.falloffModel = BlastAttack.FalloffModel.None;
-            component2.teamIndex = a.body.teamComponent.teamIndex;
-            NetworkServer.Spawn(gameObject);
+            Ray ray = new Ray(spawnPosition + b + new Vector3(0f, BombArtifactManager.maxBombStepUpDistance, 0f), Vector3.down);
+            float maxDistance = BombArtifactManager.maxBombStepUpDistance + BombArtifactManager.maxBombFallDistance;
+            RaycastHit raycastHit;
+            if (Physics.Raycast(ray, out raycastHit, maxDistance, LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
+            {
+                if (spawnPosition.y < raycastHit.point.y + 4f)
+                {
+                    spawnPosition.y = raycastHit.point.y + 4f;
+                }
+                Vector3 raycastOrigin = spawnPosition + b;
+                raycastOrigin.y = raycastHit.point.y;
+
+
+                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(scugBomb, spawnPosition, UnityEngine.Random.rotation);
+                SpiteBombController component = gameObject.GetComponent<SpiteBombController>();
+                DelayBlast delayBlast = component.delayBlast;
+                TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
+                component.bouncePosition = raycastOrigin;
+                component.initialVelocityY = velocityY;
+                delayBlast.position = spawnPosition;
+                delayBlast.baseDamage = damageBase + damageStack * i;
+                delayBlast.baseForce = 2300f;
+                delayBlast.attacker = a.gameObject;
+                delayBlast.radius = 7f;// BombArtifactManager.bombBlastRadius;
+                delayBlast.crit = a.body.RollCrit();
+                delayBlast.procCoefficient = 0.75f;
+                delayBlast.maxTimer = 8f;//BombArtifactManager.bombFuseTimeout;
+                delayBlast.timerStagger = 0f;
+                delayBlast.falloffModel = BlastAttack.FalloffModel.None;
+                component2.teamIndex = a.body.teamComponent.teamIndex;
+                NetworkServer.Spawn(gameObject);
+            }
+
+            
         }
 
         public override void Init()

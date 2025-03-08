@@ -113,8 +113,8 @@ namespace SwanSongExtended.Items
         {
             rainbowWavePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWave", true);
             GameObject ghost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRampingGhost.prefab").WaitForCompletion().InstantiateClone("SnailyRainbowWaveGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
-            rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3 (0, 1, 1) * 10f;//testig :3
-            ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(0, 1, 1) * 10f;//testig :3
+            rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3 (10, 10, 0) ;//testig :3
+            ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(10, 10, 0);//testig :3
 
             ProjectileSimple ps = rainbowWavePrefab.GetComponent<ProjectileSimple>();
             ps.desiredForwardSpeed = rainbowWaveSpeed;

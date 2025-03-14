@@ -16,8 +16,8 @@ namespace SwanSongExtended.Items
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int critBase = 5;
         int critStack = 5;
-        int attackSpeedBase = 7;
-        int attackSpeedStack = 7;
+        float attackSpeedBase = .07f;
+        float attackSpeedStack = .07f;
         public override string ItemName => "Metamorphic Ichor (Red)";
 
         public override string ItemLangTokenName => "ICHORRED";
@@ -50,7 +50,7 @@ namespace SwanSongExtended.Items
         {
             int itemCount = GetCount(sender);
             args.critAdd += critBase + critStack * (itemCount - 1);
-            args.baseAttackSpeedAdd += attackSpeedBase + attackSpeedStack * (itemCount - 1);
+            args.attackSpeedMultAdd += attackSpeedBase + attackSpeedStack * (itemCount - 1);
         }
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)

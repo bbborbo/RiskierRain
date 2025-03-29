@@ -65,7 +65,7 @@ namespace RiskierRain
         GameObject pestSpit;
 
         float pestBaseHealth = 50f; // 80
-        float pestBaseDamage = 8f; // 15
+        float pestBaseDamage = 6f; // 15
         float pestBaseSpeed = 4f; //6
 
         float pestSpitVelocity = 70; // 100
@@ -244,7 +244,24 @@ namespace RiskierRain
             }
         }
         #endregion
+        #region wisp
+        GameObject lesserWispPrefab;
+        float wispBaseDamage = 2;
 
+        void LesserWispCHanges()
+        {
+            lesserWispPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Wisp/WispBody.prefab ").WaitForCompletion();
+            if (lesserWispPrefab)
+            {
+                CharacterBody lesserWispBody = lesserWispPrefab.GetComponent<CharacterBody>();
+                if (lesserWispBody)
+                {
+                    lesserWispBody.baseDamage = wispBaseDamage;
+                    lesserWispBody.levelDamage = wispBaseDamage * 0.2f;
+                }
+            }
+        }
+        #endregion
         #region xi construct related
         void MakeSpawnSlotSpawnsInheritEliteAffix()
         {

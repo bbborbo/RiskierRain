@@ -478,6 +478,11 @@ namespace RiskierRain
             {
                 ReworkSoulShrine();
             }
+
+            if (true)
+            {
+                FixProcCoeffInteractions();
+            }
             //this.DoSadistScavenger();
             #endregion
 

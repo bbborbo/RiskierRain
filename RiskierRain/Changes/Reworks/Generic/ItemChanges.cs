@@ -441,6 +441,7 @@ namespace RiskierRain
                 if (pd)
                 {
                     pd.damageType |= DamageType.BleedOnHit;
+                    pd.damageType.damageSource = DamageSource.Primary;
                 }
             }
 

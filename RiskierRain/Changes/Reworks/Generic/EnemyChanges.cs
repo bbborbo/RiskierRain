@@ -246,7 +246,7 @@ namespace RiskierRain
         #endregion
         #region wisp
         GameObject lesserWispPrefab;
-        float wispBaseDamage = 2;
+        float wispBaseDamage = 1.5f;
 
         void LesserWispCHanges()
         {

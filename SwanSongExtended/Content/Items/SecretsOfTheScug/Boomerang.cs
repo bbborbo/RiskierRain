@@ -22,8 +22,8 @@ namespace SwanSongExtended.Items
         public static float maxFlyOutTime = 0.3f; //0.6f
         [AutoConfig("Boomerang Scale Factor", 0.3f)]
         public static float boomerangScale = 0.3f; //1.0f
-        [AutoConfig("Boomerang Speed", 60f)]
-        public static float boomerangSpeed = 60f; //1.0f
+        [AutoConfig("Boomerang Speed", 100f)]
+        public static float boomerangSpeed = 100f; //1.0f
 
         [AutoConfig("Damage Coefficient", 2f)]
         public static float damageCoefficient = 2f;
@@ -146,14 +146,12 @@ namespace SwanSongExtended.Items
         float cooldownTimer = 0;
         private void FixedUpdate()
         {
-            Debug.Log(cooldownTimer);
             if (cooldownTimer > 0)
             {
                 cooldownTimer -= Time.deltaTime;
             }
             if (cooldownTimer <= 0)//make this not hardcoded
             {
-                Debug.Log("boomb");
                 RechargeBuff();
             }
         }

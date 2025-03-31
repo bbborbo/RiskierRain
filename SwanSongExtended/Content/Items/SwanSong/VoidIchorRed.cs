@@ -14,21 +14,23 @@ namespace SwanSongExtended.Items
     class VoidIchorRed : ItemBase<VoidIchorRed>
     {
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
-        int damageBase = 5;
-        int damageStack = 5;
+        int critBase = 5;
+        int critStack = 5;
+        float attackSpeedBase = .07f;
+        float attackSpeedStack = .07f;
         public override string ItemName => "Metamorphic Ichor (Red)";
 
         public override string ItemLangTokenName => "ICHORRED";
 
-        public override string ItemPickupDesc => "Retaliate with flat damage when hit. Corrupts all Replusion Armor Plates.";
+        public override string ItemPickupDesc => "Increase attack speed and critical strike chance. Corrupts all Replusion Armor Plates.";
 
-        public override string ItemFullDescription => "Retaliate with flat damage when hit. Corrupts all Replusion Armor Plates.";
+        public override string ItemFullDescription => "Increase attack speed and critical strike chance. Corrupts all Replusion Armor Plates.";
 
         public override string ItemLore => "";
 
         public override ItemTier Tier => ItemTier.VoidTier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist, ItemTag.Damage, ItemTag.AIBlacklist };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlIchorR.prefab");
 
@@ -40,42 +42,17 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += IchorTakeDamage;
+            RecalculateStatsAPI.GetStatCoefficients += RedIchorStats;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
-        private void IchorTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        private void RedIchorStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            orig(self, damageInfo);
-            if (self.body == null || damageInfo.attacker == null)
-            {
-                return;
-            }
-            int itemCount = GetCount(self.body);
-            if (itemCount <= 0 || damageInfo.attacker == self.body)
-            {
-                return;
-            }
-            HealthComponent attackerHC = damageInfo.attacker.GetComponent<HealthComponent>();
-            if (attackerHC == null)
-            {
-                Debug.LogWarning("ichorredwhoopsie");
-                return;
-            }
-            DamageInfo retaliateHit = new DamageInfo
-            {
-                attacker = self.body.gameObject,
-                crit = false,
-                damage = damageBase + (damageStack * (itemCount -1)),
-                damageType = DamageType.Generic,
-                damageColorIndex = DamageColorIndex.Item,
-                force = Vector3.zero,
-                position = damageInfo.attacker.transform.position,
-                procChainMask = damageInfo.procChainMask,
-                procCoefficient = 0
-            };
-            attackerHC.TakeDamage(retaliateHit);
+            int itemCount = GetCount(sender);
+            args.critAdd += critBase + critStack * (itemCount - 1);
+            args.attackSpeedMultAdd += attackSpeedBase + attackSpeedStack * (itemCount - 1);
         }
+
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
         {
             ItemDef.Pair transformation = new ItemDef.Pair()

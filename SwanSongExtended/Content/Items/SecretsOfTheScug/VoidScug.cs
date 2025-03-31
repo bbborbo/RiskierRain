@@ -20,6 +20,8 @@ namespace SwanSongExtended.Items
         public static float radiusBase = 28;
         public static float durationBase = 6;
         public static float durationStack = 3;
+        public static float damageBase = 3;
+        public static float damageStack = .5f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Curious Scug";
@@ -52,7 +54,7 @@ namespace SwanSongExtended.Items
                 "bdScugBurstReady",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
                 new Color(0.9f, 0.8f, 0.0f),
-                false, false);
+                true, false);
             scugBuff.isHidden = true;
             base.Init();
         }
@@ -78,14 +80,24 @@ namespace SwanSongExtended.Items
         {
             CharacterBody body = self.body;
             int scugItemCount = GetCount(body);
+            int scugBuffCount = body.GetBuffCount(scugBuff);
             orig(self, damageInfo);
 
-            if (scugItemCount > 0 && body.HasBuff(scugBuff))
+            if (scugItemCount <= 0 || body.GetBuffCount(scugBuff) <= 0)
+                return;//return if no scug item or no scug buff
+            if (body.GetBuffCount(scugBuff) >= 2)
             {
                 ScugBlast(body, scugItemCount);
+                return;//blast if more than 1 buff
+            }
+            if (self.combinedHealthFraction <= .5f)
+            {
+                ScugBlast(body, scugItemCount);
+                //blast if 1 buff AND under 50% hp
             }
 
         }
+
         void ScugBlast(CharacterBody body, int itemCount)
         {
             EffectManager.SpawnEffect(scugNovaEffectPrefab, new EffectData
@@ -96,7 +108,7 @@ namespace SwanSongExtended.Items
             ChillRework.ChillRework.ApplyChillSphere(body.corePosition, radiusBase, body.teamComponent.teamIndex, durationBase + durationStack * (itemCount - 1));
             BlastAttack scugNova = new BlastAttack()
             {
-                baseDamage = body.damage,
+                baseDamage = body.damage * (damageBase + damageStack * (itemCount - 1)),
                 radius = radiusBase,
                 procCoefficient = 0f,
                 position = body.transform.position,
@@ -108,6 +120,7 @@ namespace SwanSongExtended.Items
                 teamIndex = TeamComponent.GetObjectTeam(body.gameObject)
             };
             scugNova.Fire();
+            body.RemoveBuff(scugBuff);
         }
 
 
@@ -134,20 +147,13 @@ namespace SwanSongExtended.Items
         {
             this.SetProvidingBuff(body.outOfDanger);
         }
-        private void SetProvidingBuff(bool shouldProvideBuff)
+        private void SetProvidingBuff(bool outOfDanger)
         {
-            if (shouldProvideBuff == providingBuff)
+            if (outOfDanger)
             {
-                return;
+                body.SetBuffCount(VoidScug.scugBuff.buffIndex, 2);
             }
-            providingBuff = shouldProvideBuff;
-            if (providingBuff)
-            {
-                body.AddBuff(VoidScug.scugBuff);
-                return;
-            }
-            body.RemoveBuff(VoidScug.scugBuff);
         }
-        private bool providingBuff;
+
     }
 }

@@ -108,7 +108,8 @@ namespace SwanSongExtended.States
                     radius = 5f,
                     falloffModel = BulletAttack.FalloffModel.None,
                     maxDistance = maxRange,
-                    smartCollision = false
+                    smartCollision = false,
+                    damageType = DamageTypeCombo.GenericPrimary
                 }.Fire();
             }
         }

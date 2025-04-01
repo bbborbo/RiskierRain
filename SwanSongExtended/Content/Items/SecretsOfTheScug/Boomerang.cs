@@ -123,8 +123,8 @@ namespace SwanSongExtended.Items
             ProjectileController pc = bp.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
 
-            //ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
-            //pd.damageType |= DamageType.BonusToLowHealth;
+            ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
+            pd.damageType.damageSource = DamageSource.Primary;
 
             ProjectileDotZone pdz = boomerangPrefab.GetComponent<ProjectileDotZone>();
             /*pdz.overlapProcCoefficient = 0.8f;

@@ -77,7 +77,8 @@ namespace SwanSongExtended.Items
                 owner = body.gameObject,
                 projectilePrefab = peashooterPrefab,
                 rotation = Util.QuaternionSafeLookRotation(forward),
-                speedOverride = peashooterSpeed //20
+                speedOverride = peashooterSpeed, //20
+                damageTypeOverride = DamageTypeCombo.GenericPrimary
             });
         }
 

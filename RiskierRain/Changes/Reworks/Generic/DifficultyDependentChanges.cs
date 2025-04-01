@@ -27,7 +27,7 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float difficultyIncreasePerMinute = 1.5f; //1f
+        public static float difficultyIncreasePerMinute = 1.35f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
         /// </summary>

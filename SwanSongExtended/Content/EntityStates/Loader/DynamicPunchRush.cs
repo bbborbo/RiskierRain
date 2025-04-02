@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using EntityStates.Loader;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,7 @@ namespace SwanSongExtended.States.Loader
 		private Transform leftMuzzleTransform;
 		private Transform rightMuzzleTransform;
 		public float tickFrequency;
-		private float tickDamageCoefficient;
-		public static float totalDamageCoefficient = 1.2f;
+		private float tickDamageCoefficient = 1.2f;
 		private static int PrepFlamethrowerStateHash = Animator.StringToHash("PrepFlamethrower");
 		private static int ExitFlamethrowerStateHash = Animator.StringToHash("ExitFlamethrower");
 		private static int FlamethrowerParamHash = Animator.StringToHash("Flamethrower.playbackRate");
@@ -34,12 +34,12 @@ namespace SwanSongExtended.States.Loader
 		public float maxDistance = 10;
 		private bool hasBegunFlamethrower;
 		//public static string startAttackSoundString;
-		private static int FlamethrowerStateHash = Animator.StringToHash("Flamethrower");
+		private static int FlamethrowerStateHash => BaseChargeFist.ChargePunchIntroStateHash;// Animator.StringToHash("Flamethrower");
 		[SerializeField]
 		//public GameObject flamethrowerEffectPrefab;
 		private float flamethrowerStopwatch;
 
-		public static float baseTickFrequency = .02f;
+		public static float baseTickFrequency = 50f;
 
 		public override void OnEnter()
 		{
@@ -61,8 +61,6 @@ namespace SwanSongExtended.States.Loader
 				this.leftMuzzleTransform = this.childLocator.FindChild("MuzzleLeft");
 				this.rightMuzzleTransform = this.childLocator.FindChild("MuzzleRight");
 			}
-			int num = Mathf.CeilToInt(tickFrequency);
-			this.tickDamageCoefficient = totalDamageCoefficient / (float)num;
 			base.PlayAnimation("Gesture, Additive", PrepFlamethrowerStateHash, FlamethrowerParamHash, this.entryDuration);
 		}
 		public override void OnExit()

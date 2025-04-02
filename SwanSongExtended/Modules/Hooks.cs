@@ -49,7 +49,6 @@ namespace SwanSongExtended.Modules
 
         private static void SquidDeathBlast(CharacterBody body, int squidCount)
         {
-            Debug.Log("sqwuib");
             //temp location. put somewhere good later! when you do that you can also 
             float radiusBase = 28f;
             //float durationBase = 12f;
@@ -91,7 +90,6 @@ namespace SwanSongExtended.Modules
                     }
                 }
             }
-            Debug.Log(num + " squids counted");
             return num;
         }
         #endregion

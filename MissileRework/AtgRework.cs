@@ -70,19 +70,14 @@ namespace MissileRework
                 }
             }
         }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private float GetProcRate(DamageInfo damageInfo)
         {
             if (BepInEx.Bootstrap.Chainloader.PluginInfos[ProcSolverPlugin.guid] == null)
             {
                 return 1;
             }
-            return _GetProcRate(damageInfo);
-        }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private float _GetProcRate(DamageInfo damageInfo)
-        {
-            float mod = ProcSolverPlugin.GetProcRateMod();
-            return mod;
+            return ProcSolverPlugin.GetProcRateMod();
         }
 
         #region mundane stuff

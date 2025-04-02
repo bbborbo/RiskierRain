@@ -30,11 +30,11 @@ namespace MissileRework
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += ShrimpRework;
             GetStatCoefficients += ShrimpShieldFix;
 
-            LanguageAPI.Add("ITEM_MISSILEVOID_PICKUP", "While you have shield, fire missiles on every hit. <style=cIsVoid>Corrupts all AtG Missile Mk. 3s</style>.");
+            LanguageAPI.Add("ITEM_MISSILEVOID_PICKUP", "While you have shield, fire a missile on every hit. <style=cIsVoid>Corrupts all AtG Missile Mk. 3s</style>.");
             LanguageAPI.Add("ITEM_MISSILEVOID_DESC",
                 $"Gain <style=cIsHealing>{shrimpShieldBase} shield</style>. " +
                 $"While you have a <style=cIsHealing>shield</style>, " +
-                $"hitting an enemy fires <style=cIsDamage>3</style> missiles that each deal " +
+                $"hitting an enemy fires a missile that deals " +
                 $"<style=cIsDamage>{shrimpDamageCoeffBase * 100}%</style> " +
                 $"<style=cStack>(+{shrimpDamageCoeffStack * 100}% per stack)</style> TOTAL damage. " +
                 $"<style=cIsVoid>Corrupts all AtG Missile Mk. 3s</style>.");

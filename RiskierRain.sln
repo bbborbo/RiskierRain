@@ -36,6 +36,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RiskierRainContent", "Riski
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissileRework", "MissileRework\MissileRework.csproj", "{6D27C489-F96C-4E87-8515-62339EB61136}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A} = {D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ror2AggroTools", "Ror2AggroTools\Ror2AggroTools.csproj", "{DEEF6AED-1F66-4DFA-AD15-2C468316FF3D}"
 EndProject
@@ -55,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwanSongExtended", "SwanSon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoreStats", "MoreStats\MoreStats.csproj", "{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreStatsPlus", "MoreStatsPlus\MoreStatsPlus.csproj", "{43669EBE-BA40-4E86-B9DD-B8DFA523E8F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoreStatsPlus", "MoreStatsPlus\MoreStatsPlus.csproj", "{43669EBE-BA40-4E86-B9DD-B8DFA523E8F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

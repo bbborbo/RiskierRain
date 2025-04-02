@@ -243,14 +243,6 @@ namespace RiskierRain
                 this.BuffJustice();
             }
 
-            // resonance disc
-            if (GetConfigBool(true, "Resonance Disc"))
-            {
-                ResonanceDiscNerfs();
-                //this.NerfResDisc();
-                EntityStates.LaserTurbine.FireMainBeamState.mainBeamProcCoefficient = 0.5f;
-            }
-
             // jellynuke
             if (GetConfigBool(true, "Jellynuke"))
             {
@@ -260,7 +252,7 @@ namespace RiskierRain
             // shatterspleen, INT
             if (GetConfigBool(true, "Shatterspleen"))
             {
-                this.ReworkShatterspleen();
+                //this.ReworkShatterspleen();
             }
 
             // enemy blacklist
@@ -378,12 +370,6 @@ namespace RiskierRain
                 this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().childrenCount = 1; //0
                 this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().childrenProjectilePrefab = meatballNapalmPool; //null
                 this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().fireChildren = true; //false
-            }
-
-            // charged perforator
-            if (GetConfigBool(true, "Charged Perforator"))
-            {
-                On.RoR2.Orbs.SimpleLightningStrikeOrb.Begin += NerfChargedPerforatorOrb;
             }
 
             // shatterspleen, dmg
@@ -574,7 +560,7 @@ namespace RiskierRain
             //newt shrine
             if (GetConfigBool(true, "Lunar: Newt Shrine"))
             {
-                NerfBazaarStuff();
+                //NerfBazaarStuff();
             }
 
             //gold gain and chest scaling

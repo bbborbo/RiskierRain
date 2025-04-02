@@ -18,10 +18,12 @@ namespace SwanSongExtended.Items
     {
         #region config
         public override string ConfigName => "Reworks : Delicate Watch";
-        [AutoConfig("Base Attack Speed Bonus", 0.4f)]
-        public static float aspdBonusBase = 0.4f;
-        [AutoConfig("Stack Attack Speed Bonus", 0.3f)]
-        public static float aspdBonusStack = 0.3f;
+        [AutoConfig("Free Attack Speed Bonus", 0.075f)]
+        public static float aspdBonusFree = 0.08f;
+        [AutoConfig("Base Attack Speed Bonus", 0.32f)]
+        public static float aspdBonusBase = 0.32f;
+        [AutoConfig("Stack Attack Speed Bonus", 0.22f)]
+        public static float aspdBonusStack = 0.22f;
         [AutoConfig("Stationary Wait Time", 0.5f)]
         public static float watchWaitTime = 0.2f;
         #endregion
@@ -73,7 +75,7 @@ namespace SwanSongExtended.Items
             int watchCount = GetCount(sender);
             if(watchCount > 0)
             {
-                float aspdIncrease = 0;
+                float aspdIncrease = aspdBonusFree * watchCount;
                 if (sender.HasBuff(watchAspdBuff))
                 {
                     aspdIncrease += aspdBonusBase + aspdBonusStack * (watchCount - 1);

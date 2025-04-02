@@ -100,7 +100,7 @@ namespace RiskierRain.SurvivorTweaks
             ProjectileDamage projectileDamage = commandoNade.GetComponent<ProjectileDamage>();
             if (projectileDamage)
             {
-                projectileDamage.damageType = DamageType.IgniteOnHit;
+                projectileDamage.damageType |= DamageType.IgniteOnHit;
             }
 
             Rigidbody rb = commandoNade.GetComponent<Rigidbody>();

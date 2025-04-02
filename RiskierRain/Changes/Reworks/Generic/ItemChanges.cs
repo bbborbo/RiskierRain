@@ -426,7 +426,7 @@ namespace RiskierRain
         #region shuriken
         GameObject shurikenProjectilePrefab;
         public float shurikenBaseDamage = 0.8f; //3f + 1f/s
-        public float shurikenProcCoefficient = 1.5f;
+        public float shurikenProcCoefficient = 2f;
         public void ReworkShuriken()
         {
             shurikenProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/ShurikenProjectile");
@@ -441,6 +441,7 @@ namespace RiskierRain
                 if (pd)
                 {
                     pd.damageType |= DamageType.BleedOnHit;
+                    pd.damageType.damageSource = DamageSource.Primary;
                 }
             }
 
@@ -462,7 +463,7 @@ namespace RiskierRain
         private void ModifyShurikenAttack(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)
         {
             Ray aimRay = self.GetAimRay();
-            ProjectileManager.instance.FireProjectile(
+            ProjectileManager.instance.FireProjectileWithoutDamageType(
                 self.projectilePrefab, aimRay.origin,
                 Util.QuaternionSafeLookRotation(aimRay.direction) * self.GetRandomRollPitch(),
                 self.gameObject, self.body.damage * (shurikenBaseDamage), 0f,
@@ -472,7 +473,7 @@ namespace RiskierRain
 
 
         #region lepton daisy
-        public float daisyRadiusMultiplier = 1.1f; //increase by 10%
+        public float daisyRadiusMultiplier = 1.15f; //increase by 10%
         public void BuffDaisy()
         {
             On.RoR2.HoldoutZoneController.OnEnable += DaisyRadiusIncrease;

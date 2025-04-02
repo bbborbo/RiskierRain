@@ -1,4 +1,5 @@
 ﻿using MonoMod.Cil;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,9 @@ namespace MissileRework
         internal void ReworkIcbm()
         {
             DisableICBM();
+
+            LanguageAPI.Add("ITEM_MOREMISSILE_PICKUP", "Knock \'em dead, faggot.");
+            LanguageAPI.Add("ITEM_MOREMISSILE_DESC", "Knock \'em dead, faggot.");
         }
 
 

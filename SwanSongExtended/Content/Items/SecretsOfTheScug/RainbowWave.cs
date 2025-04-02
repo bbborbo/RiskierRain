@@ -93,7 +93,8 @@ namespace SwanSongExtended.Items
                 owner = body.gameObject,
                 projectilePrefab = rainbowWavePrefab,
                 rotation = Util.QuaternionSafeLookRotation(forward),
-                speedOverride = rainbowWaveSpeed //20
+                speedOverride = rainbowWaveSpeed, //20
+                damageTypeOverride = DamageTypeCombo.GenericPrimary
             });
         }
 

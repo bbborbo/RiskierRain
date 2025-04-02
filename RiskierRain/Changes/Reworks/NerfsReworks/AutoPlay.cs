@@ -31,11 +31,13 @@ namespace RiskierRain
 
 		private GameObject meatballProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/FireMeatBall");
 
+		private static float willowispProcCoeff = 1f;
 		private static float willowispBaseDamage = 2f;
 		private static float willowispScaleFraction = 0.8f;
 		private static float willowispBaseRange = 16f;
 		private static float willowispStackRange = 0f;
 
+		private static float voidsentProcCoeff = 1f;
 		private static float voidsentBaseDamage = 3.5f;
 		private static float voidsentScaleFraction = 0.8f;
 		private static float voidsentBaseRange = 24f;
@@ -47,6 +49,9 @@ namespace RiskierRain
 		private static float gasStackBurnDamage = 2f;
 		private static float gasBaseDamage = 0.5f;
 		private static float gasStackDamage = 0;
+
+		float discipleDevilorbProc = 0.4f;
+		float opinionDevilorbProc = 0.75f;
 
 		public static bool useNkuhanaKnockbackSlow = false;
 		public static bool useDiscipleKnockbackSlow = false;
@@ -68,7 +73,7 @@ namespace RiskierRain
 
         private void WillowispNerfs()
         {
-            this.willowispPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = 0f;
+            this.willowispPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = willowispProcCoeff;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += WillOWispChanges;
             LanguageAPI.Add("ITEM_EXPLODEONDEATH_DESC",
                 $"On killing an enemy, spawn a <style=cIsDamage>lava pillar</style> in a <style=cIsDamage>{willowispBaseRange}m</style> radius for " +
@@ -77,7 +82,7 @@ namespace RiskierRain
 
         private void VoidsentNerfs()
         {
-            this.voidsentPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = 0f;
+            this.voidsentPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = voidsentProcCoeff;
             IL.RoR2.HealthComponent.TakeDamageProcess += VoidsentFlameChanges;
             LanguageAPI.Add("ITEM_EXPLODEONDEATHVOID_PICKUP",
                 $"Chance to detonate full health enemies on hit. <style=cIsVoid>Corrupts all Will-o'-the-wisps</style>.");
@@ -92,8 +97,7 @@ namespace RiskierRain
 
         private void CeremonialDaggerNerfs()
         {
-            this.daggerPrefab.GetComponent<ProjectileController>().procCoefficient = 0f;
-            this.daggerPrefab.GetComponent<ProjectileSimple>().lifetime = 3;
+            this.daggerPrefab.GetComponent<ProjectileSimple>().lifetime = 4;
         }
 
         private void GasolineChanges()
@@ -106,13 +110,6 @@ namespace RiskierRain
                 $"Additionally, enemies <style=cIsDamage>burn</style> " +
                 $"for <style=cIsDamage>{50 * (gasBaseBurnDamage + gasStackBurnDamage)}%</style> " +
                 $"<style=cStack>(+{50 * (gasStackBurnDamage)}% per stack)</style> base damage.");
-        }
-
-        private void ResonanceDiscNerfs()
-        {
-            this.resdiscProjectilePrefab.GetComponent<ProjectileController>().procCoefficient = 0; //0.5f
-            this.resdiscProjectilePrefab.GetComponent<ProjectileImpactExplosion>().blastProcCoefficient = 0; //0.5f
-            EntityStates.LaserTurbine.FireMainBeamState.mainBeamProcCoefficient = 0;
         }
 
 
@@ -163,11 +160,11 @@ namespace RiskierRain
 			CharacterBody body = self.body;
 			if (body.isSprinting)
 			{
-				self./*private*/fireTimer -= Time.fixedDeltaTime;
-				if (self./*private*/fireTimer <= 0f)
+				self.fireTimer -= Time.fixedDeltaTime;
+				if (self.fireTimer <= 0f)
 				{
-					self./*private*/fireTimer += (body.baseMoveSpeed * 1.45f) / (body.moveSpeed * self.stack);
-					self./*private*/Fire();
+					self.fireTimer += (body.baseMoveSpeed * 1.45f) / (body.moveSpeed * SprintWispBodyBehavior.fireRate);
+					self.Fire();
 				}
 			}
 		}
@@ -382,26 +379,17 @@ namespace RiskierRain
 				return newRadius;
 			});
 		}
-
-		float discipleDevilorbProc = 1;
-		float opinionDevilorbProc = 1;
 		private void NerfDevilOrb(On.RoR2.Orbs.DevilOrb.orig_Begin orig, DevilOrb self)
 		{
 			switch (self.effectType)
 			{
 				case DevilOrb.EffectType.Skull:
-					self.procCoefficient = 0;
+					self.procCoefficient = opinionDevilorbProc;
 					break;
 				case DevilOrb.EffectType.Wisp:
-					self.procCoefficient = 0;
+					self.procCoefficient = discipleDevilorbProc;
 					break;
 			}
-			orig(self);
-		}
-		private void NerfChargedPerforatorOrb(On.RoR2.Orbs.SimpleLightningStrikeOrb.orig_Begin orig, SimpleLightningStrikeOrb self)
-		{
-			self.procCoefficient = 0f;
-
 			orig(self);
 		}
 	}

@@ -12,6 +12,7 @@ using System.Linq;
 using BepInEx.Configuration;
 using System.Collections.Generic;
 using BepInEx.Bootstrap;
+using MoreStats;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -23,6 +24,7 @@ namespace MissileRework
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(ModularEclipsePlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
@@ -35,7 +37,7 @@ namespace MissileRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "IAmBecomeMissiles";
-        public const string version = "1.1.0";
+        public const string version = "1.2.0";
         #endregion
 
         #region config

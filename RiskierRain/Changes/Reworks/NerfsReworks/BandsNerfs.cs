@@ -28,14 +28,16 @@ namespace RiskierRain
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += KjaroNerf;
 
             LanguageAPI.Add("ITEM_ICERING_DESC", 
-                $"Hits that deal <style=cIsDamage>more than 400% damage</style> also blasts enemies with a " +
+                $"Hits from <style=cIsUtility>skills or equipment</style> " +
+                $"that deal <style=cIsDamage>more than 400% damage</style> also blast enemies with a " +
                 $"<style=cIsDamage>runic ice blast</style>, " +
                 $"<style=cIsUtility>Chilling</style> them for <style=cIsUtility>3s</style> <style=cStack>(+3s per stack)</style> and " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(runaldBaseDamage)}</style> BASE damage, " +
                 $"plus <style=cIsDamage>{runaldTotal}</style> <style=cStack>(+{runaldTotal} per stack)</style> TOTAL damage. " +
                 $"Recharges every <style=cIsUtility>10</style> seconds.");
             LanguageAPI.Add("ITEM_FIRERING_DESC", 
-                $"Hits that deal <style=cIsDamage>more than 400% damage</style> also blasts enemies with a " +
+                $"Hits from <style=cIsUtility>skills or equipment</style> " +
+                $"that deal <style=cIsDamage>more than 400% damage</style> also blast enemies with a " +
                 $"<style=cIsDamage>runic flame tornado</style>, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(runaldBaseDamage)}</style> BASE damage, " +
                 $"plus <style=cIsDamage>{runaldTotal}</style> <style=cStack>(+{runaldTotal} per stack)</style> TOTAL damage over time. " +

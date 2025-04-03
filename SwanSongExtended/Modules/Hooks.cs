@@ -23,17 +23,20 @@ namespace SwanSongExtended.Modules
 
             if (skill != self.skillLocator.primary)
                 return;
+            int count = 0;
             if(RainbowWave.instance.isEnabled && self.HasBuff(RainbowWave.rainbowBuff))
             {
-                RainbowWave.FireRainbowWave(self);
+                count = RainbowWave.instance.GetCount(self);
+                RainbowWave.FireRainbowWave(self, count - 1);
             }
             else if(Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
             {
-                Boomerang.FireBoomerang(self);
+                count = Boomerang.instance.GetCount(self);
+                Boomerang.FireBoomerang(self, count - 1);
             }
-            else if(Peashooter.instance.isEnabled && Peashooter.instance.GetCount(self) > 0)
+            else if(Peashooter.instance.isEnabled && (count = Peashooter.instance.GetCount(self)) > 0)
             {
-                Peashooter.FirePeashooter(self);
+                Peashooter.FirePeashooter(self, count - 1);
             }
         }
 

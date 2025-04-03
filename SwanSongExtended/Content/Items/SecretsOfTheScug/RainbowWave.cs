@@ -9,6 +9,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static SwanSongExtended.Modules.Language.Styling;
+
 
 namespace SwanSongExtended.Items
 {
@@ -26,8 +28,10 @@ namespace SwanSongExtended.Items
         [AutoConfig("Rainbow Wave Speed", 100f)]
         public static float rainbowWaveSpeed = 100f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 8f)]
-        public static float damageCoefficient = 8f;
+        [AutoConfig("Damage Base", 8f)]
+        public static float damageBase = 8f;
+        [AutoConfig("Damage Stack", 8f)]
+        public static float damageStack = 8f;
         [AutoConfig("Proc Coefficient", 1f)]
         public static float procCoefficient = 1f;
         [AutoConfig("Force", 150f)]
@@ -39,9 +43,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "SNAILY_RAINBOW_WAVE";
 
-        public override string ItemPickupDesc => "";
+        public override string ItemPickupDesc => "Fire a massive energy wave with your primary attack. Recharges over time.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => $"Your primary attack fires a piercing energy wave for {DamageValueText(damageBase)} + {StackText(ConvertDecimal(damageStack))}. Recharge 1 wave every 12 seconds, up to {UtilityColor("1")} + {StackText("1")}.";
 
         public override string ItemLore => "";
 
@@ -76,7 +80,7 @@ namespace SwanSongExtended.Items
             }
         }
 
-        public static void FireRainbowWave(CharacterBody body)
+        public static void FireRainbowWave(CharacterBody body, int count)
         {
             if (body == null || body.GetBuffCount(rainbowBuff) <= 0)
                 return;
@@ -85,7 +89,7 @@ namespace SwanSongExtended.Items
             Vector3 forward = body.inputBank.aimDirection;
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
-                damage = body.damage * damageCoefficient,
+                damage = body.damage * (damageBase + damageStack * count),
                 crit = body.RollCrit(),
                 damageColorIndex = DamageColorIndex.Item,
                 position = body.corePosition/* + Vector3.up * 3*/,

@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -25,8 +26,10 @@ namespace SwanSongExtended.Items
         [AutoConfig("Peashooter Speed", 100f)]
         public static float peashooterSpeed = 100f; //1.0f
 
-        [AutoConfig("Damage Coefficient", .2f)]
-        public static float damageCoefficient = .2f;
+        [AutoConfig("Damage Base", .2f)]
+        public static float damageBase = .2f;
+        [AutoConfig("Damage Stack", .2f)]
+        public static float damageStack = .2f;
         [AutoConfig("Proc Coefficient", 0.1f)]
         public static float procCoefficient = 0.1f;
         [AutoConfig("Force", 0f)]
@@ -37,9 +40,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "SNAILY_PEASHOOTER";
 
-        public override string ItemPickupDesc => "";
+        public override string ItemPickupDesc => "Fire an extra projectile with your primary attack.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => $"Your primary attack fires an extra projectile for {DamageValueText(damageBase)} + {StackText(ConvertDecimal(damageStack))}.";
 
         public override string ItemLore => "";
 
@@ -62,22 +65,22 @@ namespace SwanSongExtended.Items
         {
         }
 
-        public static void FirePeashooter(CharacterBody body)
+        public static void FirePeashooter(CharacterBody body, int count)
         {
             if (body == null)
                 return;
             Vector3 forward = body.inputBank.aimDirection;
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
-                damage = body.damage * damageCoefficient,
+                damage = body.damage * (damageBase + damageStack * count),
                 crit = body.RollCrit(),
                 damageColorIndex = DamageColorIndex.Item,
-                position = body.corePosition/* + Vector3.up * 3*/,
+                position = body.corePosition,
                 force = force,
                 owner = body.gameObject,
                 projectilePrefab = peashooterPrefab,
                 rotation = Util.QuaternionSafeLookRotation(forward),
-                speedOverride = peashooterSpeed, //20
+                speedOverride = peashooterSpeed,
                 damageTypeOverride = DamageTypeCombo.GenericPrimary
             });
         }

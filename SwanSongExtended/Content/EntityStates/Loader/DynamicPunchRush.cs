@@ -26,12 +26,12 @@ namespace SwanSongExtended.States.Loader
 		//public static string endAttackSoundString;
 		private Transform leftFlamethrowerTransform;
 		private Transform rightFlamethrowerTransform;
-		public static float radius = 10;
+		public static float radius = 6;
 		public static float force = 20f;
 		//public static GameObject impactEffectPrefab;
 		public static float procCoefficientPerTick = 0.3f;
 		[SerializeField]
-		public float maxDistance = 10;
+		public float maxDistance = 8;
 		private bool hasBegunFlamethrower;
 		//public static string startAttackSoundString;
 		private static int FlamethrowerStateHash => BaseChargeFist.ChargePunchIntroStateHash;// Animator.StringToHash("Flamethrower");
@@ -39,7 +39,7 @@ namespace SwanSongExtended.States.Loader
 		//public GameObject flamethrowerEffectPrefab;
 		private float flamethrowerStopwatch;
 
-		public static float baseTickFrequency = 50f;
+		public static float baseTickFrequency = 5f;
 
 		public override void OnEnter()
 		{
@@ -101,7 +101,7 @@ namespace SwanSongExtended.States.Loader
 				bulletAttack.smartCollision = true;
 				bulletAttack.damageType = DamageType.Generic;
 				bulletAttack.allowTrajectoryAimAssist = false;
-				bulletAttack.damageType.damageSource = DamageSource.Special;
+				bulletAttack.damageType.damageSource = DamageSource.Primary;
 				bulletAttack.Fire();
 				
 			}
@@ -115,27 +115,7 @@ namespace SwanSongExtended.States.Loader
 				this.hasBegunFlamethrower = true;
 				//Util.PlaySound(startAttackSoundString, base.gameObject);
 				base.PlayAnimation("Gesture, Additive", FlamethrowerStateHash, FlamethrowerParamHash, this.flamethrowerDuration);
-				//if (this.childLocator)
-				//{
-				//	Transform transform = this.childLocator.FindChild("MuzzleLeft");
-				//	Transform transform2 = this.childLocator.FindChild("MuzzleRight");
-				//	if (transform)
-				//	{
-				//		this.leftFlamethrowerTransform = UnityEngine.Object.Instantiate<GameObject>(this.flamethrowerEffectPrefab, transform).transform;
-				//	}
-				//	if (transform2)
-				//	{
-				//		this.rightFlamethrowerTransform = UnityEngine.Object.Instantiate<GameObject>(this.flamethrowerEffectPrefab, transform2).transform;
-				//	}
-				//	if (this.leftFlamethrowerTransform)
-				//	{
-				//		this.leftFlamethrowerTransform.GetComponent<ScaleParticleSystemDuration>().newDuration = this.flamethrowerDuration;
-				//	}
-				//	if (this.rightFlamethrowerTransform)
-				//	{
-				//		this.rightFlamethrowerTransform.GetComponent<ScaleParticleSystemDuration>().newDuration = this.flamethrowerDuration;
-				//	}
-				//}
+				
 				this.FireGauntlet("MuzzleCenter");
 			}
 			if (this.hasBegunFlamethrower)
@@ -151,7 +131,6 @@ namespace SwanSongExtended.States.Loader
 			}
 			if (!ShouldKeepPunchingAuthority())
 			{
-				Debug.Log("stopwatch = " + stopwatch + ", duration = " + flamethrowerDuration);
 				this.outer.SetNextStateToMain();
 				return;
 			}
@@ -172,7 +151,7 @@ namespace SwanSongExtended.States.Loader
 		//}
 		public override InterruptPriority GetMinimumInterruptPriority()
 		{
-			return InterruptPriority.Skill;
+			return InterruptPriority.PrioritySkill;
 		}
 		protected virtual bool ShouldKeepPunchingAuthority()
 		{

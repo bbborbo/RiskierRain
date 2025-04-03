@@ -60,18 +60,8 @@ namespace SwanSongExtended.Skills
         public override void Hooks()
         {
             RecalculateStatsAPI.GetStatCoefficients += LoaderArmorBreakStats;
-            On.RoR2.HealthComponent.TakeDamageProcess += LoaderArmorBreakRefresh;
         }
 
-        private void LoaderArmorBreakRefresh(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
-        {
-            orig(self, damageInfo);
-            if (self.body.HasBuff(loaderArmorBreak) && damageInfo.damageType.damageSource == DamageSource.SkillMask)
-            {
-                Debug.Log("refreshing armor break :0");
-                self.body.AddTimedBuffAuthority(loaderArmorBreak.buffIndex, 5);
-            }
-        }
 
         private void LoaderArmorBreakStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
@@ -88,7 +78,7 @@ namespace SwanSongExtended.Skills
             Content.AddEntityState(typeof(DynamicPunchRush));
             loaderArmorBreak = Content.CreateAndAddBuff("LoaderArmorBreak", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ArmorReductionOnHit/texBuffPulverizeIcon.tif").WaitForCompletion(),
                     Color.grey,
-                    false,
+                    true,
                     true);
         }
         #region buff

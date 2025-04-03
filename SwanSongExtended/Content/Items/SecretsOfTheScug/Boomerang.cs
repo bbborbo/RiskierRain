@@ -9,6 +9,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static SwanSongExtended.Modules.Language.Styling;
+
 
 namespace SwanSongExtended.Items
 {
@@ -25,8 +27,10 @@ namespace SwanSongExtended.Items
         [AutoConfig("Boomerang Speed", 100f)]
         public static float boomerangSpeed = 100f; //1.0f
 
-        [AutoConfig("Damage Coefficient", 2f)]
-        public static float damageCoefficient = 2f;
+        [AutoConfig("Damage Base", 2f)]
+        public static float damageBase = 2f;
+        [AutoConfig("Damage Stack", 1f)]
+        public static float damageStack = 1f;
         [AutoConfig("Proc Coefficient", 0.8f)]
         public static float procCoefficient = 0.8f;
         [AutoConfig("Force", 150f)]
@@ -38,9 +42,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "SNAILY_BOOMERANG";
 
-        public override string ItemPickupDesc => "";
+        public override string ItemPickupDesc => "Fire a boomerang with your primary attack. Recharges over time.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => $"Your primary attack fires a boomerang for {DamageValueText(damageBase)} + {StackText(ConvertDecimal(damageStack))}. Recharge 1 boomerang every 4 seconds, up to {UtilityColor("4")} + {StackText("1")}.";
 
         public override string ItemLore => "";
 
@@ -75,7 +79,7 @@ namespace SwanSongExtended.Items
             }
         }
 
-        public static void FireBoomerang(CharacterBody body)
+        public static void FireBoomerang(CharacterBody body, int count)
         {
             if (body == null || body.GetBuffCount(boomerangBuff) <= 0)
                 return;
@@ -84,7 +88,7 @@ namespace SwanSongExtended.Items
             Vector3 forward = body.inputBank.aimDirection;
             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
             {
-                damage = body.damage * damageCoefficient,
+                damage = body.damage * (damageBase + damageStack * count),
                 crit = body.RollCrit(),
                 damageColorIndex = DamageColorIndex.Item,
                 position = body.corePosition/* + Vector3.up * 3*/,

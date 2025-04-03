@@ -25,10 +25,8 @@ namespace SwanSongExtended.States.Loader
         private const float baseMinChargeDuration = 0.15f;
         private float stopwatch;
         private float charge;
-        private float windDownDuration;
         private float chargeDuration;
         private float minChargeDuration;
-        private bool hasPunched;
 
         private uint soundID;
         private Transform chargeVfxInstanceTransform;
@@ -37,7 +35,6 @@ namespace SwanSongExtended.States.Loader
         public override void OnEnter()
         {
             base.OnEnter();
-            this.windDownDuration = this.baseWinddownDuration / this.attackSpeedStat;
             this.chargeDuration = this.baseChargeDuration / this.attackSpeedStat;
             this.minChargeDuration = baseMinChargeDuration / this.attackSpeedStat;
 

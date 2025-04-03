@@ -13,7 +13,7 @@ namespace SwanSongExtended.States.Loader
     {
 		public static float damageCoefficient = 3f;
 		public static float procCoefficient = 1f;
-		public static float force = 20;
+		public static float force = 50;
 		public static float selfForce = 2000;
 
 

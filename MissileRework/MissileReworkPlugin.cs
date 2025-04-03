@@ -39,7 +39,7 @@ namespace MissileRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "IAmBecomeMissiles";
-        public const string version = "1.2.0";
+        public const string version = "1.2.1";
         #endregion
 
         #region config

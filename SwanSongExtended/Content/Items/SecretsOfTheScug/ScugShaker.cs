@@ -22,11 +22,6 @@ namespace SwanSongExtended.Items
         public static float damageBase = 2.5f;
         [AutoConfig("Damage Stack", 4)]
         public static float damageStack = 2.5f;
-        [AutoConfig("Barrier Base", 8)]
-        public static int barrierBase = 8;
-        [AutoConfig("Barrier Stack", 4)]
-        public static int barrierStack = 4;
-
         public override string ConfigName => "Item: " + ItemName;
         #endregion
         #region Abstract
@@ -34,11 +29,11 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "SCUGSHAKER";
 
-        public override string ItemPickupDesc => $"High damage attacks store {HealthColor("Pears.")} When struck, release stored pears, which can be {HealthColor("picked up for health and barrier")}";
+        public override string ItemPickupDesc => $"High damage attacks store {DamageColor("Scugs.")} When struck, shake stored scugs, {DamageColor("damaging and chilling enemies.")} {VoidColor("Corrupts all Pear Wigglers.")}";
 
-        public override string ItemFullDescription => $"High damage attacks store {HealthColor("Pears.")} When struck, release stored pears, which can be {HealthColor("picked up for health and barrier")}";
+        public override string ItemFullDescription => $"Attacks dealing 400% or more damage store up to 3 {StackText("+ 3")}{DamageColor("Scugs.")} When struck, release 1 scug per 5% max hp lost for {DamageValueText(damageBase)} {StackText($" + {ConvertDecimal(damageBase)}")} and {UtilityColor("chilling enemies.")} {VoidColor("Corrupts all Pear Wigglers.")}";
 
-        public override string ItemLore => "Pears taste better wiggled.";
+        public override string ItemLore => "Shake 'em and sic 'em.";
 
         public override ItemTier Tier => ItemTier.VoidTier2;
 

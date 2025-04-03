@@ -70,15 +70,6 @@ namespace MissileRework
                 }
             }
         }
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private float GetProcRate(DamageInfo damageInfo)
-        {
-            if (BepInEx.Bootstrap.Chainloader.PluginInfos[ProcSolverPlugin.guid] == null)
-            {
-                return 1;
-            }
-            return ProcSolverPlugin.GetProcRateMod();
-        }
 
         #region mundane stuff
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)

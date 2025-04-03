@@ -13,6 +13,8 @@ using BepInEx.Configuration;
 using System.Collections.Generic;
 using BepInEx.Bootstrap;
 using MoreStats;
+using System.Runtime.CompilerServices;
+using ProcSolver;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -169,6 +171,21 @@ namespace MissileRework
                 return null;
             }
             return hurtBox.transform;
+        }
+
+        public static float GetProcRate(DamageInfo damageInfo)
+        {
+            if (BepInEx.Bootstrap.Chainloader.PluginInfos[ProcSolverPlugin.guid] == null)
+            {
+                return 1;
+            }
+            return _GetProcRate(damageInfo);
+        }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static float _GetProcRate(DamageInfo damageInfo)
+        {
+            float mod = ProcSolverPlugin.GetProcRateMod(damageInfo);
+            return mod;
         }
     }
 }

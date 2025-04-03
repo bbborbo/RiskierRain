@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items
 {
@@ -48,7 +50,8 @@ namespace SwanSongExtended.Items
         public override Sprite ItemIcon => LoadItemIcon();
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;
         #endregion
-
+        public static BuffDef shellShieldBuff;
+        public static BuffDef shellShieldCooldown;
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
@@ -57,14 +60,36 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.HealthComponent.TakeDamageProcess += ShellShieldOnTakeDamage;
+            GetMoreStatCoefficients += ShellShieldBarrierFreeze;
         }
 
+        private void ShellShieldBarrierFreeze(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.HasBuff(shellShieldBuff))
+            {
+                args.barrierFreezeCount += 1;
+            }
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            shellShieldBuff = Content.CreateAndAddBuff("ShellShieldBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
+                    Color.cyan,
+                    false,
+                    false);
+            shellShieldCooldown = Content.CreateAndAddBuff("ShellShieldBuff", Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
+                    Color.cyan,
+                    false,
+                    true);
+            shellShieldCooldown.isHidden = true;
+        }
         private void ShellShieldOnTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
 
             CharacterBody body = self?.body;
             int itemCount = GetCount(body);
-            if (itemCount <= 0 || body.notMovingStopwatch <= 0.1f || !body.outOfDanger)
+            if (itemCount <= 0 || body.notMovingStopwatch <= 0.1f || shellShieldCooldown)
             {
                 orig(self, damageInfo);
                 return;
@@ -77,11 +102,13 @@ namespace SwanSongExtended.Items
 
         private void ShellShieldBarrier(HealthComponent self, int itemCount)
         {
-            itemCount--;
+            itemCount -= 1;
             float barrierToAdd = self.fullCombinedHealth * (percentBase + percentStack * itemCount);
             barrierToAdd += flatBase + flatStack * itemCount;
             self.AddBarrierAuthority(barrierToAdd);
 
+            self.body.AddTimedBuffAuthority(shellShieldBuff.buffIndex, decayFreezeBase + (decayFreezeStack * itemCount));
+            self.body.AddTimedBuffAuthority(shellShieldCooldown.buffIndex, 7);
         }
     }
 }

@@ -100,6 +100,7 @@ namespace SwanSongExtended.Items
 
         void ScugBlast(CharacterBody body, int itemCount)
         {
+            Debug.Log($"scugbuffs = {body.GetBuffCount(scugBuff.buffIndex)}");
             EffectManager.SpawnEffect(scugNovaEffectPrefab, new EffectData
             {
                 origin = body.transform.position,

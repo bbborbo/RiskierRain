@@ -13,7 +13,7 @@ namespace SwanSongExtended.States.Loader
     {
 		public static float damageCoefficient = 3f;
 		public static float procCoefficient = 1f;
-		public static float force = 50;
+		public static float force = 30;
 		public static float selfForce = 2000;
 
 
@@ -23,13 +23,6 @@ namespace SwanSongExtended.States.Loader
 			if (base.isAuthority)
 			{
 				this.duration = .5f / this.attackSpeedStat;
-				//base.characterMotor.Motor.ForceUnground(0.1f);
-				//base.characterMotor.disableAirControlUntilCollision |= BaseSwingChargedFist.disableAirControlUntilCollision;
-				//this.punchVelocity = BaseSwingChargedFist.CalculateLungeVelocity(base.characterMotor.velocity, base.GetAimRay().direction, this.charge, this.minLungeSpeed, this.maxLungeSpeed);
-				//base.characterMotor.velocity = this.punchVelocity;
-				//base.characterDirection.forward = base.characterMotor.velocity.normalized;
-				//this.punchSpeed = base.characterMotor.velocity.magnitude;
-				//this.bonusDamage = this.punchSpeed * (BaseSwingChargedFist.velocityDamageCoefficient * this.damageStat);
 			}
 			base.OnEnter();
 		}
@@ -55,7 +48,7 @@ namespace SwanSongExtended.States.Loader
 				return;
             }
 			overlapAttack.damage = damageCoefficient * this.damageStat;
-			overlapAttack.forceVector = base.GetAimRay().direction * force;
+			overlapAttack.forceVector = base.GetAimRay().direction * 1;
 			overlapAttack.damageType = DamageType.Stun1s;
 			overlapAttack.damageType.damageSource = DamageSource.Utility;
 			
@@ -67,7 +60,7 @@ namespace SwanSongExtended.States.Loader
 			{
 				//appply armor break
 				CharacterBody body = base.hitResults[i].healthComponent.body;
-				body.AddTimedBuffAuthority(DynamicPunchSkill.loaderArmorBreak.buffIndex, 5);
+				body.AddTimedBuffAuthority(DynamicPunchSkill.loaderArmorBreak.buffIndex, 6);
 				//apply force to heavy fuckers
 				float num = 1f;
 				if (body.characterMotor)
@@ -78,7 +71,7 @@ namespace SwanSongExtended.States.Loader
 				{
 					num = base.rigidbody.mass;
 				}
-				body.healthComponent.TakeDamageForce(base.GetAimRay().direction * force * num, true, true);
+				body.healthComponent.TakeDamageForce(base.GetAimRay().direction * force * num, false, true);
 			}
 			
 			base.OnMeleeHitAuthority();

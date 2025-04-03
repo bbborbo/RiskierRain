@@ -14,7 +14,7 @@ namespace SwanSongExtended.States.Loader
 		private float entryDuration;
 		public static float baseEntryDuration = .2f;
 		private float flamethrowerDuration;
-		public static float baseFlamethrowerDuration = 500f;
+		public static float baseFlamethrowerDuration = 10f;
 		private ChildLocator childLocator;
 		private Transform leftMuzzleTransform;
 		private Transform rightMuzzleTransform;
@@ -26,12 +26,12 @@ namespace SwanSongExtended.States.Loader
 		//public static string endAttackSoundString;
 		private Transform leftFlamethrowerTransform;
 		private Transform rightFlamethrowerTransform;
-		public static float radius = 10;
+		public static float radius = 6;
 		public static float force = 20f;
 		//public static GameObject impactEffectPrefab;
 		public static float procCoefficientPerTick = 0.3f;
 		[SerializeField]
-		public float maxDistance = 10;
+		public float maxDistance = 8;
 		private bool hasBegunFlamethrower;
 		//public static string startAttackSoundString;
 		private static int FlamethrowerStateHash => BaseChargeFist.ChargePunchIntroStateHash;// Animator.StringToHash("Flamethrower");

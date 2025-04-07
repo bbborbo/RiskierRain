@@ -62,7 +62,7 @@ namespace MissileRework
             //compatibility with Modular Eclipse
             if (ModularEclipseLoaded)
             {
-                ModularEclipseCompat();
+                ModularEclipseCompat(MissileArtifact);
             }
 
             IL.RoR2.MissileUtils.FireMissile_Vector3_CharacterBody_ProcChainMask_GameObject_float_bool_GameObject_DamageColorIndex_Vector3_float_bool += OverrideIcbmMissiles;
@@ -70,11 +70,6 @@ namespace MissileRework
         }
 
 
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private void ModularEclipseCompat()
-        {
-            ModularEclipsePlugin.SetArtifactDefaultWhitelist(MissileArtifact, true);
-        }
         private void OverrideIcbmMissiles(ILContext il)
         {
             ILCursor c = new ILCursor(il);

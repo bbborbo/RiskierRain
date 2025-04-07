@@ -173,19 +173,23 @@ namespace MissileRework
             return hurtBox.transform;
         }
 
-        public static float GetProcRate(DamageInfo damageInfo)
-        {
-            if (BepInEx.Bootstrap.Chainloader.PluginInfos[ProcSolverPlugin.guid] == null)
-            {
-                return 1;
-            }
-            return _GetProcRate(damageInfo);
-        }
+public static float GetProcRate(DamageInfo damageInfo)
+{
+    if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(ProcSolverPlugin.guid))
+    {
+        return 1;
+    }
+    return _GetProcRate(damageInfo);
+}
+[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+private static float _GetProcRate(DamageInfo damageInfo)
+{
+    return ProcSolverPlugin.GetProcRateMod(damageInfo);
+}
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static float _GetProcRate(DamageInfo damageInfo)
+        public static void ModularEclipseCompat(ArtifactDef artifactDef)
         {
-            float mod = ProcSolverPlugin.GetProcRateMod(damageInfo);
-            return mod;
+            ModularEclipsePlugin.SetArtifactDefaultWhitelist(artifactDef, true);
         }
     }
 }

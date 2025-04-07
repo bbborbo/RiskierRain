@@ -46,7 +46,7 @@ namespace MoreStats
 
         private static void DoIgniteOnHit(DamageInfo damageInfo, GameObject victim, CharacterBody attackerBody, CharacterBody victimBody)
         {
-            Inventory inv = victimBody.inventory;
+            Inventory inv = attackerBody.inventory;
 
             uint? maxStacksFromAttacker = null;
             if ((damageInfo != null) ? damageInfo.inflictor : null)

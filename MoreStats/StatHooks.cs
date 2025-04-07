@@ -44,7 +44,7 @@ namespace MoreStats
             // Continuously Update Shield Ready
             On.RoR2.CharacterBody.UpdateOutOfCombatAndDanger += UpdateDangerMoreStats;
             // Luck Stat Fixes
-            On.RoR2.CharacterMaster.OnInventoryChanged += UpdateMoreLuckStat;
+            ILHook luckHook = new ILHook(typeof(CharacterMaster).GetMethod("get_luck", (BindingFlags)(-1)), ModifyLuck);
 
             // Barrier Decay And Shield Recharge
             IL.RoR2.HealthComponent.ServerFixedUpdate += HookHealthComponentUpdate;
@@ -55,8 +55,6 @@ namespace MoreStats
 
             // Healing
             IL.RoR2.HealthComponent.Heal += ModifyHealing;
-
-            ILHook luckHook = new ILHook(typeof(CharacterMaster).GetMethod("get_luck", (BindingFlags)(-1)), ModifyLuck);
         }
 
         private static void ModifyHealing(ILContext il)
@@ -85,38 +83,51 @@ namespace MoreStats
             else
             {
                 Debug.LogError("MoreStats Healing Hook Failed!!!!");
+                Debug.LogError("MoreStats Healing Hook Failed!!!!");
+                Debug.LogError("MoreStats Healing Hook Failed!!!!");
+                Debug.LogError("MoreStats Healing Hook Failed!!!!");
+                Debug.LogError("MoreStats Healing Hook Failed!!!!");
             }
         }
 
         private static void ModifyLuck(ILContext il)
         {
             ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.Before,
+            if(c.TryGotoNext(MoveType.Before,
                 x => x.MatchRet()
-                );
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<Single, CharacterMaster, Single>>((baseLuck, master) =>
+                ))
             {
-                if (master == null || !master.hasBody)
-                    return baseLuck;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<Single, CharacterMaster, Single>>((baseLuck, master) =>
+                {
+                    if (master == null || !master.hasBody)
+                        return baseLuck;
 
-                CharacterBody body = master.GetBody();
-                MoreStatCoefficients msc = GetMoreStatsFromBody(body);
-                float newLuck = baseLuck + msc.luckAdd;
-                float remainder = newLuck % 1;
-                if (remainder < 0)
-                    remainder += 1;
-                if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
-                {
-                    newLuck = Mathf.CeilToInt(newLuck);
-                }
-                else
-                {
-                    newLuck = Mathf.FloorToInt(newLuck);
-                }
-                return newLuck;
-            });
+                    CharacterBody body = master.GetBody();
+                    MoreStatCoefficients msc = GetMoreStatsFromBody(body);
+                    float newLuck = baseLuck + msc.luckAdd;
+                    float remainder = newLuck % 1;
+                    if (remainder < 0)
+                        remainder += 1;
+                    if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
+                    {
+                        newLuck = Mathf.CeilToInt(newLuck);
+                    }
+                    else
+                    {
+                        newLuck = Mathf.FloorToInt(newLuck);
+                    }
+                    return newLuck;
+                });
+            }
+            else
+            {
+                Debug.LogError("MoreStats Luck Hook Failed!!!!");
+                Debug.LogError("MoreStats Luck Hook Failed!!!!");
+                Debug.LogError("MoreStats Luck Hook Failed!!!!");
+                Debug.LogError("MoreStats Luck Hook Failed!!!!");
+                Debug.LogError("MoreStats Luck Hook Failed!!!!");
+            }
         }
 
 
@@ -346,96 +357,116 @@ namespace MoreStats
         {
             c.Index = 0;
 
-            c.GotoNext(MoveType.Before,
+            if(c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>("set_barrierDecayRate")
-                );
-            c.GotoPrev(MoveType.After,
+                ) &&
+            c.TryGotoPrev(MoveType.After,
                 x => x.MatchLdcR4(out _)
-                );
-            c.Remove(); //remove div
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<float, float, CharacterBody, float>>((maxBarrier, decayTime, body) =>
+                ))
             {
-                //process barrier decay stats
-                float decayRate = 0;
-                bool decayFrozen = StatMods.barrierFreezeCount > 0;
-                float decayMultiplier = StatMods.barrierDecayRatePercentDecreaseDiv > 0 ? StatMods.barrierDecayRatePercentIncreaseMult / StatMods.barrierDecayRatePercentDecreaseDiv : 0;
-
-                CustomStats.barrierDecayFrozen = decayFrozen;
-                CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? StatMods.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife / decayMultiplier : 0;
-
-                if (!decayFrozen && decayMultiplier > 0)
+                c.Remove(); //remove div
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, float, CharacterBody, float>>((maxBarrier, decayTime, body) =>
                 {
-                    decayRate = StatMods.barrierDecayRateAddPreMult;
-                    if (StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime > 0)
+                    //process barrier decay stats
+                    float decayRate = 0;
+                    bool decayFrozen = StatMods.barrierFreezeCount > 0;
+                    float decayMultiplier = StatMods.barrierDecayRatePercentDecreaseDiv > 0 ? StatMods.barrierDecayRatePercentIncreaseMult / StatMods.barrierDecayRatePercentDecreaseDiv : 0;
+
+                    CustomStats.barrierDecayFrozen = decayFrozen;
+                    CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? StatMods.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife / decayMultiplier : 0;
+
+                    if (!decayFrozen && decayMultiplier > 0)
                     {
-                        decayRate += maxBarrier / StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime;
+                        decayRate = StatMods.barrierDecayRateAddPreMult;
+                        if (StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime > 0)
+                        {
+                            decayRate += maxBarrier / StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime;
+                        }
+                        decayRate *= decayMultiplier;
                     }
-                    decayRate *= decayMultiplier;
-                }
 
-                decayRate -= StatMods.barrierGenerationRateAddPostMult;
-                //if(StatMods.barrierGenPerSecondFlat > 0)
-                //{
-                //    if(StatMods.barrierGenPerSecondFlat > decayRate)
-                //    {
-                //        float excessBarrierGen = StatMods.barrierGenPerSecondFlat - decayRate;
-                //        decayRate = 0;
-                //        CustomStats.barrierGenRate = excessBarrierGen;
-                //    }
-                //    else
-                //    {
-                //        decayRate -= StatMods.barrierGenPerSecondFlat;
-                //    }
-                //}
+                    decayRate -= StatMods.barrierGenerationRateAddPostMult;
+                    //if(StatMods.barrierGenPerSecondFlat > 0)
+                    //{
+                    //    if(StatMods.barrierGenPerSecondFlat > decayRate)
+                    //    {
+                    //        float excessBarrierGen = StatMods.barrierGenPerSecondFlat - decayRate;
+                    //        decayRate = 0;
+                    //        CustomStats.barrierGenRate = excessBarrierGen;
+                    //    }
+                    //    else
+                    //    {
+                    //        decayRate -= StatMods.barrierGenPerSecondFlat;
+                    //    }
+                    //}
 
-                return decayRate;
-            });
-            //c.EmitDelegate<Func<float>>(() => StatMods.barrierBaseStaticDecayRateMaxHealthTime);
+                    return decayRate;
+                });
+                //c.EmitDelegate<Func<float>>(() => StatMods.barrierBaseStaticDecayRateMaxHealthTime);
+            }
+            else
+            {
+                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+            }
         }
 
         private static void ModifyBarrierDecayRate_ServerFixedUpdate(ILCursor c)
         {
             c.Index = 0;
 
-            c.GotoNext(MoveType.After,
+            if(c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<HealthComponent>("barrier"),
                 x => x.MatchLdcR4(out _)
-                );
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<float, HealthComponent, float>>((minBarrier, healthComponent) =>
+                ))
             {
-                CharacterBody body = healthComponent.body;
-                if (body)
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, HealthComponent, float>>((minBarrier, healthComponent) =>
                 {
-                    if (body.barrierDecayRate < 0)
+                    CharacterBody body = healthComponent.body;
+                    if (body)
                     {
-                        //return -1;
-                        minBarrier += body.barrierDecayRate;
+                        if (body.barrierDecayRate < 0)
+                        {
+                            //return -1;
+                            minBarrier += body.barrierDecayRate;
+                        }
                     }
-                }
-                return minBarrier;
-            });
+                    return minBarrier;
+                });
 
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<CharacterBody>("get_barrierDecayRate")
-                );
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<float, HealthComponent, float>>((barrierDecayRate, healthComponent) =>
-            {
-                MoreStatCoefficients stats = GetMoreStatsFromBody(healthComponent.body);
-                if(stats == null)
-                    return barrierDecayRate;
-
-                if (!stats.barrierDecayFrozen && stats.barrierDecayDynamicHalfLife > 0)
+                c.GotoNext(MoveType.After,
+                    x => x.MatchCallOrCallvirt<CharacterBody>("get_barrierDecayRate")
+                    );
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, HealthComponent, float>>((barrierDecayRate, healthComponent) =>
                 {
-                    barrierDecayRate += Mathf.Max(MoreStatsPlugin.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
-                }
+                    MoreStatCoefficients stats = GetMoreStatsFromBody(healthComponent.body);
+                    if (stats == null)
+                        return barrierDecayRate;
 
-                //healthComponent.AddBarrier(stats.barrierGenRate * Time.fixedDeltaTime);
+                    if (!stats.barrierDecayFrozen && stats.barrierDecayDynamicHalfLife > 0)
+                    {
+                        barrierDecayRate += Mathf.Max(MoreStatsPlugin.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
+                    }
 
-                return barrierDecayRate;
-            });
+                    //healthComponent.AddBarrier(stats.barrierGenRate * Time.fixedDeltaTime);
+
+                    return barrierDecayRate;
+                });
+            }
+            else
+            {
+                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
+            }
         }
         #endregion
 
@@ -445,18 +476,16 @@ namespace MoreStats
             c.Index = 0;
 
             int featherCountLoc = 0;
-            c.GotoNext(MoveType.After,
+            if(c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather")
-                );
-            c.GotoNext(MoveType.After,
+                ) &&
+            c.TryGotoNext(MoveType.After,
                 x => x.MatchStloc(out featherCountLoc)
-                );
-
-            bool jumpCountILFound = c.TryGotoNext(MoveType.After,
+                ) &&
+            c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.baseJumpCount)),
                 x => x.MatchLdloc(featherCountLoc)
-                );
-            if (jumpCountILFound)
+                ))
             {
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<int, CharacterBody, int>>((featherCount, self) =>
@@ -474,7 +503,11 @@ namespace MoreStats
             }
             else
             {
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED");
+                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
             }
         }
         #endregion
@@ -514,18 +547,29 @@ namespace MoreStats
         {
             c.Index = 0;
 
-            c.GotoNext(MoveType.After,
+            if(c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_maxShield")
-                );
-            c.GotoNext(MoveType.Before,
+                ) &&
+            c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_outOfDanger")
-                );
-            c.Remove();
-            c.EmitDelegate<Func<CharacterBody, bool>>((body) =>
+                ))
             {
-                MoreStatCoefficients stats = GetMoreStatsFromBody(body);
-                return stats.shieldRechargeReady;
-            });
+
+                c.Remove();
+                c.EmitDelegate<Func<CharacterBody, bool>>((body) =>
+                {
+                    MoreStatCoefficients stats = GetMoreStatsFromBody(body);
+                    return stats.shieldRechargeReady;
+                });
+            }
+            else
+            {
+                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
+            }
         }
         #endregion
 

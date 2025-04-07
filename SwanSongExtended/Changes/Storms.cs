@@ -241,7 +241,6 @@ namespace SwanSongExtended
             instance = this;
 
             On.RoR2.Stage.BeginServer += Stage_BeginServer;
-            On.RoR2.Run.OnServerTeleporterPlaced += Run_OnServerTeleporterPlaced;
 
             On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
             On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
@@ -251,7 +250,6 @@ namespace SwanSongExtended
         public void OnDestroy()
         {
             On.RoR2.Stage.BeginServer -= Stage_BeginServer;
-            On.RoR2.Run.OnServerTeleporterPlaced -= Run_OnServerTeleporterPlaced;
 
             On.RoR2.HoldoutZoneController.OnEnable -= RegisterHoldoutZone;
             On.RoR2.HoldoutZoneController.OnDisable -= UnregisterHoldoutZone;
@@ -285,11 +283,6 @@ namespace SwanSongExtended
                 Debug.Log("B");
                 stormControllerInstance.BeginStormApproach(a + Run.instance.stageRng.RangeInt(0, 1), b);
             }
-        }
-        private void Run_OnServerTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
-        {
-
-            orig(self, sceneDirector, teleporter);
         }
 
         private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)

@@ -14,13 +14,14 @@ namespace SwanSongExtended.Interactables
 {
     class EggPile : InteractableBase<EggPile>
     {
+        public override string ConfigName => "Interactables : Egg";
         public override string InteractableName => "Egg";
 
         public override string InteractableContext => "Found an egg";
 
         public override string InteractableLangToken => "EGG_PILE";
 
-        public override GameObject InteractableModel => CoreModules.Assets.orangeAssetBundle.LoadAsset<GameObject>("Assets/Prefabs/eggPile.prefab");
+        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/eggPile.prefab");
 
         public override string modelName => "eggPile";
 
@@ -38,27 +39,18 @@ namespace SwanSongExtended.Interactables
 
         public override int spawnCost => 1;
 
-        public override CostTypeIndex costTypeIndex => 0;
+        public override CostTypeIndex costTypeIndex => CostTypeIndex.None;
 
-        public override int costAmount => 0;
+        public override int interactionCost => 0;
+        public override SimpleInteractableData InteractableData => new SimpleInteractableData
+            (
+                unavailableDuringTeleporter: false,
+                sacrificeWeightScalar: 1,
+                maxSpawnsPerStage: 5
+            );
 
-        public override int interactableMinimumStageCompletions => 0;
 
-        public override bool automaticallyScaleCostWithDifficulty => false;
-
-        public override bool setUnavailableOnTeleporterActivated => false;
-
-        public override bool isShrine => false;
-
-        public override bool orientToFloor => true;
-
-        public override bool skipSpawnWhenSacrificeArtifactEnabled => false;
-
-        public override float weightScalarWhenSacrificeArtifactEnabled => 1;
-
-        public override int maxSpawnsPerStage => 5;
-
-        public string[] validScenes =
+        public override string[] validScenes => new string[]
         {
             "blackbeach",
             "blackbeach2",
@@ -67,15 +59,11 @@ namespace SwanSongExtended.Interactables
             "rootjungle",
             "foggyswamp"
         };
+        public override string[] favoredScenes => new string[] { };
 
-        public override void Init(ConfigFile config)
+        public override void Init()
         {
-            hasAddedInteractable = false;
-            
-            CreateLang();
-            CreateInteractable();
-            var cards = CreateInteractableSpawnCard();
-            customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+            base.Init();
         }
 
         public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
@@ -90,6 +78,11 @@ namespace SwanSongExtended.Interactables
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(Egg.instance.ItemsDef.itemIndex), 1f);
             weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(GoldenEgg.instance.ItemsDef.itemIndex), 0.2f);
             return weightedSelection;
+        }
+
+        public override void Hooks()
+        {
+
         }
 
         WeightedSelection<PickupIndex> weightedSelection;

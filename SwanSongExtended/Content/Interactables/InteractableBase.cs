@@ -42,77 +42,87 @@ namespace SwanSongExtended.Interactables
 		public abstract string modelName { get; }
 		public abstract string prefabName { get; }//???? fuck
 		public abstract bool ShouldCloneModel { get; }
-		public GameObject model;
+		public GameObject interactablePrefab;
 
 		public CustomInteractable customInteractable = new CustomInteractable();
+		public abstract DirectorAPI.InteractableCategory category { get; }
 
 		public PurchaseInteraction InteractionComponent;
 
+		public abstract CostTypeIndex costTypeIndex { get; }
 		public abstract float voidSeedWeight { get; }
 		public abstract int normalWeight { get; }
 		public abstract int favoredWeight { get; }
-		public abstract DirectorAPI.InteractableCategory category { get; }
 		public abstract int spawnCost { get; }
-		public static GameObject interactableBodyModelPrefab;
+		public abstract int interactionCost { get; }
+		public abstract string[] validScenes { get; }
+		public abstract string[] favoredScenes { get; }
 		public static InteractableSpawnCard interactableSpawnCard;
-		public abstract CostTypeIndex costTypeIndex { get; }
-		public abstract int costAmount { get; }
 		public static DirectorCard interactableDirectorCard;
-		public bool hasAddedInteractable;
+		public abstract SimpleInteractableData InteractableData { get; }
+        public override void Init()
+        {
+            base.Init();
+			CreateInteractablePrefab();
+			CreateInteractable();
+		}
 
-		public abstract int interactableMinimumStageCompletions { get; }
-		public abstract bool automaticallyScaleCostWithDifficulty { get; }
-		public abstract bool setUnavailableOnTeleporterActivated { get; }
-		public abstract bool isShrine { get; }
+        private void CreateInteractable()
+		{
+			var cards = CreateInteractableSpawnCard();
+			if (favoredScenes == null || favoredScenes.Length <= 0)
+			{
+				customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes);
+			}
+			else
+			{
+				var favored = CreateInteractableSpawnCard(true);
+				customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes, favored.interactableSpawnCard, favored.directorCard, favoredScenes);
+			}
+		}
 
-		//public static float floorOffset;
-		public abstract bool orientToFloor { get; }
-		public abstract bool skipSpawnWhenSacrificeArtifactEnabled { get; }
-		public abstract float weightScalarWhenSacrificeArtifactEnabled { get; }
-		public abstract int maxSpawnsPerStage { get; }
-
-		//stages to spawn on (help me)
-
-		public abstract void Init(ConfigFile config);
-		public override void Lang()
+        public override void Lang()
 		{
 			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME", this.InteractableName);
 			LanguageAPI.Add("2R4R_INTERACTABLE_" + this.InteractableLangToken + "_CONTEXT", this.InteractableContext);
 		}
 		public abstract UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction);
-		public void CreateInteractable()
+		public virtual Sprite GetPingIcon()
+        {
+			return Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion();
+
+		}
+		public void CreateInteractablePrefab()
         {
 			if (InteractableModel == null)
 			{
 				Debug.Log("interactableModel null :(");
 				return;
 			}
-			bool hajabaja = modelName == prefabName;
 			if (!ShouldCloneModel)
             {
-				model = InteractableModel;
+				interactablePrefab = InteractableModel;
             }
             else
             {
-				model = InteractableModel.InstantiateClone(prefabName, true); 
+				interactablePrefab = InteractableModel.InstantiateClone(prefabName, true); 
             }
-			interactableBodyModelPrefab = this.model;
-			interactableBodyModelPrefab.AddComponent<NetworkIdentity>();
-			PurchaseInteraction oldPurchaseInteraction = interactableBodyModelPrefab.GetComponent<PurchaseInteraction>();
+			interactablePrefab.AddComponent<NetworkIdentity>();
+			PurchaseInteraction oldPurchaseInteraction = interactablePrefab.GetComponent<PurchaseInteraction>();
 			if (oldPurchaseInteraction != null)
             {
 				GameObject.Destroy(oldPurchaseInteraction);
-            }
-			InteractionComponent = interactableBodyModelPrefab.AddComponent<PurchaseInteraction>();
+			}
+			InteractionComponent = interactablePrefab.AddComponent<PurchaseInteraction>();
 
 			InteractionComponent.displayNameToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
 			InteractionComponent.contextToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_CONTEXT";
 			InteractionComponent.costType = (CostTypeIndex)costTypeIndex;
-			InteractionComponent.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
-			InteractionComponent.cost = costAmount;
+			InteractionComponent.automaticallyScaleCostWithDifficulty = InteractableData.automaticallyScaleCostWithDifficulty;
+			InteractionComponent.cost = interactionCost;
 			InteractionComponent.available = true;
-			InteractionComponent.setUnavailableOnTeleporterActivated = setUnavailableOnTeleporterActivated;
-			InteractionComponent.isShrine = isShrine;
+			InteractionComponent.setUnavailableOnTeleporterActivated = InteractableData.unavailableDuringTeleporter;
+			InteractionComponent.isShrine = InteractableData.isShrine;
 			InteractionComponent.isGoldShrine = false;
 			InteractionComponent.onPurchase = new PurchaseEvent();
 			UnityAction<Interactor> onPurchaseAction = GetInteractionAction(InteractionComponent);
@@ -122,18 +132,18 @@ namespace SwanSongExtended.Interactables
 				InteractionComponent.onPurchase.AddListener(onPurchaseAction);
 			}
 
-			PingInfoProvider pingInfoProvider = interactableBodyModelPrefab.GetComponent<PingInfoProvider>();
+			PingInfoProvider pingInfoProvider = interactablePrefab.GetComponent<PingInfoProvider>();
 			if (pingInfoProvider == null)
 			{
-				pingInfoProvider = interactableBodyModelPrefab.AddComponent<PingInfoProvider>();
-				pingInfoProvider.pingIconOverride = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texShrineIconOutlined.png").WaitForCompletion(); //only works for shrines? change later i guess
+				pingInfoProvider = interactablePrefab.AddComponent<PingInfoProvider>();
+				pingInfoProvider.pingIconOverride = GetPingIcon();
 				
 			}
 
-			GenericDisplayNameProvider genericDisplayNameProvider = interactableBodyModelPrefab.GetComponent<GenericDisplayNameProvider>();
+			GenericDisplayNameProvider genericDisplayNameProvider = interactablePrefab.GetComponent<GenericDisplayNameProvider>();
 			if (genericDisplayNameProvider == null)
 			{
-				genericDisplayNameProvider = interactableBodyModelPrefab.AddComponent<GenericDisplayNameProvider>();
+				genericDisplayNameProvider = interactablePrefab.AddComponent<GenericDisplayNameProvider>();
 			}
 			genericDisplayNameProvider.displayToken = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
 
@@ -143,69 +153,69 @@ namespace SwanSongExtended.Interactables
 			}
 			if(voidSeedWeight > 0)
 			{
-				On.RoR2.CampDirector.SelectCard += new On.RoR2.CampDirector.hook_SelectCard(VoidCampAddInteractable);
+				On.RoR2.CampDirector.SelectCard += VoidCampAddInteractable;
 			}
 
 
-			Collider childCollider = interactableBodyModelPrefab.GetComponentInChildren<Collider>();
+			Collider childCollider = interactablePrefab.GetComponentInChildren<Collider>();
 			if (childCollider == null)
             {
 				Debug.Log("child null");
 				return;
             }
-			EntityLocator entityLocator = interactableBodyModelPrefab.GetComponent<EntityLocator>();
+			EntityLocator entityLocator = interactablePrefab.GetComponent<EntityLocator>();
 			if (entityLocator == null)
 			{
 				Debug.Log("entitylocator null, adding component");
-				entityLocator = interactableBodyModelPrefab.AddComponent<EntityLocator>();
+				entityLocator = interactablePrefab.AddComponent<EntityLocator>();
 			}
 			if (entityLocator != null)
 			{
-				entityLocator.entity = interactableBodyModelPrefab;
-				ModelLocator modelLocator = interactableBodyModelPrefab.GetComponent<ModelLocator>();
+				entityLocator.entity = interactablePrefab;
+				ModelLocator modelLocator = interactablePrefab.GetComponent<ModelLocator>();
 				if (modelLocator == null)
                 {
 					Debug.Log("modellocator null, adding component");
-					modelLocator = interactableBodyModelPrefab.AddComponent<ModelLocator>();
-					modelLocator.modelTransform = interactableBodyModelPrefab.transform.Find(modelName);//pawsible problem area? ()
+					modelLocator = interactablePrefab.AddComponent<ModelLocator>();
+					modelLocator.modelTransform = interactablePrefab.transform.Find(modelName);//pawsible problem area? ()
 					modelLocator.modelBaseTransform = modelLocator.modelTransform;
 					modelLocator.dontDetatchFromParent = true;
 					modelLocator.autoUpdateModelTransform = true;
 
-					Highlight component = interactableBodyModelPrefab.GetComponent<Highlight>();
+					Highlight component = interactablePrefab.GetComponent<Highlight>();
 					if (component == null)
 					{
 						Debug.Log("highlight null, adding component");
-						component = interactableBodyModelPrefab.AddComponent<Highlight>();
+						component = interactablePrefab.AddComponent<Highlight>();
 					}
 					if (component != null)
 					{
 
-						component.targetRenderer = (from x in interactableBodyModelPrefab.GetComponentsInChildren<MeshRenderer>()
+						component.targetRenderer = (from x in interactablePrefab.GetComponentsInChildren<MeshRenderer>()
 													where x.gameObject.name.Contains(modelName)
 													select x).First<MeshRenderer>();
 
 						component.strength = 1f;
 						component.highlightColor = Highlight.HighlightColor.interactive;
 					}
-					HologramProjector hologramProjector = interactableBodyModelPrefab.GetComponent<HologramProjector>();
+					HologramProjector hologramProjector = interactablePrefab.GetComponent<HologramProjector>();
 					if (hologramProjector == null)
 					{
 						Debug.Log("hologramProjector null, adding component");
-						hologramProjector = interactableBodyModelPrefab.AddComponent<HologramProjector>();
+						hologramProjector = interactablePrefab.AddComponent<HologramProjector>();
 					}
 					if (hologramProjector != null)
 					{
-						hologramProjector.hologramPivot = interactableBodyModelPrefab.transform.Find("HologramPivot"); // this might be fucky
+						hologramProjector.hologramPivot = interactablePrefab.transform.Find("HologramPivot"); // this might be fucky
 						hologramProjector.displayDistance = 10f;
 						hologramProjector.disableHologramRotation = false;
 					}
-					ChildLocator childLocator = interactableBodyModelPrefab.GetComponent<ChildLocator>();
+					ChildLocator childLocator = interactablePrefab.GetComponent<ChildLocator>();
 
 					if (childLocator == null)
 					{
 						Debug.Log("childLocator null, adding component");
-						childLocator = interactableBodyModelPrefab.AddComponent<ChildLocator>();
+						childLocator = interactablePrefab.AddComponent<ChildLocator>();
 					}
 					if (childLocator != null)
 					{
@@ -214,68 +224,40 @@ namespace SwanSongExtended.Interactables
 							new ChildLocator.NameTransformPair
 							{
 								name = "FireworkOrigin",
-								transform = interactableBodyModelPrefab.transform.Find("FireworkEmitter")
+								transform = interactablePrefab.transform.Find("FireworkEmitter")
 							}
 						};
 						Debug.Log("interactable registered");
 					}
 				}
 			}
-			PrefabAPI.RegisterNetworkPrefab(interactableBodyModelPrefab);
+			PrefabAPI.RegisterNetworkPrefab(interactablePrefab);
 		}
-		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard()
+		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard)  CreateInteractableSpawnCard(bool isFavored = false)
         {
 			interactableSpawnCard = ScriptableObject.CreateInstance<InteractableSpawnCard>();
-
 			interactableSpawnCard.directorCreditCost = spawnCost;
 			interactableSpawnCard.eliteRules = SpawnCard.EliteRules.Default;
 			interactableSpawnCard.sendOverNetwork = true;
 			interactableSpawnCard.occupyPosition = true;
-			interactableSpawnCard.orientToFloor = orientToFloor;
-			interactableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled = skipSpawnWhenSacrificeArtifactEnabled;
-			interactableSpawnCard.weightScalarWhenSacrificeArtifactEnabled = weightScalarWhenSacrificeArtifactEnabled;
-			interactableSpawnCard.maxSpawnsPerStage = maxSpawnsPerStage;
+			interactableSpawnCard.orientToFloor = InteractableData.orientToFloor;
+			interactableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled = InteractableData.sacrificeWeightScalar <= 0;
+			interactableSpawnCard.weightScalarWhenSacrificeArtifactEnabled = InteractableData.sacrificeWeightScalar;
+			interactableSpawnCard.maxSpawnsPerStage = InteractableData.maxSpawnsPerStage;
 			interactableSpawnCard.hullSize = HullClassification.Human;
-			interactableSpawnCard.prefab = model;
+			interactableSpawnCard.prefab = interactablePrefab;
 			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
 			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
 
 			interactableDirectorCard = new DirectorCard
 			{
-				selectionWeight = normalWeight,
+				selectionWeight = isFavored ? favoredWeight : normalWeight,
 				spawnCard = interactableSpawnCard,
 				preventOverhead = false,
-				minimumStageCompletions = interactableMinimumStageCompletions
+				minimumStageCompletions = InteractableData.minimumStageCompletions
 			};
 			Debug.Log("Created spawncard for " + "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" + "; " + interactableDirectorCard.spawnCard.name + ", " + interactableSpawnCard.name);
 
-			return (interactableDirectorCard, interactableSpawnCard);
-		}
-		public (DirectorCard directorCard, InteractableSpawnCard interactableSpawnCard) CreateInteractableSpawnCard(bool isFavored)
-		{
-			interactableSpawnCard = ScriptableObject.CreateInstance<InteractableSpawnCard>();
-
-			interactableSpawnCard.directorCreditCost = spawnCost;
-			interactableSpawnCard.eliteRules = SpawnCard.EliteRules.Default;
-			interactableSpawnCard.sendOverNetwork = true;
-			interactableSpawnCard.occupyPosition = true;
-			interactableSpawnCard.orientToFloor = orientToFloor;
-			interactableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled = skipSpawnWhenSacrificeArtifactEnabled;
-			interactableSpawnCard.weightScalarWhenSacrificeArtifactEnabled = weightScalarWhenSacrificeArtifactEnabled;
-			interactableSpawnCard.maxSpawnsPerStage = maxSpawnsPerStage;
-			interactableSpawnCard.hullSize = HullClassification.Human;
-			interactableSpawnCard.prefab = model;
-			interactableSpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
-			interactableSpawnCard.name = "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME";
-
-			interactableDirectorCard = new DirectorCard
-			{
-				selectionWeight = favoredWeight,
-				spawnCard = interactableSpawnCard,
-				preventOverhead = false,
-				minimumStageCompletions = interactableMinimumStageCompletions
-			};
-			Debug.Log("Created favored spawncard for" + "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME" + "; " + interactableDirectorCard + ", " + interactableSpawnCard);
 			return (interactableDirectorCard, interactableSpawnCard);
 		}
 
@@ -284,29 +266,26 @@ namespace SwanSongExtended.Interactables
 			if (this.voidSeedWeight <= 0)
             {
 				Debug.LogWarning($"weight was 0; {customInteractable.spawnCard.name}");
-				return orig.Invoke(self, deck, maxCost);
+				return orig(self, deck, maxCost);
             }
-			this.hasAddedInteractable = false;
-			bool flag = self.name == "Camp 1 - Void Monsters & Interactables";
-			if (flag)
+			bool hasAddedInteractable = false;
+			if (self.name == "Camp 1 - Void Monsters & Interactables")
 			{
 				for (int i = deck.Count - 1; i >= 0; i--)
 				{
-					bool flag2 = deck.GetChoice(i).value.spawnCard.name == this.customInteractable.spawnCard.name;
-					if (flag2)
+					if (deck.GetChoice(i).value.spawnCard.name == this.customInteractable.spawnCard.name)
 					{
-						this.hasAddedInteractable = true;
+						hasAddedInteractable = true;
 						break;
 					}
 				}
-				bool flag3 = !this.hasAddedInteractable;
-				if (flag3)
+				if (!hasAddedInteractable)
 				{
 					Debug.LogWarning($"added {interactableDirectorCard.spawnCard.name}/{customInteractable.directorCard} to void seed");
 					deck.AddChoice(customInteractable.directorCard, this.voidSeedWeight);
 				}
 			}
-			return orig.Invoke(self, deck, maxCost);
+			return orig(self, deck, maxCost);
 		}
 
 		public void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self, 
@@ -326,8 +305,40 @@ namespace SwanSongExtended.Interactables
 			}
 		}
 	}
+	public class SimpleInteractableData
+	{
+		public SimpleInteractableData(bool addToHackBlacklist = false, bool automaticallyScaleCostWithDifficulty = false, 
+			bool unavailableDuringTeleporter = true, bool isShrine = false, bool orientToFloor = true,
+			int minimumStageCompletions = 0, int sacrificeWeightScalar = 1, int maxSpawnsPerStage = -1)
+		{
+			this.addToHackBlacklist = addToHackBlacklist;
+			this.automaticallyScaleCostWithDifficulty = automaticallyScaleCostWithDifficulty;
+			this.unavailableDuringTeleporter = unavailableDuringTeleporter;
+			this.isShrine = isShrine;
+			this.orientToFloor = orientToFloor;
+			this.minimumStageCompletions = minimumStageCompletions;
+			this.sacrificeWeightScalar = sacrificeWeightScalar;
+			this.maxSpawnsPerStage = maxSpawnsPerStage;
+		}
+
+		internal bool	addToHackBlacklist;
+		internal bool	automaticallyScaleCostWithDifficulty;
+		internal bool	unavailableDuringTeleporter;
+		internal bool	isShrine;
+		internal bool	orientToFloor;
+		/// <summary>
+		/// Set to 0 to disable this interactable with sacrifice
+		/// </summary>
+		internal float sacrificeWeightScalar;
+		/// <summary>
+		/// Set to 0 to spawn on any stage
+		/// </summary>
+		internal int minimumStageCompletions;
+		internal int maxSpawnsPerStage;
+	}
 	public class CustomInteractable
-    {//foe the favored stage stuff this might suck dick idk
+    {
+		//foe the favored stage stuff this might suck dick idk
 		public InteractableSpawnCard spawnCard;
 		public DirectorCard directorCard;
 		public InteractableSpawnCard spawnCardFavored;

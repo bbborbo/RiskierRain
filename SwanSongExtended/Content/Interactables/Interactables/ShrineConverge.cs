@@ -47,25 +47,18 @@ namespace SwanSongExtended.Interactables
 
         public override CostTypeIndex costTypeIndex => CostTypeIndex.None;
 
-        public override int costAmount => 0;
+        public override int interactionCost => 0;
 
-        public override int interactableMinimumStageCompletions => 3;
-
-        public override bool automaticallyScaleCostWithDifficulty => false;
-
-        public override bool setUnavailableOnTeleporterActivated => true;
-
-        public override bool isShrine => true;
-
-        public override bool orientToFloor => true;
-
-        public override bool skipSpawnWhenSacrificeArtifactEnabled => false;
-
-        public override float weightScalarWhenSacrificeArtifactEnabled => 1;
-
-        public override int maxSpawnsPerStage => 1;
-
-        public string[] validScenes = {
+        public override SimpleInteractableData InteractableData => new SimpleInteractableData
+            (
+                minimumStageCompletions: 3,
+                unavailableDuringTeleporter: true,
+                isShrine: true,
+                orientToFloor: true,
+                maxSpawnsPerStage: 1
+            );
+        public override string[] validScenes => new string[]
+        {
             "golemplains",
             "golemplains2",
             "blackbeach",
@@ -95,7 +88,7 @@ namespace SwanSongExtended.Interactables
             "drybasin",
             "FBLScene"
         };
-        public string[] favoredStages =
+        public override string[] favoredScenes => new string[]
         {
             "lakes",
             "lakesnight",
@@ -116,25 +109,18 @@ namespace SwanSongExtended.Interactables
             scb.purchaseInteraction = interaction;
             return null;// scb.AddShrineStack;
         }
-
-        public override void Init(ConfigFile config)
-        {
-            var cards = CreateInteractableSpawnCard();
-            var favored = CreateInteractableSpawnCard(true);
-            customInteractable.CreateCustomInteractable(cards.interactableSpawnCard, cards.directorCard, validScenes, favored.interactableSpawnCard, favored.directorCard, favoredStages);
-            InteractionComponent.currentInspectIndex = 0;
-        }
         public override void Init()
         {
             LanguageAPI.Add(ShrineConvergeUseToken, ShrineConvergeUseMessage);
             LanguageAPI.Add(ShrineConvergeUseToken + "_2P", ShrineConvergeUseMessage2P);
             LanguageAPI.Add(ShrineConvergeBeginToken, ShrineConvergeBeginMessage);
             base.Init();
+            InteractionComponent.currentInspectIndex = 0;
         }
 
         public override void Hooks()
         {
-            throw new NotImplementedException();
+
         }
     }
     public class ShrineConvergeBehavior : ShrineBehavior

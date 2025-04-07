@@ -148,6 +148,8 @@ namespace SwanSongExtended
             expansionDefSS2 = ScriptableObject.CreateInstance<ExpansionDef>();
             expansionDefSS2.nameToken = expansionToken + "_NAME";
             expansionDefSS2.descriptionToken = expansionToken + "_DESCRIPTION";
+            expansionDefSS2.iconSprite = null;
+            expansionDefSS2.disabledIconSprite = null;
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
             Content.AddExpansionDef(expansionDefSS2);
@@ -155,6 +157,8 @@ namespace SwanSongExtended
             expansionDefSOTS = ScriptableObject.CreateInstance<ExpansionDef>();
             expansionDefSOTS.nameToken = expansionToken2 + "_NAME";
             expansionDefSOTS.descriptionToken = expansionToken2 + "_DESCRIPTION";
+            expansionDefSOTS.iconSprite = null;
+            expansionDefSOTS.disabledIconSprite = null;
             LanguageAPI.Add(expansionToken2 + "_NAME", expansionName2);
             LanguageAPI.Add(expansionToken2 + "_DESCRIPTION", $"Adds content from the '{expansionName2}' expansion to the game.");
 
@@ -176,15 +180,15 @@ namespace SwanSongExtended
             ///scavengers
             BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
 
-            BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
-
-            BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
-
             BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
 
             BeginInitializing<EliteEquipmentBase>(allTypes, "SwanSongElites.txt");
 
+            BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
+
             BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
+
+            BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
             BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
         }

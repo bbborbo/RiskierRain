@@ -5,11 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Content\Interactables\Interactables\EggPile.cs" />
-    <Compile Remove="Content\Interactables\Interactables\ShrineConverge.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -49,11 +44,6 @@
 
   <ItemGroup>
     <Folder Include="Content\Items\Vanilla\SOTS\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Content\Interactables\Interactables\EggPile.cs" />
-    <None Include="Content\Interactables\Interactables\ShrineConverge.cs" />
   </ItemGroup>
 
 </Project>

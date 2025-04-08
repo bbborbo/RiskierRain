@@ -20,9 +20,9 @@ namespace SwanSongExtended.Items
         public static int baseGoldChunk = 25;
         public static bool includeDeploys = true;
 
-        static float bonusDamageMin = 0.2f;
+        static float bonusDamageMin = 0.20f;
 
-        static float bonusDamagePerChunk = 0.05f;
+        static float bonusDamagePerChunk = 0.04f;
         float bonusGold = 0.1f;
         public static BuffDef bronzeDamageBuff;
         public static int maxBronze = 3;
@@ -40,16 +40,18 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "ECONOMYWEAPON";
 
-        public override string ItemPickupDesc => "Deal bonus damage based on the gold you have saved up.";
+        public override string ItemPickupDesc => "Deal bonus damage for each chest you can afford.";
 
         /*public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
             $"Also deal <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style></style> " +
             $"bonus damage <style=cIsDamage>per chest you can afford</style>, for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";*/
 
-        public override string ItemFullDescription => $"At the beginning of each stage, <style=cIsUtility>receive {baseGoldChunk} gold</style>. " +
-            $"Also deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style> bonus damage</style>, " +
-            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> per additional chest you can afford</style>, " +
-            $"for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
+        public override string ItemFullDescription => $"Begin each stage with <style=cIsUtility>${baseGoldChunk}</style>. " +
+            $"While holding <style=cIsUtility>${baseGoldChunk} or more</style>, " +
+            $"deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} bonus damage</style> <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style>, " +
+            $"plus <style=cIsDamage>{damageBoostPerChestPerStack}</style> <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> " +
+            $"per <style=cIsUtility>additional ${baseGoldChunk} held</style>, " +
+            $"for up to a maximum of <style=cIsUtility>{maxPlatinum} times</style>.";
 
         public override string ItemLore =>
 @"Man, this thing is so cool. B-zap! Haha.

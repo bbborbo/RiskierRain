@@ -125,6 +125,7 @@ namespace SwanSongExtended.Interactables
 			InteractionComponent.isShrine = InteractableData.isShrine;
 			InteractionComponent.isGoldShrine = false;
 			InteractionComponent.onPurchase = new PurchaseEvent();
+			InteractionComponent.saleStarCompatible = InteractableData.saleStarCompatible;
 			UnityAction<Interactor> onPurchaseAction = GetInteractionAction(InteractionComponent);
 			if(onPurchaseAction != null)
 			{
@@ -308,7 +309,7 @@ namespace SwanSongExtended.Interactables
 	public class SimpleInteractableData
 	{
 		public SimpleInteractableData(bool addToHackBlacklist = false, bool automaticallyScaleCostWithDifficulty = false, 
-			bool unavailableDuringTeleporter = true, bool isShrine = false, bool orientToFloor = true,
+			bool unavailableDuringTeleporter = true, bool isShrine = false, bool orientToFloor = true, bool saleStarCompatible = false,
 			int minimumStageCompletions = 0, int sacrificeWeightScalar = 1, int maxSpawnsPerStage = -1)
 		{
 			this.addToHackBlacklist = addToHackBlacklist;
@@ -316,6 +317,7 @@ namespace SwanSongExtended.Interactables
 			this.unavailableDuringTeleporter = unavailableDuringTeleporter;
 			this.isShrine = isShrine;
 			this.orientToFloor = orientToFloor;
+			this.saleStarCompatible = saleStarCompatible;
 			this.minimumStageCompletions = minimumStageCompletions;
 			this.sacrificeWeightScalar = sacrificeWeightScalar;
 			this.maxSpawnsPerStage = maxSpawnsPerStage;
@@ -326,6 +328,7 @@ namespace SwanSongExtended.Interactables
 		internal bool	unavailableDuringTeleporter;
 		internal bool	isShrine;
 		internal bool	orientToFloor;
+		internal bool	saleStarCompatible;
 		/// <summary>
 		/// Set to 0 to disable this interactable with sacrifice
 		/// </summary>

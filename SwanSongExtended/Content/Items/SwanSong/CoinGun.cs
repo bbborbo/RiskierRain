@@ -279,7 +279,7 @@ What happened to all of our gold?";
         {
             master = body.master;
 
-            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(GreedyRing.bonusMoney);
+            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk);
             body.master.GiveMoney(freeMoney);
             UpdateCurrentGold(freeMoney);
         }

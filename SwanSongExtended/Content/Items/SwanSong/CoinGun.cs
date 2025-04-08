@@ -46,7 +46,7 @@ namespace SwanSongExtended.Items
             $"Also deal <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style></style> " +
             $"bonus damage <style=cIsDamage>per chest you can afford</style>, for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";*/
 
-        public override string ItemFullDescription => $"<style=cIsUtility>Gain {Tools.ConvertDecimal(bonusGold)} extra gold</style>. " +
+        public override string ItemFullDescription => $"At the beginning of each stage, <style=cIsUtility>receive {baseGoldChunk} gold</style>. " +
             $"Also deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style> bonus damage</style>, " +
             $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> per chest you can afford</style>, " +
             $"for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
@@ -119,7 +119,7 @@ What happened to all of our gold?";
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
+            //On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
             On.RoR2.HealthComponent.TakeDamageProcess += GoldGunDamageBoost;
             GetStatCoefficients += this.GiveBonusDamage;
         }
@@ -209,10 +209,15 @@ What happened to all of our gold?";
         {
             if (master == null)
                 return;
-            if (currentMoney == master.money)
+            if (master.money == currentMoney)
                 return;
 
-            currentMoney = master.money;
+            UpdateCurrentGold(master.money);
+        }
+
+        private void UpdateCurrentGold(uint money)
+        {
+            currentMoney = money;
             if (CoinGun.includeDeploys)
             {
                 var deployable = master.GetComponent<Deployable>();
@@ -273,8 +278,10 @@ What happened to all of our gold?";
         private void Start()
         {
             master = body.master;
-            damageBoostCount = 0;
-            currentMoney = 0;
+
+            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(GreedyRing.bonusMoney);
+            body.master.GiveMoney(freeMoney);
+            UpdateCurrentGold(freeMoney);
         }
         void OnDestroy()
         {

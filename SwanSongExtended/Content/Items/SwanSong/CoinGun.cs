@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
         public static int baseGoldChunk = 25;
         public static bool includeDeploys = true;
 
-        static float bonusDamageMin = 0.15f;
+        static float bonusDamageMin = 0.2f;
 
         static float bonusDamagePerChunk = 0.05f;
         float bonusGold = 0.1f;
@@ -48,7 +48,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemFullDescription => $"At the beginning of each stage, <style=cIsUtility>receive {baseGoldChunk} gold</style>. " +
             $"Also deal <style=cIsDamage>{Tools.ConvertDecimal(bonusDamageMin)} <style=cStack>(+{Tools.ConvertDecimal(bonusDamageMin)} per stack)</style> bonus damage</style>, " +
-            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> per chest you can afford</style>, " +
+            $"plus <style=cIsDamage>{damageBoostPerChestPerStack} <style=cStack>(+{damageBoostPerChestPerStack} per stack)</style> per additional chest you can afford</style>, " +
             $"for up to a maximum of <style=cIsUtility>{maxPlatinum} chests</style>.";
 
         public override string ItemLore =>
@@ -135,7 +135,7 @@ What happened to all of our gold?";
                 //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
                 if(damageBoostCount > 0)
                 {
-                    float damageMult = bonusDamageMin + bonusDamagePerChunk * damageBoostCount;
+                    float damageMult = bonusDamageMin + bonusDamagePerChunk * (damageBoostCount - 1);
 
                     args.damageMultAdd += damageMult * itemCount;
                 }

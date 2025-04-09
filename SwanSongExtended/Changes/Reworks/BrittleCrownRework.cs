@@ -15,6 +15,8 @@ namespace SwanSongExtended
     public partial class SwanSongPlugin
     {
         BuffDef brittleCrownBuff => Modules.CommonAssets.brittleCrownCursePurchase;
+        public static int brittleCrownStealCountBase = 3;
+        public static int brittleCrownStealCountStack = 2;
         public void BrittleCrownChanges()
         {
             LanguageAPI.Add("ITEM_GOLDONHIT_NAME", "Sunken Crown");
@@ -23,7 +25,7 @@ namespace SwanSongExtended
                 $"opening the chest {UtilityColor("without spending ANY money")}. " +
                 $"Stealing from chests costs {HealthColor("[ 17% / 33% / 80% ]")} " +
                 $"of your {HealthColor("maximum health")}, depending on the size of the chest. " +
-                $"Can steal up to {BrittleCrownBehavior.brittleCrownStealCountBase} {StackText($"+{BrittleCrownBehavior.brittleCrownStealCountStack}")} times per stage.");
+                $"Can steal up to {brittleCrownStealCountBase} {StackText($"+{brittleCrownStealCountStack}")} times per stage.");
 
             IL.RoR2.HealthComponent.TakeDamageProcess += RemoveCrownPenalty;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveCrownReward;
@@ -143,18 +145,16 @@ namespace SwanSongExtended
 
     public class BrittleCrownBehavior : CharacterBody.ItemBehavior
     {
-        public static int brittleCrownStealCountBase = 3;
-        public static int brittleCrownStealCountStack = 2;
-        private void OnEnable()
+        public void Start()
         {
             if (NetworkServer.active)
             {
                 body.SetBuffCount(Modules.CommonAssets.brittleCrownCursePurchase.buffIndex, 
-                    brittleCrownStealCountBase + brittleCrownStealCountStack * (this.stack - 1));
+                    SwanSongPlugin.brittleCrownStealCountBase + SwanSongPlugin.brittleCrownStealCountStack * (this.stack - 1));
             }
         }
 
-        private void OnDisable()
+        public void OnDisable()
         {
             if (NetworkServer.active)
             {

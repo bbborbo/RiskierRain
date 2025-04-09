@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace SwanSongExtended.Components
 {
     public class InteractableDropPickup : MonoBehaviour
     {
+        public PurchaseInteraction purchaseInteraction;
         public bool destroyOnUse = true;
         public ExplicitPickupDropTable dropTable;
         private Xoroshiro128Plus rng;
@@ -19,11 +21,13 @@ namespace SwanSongExtended.Components
             {
                 dropletOrigin = this.transform;
             }
+            purchaseInteraction.onPurchase.AddListener(new UnityAction<Interactor>(OnInteractionBegin));
         }
         public void OnInteractionBegin(Interactor activator)
         {
             if (dropTable == null || !canActivate)
                 return;
+            Debug.Log("AAAAAAAAAAAAAHHHHHHHHHHHHHHH");
             
             PickupIndex pickupIndex = PickupIndex.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);

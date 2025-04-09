@@ -57,34 +57,8 @@ namespace SwanSongExtended.Items
         {
             On.RoR2.GlobalEventManager.OnCharacterDeath += EggOnDeath;
             On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
-            On.RoR2.SceneDirector.PopulateScene += HideEggs;
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-        }
-
-        private void HideEggs(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
-        {
-            orig(self);
-            Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
-            //this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            //int num = 0;
-            //using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
-            //{
-            //    while (enumerator.MoveNext())
-            //    {
-            //        if (enumerator.Current.inventory.GetItemCount(this.ItemsDef) > 0)
-            //        {
-            //            num += 3;
-            //        }
-            //    }
-            //}
-            //for (int j = 0; j < num; j++)
-            //{
-            //    DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(EggPile.instance.customInteractable.spawnCard, new DirectorPlacementRule
-            //    {
-            //        placementMode = DirectorPlacementRule.PlacementMode.Random
-            //    }, rng));
-            //}
         }
 
         private void EggStats(CharacterBody sender, StatHookEventArgs args)

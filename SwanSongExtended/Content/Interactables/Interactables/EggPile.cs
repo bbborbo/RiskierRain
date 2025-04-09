@@ -67,34 +67,72 @@ namespace SwanSongExtended.Interactables
         public override void Init()
         {
             base.Init();
+            On.RoR2.SceneDirector.PopulateScene += HideEggs;
+            InteractableDropPickup idi = InteractionComponent.gameObject.AddComponent<InteractableDropPickup>();
+            idi.dropTable = GenerateWeightedSelection();
+            idi.destroyOnUse = true;
+            idi.purchaseInteraction = InteractionComponent;
+            //InteractionComponent.onPurchase.AddListener(idi.OnInteractionBegin);
+            //return new UnityAction<Interactor>(idi.OnInteractionBegin);
+            //return idi.OnInteractionBegin;
+        }
+
+        private Xoroshiro128Plus rng;
+        private void HideEggs(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
+        {
+            orig(self);
+            //Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
+            this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
+            int num = 0;
+            using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (enumerator.Current.inventory.GetItemCount(Egg.instance.ItemsDef) > 0)
+                    {
+                        num += 3;
+                    }
+                }
+            }
+            for (int j = 0; j < num; j++)
+            {
+                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(EggPile.instance.customInteractable.spawnCard, new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.Random
+                }, rng));
+            }
         }
 
         public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
         {
+            return null;
             InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
             idi.destroyOnUse = true;
+            return new UnityAction<Interactor>(idi.OnInteractionBegin);
             return idi.OnInteractionBegin;
         }
         private ExplicitPickupDropTable GenerateWeightedSelection()
         {
             ExplicitPickupDropTable dropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+
             List<ExplicitPickupDropTable.PickupDefEntry> pickupDefEntries = new List<ExplicitPickupDropTable.PickupDefEntry>();
             pickupDefEntries.Add(
                 new ExplicitPickupDropTable.PickupDefEntry
-                {
-                    pickupDef = Egg.instance.ItemsDef,
-                    pickupWeight = 1f
-                }
-                );pickupDefEntries.Add(
-                new ExplicitPickupDropTable.PickupDefEntry
-                {
-                    pickupDef = GoldenEgg.instance.ItemsDef,
-                    pickupWeight = 0.2f
-                }
+                    {
+                        pickupDef = Egg.instance.ItemsDef,
+                        pickupWeight = 1f
+                    }
                 );
-
+            pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                    {
+                        pickupDef = GoldenEgg.instance.ItemsDef,
+                        pickupWeight = 0.2f
+                    }
+                );
             dropTable.pickupEntries = pickupDefEntries.ToArray();
+
             return dropTable;
         }
 
@@ -102,9 +140,5 @@ namespace SwanSongExtended.Interactables
         {
 
         }
-
-        WeightedSelection<PickupIndex> weightedSelection;
-        private Xoroshiro128Plus rng;
-        public Transform dropletOrigin;
     }
 }

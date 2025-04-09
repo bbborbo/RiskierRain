@@ -15,17 +15,15 @@ namespace SwanSongExtended
     public partial class SwanSongPlugin
     {
         BuffDef brittleCrownBuff => Modules.CommonAssets.brittleCrownCursePurchase;
-        public static int brittleCrownStealCountBase = 3;
-        public static int brittleCrownStealCountStack = 2;
         public void BrittleCrownChanges()
         {
             LanguageAPI.Add("ITEM_GOLDONHIT_NAME", "Sunken Crown");
             LanguageAPI.Add("ITEM_GOLDONHIT_PICKUP", $"Steal from chests... {HealthColor("at the cost of health.")}");
             LanguageAPI.Add("ITEM_GOLDONHIT_DESC", $"Allows interacting with chests without the ability to afford them, " +
                 $"opening the chest {UtilityColor("without spending ANY money")}. " +
-                $"Stealing from chests costs {HealthColor("17% / 33% / 80%")} " +
+                $"Stealing from chests costs {HealthColor("[ 17% / 33% / 80% ]")} " +
                 $"of your {HealthColor("maximum health")}, depending on the size of the chest. " +
-                $"Can steal up to {brittleCrownStealCountBase} {StackText($"{brittleCrownStealCountStack}")} times per stage.");
+                $"Can steal up to {BrittleCrownBehavior.brittleCrownStealCountBase} {StackText($"+{BrittleCrownBehavior.brittleCrownStealCountStack}")} times per stage.");
 
             IL.RoR2.HealthComponent.TakeDamageProcess += RemoveCrownPenalty;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveCrownReward;
@@ -145,12 +143,14 @@ namespace SwanSongExtended
 
     public class BrittleCrownBehavior : CharacterBody.ItemBehavior
     {
+        public static int brittleCrownStealCountBase = 3;
+        public static int brittleCrownStealCountStack = 2;
         private void OnEnable()
         {
             if (NetworkServer.active)
             {
                 body.SetBuffCount(Modules.CommonAssets.brittleCrownCursePurchase.buffIndex, 
-                    SwanSongPlugin.brittleCrownStealCountBase + SwanSongPlugin.brittleCrownStealCountStack * (this.stack - 1));
+                    brittleCrownStealCountBase + brittleCrownStealCountStack * (this.stack - 1));
             }
         }
 

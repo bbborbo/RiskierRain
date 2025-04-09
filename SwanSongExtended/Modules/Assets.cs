@@ -67,6 +67,17 @@ namespace SwanSongExtended.Modules
             AddHarpoonAssets();
             AddRazorwireAssets();
             AddBrittleCrownAssets();
+            AddGestureAssets();
+        }
+
+        public static BuffDef gestureQueueEquipBreak;
+        private static void AddGestureAssets()
+        {
+            gestureQueueEquipBreak = Content.CreateAndAddBuff(
+                "bdGestureBreakPending",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(),
+                Color.cyan, false, false);
+            gestureQueueEquipBreak.isHidden = true;
         }
 
         public static BuffDef brittleCrownCursePurchase;

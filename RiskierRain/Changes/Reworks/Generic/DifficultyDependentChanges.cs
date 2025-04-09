@@ -35,7 +35,7 @@ namespace RiskierRain
         /// <summary>
         /// exponential. works the same as difficultyIncreasePerStage, but only once per 5 stages
         /// </summary>
-        public static float difficultyIncreasePerLoop = 1.2f; //1.0f, exponential
+        public static float difficultyIncreasePerLoop = 1.3f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
@@ -281,7 +281,7 @@ namespace RiskierRain
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 6f;
+                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 3f;
                     }
                 }
             }

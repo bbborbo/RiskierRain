@@ -121,6 +121,7 @@ namespace SwanSongExtended.Interactables
 			InteractionComponent.automaticallyScaleCostWithDifficulty = InteractableData.automaticallyScaleCostWithDifficulty;
 			InteractionComponent.cost = interactionCost;
 			InteractionComponent.available = true;
+			InteractionComponent.SetAvailable(true);
 			InteractionComponent.setUnavailableOnTeleporterActivated = InteractableData.unavailableDuringTeleporter;
 			InteractionComponent.isShrine = InteractableData.isShrine;
 			InteractionComponent.isGoldShrine = false;

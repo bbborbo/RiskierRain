@@ -9,7 +9,7 @@ namespace SwanSongExtended.Components
     public class InteractableDropPickup : MonoBehaviour
     {
         public bool destroyOnUse = true;
-        public WeightedSelection<PickupIndex> dropTable;
+        public ExplicitPickupDropTable dropTable;
         private Xoroshiro128Plus rng;
         public Transform dropletOrigin;
         public bool canActivate = true;
@@ -24,9 +24,11 @@ namespace SwanSongExtended.Components
         {
             if (dropTable == null || !canActivate)
                 return;
+            
             PickupIndex pickupIndex = PickupIndex.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, dropTable);
+            dropTable.GenerateWeightedSelection();
+            pickupIndex = dropTable.GenerateDrop(rng);
             PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f);
             if (destroyOnUse)
             {

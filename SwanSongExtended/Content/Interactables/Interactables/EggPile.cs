@@ -49,7 +49,6 @@ namespace SwanSongExtended.Interactables
                 maxSpawnsPerStage: 1
             );
 
-
         public override string[] validScenes => new string[]
         {
             "blackbeach",
@@ -74,14 +73,29 @@ namespace SwanSongExtended.Interactables
         {
             InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
+            idi.destroyOnUse = true;
             return idi.OnInteractionBegin;
         }
-        private WeightedSelection<PickupIndex> GenerateWeightedSelection()
+        private ExplicitPickupDropTable GenerateWeightedSelection()
         {
-            WeightedSelection<PickupIndex> weightedSelection = new WeightedSelection<PickupIndex>();
-            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(Egg.instance.ItemsDef.itemIndex), 1f);
-            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(GoldenEgg.instance.ItemsDef.itemIndex), 0.2f);
-            return weightedSelection;
+            ExplicitPickupDropTable dropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+            List<ExplicitPickupDropTable.PickupDefEntry> pickupDefEntries = new List<ExplicitPickupDropTable.PickupDefEntry>();
+            pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                {
+                    pickupDef = Egg.instance.ItemsDef,
+                    pickupWeight = 1f
+                }
+                );pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                {
+                    pickupDef = GoldenEgg.instance.ItemsDef,
+                    pickupWeight = 0.2f
+                }
+                );
+
+            dropTable.pickupEntries = pickupDefEntries.ToArray();
+            return dropTable;
         }
 
         public override void Hooks()

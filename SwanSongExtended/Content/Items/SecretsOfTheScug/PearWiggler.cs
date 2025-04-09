@@ -43,7 +43,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing};
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/SecretsOfTheScug/mdlPearWiggler.prefab");
 
         public override Sprite ItemIcon => LoadItemIcon();
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;

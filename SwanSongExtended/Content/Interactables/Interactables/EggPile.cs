@@ -23,7 +23,7 @@ namespace SwanSongExtended.Interactables
 
         public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/eggPile.prefab");
 
-        public override string modelName => "eggPile";
+        public override string modelName => "mdlEggPile";
 
         public override string prefabName => "eggPile";
 
@@ -46,7 +46,7 @@ namespace SwanSongExtended.Interactables
             (
                 unavailableDuringTeleporter: false,
                 sacrificeWeightScalar: 1,
-                maxSpawnsPerStage: 5
+                maxSpawnsPerStage: 1
             );
 
 
@@ -57,6 +57,10 @@ namespace SwanSongExtended.Interactables
             "wispgraveyard",
             "shipgraveyard",
             "rootjungle",
+            "habitat",
+            "habitatfall",
+            "lakes",
+            "lakesnight",
             "foggyswamp"
         };
         public override string[] favoredScenes => new string[] { };

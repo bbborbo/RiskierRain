@@ -66,7 +66,18 @@ namespace SwanSongExtended.Modules
             AddMaskHauntAssets();
             AddHarpoonAssets();
             AddRazorwireAssets();
+            AddBrittleCrownAssets();
         }
+
+        public static BuffDef brittleCrownCursePurchase;
+        private static void AddBrittleCrownAssets()
+        {
+            brittleCrownCursePurchase = Content.CreateAndAddBuff(
+                "bdBrittleCrownCursePurchase", 
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(), 
+                Color.cyan, true, false);
+        }
+
         public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
 
         #region razorwire

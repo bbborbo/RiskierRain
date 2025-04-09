@@ -232,6 +232,14 @@ namespace SwanSongExtended
             {
                 ReworkFreshMeat();
             }
+            if (GetConfigBool(true, "Reworks : Gesture of the Drowned"))
+            {
+                GestureChanges();
+            }
+            if (GetConfigBool(true, "Reworks : Brittle Crown"))
+            {
+                BrittleCrownChanges();
+            }
             if (GetConfigBool(true, "Reworks : Commencement"))
             {
                 MakePillarsFun();

@@ -415,7 +415,6 @@ namespace MissileRework
                     }
                 }
             }
-            orig(self);
         }
 
         private void MissileArtifact_LodrPylon(On.EntityStates.Loader.ThrowPylon.orig_OnEnter orig, EntityStates.Loader.ThrowPylon self)

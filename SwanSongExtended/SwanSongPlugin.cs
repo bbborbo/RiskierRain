@@ -109,17 +109,14 @@ namespace SwanSongExtended
         }
         #endregion
 
-        [AutoConfig("Enable Debugging", "Enable debug outputs to the log for troubleshooting purposes. Enabling this will slow down the game.", false)]
-        public static bool enableDebugging;
-
         void Awake()
         {
             instance = this;
 
+            Modules.Config.Init();
             Log.Init(Logger);
 
             CreateExpansionDef();
-            Modules.Config.Init();
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();

@@ -487,10 +487,10 @@ namespace SwanSongExtended.Elites
             BullseyeSearch bullseyeSearch = new BullseyeSearch();
             bullseyeSearch.viewer = body;
             bullseyeSearch.searchOrigin = body.corePosition;
-            bullseyeSearch.searchDirection = body.corePosition;
+            //bullseyeSearch.searchDirection = body.corePosition;
             bullseyeSearch.maxDistanceFilter = maxDistance;
             bullseyeSearch.teamMaskFilter = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
-            bullseyeSearch.sortMode = BullseyeSearch.SortMode.DistanceAndAngle;
+            bullseyeSearch.sortMode = BullseyeSearch.SortMode.Distance;
             bullseyeSearch.RefreshCandidates();
             this.target = bullseyeSearch.GetResults().FirstOrDefault<HurtBox>();
         }

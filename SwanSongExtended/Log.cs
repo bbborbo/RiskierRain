@@ -7,10 +7,14 @@ namespace SwanSongExtended
 {
     internal static class Log
     {
+        public static bool enableDebugging;
         internal static ManualLogSource _logSource;
 
         internal static void Init(ManualLogSource logSource)
         {
+            enableDebugging = Modules.ConfigManager.DualBindToConfig<bool>(
+                "Swan Song", Modules.Config.MyConfig, "Enable Debugging", false,
+                "Enable debug outputs to the log for troubleshooting purposes. Enabling this will slow down the game.");
             _logSource = logSource;
         }
         internal static string Combine(params string[] parameters)
@@ -24,7 +28,7 @@ namespace SwanSongExtended
         }
         internal static void Debug(object data) 
         {
-            if (SwanSongPlugin.enableDebugging)
+            if (enableDebugging)
                 _logSource.LogDebug(data);
         } 
         internal static void Error(object data) => _logSource.LogError(data);

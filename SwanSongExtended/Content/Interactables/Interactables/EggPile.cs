@@ -9,12 +9,16 @@ using R2API;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Components;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace SwanSongExtended.Interactables
 {
     class EggPile : InteractableBase<EggPile>
     {
+
         public override string ConfigName => "Interactables : Egg";
+        [AutoConfig("Hideable Eggs Per Player", 3)]
+        public static int eggsPerPlayer = 3;
         public override string InteractableName => "Egg";
 
         public override string InteractableContext => "Found an egg";
@@ -64,10 +68,11 @@ namespace SwanSongExtended.Interactables
         };
         public override string[] favoredScenes => new string[] { };
 
+        private Xoroshiro128Plus rng;
+
         public override void Init()
         {
             base.Init();
-            On.RoR2.SceneDirector.PopulateScene += HideEggs;
             InteractableDropPickup idi = InteractionComponent.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
             idi.destroyOnUse = true;
@@ -77,24 +82,28 @@ namespace SwanSongExtended.Interactables
             //return idi.OnInteractionBegin;
         }
 
-        private Xoroshiro128Plus rng;
+        public override void Hooks()
+        {
+            On.RoR2.SceneDirector.PopulateScene += HideEggs;
+        }
+
         private void HideEggs(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
         {
             orig(self);
-            //Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
+
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
-            int num = 0;
+            int eggsToHide = 0;
             using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
                     if (enumerator.Current.inventory.GetItemCount(Egg.instance.ItemsDef) > 0)
                     {
-                        num += 3;
+                        eggsToHide += eggsPerPlayer;
                     }
                 }
             }
-            for (int j = 0; j < num; j++)
+            for (int j = 0; j < eggsToHide; j++)
             {
                 DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(EggPile.instance.customInteractable.spawnCard, new DirectorPlacementRule
                 {
@@ -134,11 +143,6 @@ namespace SwanSongExtended.Interactables
             dropTable.pickupEntries = pickupDefEntries.ToArray();
 
             return dropTable;
-        }
-
-        public override void Hooks()
-        {
-
         }
     }
 }

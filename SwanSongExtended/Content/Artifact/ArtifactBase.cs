@@ -28,6 +28,8 @@ namespace SwanSongExtended.Artifacts
 
     public abstract class ArtifactBase : SharedBase
     {
+        public override string ConfigName => "Artifacts : " + ArtifactName;
+        public override AssetBundle assetBundle => null;
         public abstract string ArtifactName { get; }
         public abstract string ArtifactDescription { get; }
         public abstract string ArtifactLangTokenName { get; }

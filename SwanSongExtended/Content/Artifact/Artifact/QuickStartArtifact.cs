@@ -12,7 +12,6 @@ namespace SwanSongExtended.Artifacts
     class QuickStartArtifact : ArtifactBase<QuickStartArtifact>
     {
         #region config
-        public override string ConfigName => "Artifacts : Initiative";
 
         [AutoConfig("Wish Pickup Index", "2 is Common, 3 is Uncommon, 4 is Rare", 3)]
         public static int wishPickupIndex = 3;
@@ -50,8 +49,6 @@ namespace SwanSongExtended.Artifacts
         public override Sprite ArtifactSelectedIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
         public override Sprite ArtifactDeselectedIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-
-        public override AssetBundle assetBundle => null;
 
         public override void Hooks()
         {

@@ -22,12 +22,11 @@ namespace SwanSongExtended.Artifacts
 
         public override void Hooks()
         {
-
+            On.RoR2.CharacterBody.Start += GiveQuickStart;
         }
 
         public override void OnArtifactEnabledServer()
         {
-            On.RoR2.CharacterBody.Start += GiveQuickStart;
 
             itemPool = ItemCatalog.allItemDefs.Where(
                 item => item.tier == ItemTier.Lunar
@@ -37,20 +36,23 @@ namespace SwanSongExtended.Artifacts
 
         public override void OnArtifactDisabledServer()
         {
-            On.RoR2.CharacterBody.Start -= GiveQuickStart;
+            //On.RoR2.CharacterBody.Start -= GiveQuickStart;
         }
 
         private void GiveQuickStart(On.RoR2.CharacterBody.orig_Start orig, RoR2.CharacterBody self)
         {
             orig(self);
-            bool isStageone = Run.instance.stageClearCount == 0;
-            if (!isStageone)
+            if (RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef))
             {
-                return;
-            }
-            if (self.isPlayerControlled)
-            {
-                OnPlayerCharacterBodyStartServer(self);
+                bool isStageone = Run.instance.stageClearCount == 0;
+                if (!isStageone)
+                {
+                    return;
+                }
+                if (self.isPlayerControlled)
+                {
+                    OnPlayerCharacterBodyStartServer(self);
+                }
             }
         }
 

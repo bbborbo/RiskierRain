@@ -110,7 +110,6 @@ namespace SwanSongExtended.Items
             {
                 ParticleSystemRenderer psr = psrs[i];
                 string name = psr.gameObject.name;
-                Log.Error(name);
                 Color32 color = Color.white;
                 string matName = "";
                 if (name == "Core")

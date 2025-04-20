@@ -27,7 +27,7 @@ namespace ChillRework
         }
 
         #region chill on hit
-        private readonly Dictionary<GameObject, GameObject> frozenBy = new Dictionary<GameObject, GameObject>();
+        //private readonly Dictionary<GameObject, GameObject> frozenBy = new Dictionary<GameObject, GameObject>();
         /// <summary>
         /// attacker, victim
         /// </summary>
@@ -156,7 +156,7 @@ namespace ChillRework
                     {
                         if (damageInfo.damageType.damageType.HasFlag(DamageType.Freeze2s))
                         {
-                            this.frozenBy[victim] = damageInfo.attacker;
+                            //this.frozenBy[victim] = damageInfo.attacker;
                             float chillCount = chillStacksOnFreeze;
                             if (damageInfo.damageType.damageType.HasFlag(DamageType.AOE))
                             {

@@ -32,11 +32,8 @@ namespace SwanSongExtended.Artifacts
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarSpecialReplacement), FreeLunarBlacklist);
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.RepeatHeal), FreeLunarBlacklist);
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket), FreeLunarBlacklist);
-            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.));
-            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
             SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.HalfAttackSpeedHalfCooldowns), FreeLunarBlacklist);
             SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.HalfSpeedDoubleHealth), FreeLunarBlacklist);
-            SwanSongPlugin.BlacklistSingleItem(nameof(DLC2Content.Items.OnLevelUpFreeUnlock));
         }
         public override void Hooks()
         {

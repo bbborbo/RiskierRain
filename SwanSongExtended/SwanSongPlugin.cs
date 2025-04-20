@@ -122,6 +122,7 @@ namespace SwanSongExtended
             Modules.CommonAssets.Init();
             Modules.EliteModule.Init();
             Modules.AllyCaps.Init();
+            Modules.Spawnlists.Init();
             this.InitializeStorms();
 
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
@@ -330,6 +331,21 @@ namespace SwanSongExtended
                 def.deprecatedTier = tier;
             }
             return def;
+        }
+        internal static void AIBlacklistSingleItem(string name)
+        {
+            ItemDef itemDef = LoadItemDef(name);
+            if (itemDef != null)
+            {
+                List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
+                itemTags.Add(ItemTag.AIBlacklist);
+
+                itemDef.tags = itemTags.ToArray();
+            }
+            else
+            {
+                Debug.LogError($"ItemDef {name} failed to load - unable to blacklist");
+            }
         }
 
         public static void RemoveEquipment(string equipName)

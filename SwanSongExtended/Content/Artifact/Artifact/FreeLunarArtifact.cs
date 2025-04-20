@@ -9,6 +9,8 @@ namespace SwanSongExtended.Artifacts
 {
     class FreeLunarArtifact : ArtifactBase<FreeLunarArtifact>
     {
+        const int _FreeLunarBlacklist = (int)ItemTag.SacrificeBlacklist;
+        public static ItemTag FreeLunarBlacklist => (ItemTag)_FreeLunarBlacklist;
         ItemDef[] itemPool;
         public override string ArtifactName => "Lunacy";
 
@@ -20,6 +22,22 @@ namespace SwanSongExtended.Artifacts
 
         public override Sprite ArtifactDeselectedIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
+        public override void Init()
+        {
+            base.Init();
+
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarPrimaryReplacement), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarSecondaryReplacement), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarUtilityReplacement), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarSpecialReplacement), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.RepeatHeal), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.HalfAttackSpeedHalfCooldowns), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.HalfSpeedDoubleHealth), FreeLunarBlacklist);
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC2Content.Items.OnLevelUpFreeUnlock));
+        }
         public override void Hooks()
         {
             On.RoR2.CharacterBody.Start += GiveQuickStart;
@@ -30,7 +48,7 @@ namespace SwanSongExtended.Artifacts
 
             itemPool = ItemCatalog.allItemDefs.Where(
                 item => item.tier == ItemTier.Lunar
-                /*&& !item.ContainsTag(ItemTag.AIBlacklist)*/
+                && !item.ContainsTag(ItemTag.WorldUnique) && !item.ContainsTag(ItemTag.SacrificeBlacklist)
                 ).ToArray();
         }
 

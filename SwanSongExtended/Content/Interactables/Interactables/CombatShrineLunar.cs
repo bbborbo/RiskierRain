@@ -95,18 +95,18 @@ namespace SwanSongExtended.Interactables
             LanguageAPI.Add(baseUseMessage + "_2P", "<style=cShrine>{0} has invoked <style=cIsLunar>{1}</style> in battle.</color>");
             base.Init();
 
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.GoldOnHit));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.RepeatHeal));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.AutoCastEquipment));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarPrimaryReplacement));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarUtilityReplacement));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarSpecialReplacement));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.FocusConvergence));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(DLC1Content.Items.LunarSun));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(DLC1Content.Items.RandomlyLunar));
-            SwanSongPlugin.AIBlacklistSingleItem(nameof(DLC2Content.Items.OnLevelUpFreeUnlock));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.GoldOnHit));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.RepeatHeal));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.AutoCastEquipment));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarPrimaryReplacement));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarUtilityReplacement));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarSpecialReplacement));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.FocusConvergence));
+            SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.LunarSun));
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.RandomlyLunar));
+            SwanSongPlugin.BlacklistSingleItem(nameof(DLC2Content.Items.OnLevelUpFreeUnlock));
         }
 
         public override void Hooks()
@@ -119,7 +119,7 @@ namespace SwanSongExtended.Interactables
             orig(self);
             itemPool = ItemCatalog.allItemDefs.Where(
                 item => item.tier == ItemTier.Lunar
-                && !item.ContainsTag(ItemTag.AIBlacklist)
+                && !item.ContainsTag(ItemTag.WorldUnique) && !item.ContainsTag(ItemTag.AIBlacklist)
                 ).ToArray();
         }
 

@@ -332,13 +332,13 @@ namespace SwanSongExtended
             }
             return def;
         }
-        internal static void AIBlacklistSingleItem(string name)
+        internal static void BlacklistSingleItem(string name, ItemTag itemTag = ItemTag.AIBlacklist)
         {
             ItemDef itemDef = LoadItemDef(name);
             if (itemDef != null)
             {
                 List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
-                itemTags.Add(ItemTag.AIBlacklist);
+                itemTags.Add(itemTag);
 
                 itemDef.tags = itemTags.ToArray();
             }

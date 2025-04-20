@@ -11,6 +11,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static MoreStats.StatHooks;
 using SwanSongExtended.Modules;
+using SwanSongExtended.Artifacts;
 
 namespace SwanSongExtended.Items
 {
@@ -47,7 +48,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Lunar;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable, ItemTag.LowHealth, ItemTag.Utility };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable, ItemTag.LowHealth, ItemTag.Utility, FreeLunarArtifact.FreeLunarBlacklist };
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/RepeatHeal/PickupCorpseflower.prefab").WaitForCompletion();
 

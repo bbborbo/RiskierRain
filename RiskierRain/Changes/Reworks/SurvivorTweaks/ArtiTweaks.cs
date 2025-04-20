@@ -15,6 +15,7 @@ namespace RiskierRain.SurvivorTweaks
 {
     class ArtiTweaks : SurvivorTweakModule
     {
+        public static float flamethrowerDamage = 28; //20 vanilla, 34 pre-nerf glory
         public override string survivorName => "Artificer";
 
         public override string bodyName => "MageBody";
@@ -28,7 +29,7 @@ namespace RiskierRain.SurvivorTweaks
             CharacterBody mageBody = bodyObject.GetComponent<CharacterBody>();
             if (mageBody != null)
             {
-                float mageDamage = 13; //12
+                float mageDamage = 12; //12
                 mageBody.baseDamage = mageDamage;
                 mageBody.levelDamage = mageDamage * 0.2f;
             }
@@ -101,6 +102,9 @@ namespace RiskierRain.SurvivorTweaks
             #endregion
 
             #region Flamethrower
+            Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+            LanguageAPI.Add("MAGE_SPECIAL_FIRE_DESCRIPTION", $"Burn all enemies in front of you for {Tools.ConvertDecimal(flamethrowerDamage)}. " +
+                $"Each hit has a <style=cIsDamage>50% chance</style> to <style=cIsDamage>Ignite</style>.");
             if (false)
             {
                 On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
@@ -137,7 +141,6 @@ namespace RiskierRain.SurvivorTweaks
 
         private void JetpackSpeedBoost(CharacterBody sender, StatHookEventArgs args)
         {
-
             if (sender.HasBuff(CoreModules.Assets.jetpackSpeedBoost))
             {
                 args.moveSpeedMultAdd += 0.15f;

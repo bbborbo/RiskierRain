@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SwanSongExtended.Artifacts 
 {
@@ -38,7 +39,26 @@ namespace SwanSongExtended.Artifacts
         public override void Hooks()
         {
             On.RoR2.CharacterBody.Start += GiveQuickStart;
+            On.RoR2.TeleporterInteraction.Start += OnTeleporterStart;
             On.RoR2.Run.OnServerTeleporterPlaced += OnTeleporterPlaced;
+        }
+
+        private void OnTeleporterStart(On.RoR2.TeleporterInteraction.orig_Start orig, TeleporterInteraction self)
+        {
+            orig(self);
+            if (IsArtifactEnabled())
+            {
+                self.shouldAttemptToSpawnShopPortal = true;
+                foreach (PortalStatueBehavior portalStatueBehavior in GameObject.FindObjectsOfType<PortalStatueBehavior>())
+                {
+                    PurchaseInteraction purchaseInteraction;
+                    if (portalStatueBehavior.portalType == PortalStatueBehavior.PortalType.Shop && portalStatueBehavior.TryGetComponent<PurchaseInteraction>(out purchaseInteraction))
+                    {
+                        purchaseInteraction.Networkavailable = false;
+                        portalStatueBehavior.CallRpcSetPingable(portalStatueBehavior.gameObject, false);
+                    }
+                }
+            }
         }
 
         public override void OnArtifactEnabledServer()
@@ -52,9 +72,9 @@ namespace SwanSongExtended.Artifacts
         private void OnTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
         {
             orig(self, sceneDirector, teleporter);
-            if (IsArtifactEnabled())
+            if (IsArtifactEnabled() && teleporter.TryGetComponent(out TeleporterInteraction tp))
             {
-                TeleporterInteraction.instance.shouldAttemptToSpawnShopPortal = true;
+                tp.shouldAttemptToSpawnShopPortal = true;
                 foreach (PortalStatueBehavior portalStatueBehavior in GameObject.FindObjectsOfType<PortalStatueBehavior>())
                 {
                     PurchaseInteraction purchaseInteraction;
@@ -75,7 +95,7 @@ namespace SwanSongExtended.Artifacts
         private void GiveQuickStart(On.RoR2.CharacterBody.orig_Start orig, RoR2.CharacterBody self)
         {
             orig(self);
-            if (IsArtifactEnabled())
+            if (IsArtifactEnabled() && NetworkServer.active)
             {
                 bool isStageone = Run.instance.stageClearCount == 0;
                 if (!isStageone)

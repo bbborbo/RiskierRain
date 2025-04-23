@@ -131,7 +131,7 @@ namespace SwanSongExtended.Elites
                         EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova"), new EffectData
                         {
                             origin = enemyBody.corePosition,
-                            scale = 5
+                            scale = enemyBody.bestFitRadius + 4
                         }, true);
                     }
                 }

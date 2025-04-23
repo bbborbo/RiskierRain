@@ -171,8 +171,8 @@ namespace RiskierRain
         public static float overloadingShieldConversionFraction = 0.33f;
         public static float overloadingSmiteCountBase = 2;
         public static float overloadingSmiteCountPerRadius = 1f;
-        public static float overloadingSmiteRangeBase = 15f;
-        public static float overloadingSmiteRangePerRadius = 8f;
+        public static float overloadingSmiteRangeBase = 18f;
+        public static float overloadingSmiteRangePerRadius = 9f;
         public static float overloadingSmiteStartingDamage = 10f;
         public static float overloadingSmiteDamagePerStrike = 5f;
         private void OverloadingSmiteDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)

@@ -38,15 +38,33 @@ namespace SwanSongExtended.Artifacts
         public override void Hooks()
         {
             On.RoR2.CharacterBody.Start += GiveQuickStart;
+            On.RoR2.Run.OnServerTeleporterPlaced += OnTeleporterPlaced;
         }
 
         public override void OnArtifactEnabledServer()
         {
-
             itemPool = ItemCatalog.allItemDefs.Where(
                 item => item.tier == ItemTier.Lunar
                 && !item.ContainsTag(ItemTag.WorldUnique) && !item.ContainsTag(ItemTag.SacrificeBlacklist)
                 ).ToArray();
+        }
+
+        private void OnTeleporterPlaced(On.RoR2.Run.orig_OnServerTeleporterPlaced orig, Run self, SceneDirector sceneDirector, GameObject teleporter)
+        {
+            orig(self, sceneDirector, teleporter);
+            if (IsArtifactEnabled())
+            {
+                TeleporterInteraction.instance.shouldAttemptToSpawnShopPortal = true;
+                foreach (PortalStatueBehavior portalStatueBehavior in GameObject.FindObjectsOfType<PortalStatueBehavior>())
+                {
+                    PurchaseInteraction purchaseInteraction;
+                    if (portalStatueBehavior.portalType == PortalStatueBehavior.PortalType.Shop && portalStatueBehavior.TryGetComponent<PurchaseInteraction>(out purchaseInteraction))
+                    {
+                        purchaseInteraction.Networkavailable = false;
+                        portalStatueBehavior.CallRpcSetPingable(portalStatueBehavior.gameObject, false);
+                    }
+                }
+            }
         }
 
         public override void OnArtifactDisabledServer()
@@ -57,7 +75,7 @@ namespace SwanSongExtended.Artifacts
         private void GiveQuickStart(On.RoR2.CharacterBody.orig_Start orig, RoR2.CharacterBody self)
         {
             orig(self);
-            if (RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef))
+            if (IsArtifactEnabled())
             {
                 bool isStageone = Run.instance.stageClearCount == 0;
                 if (!isStageone)

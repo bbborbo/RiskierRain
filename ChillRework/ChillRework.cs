@@ -41,7 +41,7 @@ namespace ChillRework
         public const int chillStacksOnFreeze = 3;
         public const float chillProcDuration = 8f;
         public const int chillProcChance = 100;
-        public const float chillLimitInterval = 0.3f;
+        public const float chillLimitInterval = 1f;
         public void Awake()
         {
             Debug.Log("Chill Rework initializing!");

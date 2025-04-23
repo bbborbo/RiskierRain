@@ -57,7 +57,7 @@ namespace ChillRework
                         component.SetFrozen(2f);
                     }
 
-                    //add 3 stacks of chill limiter, this will cap chill at 1 for 0.3 seconds, then 4 for 0.3, then 7 for 0.3, then 10
+                    //add 3 stacks of chill limiter, this will cap chill at 1 for 0.5 seconds, then 4 for 0.5, then 7 for 0.5, then 10
                     for(int i = 1; i < 4; i++)
                     {
                         self.AddTimedBuff(ChillLimitBuff, chillLimitInterval * i);

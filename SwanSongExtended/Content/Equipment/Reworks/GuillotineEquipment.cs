@@ -27,8 +27,11 @@ namespace SwanSongExtended.Equipment
         #region config
         public override string ConfigName => "Reworks : Old Guillotine";
 
-        [AutoConfig("Base Execution Threshold", 0.15f)]
-        public static float newExecutionThresholdBase = 0.15f;
+        [AutoConfig("Executed Elite Aspect Drop Chance", 1 / 20)]
+        public static float aspectDropChance = 1 / 20;
+
+        [AutoConfig("Base Execution Threshold", 0.20f)]
+        public static float newExecutionThresholdBase = 0.20f;
         [AutoConfig("Bonus Execution Threshold For Status", 0.10f)]
         public static float newExecutionThresholdStack = 0.10f;
 
@@ -53,13 +56,16 @@ namespace SwanSongExtended.Equipment
 
         public override string EquipmentLangTokenName => "BOBOGUILLOTINE";
 
-        public override string EquipmentPickupDesc => "Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
+        public override string EquipmentPickupDesc => "Instantly kill low health Elite monsters.";
+        //"Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
 
-        public override string EquipmentFullDescription => $"Target a monster, allowing them to be " +
-            $"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +
-            $"{StackColor($"(+{stackThreshold} per Elite tier)")}. " +
-            $"Executing them in this manner will {DamageColor("empower you")}, " +
-            $"resetting {UtilityColor("all skill cooldowns")} and {UtilityColor($"increasing Luck for {luckDuration} seconds")}.";
+        public override string EquipmentFullDescription => $"Instantly kill Elite monsters below {RedText($"{baseThreshold} max health")}. " +
+            $"{UtilityColor(Tools.ConvertDecimal(aspectDropChance) + "chance")} to claim the power of slain Elite monsters.";
+        //$"Target a monster, allowing them to be " +
+        //$"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +
+        //$"{StackColor($"(+{stackThreshold} per Elite tier)")}. " +
+        //$"Executing them in this manner will {DamageColor("empower you")}, " +
+        //$"resetting {UtilityColor("all skill cooldowns")} and {UtilityColor($"increasing Luck for {luckDuration} seconds")}.";
 
         public override string EquipmentLore => "Order: Old Guillotine" +
             "\nTracking Number: 782*****" +
@@ -189,11 +195,46 @@ namespace SwanSongExtended.Equipment
 
         public override void Hooks()
         {
-            On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
+            //On.RoR2.EquipmentSlot.UpdateTargets += GuillotineTargeting;
+            //On.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineExecuteBehavior;
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ExecuteLowHealthElite);
 
-            GetMoreStatCoefficients += GuillotineStats;
+            //GetMoreStatCoefficients += GuillotineStats;
+            On.RoR2.CharacterBody.RecalculateStats += AddEliteExecuteThreshold;
+            IL.RoR2.GlobalEventManager.OnCharacterDeath += GuillotineNewExecuteBehavior;
+        }
+
+        private void GuillotineNewExecuteBehavior(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            if (c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<EquipmentDef>(nameof(EquipmentDef.dropOnDeathChance))
+                ))
+            {
+                c.EmitDelegate<Func<float, DamageReport, float>>((baseDropChance, damageReport) =>
+                {
+                    float dropChance = baseDropChance;
+                    if (damageReport.victimIsElite)
+                    {
+                    CharacterBody attackerBody = damageReport.attackerBody;
+                    if (attackerBody.executeEliteHealthFraction > 0)
+                    {
+                        dropChance = aspectDropChance;
+                    }
+                    }
+                    return dropChance;
+                });
+            }
+        }
+
+        private void AddEliteExecuteThreshold(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            if(self.inventory?.currentEquipmentIndex == this.EquipDef.equipmentIndex)
+            {
+                self.executeEliteHealthFraction = newExecutionThresholdBase;
+            }
         }
 
         private void GuillotineTargetingOld(ILContext il)
@@ -288,6 +329,7 @@ namespace SwanSongExtended.Equipment
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
+            return false;
             bool b = false;
 
             HurtBox hurtBox = slot.currentTarget.hurtBox;

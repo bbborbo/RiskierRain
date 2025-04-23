@@ -212,6 +212,7 @@ namespace SwanSongExtended.Equipment
                 x => x.MatchLdfld<EquipmentDef>(nameof(EquipmentDef.dropOnDeathChance))
                 ))
             {
+                c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<float, DamageReport, float>>((baseDropChance, damageReport) =>
                 {
                     float dropChance = baseDropChance;

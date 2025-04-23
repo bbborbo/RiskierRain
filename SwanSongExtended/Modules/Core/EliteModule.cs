@@ -27,12 +27,20 @@ namespace SwanSongExtended.Modules
             {
                 switch (eliteDef.eliteTier)
                 {
+                    default:
+                        break;
                     case EliteTiers.Tier1:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
+                        break;
+                    case EliteTiers.Tier1AndHalf:
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.Tier2:
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.eliteDef);
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[5].eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.StormT1:
                         HG.ArrayUtils.ArrayAppend(ref SwanSongPlugin.StormT1.eliteTypes, eliteDef.eliteDef);
@@ -40,7 +48,8 @@ namespace SwanSongExtended.Modules
                     case EliteTiers.StormT2:
                         HG.ArrayUtils.ArrayAppend(ref SwanSongPlugin.StormT2.eliteTypes, eliteDef.eliteDef);
                         break;
-                    default:
+                    case EliteTiers.Lunar:
+                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[6].eliteTypes, eliteDef.eliteDef);
                         break;
                 }
             }
@@ -60,9 +69,11 @@ namespace SwanSongExtended.Modules
         public enum EliteTiers
         {
             Tier1,
+            Tier1AndHalf,
             Tier2,
             StormT1,
             StormT2,
+            Lunar,
             Other
         }
         #endregion

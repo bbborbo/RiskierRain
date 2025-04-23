@@ -148,7 +148,10 @@ namespace SwanSongExtended.Elites
             EliteDef.color = EliteBuffColor;
             EliteDef.shaderEliteRampIndex = 0;
             Texture2D eliteRamp = CommonAssets.mainAssetBundle.LoadAsset<Texture2D>(CommonAssets.eliteMaterialsPath + EliteRampTextureName + ".png");
-            EliteRamp.AddRamp(EliteDef, eliteRamp);
+            if(eliteRamp != null)
+            {
+                EliteRamp.AddRamp(EliteDef, eliteRamp);
+            }
 
             //elite equipment
             EliteEquipmentDef = ScriptableObject.CreateInstance<EquipmentDef>();

@@ -18,12 +18,23 @@ namespace SwanSongExtended.Elites
         #region config
         public override string ConfigName => "Elites : " + EliteModifier;
 
-        [AutoConfig("Cooldown Reduction Fraction", 0.3f)]
-        public static float cooldownReduction = 0.3f;
-        [AutoConfig("Bonus Movement Speed Multiplier", 0.8f)]
-        public static float moveSpeedBonus = 0.8f;
-        [AutoConfig("Bonus Attack Speed Multiplier", 1.2f)]
-        public static float atkSpeedBonus = 1.2f;
+        [AutoConfig("Transfer Buff Duration", 6f)]
+        public static float frenziedTransferDuration = 6f;
+        [AutoConfig("Transfer Buff Count Base", 1f)]
+        public static float transferCountBase = 1;
+        [AutoConfig("Transfer Buff Count Per Radius", 1f)]
+        public static float transferCountPerRadius = 1f;
+        [AutoConfig("Transfer Buff Range Base", 24f)]
+        public static float transferRangeBase = 24f;
+        [AutoConfig("Transfer Buff Range Per Radius", 12f)]
+        public static float transferRangePerRadius = 12f;
+
+        [AutoConfig("Cooldown Reduction Fraction", 0.4f)]
+        public static float cooldownReduction = 0.4f;
+        [AutoConfig("Bonus Movement Speed Multiplier", 1.2f)]
+        public static float moveSpeedBonus = 1.2f;
+        [AutoConfig("Bonus Attack Speed Multiplier", 1.8f)]
+        public static float atkSpeedBonus = 1.8f;
         #endregion
 
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
@@ -35,7 +46,7 @@ namespace SwanSongExtended.Elites
 
         public override string EliteAffixToken => "AFFIX_SPEED";
 
-        public override string EliteModifier => "Frenzied";
+        public override string EliteModifier => "Hallowed";
 
         public override string EliteEquipmentFullDescription => "Increase movement, attack, and ability recharge speed.";
 
@@ -49,6 +60,7 @@ namespace SwanSongExtended.Elites
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matFrenzied.mat");
         public override string EliteRampTextureName { get; set; } = "texRampFrenzied";
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1AndHalf;
 
         public override bool CanDrop { get; } = false;
 
@@ -62,6 +74,10 @@ namespace SwanSongExtended.Elites
         {
             return null;
         }
+        public override void Init()
+        {
+            base.Init();
+        }
 
         public override void Hooks()
         {
@@ -69,12 +85,6 @@ namespace SwanSongExtended.Elites
             On.RoR2.CharacterBody.RecalculateStats += FrenziedCooldownBuff;
             On.RoR2.GlobalEventManager.OnCharacterDeath += FrenziedTransferDeath;
         }
-
-        public static float frenziedTransferDuration = 8f;
-        public static float overloadingSmiteCountBase = 1;
-        public static float overloadingSmiteCountPerRadius = 1f;
-        public static float overloadingSmiteRangeBase = 24f;
-        public static float overloadingSmiteRangePerRadius = 12f;
         private void FrenziedTransferDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             CharacterBody victimBody = damageReport.victimBody;
@@ -83,8 +93,8 @@ namespace SwanSongExtended.Elites
             {
                 if (victimBody.HasBuff(EliteBuffDef))
                 {
-                    int maxTransferCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.radius * overloadingSmiteCountPerRadius);
-                    float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
+                    int maxTransferCount = Mathf.CeilToInt(transferCountBase + victimBody.radius * transferCountPerRadius);
+                    float range = transferRangeBase + victimBody.radius * transferRangePerRadius;
 
                     //procChainMask6.AddProc(ProcType.LightningStrikeOnHit);
 
@@ -162,10 +172,6 @@ namespace SwanSongExtended.Elites
                 args.moveSpeedMultAdd += moveSpeedBonus;
                 args.baseAttackSpeedAdd += atkSpeedBonus;
             }
-        }
-        public override void Init()
-        {
-            base.Init();
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)

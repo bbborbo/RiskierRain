@@ -18,6 +18,7 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         float softEliteHealthBoostCoefficient = 2f; //3
+        float hardEliteHealthBoostCoefficient = 4f; //5
         float baseEliteHealthBoostCoefficient = 3f; //4
         float T2EliteHealthBoostCoefficient = 9; //18
         float baseEliteDamageBoostCoefficient = 1.5f; //2
@@ -67,6 +68,11 @@ namespace RiskierRain
             DLC1Content.Elites.Earth.healthBoostCoefficient = softEliteHealthBoostCoefficient;
             DLC1Content.Elites.EarthHonor.damageBoostCoefficient = baseEliteDamageBoostCoefficient;
             DLC1Content.Elites.EarthHonor.healthBoostCoefficient = softEliteHealthBoostCoefficient / 2;
+
+            DLC2Content.Elites.Aurelionite.damageBoostCoefficient = baseEliteDamageBoostCoefficient;
+            DLC2Content.Elites.Aurelionite.healthBoostCoefficient = hardEliteHealthBoostCoefficient;
+            DLC2Content.Elites.AurelioniteHonor.damageBoostCoefficient = baseEliteDamageBoostCoefficient;
+            DLC2Content.Elites.AurelioniteHonor.healthBoostCoefficient = hardEliteHealthBoostCoefficient / 2;
 
             foreach (CombatDirector.EliteTierDef etd in EliteAPI.VanillaEliteTiers)//CombatDirector.eliteTiers)
             {

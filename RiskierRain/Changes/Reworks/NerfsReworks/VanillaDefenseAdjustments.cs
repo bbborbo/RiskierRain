@@ -60,10 +60,10 @@ namespace RiskierRain
             IL.RoR2.HealthComponent.TakeDamageProcess += TeddyChanges;
             IL.RoR2.HealthComponent.TakeDamageProcess += VoidBearChanges;
             LanguageAPI.Add("ITEM_BEAR_DESC",
-                $"<style=cIsHealing>{15 / teddyNewMaxValue}%</style> " +
-                $"<style=cStack>(+{15 / teddyNewMaxValue}% per stack)</style> " +
+                $"<style=cIsHealing>{15 * teddyNewMaxValue}%</style> " +
+                $"<style=cStack>(+{15 * teddyNewMaxValue}% per stack)</style> " +
                 $"chance to <style=cIsHealing>block</style> incoming damage, " +
-                $"up to a maximum of <style=cIsHealing>{Tools.ConvertDecimal(teddyNewMaxValue)}%</style>. " +
+                $"up to a maximum of <style=cIsHealing>{Tools.ConvertDecimal(teddyNewMaxValue)}</style>. " +
                 $"<style=cIsUtility>Unaffected by luck</style>.");
             LanguageAPI.Add("ITEM_BEARVOID_DESC",
                 $"<style=cIsHealing>Blocks</style> incoming damage once. " +

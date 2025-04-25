@@ -218,11 +218,11 @@ namespace SwanSongExtended.Equipment
                     float dropChance = baseDropChance;
                     if (damageReport.victimIsElite)
                     {
-                    CharacterBody attackerBody = damageReport.attackerBody;
-                    if (attackerBody.executeEliteHealthFraction > 0)
-                    {
-                        dropChance = aspectDropChance;
-                    }
+                        CharacterBody attackerBody = damageReport.attackerBody;
+                        if (attackerBody != null && attackerBody.executeEliteHealthFraction > 0)
+                        {
+                            dropChance = aspectDropChance;
+                        }
                     }
                     return dropChance;
                 });

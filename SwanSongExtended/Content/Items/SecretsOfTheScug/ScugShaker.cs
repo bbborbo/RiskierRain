@@ -39,7 +39,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/SecretsOfTheScug/mdlScugShaker.prefab");
+        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlScugShaker.prefab");
 
         public override Sprite ItemIcon => LoadItemIcon();
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;

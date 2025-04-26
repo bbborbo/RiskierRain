@@ -29,7 +29,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.InteractableRelated };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.InteractableRelated, ItemTag.AIBlacklist };
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 

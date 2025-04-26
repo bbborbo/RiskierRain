@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RiskierRain.EntityState.Commando
+namespace RiskierRain.States.Commando
 {
     public class CommandoBaseSoupState : BaseSkillState
 	{

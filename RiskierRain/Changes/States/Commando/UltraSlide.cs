@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 
 
-namespace RiskierRain.EntityState.Commando
+namespace RiskierRain.States.Commando
 {
     class UltraSlide : BaseSkillState
 	{

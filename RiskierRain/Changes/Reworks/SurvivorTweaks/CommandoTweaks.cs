@@ -3,7 +3,7 @@ using EntityStates.Commando;
 using EntityStates.Commando.CommandoWeapon;
 using R2API;
 using RiskierRain.CoreModules;
-using RiskierRain.EntityState.Commando;
+using RiskierRain.States.Commando;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;

@@ -1,6 +1,8 @@
-﻿using EntityStates.Engi.EngiBubbleShield;
+﻿using EntityStates;
+using EntityStates.Engi.EngiBubbleShield;
 using EntityStates.Engi.EngiWeapon;
 using EntityStates.Engi.Mine;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2API;
 using RoR2;
@@ -87,10 +89,12 @@ namespace RiskierRain.SurvivorTweaks
                 x => x.MatchStfld<BlastAttack>(nameof(BlastAttack.radius))
                 );
 
-            c.EmitDelegate<Func<float, float>>((startRadius) =>
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<float, EntityState, float>>((startRadius, state) =>
             {
-                float endRadius = startRadius + 2;
-                return endRadius;
+                if(state.teamComponent.teamIndex == TeamIndex.Player)
+                    return startRadius + 2;
+                return startRadius;
             });
         }
     }

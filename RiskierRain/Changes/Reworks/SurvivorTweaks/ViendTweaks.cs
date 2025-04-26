@@ -2,7 +2,7 @@
 using EntityStates.VoidSurvivor.Weapon;
 using R2API;
 using RiskierRain.CoreModules;
-using RiskierRain.EntityState.VoidFiend;
+using RiskierRain.States.VoidFiend;
 using RoR2;
 using RoR2.Skills;
 using System;

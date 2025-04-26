@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.EntityState.Commando
+namespace RiskierRain.States.Commando
 {
     public class SoupTargeting : CommandoBaseSoupState
 	{

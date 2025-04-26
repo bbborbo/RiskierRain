@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace RiskierRain.EntityState.VoidFiend
+namespace RiskierRain.States.VoidFiend
 {
     class FireHandBeamNew : ChargeHandBeam
 	{

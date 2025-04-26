@@ -26,7 +26,7 @@ namespace SwanSongExtended.Items
         float cdIncreaseBase = 2;
         float cdIncreaseStack = 2;
         float shardsPerSecondBase = 0.5f;
-        float shardsPerSecondStack = 0;
+        float shardsPerSecondStack = 0.25f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
@@ -114,7 +114,7 @@ namespace SwanSongExtended.Items
             int itemCount = GetCount(self);
             if (itemCount > 0)
             {
-                float shardsPerSecond = shardsPerSecondBase + (shardsPerSecondStack * itemCount);
+                float shardsPerSecond = shardsPerSecondBase + (shardsPerSecondStack * itemCount - 1);
                 float skillCD = skill.finalRechargeInterval;
                 float skillStock = skill.rechargeStock;
                 //Util.PlaySound(FireVoidspikes.attackSoundString, self.gameObject);

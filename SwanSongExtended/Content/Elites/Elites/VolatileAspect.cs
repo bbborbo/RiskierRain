@@ -269,7 +269,7 @@ namespace SwanSongExtended.Elites
 
                 ProjectileDamage pd = volatileMortarPrefab.GetComponent<ProjectileDamage>();
                 pd.force = 1500;
-
+                
                 ProjectileSimple scrapPs = volatileMortarPrefab.GetComponent<ProjectileSimple>();
                 scrapPs.desiredForwardSpeed = mortarSpeed;
 
@@ -289,6 +289,7 @@ namespace SwanSongExtended.Elites
                 pie.blastProcCoefficient = 0;
                 pie.blastRadius = volatileMortarRadius;
                 pie.bonusBlastForce = Vector3.up * 1000;
+
 
                 Content.AddProjectilePrefab(volatileMortarPrefab);
             }
@@ -314,7 +315,7 @@ namespace SwanSongExtended.Elites
 
                 Material material1 = assetBundle.LoadAsset<Material>(Modules.CommonAssets.eliteMaterialsPath + "matVolatile.mat");
                 //Material material2 = new Material(LegacyShaderAPI.Find("Standard"));
-                Tools.GetMaterial(landmineGhost, "Mesh", Color.red, ref material1);
+                Tools.GetMaterial(landmineGhost, "EngiMineMesh", Color.red, ref material1);
                 Tools.GetMaterial(landmineGhost, "GameObject (1)", Color.green, ref material1);// material2);
                 Tools.GetParticle(landmineGhost, "Fire", Color.blue);
                 //Tools.DebugMaterial(projectileGhost);
@@ -342,7 +343,38 @@ namespace SwanSongExtended.Elites
                     }
                 }*/
 
+                ChangeLandmineIndicator(volatileLandminePrefab, "WeakIndicator");
+                ChangeLandmineIndicator(volatileLandminePrefab, "StrongIndicator");
+
                 Content.AddProjectilePrefab(volatileLandminePrefab);
+            }
+
+            void ChangeLandmineIndicator(GameObject prefab, string transformName)
+            {
+                Transform indicator = prefab.transform.Find(transformName);
+                if (indicator)
+                {
+                    MeshRenderer meshRenderer = indicator.gameObject.GetComponentInChildren<MeshRenderer>();
+                    if (meshRenderer)
+                    {
+                        Material mat = new Material(meshRenderer.material);
+
+                        mat.name = "matVolatileIndicatorIntersection";
+                        mat.SetTexture("_RemapTex", CommonAssets.mainAssetBundle.LoadAsset<Texture>(CommonAssets.eliteMaterialsPath + EliteRampTextureName + ".png"));
+                        mat.SetColor("_TintColor", new Color32(134, 134, 134, 255));
+                        mat.SetFloat("_IntersectionStrength", 5.91f);
+                        mat.SetFloat("_AlphaBoost", 1.76f);
+                        mat.SetFloat("_RimStrength", 0.06f);
+                        mat.SetFloat("_RimPower", 1.5f);
+
+                        meshRenderer.material = mat;
+                    }
+                    Light light = indicator.gameObject.GetComponentInChildren<Light>();
+                    if (light)
+                    {
+                        light.color = new Color32(255, 146, 66, 255);
+                    }
+                }
             }
         }
 

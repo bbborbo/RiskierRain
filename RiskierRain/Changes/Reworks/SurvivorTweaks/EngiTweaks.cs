@@ -92,7 +92,7 @@ namespace RiskierRain.SurvivorTweaks
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<float, EntityState, float>>((startRadius, state) =>
             {
-                if(state.teamComponent.teamIndex == TeamIndex.Player)
+                if(state.projectileController?.teamFilter?.teamIndex == TeamIndex.Player)
                     return startRadius + 2;
                 return startRadius;
             });

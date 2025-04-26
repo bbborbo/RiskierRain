@@ -281,7 +281,7 @@ What happened to all of our gold?";
         {
             master = body.master;
 
-            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk);
+            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
             body.master.GiveMoney(freeMoney);
             UpdateCurrentGold(freeMoney);
         }

@@ -18,7 +18,7 @@ namespace RiskierRain.SurvivorTweaks
     {
         public static float mineArmingDuration = 2f;//3f
         public static GameObject bubbleShieldPrefab;
-        public static float bubbleShieldRadius = 30;//20
+        public static float bubbleShieldDiameter = 30;//20
         public override string survivorName => "Engineer";
 
         public override string bodyName => "ENGIBODY";
@@ -39,14 +39,14 @@ namespace RiskierRain.SurvivorTweaks
             //utility
             LanguageAPI.Add("ENGI_UTILITY_DESCRIPTION", "Place an <style=cIsUtility>impenetrable shield</style> that blocks all incoming damage, and <style=cIsUtility>slows enemies</style> inside.");
             bubbleShieldPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Engi/EngiBubbleShield.prefab").WaitForCompletion().InstantiateClone("NewEngiBubbleShield", true);
-            ChildLocator cl = bubbleShieldPrefab.GetComponent<ChildLocator>();
-            GameObject bubble = cl.FindChild(Deployed.childLocatorString).gameObject;
-            bubble.transform.localScale = Vector3.one * bubbleShieldRadius;
-            BuffWard buffWard = bubble.AddComponent<BuffWard>();
+            //ChildLocator cl = bubbleShieldPrefab.GetComponent<ChildLocator>();
+            Transform bubble = bubbleShieldPrefab.transform.Find("Collision");//FindChild(Deployed.childLocatorString).gameObject;
+            bubble.localScale = Vector3.one * bubbleShieldDiameter;
+            BuffWard buffWard = bubble.gameObject.AddComponent<BuffWard>();
             buffWard.buffDef = Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Common/bdSlow50.asset").WaitForCompletion();
-            buffWard.buffDuration = 0.1f;
-            buffWard.interval = 0.1f;
-            buffWard.radius = bubbleShieldRadius / 2;
+            buffWard.buffDuration = 0.3f;
+            buffWard.interval = 0.2f;
+            buffWard.radius = bubbleShieldDiameter / 2;
             buffWard.invertTeamFilter = true;
             On.EntityStates.Engi.EngiWeapon.FireMines.OnEnter += ReplaceBubbleShieldPrefab;
             On.EntityStates.Engi.EngiBubbleShield.Deployed.FixedUpdate += BubbleBuffwardTeam;

@@ -92,7 +92,7 @@ namespace RiskierRain
                     {
                         ItemInfo adaptiveArmor = new ItemInfo();
                         adaptiveArmor.count = awuAdaptiveArmorCount;
-                        adaptiveArmor.itemString = RoR2Content.Items.AdaptiveArmor.nameToken;
+                        adaptiveArmor.itemString = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AdaptiveArmor/AdaptiveArmor.asset").WaitForCompletion().nameToken;
 
                         gpos.itemInfos = new ItemInfo[1] { adaptiveArmor };
                     }
@@ -352,6 +352,11 @@ namespace RiskierRain
             //IL.RoR2.CostTypeCatalog.Init += FixSoulCost;
             //On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
             //GetStatCoefficients += VoidCradleCurse;
+            RoR2Application.onLoad += FixSoulPayCost;
+        }
+
+        private void FixSoulPayCost()
+        {
             CostTypeDef ctd = CostTypeCatalog.GetCostTypeDef(CostTypeIndex.SoulCost);
             var method = ctd.payCost.Method;
             ILHook hook = new ILHook(method, FixSoulCost);

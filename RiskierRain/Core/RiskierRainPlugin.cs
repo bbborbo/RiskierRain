@@ -105,6 +105,7 @@ namespace RiskierRain
             InitializeCoreModules();
 
             InitializeConfig();
+            InitializeEverything();
 
             #region rework pending / priority removal
             RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.StunChanceOnHit)); //stun grenade
@@ -119,10 +120,11 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
             RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
+            RiskierRainPlugin.RetierItem(nameof(DLC2Content.Items.BarrageOnBoss)); //war bonds
             //RiskierRainPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AutoCastEquipment/AutoCastEquipment.asset").WaitForCompletion());
             #endregion
 
-            RoR2Application.onLoad += InitializeEverything;
+            //RoR2Application.onLoad += InitializeEverything;
 
             
             new ContentPacks().Initialize();

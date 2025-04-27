@@ -45,7 +45,7 @@ namespace RiskierRain
                 monsoonDesc += $"\n>{Tier2EliteName} Elites appear starting on <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon + 1}</style>";
             }
 
-            ChangeEliteTierStats();
+            RoR2Application.onLoad += ChangeEliteTierStats;
         }
 
         private void ChangeEliteTierStats()

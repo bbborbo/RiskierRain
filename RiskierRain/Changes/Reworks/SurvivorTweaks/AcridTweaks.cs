@@ -64,7 +64,7 @@ namespace RiskierRain.SurvivorTweaks
 
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseMoveSpeed = 8;//7
-            body.baseDamage = 10; //15
+            body.baseDamage = 12; //15
 
             ChangePassive();
 

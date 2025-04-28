@@ -43,11 +43,11 @@ namespace SwanSongExtended.Orbs
                 int buffCount = victimBody.GetBuffCount(buffDef);
                 if (buffCount > 0)
                 {
-                    int count = Mathf.CeilToInt((float)buffCount * 0.5f);
+                    int count = Mathf.CeilToInt((float)buffCount * Modules.CommonAssets.contagiousTransferRate);
+                    DotController.DotIndex dotDefIndex = DotController.GetDotDefIndex(buffDef);
+
                     bool isTimed = false;
                     float duration = 0f;
-
-                    DotController.DotIndex dotDefIndex = DotController.GetDotDefIndex(buffDef);
                     isTimed = dotController.GetDotStackTotalDurationForIndex(dotDefIndex, out duration);
 
                     VineOrb.SplitDebuffInformation item = new VineOrb.SplitDebuffInformation

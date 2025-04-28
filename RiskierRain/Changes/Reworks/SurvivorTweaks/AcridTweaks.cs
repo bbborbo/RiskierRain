@@ -31,7 +31,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public static float spitCooldown = 5f; //2
         public static float spitDamageCoeff = 1.6f; //2.4f
-        public static float spitDamageCoeffAfterDistance = 5.4f; //2.4f
+        public static float spitDamageCoeffAfterDistance = 6.2f; //2.4f
         public static float spitDistanceForBoost = 21f;
         public static float spitDuration = 0.4f; //0.5
         public static int spitBaseStock = 3;

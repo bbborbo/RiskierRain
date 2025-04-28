@@ -100,7 +100,7 @@ namespace SwanSongExtended.Modules
                 "AcridCorrosion", 
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffBleedingIcon.tif").WaitForCompletion(), 
                 Color.yellow, 
-                false, true);
+                true, true);
             corrosionBuff.isDOT = true;
             corrosionDotDef = new DotController.DotDef
             {

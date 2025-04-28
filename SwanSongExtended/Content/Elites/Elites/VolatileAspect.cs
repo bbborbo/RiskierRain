@@ -26,8 +26,8 @@ namespace SwanSongExtended.Elites
         public static float mortarsPerSize = 1f;
         [AutoConfig("Mortar Count Bonus", 1f)]
         public static float mortarsBonus = 1f;
-        [AutoConfig("Mortar Damage", "Scales with level", 25f)]
-        public static float volatileMortarDamage = 25f;
+        [AutoConfig("Mortar Damage", "Scales with level", 10f)]
+        public static float volatileMortarDamage = 10f;
         public static float volatileMortarForce = 400f;
         [AutoConfig("Mortar Velocity", 30f)]
         public static float mortarSpeed = 30f;

@@ -23,7 +23,7 @@ namespace SwanSongExtended.Orbs
         public ProcChainMask procChainMask;
         public float procCoefficient = 1f;
         public DamageColorIndex damageColorIndex;
-        public float range = 20f;
+        public float range = 30f;
         public float damageCoefficientPerBounce = 1f;
         public int targetsToFindPerBounce = 1;
         public DamageTypeCombo damageType = DamageType.Generic;

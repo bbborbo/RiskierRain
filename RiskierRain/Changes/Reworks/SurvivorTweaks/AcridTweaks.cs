@@ -34,6 +34,7 @@ namespace RiskierRain.SurvivorTweaks
         public static float spitDamageCoeffAfterDistance = 6.2f; //2.4f
         public static float spitDistanceForBoost = 21f;
         public static float spitDuration = 0.4f; //0.5
+        public static float spitBlastRadius = 6f; //3
         public static int spitBaseStock = 3;
 
         public static float biteForceStrength = 8000f; //0
@@ -46,7 +47,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public static float epidemicCooldown = 15f; //10
         public static float epidemicDamageCoefficient = 0.5f; //1
-        public static float epidemicSpreadRange = 30;
+        public static float epidemicSpreadRange = 50;
         public static float epidemicProjectileBlastRadius = 3f;
         public static ModdedDamageType AcridSkillBasedDamage;
 
@@ -188,10 +189,17 @@ namespace RiskierRain.SurvivorTweaks
                 $"or <style=cIsDamage>{Tools.ConvertDecimal(spitDamageCoeffAfterDistance)} damage</style> after " +
                 $"<style=cIsUtility>{spitDistanceForBoost}m</style>. Hold up to {spitBaseStock}.");
             GameObject spitProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Croco/CrocoSpit.prefab").WaitForCompletion();
+
             ProjectileIncreaseDamageAfterDistance component = spitProjectilePrefab.AddComponent<ProjectileIncreaseDamageAfterDistance>();
             component.requiredDistance = spitDistanceForBoost;
             component.damageMultiplierOnIncrease = spitDamageCoeffAfterDistance / spitDamageCoeff;
             component.effectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/FlyingVermin/VerminSpitImpactEffect.prefab").WaitForCompletion();
+
+            ProjectileImpactExplosion pie = spitProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
+            if (pie)
+            {
+                pie.blastRadius = spitBlastRadius;
+            }
 
             //bite
             SkillDef secondaryAlt = family.variants[1].skillDef;

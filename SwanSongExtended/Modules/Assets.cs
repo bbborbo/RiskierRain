@@ -86,7 +86,7 @@ namespace SwanSongExtended.Modules
         public static float corrosionDuration = 6f;
         public static float corrosionDamagePerSecond = 1f;
         public static float corrosionTickInterval = 1f;
-        public static bool festerResetAllDots = false;
+        public static bool festerResetOnlyKitDots = true;
         public const string AcridFesterKeywordToken = "KEYWORD_FESTER";
         public const string AcridCorrosionKeywordToken = "KEYWORD_CORROSION";
         public const string AcridContagiousKeywordToken = "KEYWORD_CONTAGIOUS";
@@ -146,7 +146,7 @@ namespace SwanSongExtended.Modules
                     foreach (DotController.DotStack dotStack in dotController.dotStackList)
                     {
                         //if fester is set to only reset acrid's dots and the dot index is not of one of acrid's dots
-                        if (!festerResetAllDots ||
+                        if (festerResetOnlyKitDots &&
                             (dotStack.dotIndex != DotController.DotIndex.Blight
                             && dotStack.dotIndex != DotController.DotIndex.Poison
                             && dotStack.dotIndex != corrosionDotIndex))

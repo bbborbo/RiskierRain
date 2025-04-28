@@ -22,6 +22,7 @@
     <PackageReference Include="R2API" Version="5.0.5" />
     <PackageReference Include="R2API.Director" Version="2.3.1" />
     <PackageReference Include="R2API.ProcType" Version="1.0.1" />
+    <PackageReference Include="R2API.DamageType" Version="1.1.7" />
   </ItemGroup>
 
   <ItemGroup>

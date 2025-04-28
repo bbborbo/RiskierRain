@@ -17,6 +17,10 @@ using SwanSongExtended.Characters;
 using UnityEngine.AddressableAssets;
 using ThreeEyedGames;
 using RoR2.ExpansionManagement;
+using static R2API.DamageAPI;
+using static SwanSongExtended.Modules.Language.Styling;
+using static MoreStats.OnHit;
+using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended.Modules
 {
@@ -57,6 +61,7 @@ namespace SwanSongExtended.Modules
 
         public static void Init()
         {
+            AddAcridReworkAssets();
             CreateMeatballNapalmPool();
             CreateSquidBlasterBall();
 
@@ -69,6 +74,115 @@ namespace SwanSongExtended.Modules
             AddBrittleCrownAssets();
             AddGestureAssets();
         }
+
+        #region acrid
+        public static ModdedDamageType AcridFesterDamage;
+        public static ModdedDamageType AcridCorrosiveDamage;
+        public static BuffDef corrosionBuff;
+        public static DotController.DotDef corrosionDotDef;
+        public static DotController.DotIndex corrosionDotIndex;
+        public static float contagiousTransferRate = 0.5f;
+        public static int corrosionArmorReduction = 20;
+        public static float corrosionDuration = 6f;
+        public static float corrosionDamagePerSecond = 1f;
+        public static float corrosionTickInterval = 1f;
+        public static bool festerResetAllDots = false;
+        public const string AcridFesterKeywordToken = "KEYWORD_FESTER";
+        public const string AcridCorrosionKeywordToken = "KEYWORD_CORROSION";
+        public const string AcridContagiousKeywordToken = "KEYWORD_CONTAGIOUS";
+        private static void AddAcridReworkAssets()
+        {
+            OrbAPI.AddOrb<SwanSongExtended.Orbs.DiseaseOrb>();
+            AcridFesterDamage = DamageAPI.ReserveDamageType();
+            AcridCorrosiveDamage = DamageAPI.ReserveDamageType();
+
+            corrosionBuff = Content.CreateAndAddBuff(
+                "AcridCorrosion", 
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffBleedingIcon.tif").WaitForCompletion(), 
+                Color.yellow, 
+                false, true);
+            corrosionBuff.isDOT = true;
+            corrosionDotDef = new DotController.DotDef
+            {
+                associatedBuff = corrosionBuff,
+                damageCoefficient = corrosionDamagePerSecond * corrosionTickInterval,
+                damageColorIndex = DamageColorIndex.Poison,
+                interval = corrosionTickInterval
+            };
+            corrosionDotIndex = DotAPI.RegisterDotDef(corrosionDotDef, (self, dotStack) =>
+            {
+
+            });
+
+            LanguageAPI.Add(AcridFesterKeywordToken, KeywordText("Festering", 
+                $"Striking enemies {UtilityColor("resets")} the duration of all " +
+                $"{HealingColor("Poison")}, {VoidColor("Blight")}, and {DamageColor("Corrosion")} stacks."));
+            LanguageAPI.Add(AcridCorrosionKeywordToken, KeywordText("Caustic", 
+                $"Deal {DamageColor(Tools.ConvertDecimal(corrosionDamagePerSecond) + " base damage")} over {UtilityColor($"{corrosionDuration}s")}. " +
+                $"Reduce armor by {DamageColor(corrosionArmorReduction.ToString())}."));
+            LanguageAPI.Add(AcridContagiousKeywordToken, KeywordText("Contagious", 
+                $"This skill transfers {DamageColor(Tools.ConvertDecimal(contagiousTransferRate))} of {UtilityColor("every damage over time stack")} " +
+                $"to nearby enemies."));
+
+            GetStatCoefficients += CorrosionArmorReduction;
+            GetHitBehavior += FesterOnHit;
+        }
+
+        private static void CorrosionArmorReduction(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (sender.HasBuff(corrosionBuff))
+            {
+                args.armorAdd -= corrosionArmorReduction;
+            }
+        }
+
+        private static void FesterOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
+        {
+            if (damageInfo.HasModdedDamageType(AcridFesterDamage))
+            {
+                DotController dotController = DotController.FindDotController(victimBody.gameObject);
+                if (dotController)
+                {
+                    foreach (DotController.DotStack dotStack in dotController.dotStackList)
+                    {
+                        //if fester is set to only reset acrid's dots and the dot index is not of one of acrid's dots
+                        if (!festerResetAllDots ||
+                            (dotStack.dotIndex != DotController.DotIndex.Blight
+                            && dotStack.dotIndex != DotController.DotIndex.Poison
+                            && dotStack.dotIndex != corrosionDotIndex))
+                            continue;
+
+                        float duration = dotStack.totalDuration * damageInfo.procCoefficient;
+                        if (dotStack.timer < duration)
+                            dotStack.timer = duration;
+                    }
+                }
+            }
+            if (damageInfo.HasModdedDamageType(AcridCorrosiveDamage))
+            {
+                uint? maxStacksFromAttacker = null;
+                if ((damageInfo != null) ? damageInfo.inflictor : null)
+                {
+                    ProjectileDamage component = damageInfo.inflictor.GetComponent<ProjectileDamage>();
+                    if (component && component.useDotMaxStacksFromAttacker)
+                    {
+                        maxStacksFromAttacker = new uint?(component.dotMaxStacksFromAttacker);
+                    }
+                }
+
+                InflictDotInfo inflictDotInfo = new InflictDotInfo
+                {
+                    attackerObject = damageInfo.attacker,
+                    victimObject = victimBody.gameObject,
+                    totalDamage = new float?(attackerBody.baseDamage * corrosionDamagePerSecond * corrosionDuration * damageInfo.procCoefficient),
+                    damageMultiplier = 1f,
+                    dotIndex = corrosionDotIndex,
+                    maxStacksFromAttacker = maxStacksFromAttacker
+                };
+                DotController.InflictDot(ref inflictDotInfo);
+            }
+        }
+        #endregion
 
         public static BuffDef gestureQueueEquipBreak;
         private static void AddGestureAssets()

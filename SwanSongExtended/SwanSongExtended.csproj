@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Content\Interactables\Interactables\CombatShrineLunar.cs" />
+    <Compile Remove="Content\Interactables\Interactables\ConstructConstruct.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -44,6 +49,11 @@
 
   <ItemGroup>
     <Folder Include="Content\Items\Vanilla\SOTS\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Content\Interactables\Interactables\CombatShrineLunar.cs" />
+    <None Include="Content\Interactables\Interactables\ConstructConstruct.cs" />
   </ItemGroup>
 
 </Project>

@@ -24,14 +24,14 @@ namespace RiskierRain.SurvivorTweaks
     {
         public static bool isLoaded;
 
-        public static float poisonDuration = 8; //10
+        public static float poisonDuration = 10; //10
         public static float blightDuration = 5; //5
 
-        public static float slashDuration = 0.8f; //1.5f
+        public static float slashDuration = 1f; //1.5f
 
         public static float spitCooldown = 5f; //2
-        public static float spitDamageCoeff = 1.6f; //2.4f
-        public static float spitDamageCoeffAfterDistance = 6.2f; //2.4f
+        public static float spitDamageCoeff = 1.8f; //2.4f
+        public static float spitDamageCoeffAfterDistance = 5.8f; //2.4f
         public static float spitDistanceForBoost = 21f;
         public static float spitDuration = 0.4f; //0.5
         public static float spitBlastRadius = 6f; //3
@@ -41,8 +41,8 @@ namespace RiskierRain.SurvivorTweaks
         public static float biteCooldown = 3f; //2
         public static float biteDamageCoeff = 4.8f; //3.1f
 
-        public static float causticCooldown = 8f; //6
-        public static float frenziedCooldown = 10; //10
+        public static float causticCooldown = 7f; //6
+        public static float frenziedCooldown = 9; //10
         public static float leapMinY = -0.3f; //0
 
         public static float epidemicCooldown = 15f; //10

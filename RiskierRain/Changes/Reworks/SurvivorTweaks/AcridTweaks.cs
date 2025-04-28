@@ -29,25 +29,24 @@ namespace RiskierRain.SurvivorTweaks
 
         public static float slashDuration = 0.8f; //1.5f
 
-        public static float spitCooldown = 4f; //2
-        public static float spitDamageCoeff = 2.4f; //2.4f
-        public static float spitDamageCoeffAfterDistance = 6f; //2.4f
-        public static float spitDistanceForBoost = 25f;
-        public static float spitDuration = 0.4f; //idk
+        public static float spitCooldown = 5f; //2
+        public static float spitDamageCoeff = 1.6f; //2.4f
+        public static float spitDamageCoeffAfterDistance = 5.4f; //2.4f
+        public static float spitDistanceForBoost = 21f;
+        public static float spitDuration = 0.4f; //0.5
         public static int spitBaseStock = 3;
 
         public static float biteForceStrength = 8000f; //0
-        public static float biteCooldown = 2f; //2
+        public static float biteCooldown = 3f; //2
         public static float biteDamageCoeff = 4.8f; //3.1f
 
-        public static float causticCooldown = 6; //6
-        public static float frenziedCooldown = 8; //10
+        public static float causticCooldown = 8f; //6
+        public static float frenziedCooldown = 10; //10
         public static float leapMinY = -0.3f; //0
-        public static float leapBlastRadius = 6; //idk
 
-        public static float epidemicCooldown = 12f; //10
-        public static float epidemicDamageCoefficient = 2; //1
-        public static float epidemicSpreadRange = 50;
+        public static float epidemicCooldown = 15f; //10
+        public static float epidemicDamageCoefficient = 0.5f; //1
+        public static float epidemicSpreadRange = 30;
         public static float epidemicProjectileBlastRadius = 3f;
         public static ModdedDamageType AcridSkillBasedDamage;
 
@@ -188,7 +187,6 @@ namespace RiskierRain.SurvivorTweaks
                 $"Spit toxic bile for <style=cIsDamage>{Tools.ConvertDecimal(spitDamageCoeff)} damage</style>, " +
                 $"or <style=cIsDamage>{Tools.ConvertDecimal(spitDamageCoeffAfterDistance)} damage</style> after " +
                 $"<style=cIsUtility>{spitDistanceForBoost}m</style>. Hold up to {spitBaseStock}.");
-            On.EntityStates.Croco.FireSpit.OnEnter += SpitAttackSpeed;
             GameObject spitProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Croco/CrocoSpit.prefab").WaitForCompletion();
             ProjectileIncreaseDamageAfterDistance component = spitProjectilePrefab.AddComponent<ProjectileIncreaseDamageAfterDistance>();
             component.requiredDistance = spitDistanceForBoost;
@@ -203,16 +201,6 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("CROCO_SECONDARY_ALT_DESCRIPTION",
                 $"<style=cIsVoid>Blight</style>. <style=cIsDamage>Slayer</style>. <style=cIsHealing>Regenerative</style>. " +
                 $"Bite an enemy for <style=cIsDamage>{Tools.ConvertDecimal(biteDamageCoeff)} damage</style>.");
-        }
-
-        private void SpitAttackSpeed(On.EntityStates.Croco.FireSpit.orig_OnEnter orig, FireSpit self)
-        {
-            if(!(self is FireDiseaseProjectile))
-            {
-                Debug.Log(self.baseDuration);
-                self.baseDuration = spitDuration;
-            }
-            orig(self);
         }
 
         private void BuffBite(On.EntityStates.Croco.Bite.orig_OnEnter orig, EntityStates.Croco.Bite self)
@@ -252,8 +240,8 @@ namespace RiskierRain.SurvivorTweaks
                 s.mustKeyPress = true;
             }*/
 
-            BaseLeap.blastRadius = leapBlastRadius;
-            On.EntityStates.Croco.BaseLeap.OnEnter += ChangeLeapStuff;
+            //BaseLeap.blastRadius = leapBlastRadius;
+            BaseLeap.minimumY = leapMinY;
             On.EntityStates.Croco.BaseLeap.DoImpactAuthority += AddLeapBounce;
             On.EntityStates.Croco.Leap.GetBlastDamageType += LeapDamageType;
         }
@@ -270,12 +258,6 @@ namespace RiskierRain.SurvivorTweaks
         {
             orig(self);
             self.SmallHop(self.characterMotor, 3f);
-        }
-
-        private void ChangeLeapStuff(On.EntityStates.Croco.BaseLeap.orig_OnEnter orig, EntityStates.Croco.BaseLeap self)
-        {
-            BaseLeap.minimumY = leapMinY;
-            orig(self);
         }
 
         #region specials
@@ -313,14 +295,12 @@ namespace RiskierRain.SurvivorTweaks
             {
                 self.damageCoefficient = epidemicDamageCoefficient;
             }
+            else
+            {
+                self.damageCoefficient = spitDamageCoeff;
+                self.baseDuration = spitDuration;
+            }
             orig(self);
-        }
-
-        private void ChangeDiseaseBehavior(On.EntityStates.Croco.Disease.orig_OnEnter orig, Disease self)
-        {
-            //orig(self);
-            self.duration = Disease.baseDuration / self.attackSpeedStat;
-            
         }
         #endregion
 

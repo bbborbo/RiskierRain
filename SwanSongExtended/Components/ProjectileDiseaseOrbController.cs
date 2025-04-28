@@ -91,7 +91,7 @@ namespace SwanSongExtended.Components
                 DiseaseOrb diseaseOrb = new DiseaseOrb();
                 diseaseOrb.splitDotInformation = splitDotInfo;
                 diseaseOrb.bouncedObjects = new List<HealthComponent>();
-                diseaseOrb.debuffBlacklistedObjects = null;// targetsHit;
+                diseaseOrb.debuffBlacklistedObjects = targetsHit;
                 diseaseOrb.attacker = this.projectileController.owner;
                 diseaseOrb.inflictor = base.gameObject;
                 diseaseOrb.teamIndex = this.myTeamIndex;
@@ -103,7 +103,7 @@ namespace SwanSongExtended.Components
                 diseaseOrb.target = firstTarget;
                 diseaseOrb.damageColorIndex = this.projectileDamage.damageColorIndex;
                 diseaseOrb.damageType = this.projectileDamage.damageType;
-                diseaseOrb.range = this.maxOrbRange;
+                //diseaseOrb.range = this.maxOrbRange;
                 OrbManager.instance.AddOrb(diseaseOrb);
             }
         }

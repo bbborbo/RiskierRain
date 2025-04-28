@@ -82,7 +82,7 @@ namespace SwanSongExtended.Modules
         public static DotController.DotDef corrosionDotDef;
         public static DotController.DotIndex corrosionDotIndex;
         public static float contagiousTransferRate = 0.5f;
-        public static int corrosionArmorReduction = 20;
+        public static int corrosionArmorReduction = 15;
         public static float corrosionDuration = 6f;
         public static float corrosionDamagePerSecond = 1f;
         public static float corrosionTickInterval = 1f;

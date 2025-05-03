@@ -149,6 +149,7 @@ namespace SwanSongExtended.Interactables
             lscb.maxPurchaseCount = 1;
             lscb.monsterCreditCoefficientPerPurchase = 2;
 
+            InteractionComponent.onPurchase.AddListener(lscb.OnInteractionBegin);
             return lscb.OnInteractionBegin;
 
             void OnGalleryDirectorSpawnServer(GameObject masterObject)

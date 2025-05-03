@@ -30,7 +30,7 @@ namespace SwanSongExtended.Components
         private ProjectileDamage projectileDamage;
 
         public float maxOrbRange = 100;
-        public float blastRadius = 3;
+        public float orbSpreadRange = 20;
         public float procCoefficient;
         public int bounces;
         public float damageCoefficient;
@@ -90,6 +90,7 @@ namespace SwanSongExtended.Components
 
                 DiseaseOrb diseaseOrb = new DiseaseOrb();
                 diseaseOrb.splitDotInformation = splitDotInfo;
+                diseaseOrb.range = orbSpreadRange;
                 diseaseOrb.bouncedObjects = new List<HealthComponent>();
                 diseaseOrb.debuffBlacklistedObjects = targetsHit;
                 diseaseOrb.attacker = this.projectileController.owner;

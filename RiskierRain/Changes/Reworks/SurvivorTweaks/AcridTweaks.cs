@@ -47,8 +47,10 @@ namespace RiskierRain.SurvivorTweaks
 
         public static float epidemicCooldown = 15f; //10
         public static float epidemicDamageCoefficient = 0.5f; //1
-        public static float epidemicSpreadRange = 50;
+        public static float epidemicInitialRange = 50;
+        public static float epidemicSpreadRange = 35;
         public static float epidemicProjectileBlastRadius = 3f;
+        public static int epidemicMaxTargets = 10;
         public static ModdedDamageType AcridSkillBasedDamage;
 
         public override string survivorName => "Acrid";
@@ -278,7 +280,7 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("CROCO_SPECIAL_DESCRIPTION", 
                 $"<style=cIsHealing>Poisonous</style>. <style=cIsHealth>Contagious</style>. " +
                 $"Release a deadly disease that deals <style=cIsDamage>{Tools.ConvertDecimal(epidemicDamageCoefficient)} damage</style>. " +
-                $"The disease spreads to up to <style=cIsDamage>20</style> targets.");
+                $"The disease spreads to up to <style=cIsDamage>{epidemicMaxTargets}</style> targets.");
 
             GameObject diseaseProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Croco/CrocoDiseaseProjectile.prefab").WaitForCompletion();
 
@@ -289,9 +291,9 @@ namespace RiskierRain.SurvivorTweaks
                 ProjectileDiseaseOrbController diseaseOrbController = diseaseProjectilePrefab.AddComponent<ProjectileDiseaseOrbController>();
                 diseaseOrbController.procCoefficient = beamController.procCoefficient;
                 diseaseOrbController.damageCoefficient = beamController.damageCoefficient;
-                diseaseOrbController.bounces = beamController.bounces;
-                diseaseOrbController.maxOrbRange = epidemicSpreadRange;
-                diseaseOrbController.blastRadius = epidemicProjectileBlastRadius;
+                diseaseOrbController.bounces = epidemicMaxTargets;
+                diseaseOrbController.maxOrbRange = epidemicInitialRange;
+                diseaseOrbController.orbSpreadRange = epidemicSpreadRange;
                 UnityEngine.Object.Destroy(beamController);
             }
             On.EntityStates.Croco.FireSpit.OnEnter += FireSpit_OnEnter;

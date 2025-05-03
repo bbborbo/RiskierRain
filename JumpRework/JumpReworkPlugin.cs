@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.DamageAPI;
 using static MoreStats.StatHooks;
+using MoreStats;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -37,7 +38,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.2.1";
+        public const string version = "1.2.2";
         #endregion
         public static bool IsMissileArtifactEnabled()
         {
@@ -63,7 +64,8 @@ namespace JumpRework
         }
         void JumpReworks()
         {
-            GetMoreStatCoefficients += JumpCounts;
+            BaseStats.FeatherJumpCountBase = featherJumpCount;
+            BaseStats.FeatherJumpCountStack = 0;
             IL.EntityStates.GenericCharacterMain.ProcessJump += DoubleJumpStrengthNerf;
 
             FeatherRework();
@@ -73,8 +75,6 @@ namespace JumpRework
 
         private void JumpCounts(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            args.FOR_REWORK_MODS_featherJumpCountBase = featherJumpCount;
-            args.FOR_REWORK_MODS_featherJumpCountStack = 0;
             Inventory inv = sender.inventory;
             if (inv)
             {

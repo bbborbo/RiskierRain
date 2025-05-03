@@ -12,6 +12,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.DamageAPI;
 using static MoreStats.StatHooks;
+using MoreStats;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -34,7 +35,7 @@ namespace BarrierRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBarrierDecay";
-        public const string version = "2.1.1";
+        public const string version = "2.1.2";
         #endregion
 
         private bool _useDynamicDecay = true;
@@ -84,13 +85,15 @@ namespace BarrierRework
         }
         void BuffBarrier()
         {
-            GetMoreStatCoefficients += ChangeBarrierDecay;
+            BaseStats.BarrierDecayStaticMaxHealthTime = BarrierDecayRateStatic.Value;
+            BaseStats.BarrierDecayDynamicHalfLife = BarrierDecayRateDynamic.Value;
+            //GetMoreStatCoefficients += ChangeBarrierDecay;
         }
 
         private void ChangeBarrierDecay(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            args.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime = BarrierDecayRateStatic.Value;
-            args.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife = BarrierDecayRateDynamic.Value;
+            //args.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime = BarrierDecayRateStatic.Value;
+            //args.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife = BarrierDecayRateDynamic.Value;
         }
     }
 }

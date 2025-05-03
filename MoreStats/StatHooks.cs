@@ -181,16 +181,6 @@ namespace MoreStats
             /// * ([barrierDecayIncreaseMultiplier] / [barrierDecayDecreaseDivisor]) + barrierGenPerSecondFlat
             /// </summary>
             public float barrierDecayRateAddPreMult = 0;
-
-            //base decay
-            /// <summary>
-            /// pls dont touch this unless ur a rework mod
-            /// </summary>
-            public float FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime = 30;
-            /// <summary>
-            /// pls dont touch this unless ur a rework mod
-            /// </summary>
-            public float FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife = 0;
             #endregion
 
             #region jumps
@@ -199,15 +189,6 @@ namespace MoreStats
             //public float jumpVerticalDecreaseDivisor = 1;
             //public float jumpHorizontalIncreaseMultiplier = 1;
             //public float jumpHorizontalDecreaseMultiplier = 1;
-
-            /// <summary>
-            /// pls dont touch this unless ur a rework mod
-            /// </summary>
-            public int FOR_REWORK_MODS_featherJumpCountBase = 1;
-            /// <summary>
-            /// pls dont touch this unless ur a rework mod
-            /// </summary>
-            public int FOR_REWORK_MODS_featherJumpCountStack = 1;
             #endregion
 
             #region on hit
@@ -321,10 +302,10 @@ namespace MoreStats
 
                 //process shield recharge delay
                 #region shield delay
-                float shieldDelay = (MoreStatsPlugin.BaseShieldDelaySeconds + StatMods.shieldDelaySecondsIncreaseAddPreMult) 
+                float shieldDelay = (BaseStats.BaseShieldDelaySeconds + StatMods.shieldDelaySecondsIncreaseAddPreMult) 
                     * StatMods.shieldDelayMultiplier + StatMods.shieldDelaySecondsIncreaseAddPostMult;
 
-                CustomStats.shieldRechargeDelay = Mathf.Max(MoreStatsPlugin.MinShieldDelaySeconds, shieldDelay);
+                CustomStats.shieldRechargeDelay = Mathf.Max(BaseStats.MinShieldDelaySeconds, shieldDelay);
                 UpdateShieldRechargeReady(body, CustomStats);
                 #endregion
 
@@ -357,12 +338,14 @@ namespace MoreStats
         {
             c.Index = 0;
 
-            if(c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<CharacterBody>("set_barrierDecayRate")
-                ) &&
-            c.TryGotoPrev(MoveType.After,
-                x => x.MatchLdcR4(out _)
-                ))
+            if(
+                c.TryGotoNext(MoveType.Before,
+                    x => x.MatchCallOrCallvirt<CharacterBody>("set_barrierDecayRate")
+                    ) &&
+                c.TryGotoPrev(MoveType.After,
+                    x => x.MatchLdcR4(out _)
+                    )
+                )
             {
                 c.Remove(); //remove div
                 c.Emit(OpCodes.Ldarg_0);
@@ -374,14 +357,14 @@ namespace MoreStats
                     float decayMultiplier = StatMods.barrierDecayRatePercentDecreaseDiv > 0 ? StatMods.barrierDecayRatePercentIncreaseMult / StatMods.barrierDecayRatePercentDecreaseDiv : 0;
 
                     CustomStats.barrierDecayFrozen = decayFrozen;
-                    CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? StatMods.FOR_REWORK_MODS_barrierBaseDynamicDecayRateHalfLife / decayMultiplier : 0;
+                    CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? BaseStats.BarrierDecayDynamicHalfLife / decayMultiplier : 0;
 
                     if (!decayFrozen && decayMultiplier > 0)
                     {
                         decayRate = StatMods.barrierDecayRateAddPreMult;
-                        if (StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime > 0)
+                        if (BaseStats.BarrierDecayStaticMaxHealthTime > 0)
                         {
-                            decayRate += maxBarrier / StatMods.FOR_REWORK_MODS_barrierBaseStaticDecayRateMaxHealthTime;
+                            decayRate += maxBarrier / BaseStats.BarrierDecayStaticMaxHealthTime;
                         }
                         decayRate *= decayMultiplier;
                     }
@@ -451,7 +434,7 @@ namespace MoreStats
 
                     if (!stats.barrierDecayFrozen && stats.barrierDecayDynamicHalfLife > 0)
                     {
-                        barrierDecayRate += Mathf.Max(MoreStatsPlugin.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
+                        barrierDecayRate += Mathf.Max(BaseStats.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
                     }
 
                     //healthComponent.AddBarrier(stats.barrierGenRate * Time.fixedDeltaTime);
@@ -494,7 +477,7 @@ namespace MoreStats
                     MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                     if (featherCount > 0)
                     {
-                        jumpCount += StatMods.FOR_REWORK_MODS_featherJumpCountBase + StatMods.FOR_REWORK_MODS_featherJumpCountStack * (featherCount - 1);
+                        jumpCount += BaseStats.FeatherJumpCountBase + BaseStats.FeatherJumpCountStack * (featherCount - 1);
                     }
                     jumpCount += StatMods.jumpCountAdd;
 
@@ -641,7 +624,7 @@ namespace MoreStats
         //public float chillChance = 0;
 
         public bool  shieldRechargeReady = true;
-        public float shieldRechargeDelay = MoreStatsPlugin.BaseShieldDelaySeconds;
+        public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
 
         public float selfExecutionThresholdAdd = 0;
         public float selfExecutionThresholdBase = Mathf.NegativeInfinity;
@@ -659,7 +642,7 @@ namespace MoreStats
             //chillChance = 0;     
             
             shieldRechargeReady = true;
-            shieldRechargeDelay = MoreStatsPlugin.BaseShieldDelaySeconds;
+            shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
 
             selfExecutionThresholdAdd = 0;
             selfExecutionThresholdBase = 0;

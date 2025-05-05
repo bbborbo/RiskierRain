@@ -41,13 +41,13 @@ namespace BarrierRework
         private bool _useDynamicDecay = true;
         private float _barrierDecayRateStatic = 0f; //30
         private float _barrierDecayRateDynamic = 2f; //0
+
+        #region config
+        internal static ConfigFile CustomConfigFile { get; private set; }
         public static ConfigEntry<float> BarrierDecayRateStatic { get; set; }
         public static ConfigEntry<float> BarrierDecayRateDynamic { get; set; }
         public static ConfigEntry<bool> AegisRework { get; set; }
         public static ConfigEntry<float> AegisBarrierFlat { get; set; }
-
-        #region config
-        internal static ConfigFile CustomConfigFile { get; private set; }
         #endregion
 
         public void Awake()

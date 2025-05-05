@@ -17,12 +17,9 @@ namespace JumpRework
 {
     public partial class JumpReworkPlugin
     {
-        public static int urnJumpCount = 2;
         public int urnBallCountBase = 3;
         public int urnBallCountStack = 0;
         public float urnBallYawSpread = 25f;
-        public float urnBallDamageCoefficient = 2.5f;
-        public float urnBallChance = 0.3f;
         private void MiredUrnRework()
         {
             OnJumpEvent += UrnOnJump;
@@ -30,12 +27,12 @@ namespace JumpRework
             On.RoR2.Items.SiphonOnLowHealthItemBodyBehavior.OnEnable += VoidVanillaUrnBehavior;
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_PICKUP", "Triple jump. Jumping fires tar balls in front of you.");
             LanguageAPI.Add("ITEM_SIPHONONLOWHEALTH_DESC",
-                $"Gain <style=cIsUtility>{urnJumpCount}</style> jumps. " +
-                $"While in danger, jumping has a <style=cIsUtility>{Tools.ConvertDecimal(urnBallChance)} chance</style> to fire " +
+                $"Gain <style=cIsUtility>{UrnJumpCount.Value}</style> jumps. " +
+                $"While in danger, jumping has a <style=cIsUtility>{Tools.ConvertDecimal(UrnBallChance.Value)} chance</style> " +
+                $"<style=cStack>(+{Tools.ConvertDecimal(UrnBallChance.Value)} per stack)</style> to fire " +
                 $"<style=cIsDamage>sentient tar pots</style> in front of you, dealing " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(urnBallDamageCoefficient)}</style> damage " +
-                $"<style=cStack>(+{Tools.ConvertDecimal(urnBallDamageCoefficient)} per stack)</style> " +
-                $"and <style=cIsUtility>slowing</style> enemies hit.");
+                $"<style=cIsDamage>{Tools.ConvertDecimal(UrnBallDamageCoefficient.Value)}</style> damage " +
+                $"and <style=cIsUtility>tarring</style> enemies hit.");
         }
 
         public static GameObject miredUrnTarball;
@@ -69,7 +66,7 @@ namespace JumpRework
             {
                 itemCount = body.inventory.GetItemCount(RoR2Content.Items.SiphonOnLowHealth);
             }
-            if (Util.CheckRoll((1 - Mathf.Pow(1 - urnBallChance, itemCount)) * 100, body.master))
+            if (Util.CheckRoll((1 - Mathf.Pow(1 - UrnBallChance.Value, itemCount)) * 100, body.master))
             {
                 Util.PlaySound(FireTarball.attackSoundString, body.gameObject);
                 Ray aimRay = body.inputBank.GetAimRay();
@@ -125,7 +122,7 @@ namespace JumpRework
         {
             ProjectileManager.instance.FireProjectile(
                 miredUrnTarball, origin, Util.QuaternionSafeLookRotation(forward),
-                body.gameObject, body.damage * urnBallDamageCoefficient, 0f,
+                body.gameObject, body.damage * UrnBallDamageCoefficient.Value, 0f,
                 Util.CheckRoll(body.crit, body.master), DamageColorIndex.Default, null, -1f);
         }
     }

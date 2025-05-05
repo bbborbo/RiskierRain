@@ -38,7 +38,27 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.2.2";
+        public const string version = "1.2.3";
+        #endregion
+        #region config
+        internal static ConfigFile CustomConfigFile { get; private set; }
+        public static ConfigEntry<bool> NerfDoubleJumps { get; set; }
+        public static ConfigEntry<bool> ReworkFeather { get; set; }
+        public static ConfigEntry<bool> ReworkHeadstomper { get; set; }
+        public static ConfigEntry<bool> ReworkUrn { get; set; }
+
+        public static ConfigEntry<float> DoubleJumpVBonus { get; set; }
+        public static ConfigEntry<float> DoubleJumpHBonus { get; set; }
+        public static ConfigEntry<int> FeatherJumpCount { get; set; }
+        public static ConfigEntry<int> UrnJumpCount { get; set; }
+        public static ConfigEntry<int> HeadstomperJumpCount { get; set; }
+
+        public static ConfigEntry<bool> HeadstomperBoostLast { get; set; }
+        public static ConfigEntry<float> HeadstomperBoostStrengthFirst { get; set; }
+        public static ConfigEntry<float> HeadstomperBoostStrengthLast { get; set; }
+
+        public static ConfigEntry<float> UrnBallChance { get; set; }
+        public static ConfigEntry<float> UrnBallDamageCoefficient { get; set; }
         #endregion
         public static bool IsMissileArtifactEnabled()
         {
@@ -58,19 +78,117 @@ namespace JumpRework
 
         public void Awake()
         {
+            CustomConfigFile = new ConfigFile(Paths.ConfigPath + "\\FruityJumps.cfg", true);
+
+            #region config reworks
+            ReworkFeather = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Nerf Double Jump Strength",
+                true,
+                ""
+                );
+            ReworkFeather = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Rework Hopoo Feather",
+                true,
+                ""
+                );
+            ReworkHeadstomper = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Rework Hopoo Feather",
+                true,
+                ""
+                );
+            ReworkUrn = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Rework Hopoo Feather",
+                true,
+                ""
+                );
+            #endregion
+            #region config jump strength
+            DoubleJumpVBonus = CustomConfigFile.Bind<float>(
+                "Jump Strength",
+                "Double Jump Vertical Strength",
+                0.8f,
+                "Vertical strength bonus of double jumps. Vanilla base jumps are 1, double jumps 1.5");
+            DoubleJumpHBonus = CustomConfigFile.Bind<float>(
+                "Jump Strength",
+                "Double Jump Horizontal Strength",
+                1.1f,
+                "Horizontal strength bonus of double jumps. Vanilla base jumps are 1, double jumps 1.3");
+            #endregion
+
+            #region jump counts
+            FeatherJumpCount = CustomConfigFile.Bind<int>(
+                "Jump Counts",
+                "Hopoo Feather Jump Count",
+                1,
+                "Only applies if its respective rework is enabled.");
+            HeadstomperJumpCount = CustomConfigFile.Bind<int>(
+                "Jump Counts",
+                "Headstomper Jump Count",
+                3,
+                "Only applies if its respective rework is enabled.");
+            UrnJumpCount = CustomConfigFile.Bind<int>(
+                "Jump Counts",
+                "Mired Urn Jump Count",
+                2,
+                "Only applies if its respective rework is enabled.");
+            #endregion
+            #region headstompers
+            HeadstomperBoostLast = CustomConfigFile.Bind<bool>(
+                "Headstompers",
+                "Should Headstompers boost the last jump instead of the first?",
+                true,
+                ""
+                );
+            HeadstomperBoostStrengthFirst = CustomConfigFile.Bind<float>(
+                "Headstompers",
+                "Headstompers First Super Jump Strength",
+                1.2f,
+                "Only applies if the Super Jump is configured to be first. Vanilla is 2");
+            HeadstomperBoostStrengthLast = CustomConfigFile.Bind<float>(
+                "Headstompers",
+                "Headstompers Final Super Jump Strength",
+                2,
+                "Only applies if the Super Jump is configured to be last");
+            #endregion
+            #region urn
+            UrnBallChance = CustomConfigFile.Bind<float>(
+                "Mired Urn",
+                "Mired Urn Ball Chance",
+                0.25f,
+                "Stacks identically, approaches 100%");
+            UrnBallDamageCoefficient = CustomConfigFile.Bind<float>(
+                "Mired Urn",
+                "Urn Ball Damage Coefficient",
+                6.5f,
+                "Multiply by 100 for %, ie 6.5 is 650%");
+            #endregion
+
             CreateMiredUrnTarball();
+            if(ReworkUrn.Value || ReworkHeadstomper.Value)
+                GetMoreStatCoefficients += JumpCounts;
 
-            RoR2Application.onLoad += JumpReworks;
-        }
-        void JumpReworks()
-        {
-            BaseStats.FeatherJumpCountBase = featherJumpCount;
-            BaseStats.FeatherJumpCountStack = 0;
-            IL.EntityStates.GenericCharacterMain.ProcessJump += DoubleJumpStrengthNerf;
-
-            FeatherRework();
-            StompersRework();
-            MiredUrnRework();
+            if (NerfDoubleJumps.Value)
+            {
+                IL.EntityStates.GenericCharacterMain.ProcessJump += DoubleJumpStrengthNerf;
+            }
+            if (ReworkFeather.Value)
+            {
+                BaseStats.FeatherJumpCountBase = FeatherJumpCount.Value;
+                BaseStats.FeatherJumpCountStack = 0;
+                FeatherRework();
+            }
+            if (ReworkHeadstomper.Value)
+            {
+                StompersRework();
+            }
+            if (ReworkUrn.Value)
+            {
+                MiredUrnRework();
+            }
         }
 
         private void JumpCounts(CharacterBody sender, MoreStatHookEventArgs args)
@@ -78,19 +196,16 @@ namespace JumpRework
             Inventory inv = sender.inventory;
             if (inv)
             {
-                if (inv.GetItemCount(RoR2Content.Items.SiphonOnLowHealth) > 0)
+                if (inv.GetItemCount(RoR2Content.Items.SiphonOnLowHealth) > 0 && ReworkUrn.Value)
                 {
-                    args.jumpCountAdd += urnJumpCount;
+                    args.jumpCountAdd += UrnJumpCount.Value;
                 }
-                if (inv.GetItemCount(RoR2Content.Items.FallBoots) > 0)
+                if (inv.GetItemCount(RoR2Content.Items.FallBoots) > 0 && ReworkHeadstomper.Value)
                 {
-                    args.jumpCountAdd += fallBootsJumpCount;
+                    args.jumpCountAdd += HeadstomperJumpCount.Value;
                 }
             }
         }
-
-        public static float doubleJumpVerticalBonus = 1.0f; //1.5f
-        public static float doubleJumpHorizontalBonus = 1.1f; //1.3f; //1.5f
         private void DoubleJumpStrengthNerf(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -107,7 +222,7 @@ namespace JumpRework
                 x => x.MatchStloc(out horizontalBoostLoc)
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, doubleJumpHorizontalBonus);
+            c.Emit(OpCodes.Ldc_R4, DoubleJumpHBonus.Value);
             c.Index++;
 
             int verticalBoostLoc = 4;
@@ -116,7 +231,7 @@ namespace JumpRework
                 x => x.MatchStloc(out verticalBoostLoc)
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, doubleJumpVerticalBonus);
+            c.Emit(OpCodes.Ldc_R4, DoubleJumpVBonus.Value);
         }
     }
 }

@@ -14,16 +14,12 @@ namespace JumpRework
 {
     public partial class JumpReworkPlugin
     {
-        public static int fallBootsJumpCount = 3;
-        public bool fallBootsSuperJumpLast = true;
-        public float superJumpStrengthFirst = 1.2f; //2
-        public float superJumpStrengthLast = 2f; //2
         private void StompersRework()
         {
             IL.EntityStates.Headstompers.HeadstompersIdle.FixedUpdateAuthority += HeadstompersJumpBoost;
             LanguageAPI.Add("ITEM_FALLBOOTS_PICKUP", "Quadruple jump. Hold 'Interact' to slam down to the ground.");
             LanguageAPI.Add("ITEM_FALLBOOTS_DESC",
-                $"Gain <style=cIsUtility>{fallBootsJumpCount}</style> jumps. " +
+                $"Gain <style=cIsUtility>{HeadstomperJumpCount.Value}</style> jumps. " +
                 $"Creates a <style=cIsDamage>5m-100m</style> radius <style=cIsDamage>kinetic explosion</style> " +
                 $"on hitting the ground, dealing " +
                 $"<style=cIsDamage>1000%-10000%</style> base damage " +
@@ -42,7 +38,7 @@ namespace JumpRework
             c.EmitDelegate<Func<bool, HeadstompersIdle, bool>>((isGrounded, self) =>
             {
                 bool shouldSuperJump = isGrounded;
-                if (fallBootsSuperJumpLast) //override superjump on first jump if true
+                if (HeadstomperBoostLast.Value) //override superjump on first jump if true
                 {
                     CharacterMotor motor = self.bodyMotor;
                     if (motor)
@@ -63,7 +59,7 @@ namespace JumpRework
                 x => x.MatchMul()
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, fallBootsSuperJumpLast ? superJumpStrengthLast : superJumpStrengthFirst);
+            c.Emit(OpCodes.Ldc_R4, HeadstomperBoostLast.Value ? HeadstomperBoostStrengthLast.Value : HeadstomperBoostStrengthFirst.Value);
         }
     }
 }

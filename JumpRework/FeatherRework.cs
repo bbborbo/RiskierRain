@@ -14,7 +14,6 @@ namespace JumpRework
 {
     public partial class JumpReworkPlugin
     {
-        public static int featherJumpCount = 1;
         public float hopooDamageBuffDuration = 0.5f;
         public static float hopooDamageIncreasePerBuff = 0.1f;
         float featherBaseDuration = 0.75f;
@@ -26,7 +25,7 @@ namespace JumpRework
             //GetStatCoefficients += FeatherDamageBoost;
             LanguageAPI.Add("ITEM_FEATHER_PICKUP", "Double jump. Jumping gives you a boost of movement speed.");
             LanguageAPI.Add("ITEM_FEATHER_DESC",
-                $"Gain <style=cIsUtility>{featherJumpCount}</style> jumps. " +
+                $"Gain <style=cIsUtility>{FeatherJumpCount.Value}</style> jumps. " +
                 $"<style=cIsUtility>On jump</style>, increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>125%</style>, " +
                 $"fading over <style=cIsUtility>{featherBaseDuration}</style> <style=cStack>(+{featherStackDuration} per stack)</style> seconds.");
         }

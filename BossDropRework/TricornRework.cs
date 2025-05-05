@@ -14,8 +14,6 @@ namespace BossDropRework
     {
         public static BuffDef bossHunterDebuff;
 
-        float tricornDamageCoefficient = 70;
-        float tricornProcCoefficient = 2;
         int tricornDebuffDuration = 999;
         bool reworkTricorn = true;
 
@@ -27,7 +25,7 @@ namespace BossDropRework
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_PICKUP", "Cripple a large monster and claim its <style=cIsDamage>trophy</style> after it dies. Consumed on use.");
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_DESC", 
                 $"Targets any enemy capable of dropping a <style=cIsDamage>unique reward</style>, " +
-                $"dealing <style=cIsDamage>{tricornDamageCoefficient * 100}% damage</style>, " +
+                $"dealing <style=cIsDamage>{TricornDamageCoefficient.Value * 100}% damage</style>, " +
                 $"then <style=cIsUtility>Crippling and Hemorrhaging</style> it " +
                 $"for <style=cIsUtility>{tricornDebuffDuration}</style> seconds. " +
                 $"When the enemy dies, it has a 100% chance to drop it's <style=cIsDamage>trophy</style>. " +
@@ -94,10 +92,9 @@ namespace BossDropRework
                                 DamageInfo damageInfo = new DamageInfo();
                                 damageInfo.attacker = self.gameObject;
                                 damageInfo.force = normalized * 1500f;
-                                damageInfo.damage = attackerBody.damage * tricornDamageCoefficient;
-                                damageInfo.procCoefficient = tricornProcCoefficient;
+                                damageInfo.damage = attackerBody.damage * TricornDamageCoefficient.Value;
+                                damageInfo.procCoefficient = TricornProcCoefficient.Value;
                                 enemyHealthComponent.TakeDamage(damageInfo);
-
 
                                 enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
                                 DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker,

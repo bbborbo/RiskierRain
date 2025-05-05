@@ -38,7 +38,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.2.3";
+        public const string version = "1.3.0";
         #endregion
         #region config
         internal static ConfigFile CustomConfigFile { get; private set; }
@@ -81,7 +81,7 @@ namespace JumpRework
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + "\\FruityJumps.cfg", true);
 
             #region config reworks
-            ReworkFeather = CustomConfigFile.Bind<bool>(
+            NerfDoubleJumps = CustomConfigFile.Bind<bool>(
                 "Reworks",
                 "Nerf Double Jump Strength",
                 true,

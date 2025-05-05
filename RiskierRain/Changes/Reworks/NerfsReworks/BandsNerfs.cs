@@ -22,6 +22,7 @@ namespace RiskierRain
 
         void NerfBands()
         {
+            return;
             //IL.RoR2.GlobalEventManager.ProcessHitEnemy += CooldownBuff;
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RunaldNerf;
@@ -129,6 +130,7 @@ namespace RiskierRain
                 x => x.MatchMul(),
                 x => x.MatchStloc(out totalDamageMultiplierLocation)
                 );
+            //c.Next.Operand = runaldTotalDamage;
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, runaldTotalDamage);
 

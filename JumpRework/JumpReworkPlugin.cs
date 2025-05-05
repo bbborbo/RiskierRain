@@ -38,7 +38,7 @@ namespace JumpRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityJumps";
-        public const string version = "1.3.0";
+        public const string version = "1.3.1";
         #endregion
         #region config
         internal static ConfigFile CustomConfigFile { get; private set; }
@@ -173,7 +173,7 @@ namespace JumpRework
 
             if (NerfDoubleJumps.Value)
             {
-                IL.EntityStates.GenericCharacterMain.ProcessJump += DoubleJumpStrengthNerf;
+                IL.EntityStates.GenericCharacterMain.ProcessJump_bool += DoubleJumpStrengthNerf;
             }
             if (ReworkFeather.Value)
             {

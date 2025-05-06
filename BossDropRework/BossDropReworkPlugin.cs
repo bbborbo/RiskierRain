@@ -29,7 +29,7 @@ namespace BossDropRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBossDrops";
-        public const string version = "1.2.0";
+        public const string version = "1.2.1";
         #endregion
 
         #region config
@@ -187,11 +187,11 @@ namespace BossDropRework
 
             PickupDropTable dropTable;
             float dropChance = GetBaseBossItemDropChanceFromBody(enemyBody, out dropTable);
-            if(dropChance > 0)
+            if(dropChance > 0 && dropTable != null)
             {
                 if(InvokeModifyBossItemDropChance(enemyBody, attackerBody, ref dropChance) > 0)
                 {
-                    PickupIndex drop = dropTable.GenerateDrop(attackerBody.equipmentSlot.rng);
+                    PickupIndex drop = dropTable.GenerateDrop(Run.instance.bossRewardRng);
 
                     if (Util.CheckRoll(dropChance, killerMaster) && drop != PickupCatalog.FindPickupIndex("VoidCoin"))
                     {

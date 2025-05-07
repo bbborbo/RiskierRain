@@ -206,6 +206,7 @@ namespace RiskierRain
         float justiceMinDamageCoeff = 8f;
         void BuffJustice()
         {
+            return;
             On.RoR2.GlobalEventManager.ProcessHitEnemy += this.JusticeBuff;
             LanguageAPI.Add("ITEM_ARMORREDUCTIONONHIT_PICKUP",
                 "Reduce the armor of enemies after repeatedly striking them or on massive hits.");

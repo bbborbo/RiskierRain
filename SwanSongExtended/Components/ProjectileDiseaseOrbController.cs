@@ -90,6 +90,7 @@ namespace SwanSongExtended.Components
 
                 DiseaseOrb diseaseOrb = new DiseaseOrb();
                 diseaseOrb.splitDotInformation = splitDotInfo;
+                diseaseOrb.search = bullseyeSearch;
                 diseaseOrb.range = orbSpreadRange;
                 diseaseOrb.bouncedObjects = new List<HealthComponent>();
                 diseaseOrb.debuffBlacklistedObjects = targetsHit;
@@ -100,6 +101,7 @@ namespace SwanSongExtended.Components
                 diseaseOrb.isCrit = this.projectileDamage.crit;
                 diseaseOrb.origin = impactPosition;
                 diseaseOrb.bouncesRemaining = this.bounces;
+                diseaseOrb.maxBounces = this.bounces;
                 diseaseOrb.procCoefficient = this.procCoefficient;
                 diseaseOrb.target = firstTarget;
                 diseaseOrb.damageColorIndex = this.projectileDamage.damageColorIndex;

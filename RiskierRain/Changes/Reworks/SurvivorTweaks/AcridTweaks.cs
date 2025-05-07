@@ -47,10 +47,10 @@ namespace RiskierRain.SurvivorTweaks
 
         public static float epidemicCooldown = 15f; //10
         public static float epidemicDamageCoefficient = 0.5f; //1
-        public static float epidemicInitialRange = 50;
+        public static float epidemicInitialRange = 80;
         public static float epidemicSpreadRange = 35;
         public static float epidemicProjectileBlastRadius = 3f;
-        public static int epidemicMaxTargets = 10;
+        public static int epidemicMaxTargets = 20;
         public static ModdedDamageType AcridSkillBasedDamage;
 
         public override string survivorName => "Acrid";
@@ -280,7 +280,7 @@ namespace RiskierRain.SurvivorTweaks
             LanguageAPI.Add("CROCO_SPECIAL_DESCRIPTION", 
                 $"<style=cIsHealing>Poisonous</style>. <style=cIsHealth>Contagious</style>. " +
                 $"Release a deadly disease that deals <style=cIsDamage>{Tools.ConvertDecimal(epidemicDamageCoefficient)} damage</style>. " +
-                $"The disease spreads to up to <style=cIsDamage>{epidemicMaxTargets}</style> targets.");
+                $"The disease spreads to up to <style=cIsDamage>{epidemicMaxTargets}</style> targets within <style=cIsUtility>{epidemicInitialRange}m</style>.");
 
             GameObject diseaseProjectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Croco/CrocoDiseaseProjectile.prefab").WaitForCompletion();
 

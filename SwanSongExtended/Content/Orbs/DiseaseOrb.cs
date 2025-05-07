@@ -16,6 +16,7 @@ namespace SwanSongExtended.Orbs
         public GameObject attacker;
         public GameObject inflictor;
         public int bouncesRemaining;
+        public int maxBounces;
         public List<HealthComponent> debuffBlacklistedObjects;
         public List<HealthComponent> bouncedObjects;
         public TeamIndex teamIndex;
@@ -28,8 +29,10 @@ namespace SwanSongExtended.Orbs
         public int targetsToFindPerBounce = 1;
         public DamageTypeCombo damageType = DamageType.Generic;
         private bool failedToKill;
-        private BullseyeSearch search;
+        public BullseyeSearch search;
+        bool redoSearch = false;
         public List<VineOrb.SplitDebuffInformation> splitDotInformation;
+        float orbDuration = 0.8f;
 
         public static List<VineOrb.SplitDebuffInformation> GetSplitDotInformation(CharacterBody victimBody, CharacterBody attackerBody)
         {
@@ -68,8 +71,8 @@ namespace SwanSongExtended.Orbs
         public override void Begin()
         {
             string path = "Prefabs/Effects/OrbEffects/CrocoDiseaseOrbEffect";
-            base.duration = 0.6f;
-            this.targetsToFindPerBounce = 2;
+            base.duration = orbDuration;
+            this.targetsToFindPerBounce = 1;
 
             EffectData effectData = new EffectData
             {
@@ -120,6 +123,8 @@ namespace SwanSongExtended.Orbs
                         HurtBox hurtBox = this.PickNextTarget(this.target.transform.position);
                         if (hurtBox)
                         {
+                            this.bouncesRemaining--;
+
                             DiseaseOrb diseaseOrb = new DiseaseOrb();
                             diseaseOrb.splitDotInformation = this.splitDotInformation;
                             diseaseOrb.debuffBlacklistedObjects = this.debuffBlacklistedObjects;
@@ -130,7 +135,8 @@ namespace SwanSongExtended.Orbs
                             diseaseOrb.inflictor = this.inflictor;
                             diseaseOrb.teamIndex = this.teamIndex;
                             diseaseOrb.damageValue = this.damageValue * this.damageCoefficientPerBounce;
-                            diseaseOrb.bouncesRemaining = this.bouncesRemaining - 1;
+                            diseaseOrb.bouncesRemaining = this.bouncesRemaining;
+                            diseaseOrb.maxBounces = this.maxBounces;
                             diseaseOrb.isCrit = this.isCrit;
                             diseaseOrb.bouncedObjects = this.bouncedObjects;
                             diseaseOrb.procChainMask = this.procChainMask;
@@ -141,6 +147,7 @@ namespace SwanSongExtended.Orbs
                             diseaseOrb.range = this.range;
                             diseaseOrb.damageType = this.damageType;
                             diseaseOrb.failedToKill = this.failedToKill;
+                            diseaseOrb.orbDuration = this.orbDuration * 0.9f;
                             OrbManager.instance.AddOrb(diseaseOrb);
                         }
                     }
@@ -194,17 +201,25 @@ namespace SwanSongExtended.Orbs
             {
                 this.search = new BullseyeSearch();
             }
-            this.search.searchOrigin = position;
-            this.search.searchDirection = Vector3.zero;
-            this.search.teamMaskFilter = TeamMask.allButNeutral;
-            this.search.teamMaskFilter.RemoveTeam(this.teamIndex);
-            this.search.filterByLoS = false;
-            this.search.sortMode = BullseyeSearch.SortMode.Distance;
-            this.search.maxDistanceFilter = this.range;
+            if (redoSearch)
+            {
+                this.search.searchOrigin = position;
+                this.search.searchDirection = Vector3.zero;
+                this.search.teamMaskFilter = TeamMask.allButNeutral;
+                this.search.teamMaskFilter.RemoveTeam(this.teamIndex);
+                this.search.filterByLoS = false;
+                this.search.sortMode = BullseyeSearch.SortMode.Distance;
+                this.search.maxDistanceFilter = this.range;
+            }
             this.search.RefreshCandidates();
-            HurtBox hurtBox = (from v in this.search.GetResults()
-                               where !this.bouncedObjects.Contains(v.healthComponent)
-                               select v).FirstOrDefault<HurtBox>();
+            int i = 0;// maxBounces - bouncesRemaining;
+            IEnumerable<HurtBox> filtered = (from v in this.search.GetResults()
+                                           where !this.bouncedObjects.Contains(v.healthComponent)
+                                           select v);
+            if (i >= filtered.Count<HurtBox>())
+                return null;
+
+            HurtBox hurtBox = filtered.FirstOrDefault<HurtBox>();//ElementAtOrDefault<HurtBox>(i);//
             if (hurtBox)
             {
                 this.bouncedObjects.Add(hurtBox.healthComponent);

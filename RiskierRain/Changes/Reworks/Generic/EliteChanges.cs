@@ -340,9 +340,18 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             c.GotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "BleedOnHitVoid")
+                );
+            c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Buffs", "EliteVoid")
                 );
+            c.GotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.HasBuff))
+                );
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Ldc_I4_0);
 
+            return;
             c.GotoNext(MoveType.Before,
                 x => x.MatchStloc(out _)
                 );

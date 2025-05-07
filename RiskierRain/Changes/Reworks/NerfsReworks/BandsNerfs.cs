@@ -22,7 +22,6 @@ namespace RiskierRain
 
         void NerfBands()
         {
-            return;
             //IL.RoR2.GlobalEventManager.ProcessHitEnemy += CooldownBuff;
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RunaldNerf;
@@ -139,10 +138,10 @@ namespace RiskierRain
                 x => x.MatchCallOrCallvirt(out _)
                 );
             //c.Index--;
-            c.Emit(OpCodes.Ldloc_2);
-            c.EmitDelegate<Func<float, CharacterBody, float>>((damage, self) =>
+            c.Emit(OpCodes.Ldloc_0);
+            c.EmitDelegate<Func<float, CharacterBody, float>>((damage, attackerBody) =>
             {
-                float dam = self.baseDamage * runaldBaseDamage;
+                float dam = attackerBody.baseDamage * runaldBaseDamage;
 
                 return damage + dam;
             });
@@ -176,10 +175,10 @@ namespace RiskierRain
                 x => x.MatchLdloc(totalDamageMultiplierLocation),
                 x => x.MatchCallOrCallvirt(out _)
                 );
-            c.Emit(OpCodes.Ldloc_2);
-            c.EmitDelegate<Func<float, CharacterBody, float>>((damage, self) =>
+            c.Emit(OpCodes.Ldloc_0);
+            c.EmitDelegate<Func<float, CharacterBody, float>>((damage, attackerBody) =>
             {
-                float dam = self.baseDamage * kjaroBaseDamage;
+                float dam = attackerBody.baseDamage * kjaroBaseDamage;
 
                 return damage + dam;
             });

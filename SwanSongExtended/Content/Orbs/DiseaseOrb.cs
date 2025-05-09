@@ -147,7 +147,7 @@ namespace SwanSongExtended.Orbs
                             diseaseOrb.range = this.range;
                             diseaseOrb.damageType = this.damageType;
                             diseaseOrb.failedToKill = this.failedToKill;
-                            diseaseOrb.orbDuration = this.orbDuration * 0.9f;
+                            diseaseOrb.orbDuration = this.orbDuration * 0.8f;
                             OrbManager.instance.AddOrb(diseaseOrb);
                         }
                     }

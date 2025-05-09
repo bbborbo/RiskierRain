@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static MoreStats.StatHooks;
+using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Artifacts;
 
@@ -25,8 +26,8 @@ namespace SwanSongExtended.Items
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
 
-        public static int luckBase = 1;
-        public static int luckStack = 1; //maybe 1?
+        public static int luckBase = 2;
+        public static int luckStack = 2; //maybe 1?
 
         public static float healthRegenBase = -2;
         public static float healthRegenStack = -2;
@@ -34,7 +35,7 @@ namespace SwanSongExtended.Items
         public static float healthRegenLevelStack = -0.3f;
 
         public static float damageBase = 4;
-        public static float damageLevel = 0.6f;
+        public static float damageStack = 2;
 
         public override string ItemName => "Corpsebloom";
 
@@ -42,7 +43,10 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Your health degenerates over time. Gain barrier and luck at low health.";
 
-        public override string ItemFullDescription => "holy fucking bingle";
+        public override string ItemFullDescription => $"Gain Reduce base health regeneration by {healthRegenBase} hp/s (-{healthRegenStack} per stack). " +
+            $"While below 60% max health, increase base damage by {damageBase} (+{damageStack} per stack). " +
+            $"While below 30% max health, gain {Tools.ConvertDecimal(LunarHealthDegenBehavior.barrierFraction)} barrier " +
+            $"and increase Luck by {luckBase} (+{luckStack} per stack).";
 
         public override string ItemLore => "";
 
@@ -86,6 +90,31 @@ namespace SwanSongExtended.Items
 
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
             GetMoreStatCoefficients += ElegyLuck;
+            GetStatCoefficients += ElegyStats;
+        }
+
+        private void ElegyStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = GetCount(sender);
+
+            if (itemCount > 0)
+            {
+                float degenMod = 1;
+                int stackMod = itemCount - 1;
+                float levelMult = (1 + 0.2f * sender.level);
+                int buffCount = sender.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
+                if (buffCount >= 4)
+                {
+                    //sender.damage += (damageBase + (damageLevel * (sender.level - 1)));
+                    args.baseDamageAdd += (damageBase + damageStack * stackMod) * levelMult;
+                    if (buffCount >= 7)
+                    {
+                        degenMod = 0.5f;
+                    }
+                }
+                //sender.regen += (healthRegenBase + (healthRegenStack * (itemCount - 1))) * degenMod;//health degen
+                args.baseRegenAdd += (healthRegenBase + healthRegenStack * stackMod) * degenMod * levelMult;//health degen
+            }
         }
 
         private void ElegyLuck(CharacterBody sender, MoreStatHookEventArgs args)
@@ -99,22 +128,6 @@ namespace SwanSongExtended.Items
         private void AddBuffStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
-            int itemCount = GetCount(self);
-
-            if (itemCount > 0)
-            {
-                float degenMod = 1;
-                int buffCount = self.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
-                if (buffCount >= 4)
-                {
-                    self.damage += (damageBase + (damageLevel * (self.level - 1)));
-                    if (buffCount >= 7)
-                    {
-                        degenMod = 0.5f;
-                    }
-                }
-                self.regen += (healthRegenBase + (healthRegenStack * (itemCount - 1))) * degenMod;//health degen
-            }
         }
 
         private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
@@ -149,7 +162,7 @@ namespace SwanSongExtended.Items
 
         private void FixedUpdate()
         {
-            float missingHealthFraction = 1 - (healthComponent.health + healthComponent.shield) / healthComponent.fullCombinedHealth;
+            float missingHealthFraction = 1 - ((healthComponent.health + healthComponent.shield) / healthComponent.fullCombinedHealth);
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (maxBuffCount));
             while (newBuffCount > buffCount && buffCount < maxBuffCount)
             {

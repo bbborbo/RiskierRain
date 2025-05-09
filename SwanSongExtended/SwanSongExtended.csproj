@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="Content\Items\SecretsOfTheScug\ShellShield.cs" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -30,6 +31,7 @@
   <ItemGroup>
     <Compile Remove="Content\Interactables\Interactables\CombatShrineLunar.cs" />
     <Compile Remove="Content\Interactables\Interactables\ConstructConstruct.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\ShellShield.cs" />
   </ItemGroup>
 
   <ItemGroup>

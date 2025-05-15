@@ -101,7 +101,7 @@ namespace SwanSongExtended
                 return;
             }
             float maxDistance = 150;
-            float maxAngle = 4;
+            float maxAngle = 10;
             var minDot = Mathf.Cos(Mathf.Clamp(maxAngle, 0f, 180f) * Mathf.PI / 180f);
 
             float camAdjust;
@@ -117,9 +117,14 @@ namespace SwanSongExtended
                 if (currentTargetInteraction != null)
                     currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
 
+                Vector3 origin = aim.origin;
+                Vector3 targetPosition = currentTargetObject.transform.position;
+
                 if (!currentTargetValid
-                    || (currentTargetObject.transform.position - self.gameObject.transform.position).sqrMagnitude > maxDistance * maxDistance
-                    || Vector3.Dot(aim.direction, (currentTargetObject.transform.position - aim.origin).normalized) < minDot)
+                    || (targetPosition - origin).sqrMagnitude > maxDistance * maxDistance
+                    || Vector3.Dot(aim.direction, (targetPosition - origin).normalized) < minDot
+                    //|| !HasLos(origin, targetPosition)
+                    )
                     self.InvalidateCurrentTarget();
             }
 
@@ -130,8 +135,15 @@ namespace SwanSongExtended
                 var vdot = Vector3.Dot(aim.direction, (collider.transform.position - aim.origin).normalized);
                 if (vdot < minDot)
                     continue;
+                Vector3 origin = aim.origin;
+                Vector3 targetPosition = collider.transform.position;
+                if (!HasLos(origin, targetPosition))
+                    continue;
 
-                PurchaseInteraction component = collider.GetComponent<EntityLocator>()?.entity.GetComponent<PurchaseInteraction>();
+                EntityLocator el = collider.GetComponent<EntityLocator>();
+                if (!el)
+                    continue;
+                PurchaseInteraction component = el.entity.GetComponent<PurchaseInteraction>();
                 if (component)
                 {
                     //using hack beacon criteria
@@ -178,6 +190,13 @@ namespace SwanSongExtended
                 self.InvalidateCurrentTarget();
                 self.targetIndicator.active = false;
             }
+        }
+
+        public bool HasLos(Vector3 origin, Vector3 targetPosition)
+        {
+            Vector3 direction = targetPosition - origin;
+            RaycastHit raycastHit;
+            return !Physics.Raycast(origin, direction, out raycastHit, direction.magnitude - 1, LayerIndex.world.mask, QueryTriggerInteraction.Ignore);
         }
 
         private void FreezeCardf(On.RoR2.Items.MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)

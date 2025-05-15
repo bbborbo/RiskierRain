@@ -196,13 +196,16 @@ namespace MoreStats
             /// Out of 100, ie +20 is 20% chance to ignite
             /// </summary>
             public float burnChanceOnHit = 0;
-            /// <summary>
-            /// Out of 100, ie +20 is 20% chance to chill
-            /// </summary>
-            //public float chillChanceOnHit = 0;
             #endregion
 
-            #region shield delay
+
+            #region shield
+            /// <summary>
+            /// ADD to increase shield to health conversion
+            /// Expressed as a decimal, i.e. 0.5 is 50% and 1 is 100%
+            /// Max of 1 (100%), in which case the health stat will always be 1.
+            /// </summary>
+            public float shieldToHealthConversionFractionAdd = 0;
             /// <summary>
             /// SUBTRACT to reduce delay, ADD to increase
             /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
@@ -625,6 +628,7 @@ namespace MoreStats
 
         public bool  shieldRechargeReady = true;
         public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
+        float shieldToHealthConversion = 0;
 
         public float selfExecutionThresholdAdd = 0;
         public float selfExecutionThresholdBase = Mathf.NegativeInfinity;

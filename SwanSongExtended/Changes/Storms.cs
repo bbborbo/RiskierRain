@@ -230,7 +230,7 @@ namespace SwanSongExtended
         public static float waveMaxInterval = 2.5f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 45;
+        public static float meteorBlastDamageCoefficient = 35;
         public static float meteorBlastDamageScalarPerLevel = 0.5f;
         public static float meteorBlastRadius = 11;
         public static float meteorBlastForce = 0;

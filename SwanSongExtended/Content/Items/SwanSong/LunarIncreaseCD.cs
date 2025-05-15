@@ -13,6 +13,7 @@ using static MoreStats.OnHit;
 using UnityEngine.AddressableAssets;
 using System.Collections;
 using RoR2.ExpansionManagement;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -20,13 +21,13 @@ namespace SwanSongExtended.Items
     {
         GameObject lunarShardProjectile => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
-        float lunarShardDamageCoefficient = 0.1f;
+        float lunarShardDamageCoefficient = 0.8f;
         float lunarShardProcCoefficient = 0.5f;
 
-        float cdIncreaseBase = 2;
-        float cdIncreaseStack = 2;
-        float shardsPerSecondBase = 0.5f;
-        float shardsPerSecondStack = 0.25f;
+        float cdIncreaseBase = 1;
+        float cdIncreaseStack = 1;
+        float secondsPerShardBase = 1;
+        float secondsPerShardReductionStack = 0.2f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
@@ -34,7 +35,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "LUNARINCREASECD";
 
-        public override string ItemPickupDesc => "Using skills launches lunar shards; longer cooldown skills launch more shards. All cooldowns are increased.";
+        public override string ItemPickupDesc => $"On any skill use, fire {DamageColor("lunar shards")} " +
+            $"for {DamageValueText(lunarShardDamageCoefficient)} (increases with ability cooldown). " +
+            $"{RedText($"Increase the cooldowns of all skills by {cdIncreaseBase} second")} {StackText($"+{cdIncreaseStack}")}.";
 
         public override string ItemFullDescription => "TBA";
 
@@ -114,7 +117,10 @@ namespace SwanSongExtended.Items
             int itemCount = GetCount(self);
             if (itemCount > 0)
             {
-                float shardsPerSecond = shardsPerSecondBase + (shardsPerSecondStack * itemCount - 1);
+                float secondsPerShard = secondsPerShardBase;
+                if (itemCount > 1)
+                    secondsPerShard *= Mathf.Pow(1 - secondsPerShardReductionStack, itemCount - 1);
+
                 float skillCD = skill.finalRechargeInterval;
                 float skillStock = skill.rechargeStock;
                 //Util.PlaySound(FireVoidspikes.attackSoundString, self.gameObject);
@@ -128,9 +134,10 @@ namespace SwanSongExtended.Items
                 }
                 Ray aimRay = new Ray(self.inputBank.aimOrigin, self.inputBank.aimDirection);
 
-                int shardCount = (int)Mathf.CeilToInt(shardsPerSecond * skillCD / skillStock);
+                int shardCount = (int)Mathf.CeilToInt(skillCD / (skillStock * secondsPerShard));
                 if (lunarShardProjectile != null)
                 {
+                    bool crit = Util.CheckRoll(self.crit, self.master);
                     for (int i = 0; i < shardCount; i++)
                     {
                         float bonusYaw = UnityEngine.Random.Range(-1f, 1f);
@@ -138,11 +145,20 @@ namespace SwanSongExtended.Items
                         float projectileSpeed = 200 * (0.3f * (i + 1));
 
                         Vector3 forward = Util.ApplySpread(aimRay.direction, 0f, 0f, 1f, 1f, bonusYaw * i, bonusPitch * i);
-                        ProjectileManager.instance.FireProjectile(lunarShardProjectile, aimRay.origin,
-                            Util.QuaternionSafeLookRotation(forward), self.gameObject,
-                            self.damage * lunarShardDamageCoefficient, 0f,
-                            Util.CheckRoll(self.crit, self.master),
-                            DamageColorIndex.Default, null, projectileSpeed);
+                        FireProjectileInfo fpi = new FireProjectileInfo
+                        {
+                            projectilePrefab = lunarShardProjectile,
+                            position = aimRay.origin,
+                            rotation = Util.QuaternionSafeLookRotation(forward),
+                            owner = self.gameObject,
+                            damage = self.damage * lunarShardDamageCoefficient,
+                            force = 0,
+                            crit = crit,
+                            damageColorIndex = DamageColorIndex.Item,
+                            speedOverride = projectileSpeed,
+                            useSpeedOverride = true
+                        };
+                        ProjectileManager.instance.FireProjectile(fpi);
                     }
                 }
                 else

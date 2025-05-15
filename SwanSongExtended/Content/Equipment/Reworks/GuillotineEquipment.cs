@@ -59,7 +59,7 @@ namespace SwanSongExtended.Equipment
         public override string EquipmentPickupDesc => "Instantly kill low health Elite monsters.";
         //"Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
 
-        public override string EquipmentFullDescription => $"Instantly kill Elite monsters below {RedText($"{baseThreshold} max health")}. " +
+        public override string EquipmentFullDescription => $"Instantly kill Elite monsters below {RedText($"{newExecutionThresholdBase} max health")}. " +
             $"{UtilityColor(Tools.ConvertDecimal(aspectDropChance) + "chance")} to claim the power of slain Elite monsters.";
         //$"Target a monster, allowing them to be " +
         //$"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +

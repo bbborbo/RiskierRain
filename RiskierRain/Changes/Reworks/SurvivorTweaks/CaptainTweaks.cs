@@ -73,8 +73,11 @@ namespace RiskierRain.SurvivorTweaks
             GetSkillsFromBodyObject(bodyObject);
 
             //passive
-            On.RoR2.CaptainDefenseMatrixController.TryGrantItem += MicrobotGuh;
-            On.RoR2.CaptainDefenseMatrixController.OnServerMasterSummonGlobal += MicrobotGah;
+            ItemDef microbot = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/CaptainDefenseMatrix/CaptainDefenseMatrix.asset").WaitForCompletion();
+            RiskierRainPlugin.RetierItem(microbot);
+            //microbot.tags |= ItemTag.
+            //On.RoR2.CaptainDefenseMatrixController.TryGrantItem += MicrobotGuh;
+            //On.RoR2.CaptainDefenseMatrixController.OnServerMasterSummonGlobal += MicrobotGah;
 
             On.EntityStates.CaptainDefenseMatrixItem.DefenseMatrixOn.OnEnter += NerfMicrobots;
             LanguageAPI.Add("ITEM_CAPTAINDEFENSEMATRIX_DESC", 

@@ -13,6 +13,7 @@ using static MoreStats.StatHooks;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Artifacts;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -21,8 +22,8 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Reworks : Corpsebloom";
         public override AssetBundle assetBundle => null;
 
-        public static BuffDef lunarLuckBuff;
-        public static BuffDef lunarLuckBarrierCooldown;
+        public static BuffDef lunarRotBuff;
+        public static BuffDef lunarRotBarrierCooldown;
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
 
@@ -34,6 +35,8 @@ namespace SwanSongExtended.Items
         public static float healthRegenLevelBase = -0.3f;
         public static float healthRegenLevelStack = -0.3f;
 
+        public static int rotStacksForFirstBonus = 3;
+        public static int rotStacksForSecondBonus = 6;
         public static float damageBase = 4;
         public static float damageStack = 2;
 
@@ -43,10 +46,11 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Your health degenerates over time. Gain barrier and luck at low health.";
 
-        public override string ItemFullDescription => $"Gain Reduce base health regeneration by {healthRegenBase} hp/s (-{healthRegenStack} per stack). " +
-            $"While below 60% max health, increase base damage by {damageBase} (+{damageStack} per stack). " +
-            $"While below 30% max health, gain {Tools.ConvertDecimal(LunarHealthDegenBehavior.barrierFraction)} barrier " +
-            $"and increase Luck by {luckBase} (+{luckStack} per stack).";
+        public override string ItemFullDescription => $"For every missing {ConvertDecimal(1 / LunarHealthDegenBehavior.maxBuffCount)} of health, gain a stack of Rot. " +
+            $"After {rotStacksForFirstBonus} stacks have accumulated, increase base damage by {damageBase} {StackText($"+{damageStack}")}. " +
+            $"After {rotStacksForFirstBonus} stacks, gain {ConvertDecimal(LunarHealthDegenBehavior.barrierFraction)} barrier " +
+            $"and increase Luck by {luckBase} {StackText($"+{luckStack}")}. " +
+            $"{RedText($"Reduce base health regeneration by {healthRegenBase} hp/s")} {StackText($"-{healthRegenStack}")}.";
 
         public override string ItemLore => "";
 
@@ -68,19 +72,19 @@ namespace SwanSongExtended.Items
             base.Init();
             SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
 
-            lunarLuckBuff = Content.CreateAndAddBuff(
-                "bdLunarFlowerLuckBuff",
+            lunarRotBuff = Content.CreateAndAddBuff(
+                "bdLunarFlowerRotBuff",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion(),
                 Color.blue,
                 true, false
                 );
-            lunarLuckBarrierCooldown = Content.CreateAndAddBuff(
+            lunarRotBarrierCooldown = Content.CreateAndAddBuff(
                 "bdLunarFlowerBarrierCooldown",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion(),
                 Color.white,
                 false, false
                 );
-            lunarLuckBarrierCooldown.isCooldown = true;
+            lunarRotBarrierCooldown.isCooldown = true;
         }
 
         public override void Hooks()
@@ -102,12 +106,12 @@ namespace SwanSongExtended.Items
                 float degenMod = 1;
                 int stackMod = itemCount - 1;
                 float levelMult = (1 + 0.2f * sender.level);
-                int buffCount = sender.GetBuffCount(lunarLuckBuff.buffIndex);//LUCK/DAMAGE UP
-                if (buffCount >= 4)
+                int buffCount = sender.GetBuffCount(lunarRotBuff.buffIndex);//LUCK/DAMAGE UP
+                if (buffCount >= rotStacksForFirstBonus)
                 {
                     //sender.damage += (damageBase + (damageLevel * (sender.level - 1)));
                     args.baseDamageAdd += (damageBase + damageStack * stackMod) * levelMult;
-                    if (buffCount >= 7)
+                    if (buffCount >= rotStacksForSecondBonus)
                     {
                         degenMod = 0.5f;
                     }
@@ -119,7 +123,7 @@ namespace SwanSongExtended.Items
 
         private void ElegyLuck(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            if (sender.GetBuffCount(lunarLuckBuff.buffIndex) >= 7)
+            if (sender.GetBuffCount(lunarRotBuff.buffIndex) >= rotStacksForSecondBonus)
             {
                 args.luckAdd += luckBase + luckStack * (GetCount(sender) - 1);
             }
@@ -146,9 +150,9 @@ namespace SwanSongExtended.Items
     public class LunarHealthDegenBehavior: CharacterBody.ItemBehavior
     {
         HealthComponent healthComponent;
-        BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarLuckBuff.buffIndex;
-        BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarLuckBarrierCooldown.buffIndex;
-        public static int maxBuffCount = 10;
+        BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarRotBuff.buffIndex;
+        BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarRotBarrierCooldown.buffIndex;
+        public static int maxBuffCount = 8;
         int buffCount = 0;
 
         public static float barrierFraction = 0.5f;
@@ -168,7 +172,7 @@ namespace SwanSongExtended.Items
             {
                 this.body.AddBuff(luckUpBuffIndex);
                 buffCount++;
-                if (buffCount >= 7 &! body.HasBuff(barrierCooldownBuffIndex))
+                if (buffCount >= LunarHealthDegen.rotStacksForSecondBonus & !body.HasBuff(barrierCooldownBuffIndex))
                 {
                     healthComponent.AddBarrier(healthComponent.fullCombinedHealth * barrierFraction);
                     body.AddTimedBuff(barrierCooldownBuffIndex, barrierCoolDown);

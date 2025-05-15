@@ -7,11 +7,18 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
     class ChargedSpine : ItemBase<ChargedSpine>
     {
+
+        public static float baseShield = 50;
+        public static float stackShield = 50;
+        public static float baseDuration = 5;
+        public static float stackDuration = 5;
+        public static float baseArmor = 200;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Charged Malachite Spine";
 
@@ -19,7 +26,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Poison yourself when shields are broken, gaining great damage resistence.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => $"Gain {HealingColor($"{baseShield} shield")} {StackText($"+{stackShield}")}. " +
+            $"While poisoned, gain {HealingColor($"{baseArmor} armor")}. " +
+            $"{RedText($"Poison is inflicted for {baseDuration} seconds on shield break")} {StackText($"+{stackDuration} seconds")}.";
 
         public override string ItemLore => "";
 
@@ -41,11 +50,6 @@ namespace SwanSongExtended.Items
             On.RoR2.HealthComponent.TakeDamageProcess += ChargedSpineTakeDamage;
             GetStatCoefficients += ChargedSpineStats;
         }
-
-        public static float baseShield = 25;
-        public static float baseDuration = 5;
-        public static float stackDuration = 5;
-        public static float baseArmor = 100;
 
         private void ChargedSpineStats(CharacterBody sender, StatHookEventArgs args)
         {

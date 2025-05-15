@@ -31,15 +31,15 @@ namespace RiskierRain
 
 		private GameObject meatballProjectilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/FireMeatBall");
 
-		private static float willowispProcCoeff = 1f;
-		private static float willowispBaseDamage = 2f;
-		private static float willowispScaleFraction = 0.8f;
+		private static float willowispProcCoeff = 0.75f;
+		private static float willowispBaseDamage = 3.6f;
+		private static float willowispScaleFraction = 0.75f;
 		private static float willowispBaseRange = 16f;
 		private static float willowispStackRange = 0f;
 
 		private static float voidsentProcCoeff = 1f;
-		private static float voidsentBaseDamage = 3.5f;
-		private static float voidsentScaleFraction = 0.8f;
+		private static float voidsentBaseDamage = 5.6f;
+		private static float voidsentScaleFraction = 0.75f;
 		private static float voidsentBaseRange = 24f;
 		private static float voidsentStackRange = 0f;
 		private static float voidsentBaseChance = 33f;

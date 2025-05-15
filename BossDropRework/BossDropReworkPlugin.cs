@@ -34,6 +34,8 @@ namespace BossDropRework
 
         #region config
         internal static ConfigFile CustomConfigFile { get; private set; }
+        public static ConfigEntry<float> LesserDropChance { get; set; }
+        public static ConfigEntry<float> EliteDropChance { get; set; }
         public static ConfigEntry<float> ChampionDropChance { get; set; }
         public static ConfigEntry<float> ChampionEliteDropChance { get; set; }
         public static ConfigEntry<float> SpecialBossDropChance { get; set; }
@@ -49,16 +51,26 @@ namespace BossDropRework
         {
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + "\\FruityBossDrops.cfg", true);
 
+            LesserDropChance = CustomConfigFile.Bind<float>(
+                "Trophy Drops",
+                "Droprate for Non-Elite Lessers",
+                0.5f,
+                "Includes Horde of Many");
+            EliteDropChance = CustomConfigFile.Bind<float>(
+                "Trophy Drops",
+                "Droprate for Elite Lessers",
+                2,
+                "Includes Horde of Many");
             ChampionDropChance = CustomConfigFile.Bind<float>(
                 "Trophy Drops",
-                "Droprate for Non-Elite Bosses and Champions",
+                "Droprate for Non-Elite Champions",
                 6,
-                "Includes Horde of Many");
+                "");
             ChampionEliteDropChance = CustomConfigFile.Bind<float>(
                 "Trophy Drops",
-                "Droprate for Elite Bosses and Champions",
+                "Droprate for Elite Champions",
                 10,
-                "Includes Horde of Many");
+                "");
             SpecialBossDropChance = CustomConfigFile.Bind<float>(
                 "Trophy Drops",
                 "Droprate for Special Bosses",
@@ -174,9 +186,9 @@ namespace BossDropRework
 
             if (enemyBody.healthComponent.alive)
                 return;
-            bool bossOrChampion = enemyBody.isBoss || enemyBody.isChampion;
-            if (!bossOrChampion)
-                return;
+            //bool bossOrChampion = enemyBody.isBoss || enemyBody.isChampion;
+            //if (!bossOrChampion)
+            //    return;
 
             CharacterMaster killerMaster = damageReport.attackerMaster;
 
@@ -229,12 +241,19 @@ namespace BossDropRework
                 return SpecialBossDropChance.Value;
             }
 
-            //bool boss = body.isChampion;// || body.isBoss;
+            bool boss = body.isChampion;// || body.isBoss;
             bool elite = body.isElite;
 
+            if (boss)
+            {
+                if (elite)
+                    return ChampionEliteDropChance.Value;
+                return ChampionDropChance.Value;
+            }
+
             if (elite)
-                return ChampionEliteDropChance.Value;
-            return ChampionDropChance.Value;
+                return EliteDropChance.Value;
+            return LesserDropChance.Value;
         }
 
 

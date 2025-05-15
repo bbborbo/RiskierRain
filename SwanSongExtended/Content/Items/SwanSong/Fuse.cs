@@ -22,25 +22,25 @@ namespace SwanSongExtended.Items
         public static float radiusBase = 16;
         public static float radiusStack = 4;
 
-        public static float minStunDuration = 0.5f;
-        public static float maxStunDuration = 4f;
+        public static float minStunDuration = 1f;
+        public static float maxStunDuration = 6f;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override string ItemName => "Volatile Fuse";
 
         public override string ItemLangTokenName => "BORBOFUSE";
 
-        public override string ItemPickupDesc => "Creates a Shocking nova when your shields break.";
+        public override string ItemPickupDesc => "Creates a stunning nova when your shields break.";
 
         public override string ItemFullDescription => $"Gain <style=cIsHealing>{baseShield} shield</style> <style=cStack>(+{baseShield} per stack)</style>. " +
             $"<style=cIsUtility>Breaking your shields</style> creates a nova that " +
-            $"<style=cIsUtility>Shocks</style> enemies within <style=cIsUtility>{radiusBase}m</style> " +
+            $"<style=cIsUtility>Stuns</style> enemies within <style=cIsUtility>{radiusBase}m</style> " +
             $"<style=cStack>(+{radiusStack} per stack)</style>. " +
             $"<style=cIsDamage>Shock duration scales with shield health</style>.";
 
         public override string ItemLore => "";
 
-        public override ItemTier Tier => ItemTier.Tier2;
+        public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
         //testing egg model
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");

@@ -27,8 +27,8 @@ namespace SwanSongExtended.Items
 
         public override string ItemFullDescription => $"Increase {DamageColor($"attack speed")} by " +
             $"{DamageColor(ConvertDecimal(attackSpeedBase))} {StackText($"+{ConvertDecimal(attackSpeedStack)}")}. " +
-            $"Increase {DamageColor($"critical strike chance")} by {DamageColor(ConvertDecimal(critBase))} " +
-            $"{StackText($"+{ConvertDecimal(critStack)}")}. {VoidColor("Corrupts all Replusion Armor Plates and Yellow Ichors")}.";
+            $"Increase {DamageColor($"critical strike chance")} by {DamageColor($"{critBase}%")} " +
+            $"{StackText($"+{critStack}%")}. {VoidColor("Corrupts all Replusion Armor Plates and Yellow Ichors")}.";
 
         public override string ItemLore => "";
 

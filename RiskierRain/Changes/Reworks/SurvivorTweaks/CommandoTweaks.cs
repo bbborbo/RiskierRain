@@ -169,7 +169,7 @@ namespace RiskierRain.SurvivorTweaks
             secondary.variants[0].skillDef.fullRestockOnAssign = false;
             LanguageAPI.Add("COMMANDO_SECONDARY_DESCRIPTION", 
                 $"Fire a <style=cIsDamage>piercing</style> bullet for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(phaseRoundDamageCoeff)} damage </style>. " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(phaseRoundDamageCoeff)} damage</style>. " +
                 $"Deals <style=cIsDamage>40%</style> more damage every time it passes through an enemy.");
 
             //phase blast

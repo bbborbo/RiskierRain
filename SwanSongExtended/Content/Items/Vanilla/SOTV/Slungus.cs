@@ -34,7 +34,7 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Standing still increases you damage while slowing nearby enemies and projectiles.";
 
         public override string ItemFullDescription => $"While stationary, create a " +
-            $"<style=cIsUtility>stasis field</style> for {radiusBase}m around you, " +
+            $"<style=cIsUtility>stasis field</style> reaching {radiusBase}m around you, " +
             $"<style=cIsUtility>slowing</style> nearby " +
             //$"enemies by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style> " +
             //$"and projectiles by <style=cIsUtility>{Tools.ConvertDecimal(1 - projectileSlowCoefficient)}</style>.";

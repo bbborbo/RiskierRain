@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
         #region config
         public override string ConfigName => "Reworks : Delicate Watch";
         [AutoConfig("Free Attack Speed Bonus", 0.075f)]
-        public static float aspdBonusFree = 0.08f;
+        public static float aspdBonusFree = 0.075f;
         [AutoConfig("Base Attack Speed Bonus", 0.32f)]
         public static float aspdBonusBase = 0.32f;
         [AutoConfig("Stack Attack Speed Bonus", 0.22f)]
@@ -35,7 +35,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Greatly increase attack speed while standing still. Breaks on low health.";
 
-        public override string ItemFullDescription => $"After standing still for {DamageColor(watchWaitTime.ToString())} seconds, " +
+        public override string ItemFullDescription => $"Increase {DamageColor($"attack speed")} by " +
+            $"{DamageColor(ConvertDecimal(aspdBonusFree))} {StackText($"+{ConvertDecimal(aspdBonusFree)}")}. " + 
+            $"After standing still for {DamageColor(watchWaitTime.ToString())} seconds, " +
             $"increase {DamageColor("attack speed")} by {ConvertDecimal(aspdBonusBase)} {StackText($"+{ConvertDecimal(aspdBonusStack)} per stack")}. " +
             $"Taking damage to below <style=cIsHealth>25% health</style> <style=cIsUtility>breaks</style> this item.";
 

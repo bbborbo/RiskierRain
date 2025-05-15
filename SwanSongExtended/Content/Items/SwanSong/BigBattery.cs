@@ -34,7 +34,7 @@ namespace SwanSongExtended.Items
             $"by <style=cIsDamage>{Tools.ConvertDecimal(aspdIncrease)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(aspdIncrease)} per stack)</style>.";
         public override string ItemLore =>
-@"Order: Prototype Battey
+@"Order: Prototype Battery
 Tracking Number: 11***********
 Estimated Delivery: 5/6/2056
 Shipping Method:  Priority

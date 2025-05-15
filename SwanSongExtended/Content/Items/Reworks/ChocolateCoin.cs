@@ -38,7 +38,7 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Chance on hit to spawn a chocolate coin for gold and healing.";
 
         public override string ItemFullDescription => 
-            $"On hit, gain a {UtilityColor(Tools.ConvertDecimal(fruitChanceBase) + " chance")} " +
+            $"On hit, gain a {UtilityColor($"{fruitChanceBase}% chance")} " +
             $"to drop a chocolate coin that heals for " +
             $"{HealingColor(healFlatBase.ToString() + " health")} {StackText($"+{healFlatStack}")} " +
             $"plus {UtilityColor(goldBase.ToString() + " gold")} {StackText($"+{goldStack}")}. " +

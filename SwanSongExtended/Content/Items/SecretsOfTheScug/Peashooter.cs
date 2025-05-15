@@ -42,7 +42,8 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Fire an extra projectile with your primary attack.";
 
-        public override string ItemFullDescription => $"Your primary attack fires an extra projectile for {DamageValueText(damageBase)} + {StackText(ConvertDecimal(damageStack))}.";
+        public override string ItemFullDescription => $"Your primary attack fires an extra projectile for {DamageValueText(damageBase)} " +
+            $"{StackText($"+{ConvertDecimal(damageStack)}")}.";
 
         public override string ItemLore => "";
 

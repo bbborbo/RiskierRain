@@ -8,21 +8,24 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2.ExpansionManagement;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
     class VoidIchorYellow : ItemBase<VoidIchorYellow>
     {
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
-        float regenBase = .6f;
-        float regenStack = .6f;
+        float regenBase = 0.8f;
+        float regenStack = 0.8f;
         public override string ItemName => "Metamorphic Ichor (Yellow)";
 
         public override string ItemLangTokenName => "ICHORYELLOW";
 
-        public override string ItemPickupDesc => "Gain health regeneration. Corrupts all Soldier's Syringes.";
+        public override string ItemPickupDesc => $"Gain health regeneration. {VoidColor("Corrupts all Soldier's Syringes and Violet Ichors")}.";
 
-        public override string ItemFullDescription => "Gain health regeneration. Corrupts all Soldier's Syringes.";
+        public override string ItemFullDescription => $"Increase {HealingColor("base health regeneration")} by " +
+            $"{HealingColor($"{regenBase} hp/s")} {StackText($"+{regenStack} hp/s")}. " +
+            $"{VoidColor("Corrupts all Soldier's Syringes and Violet Ichors")}.";
 
         public override string ItemLore => "";
 
@@ -47,7 +50,7 @@ namespace SwanSongExtended.Items
         private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1));
+            args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1)) * (1 + sender.level * 0.2f);
         }
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
         {

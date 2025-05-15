@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2.ExpansionManagement;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -16,15 +17,18 @@ namespace SwanSongExtended.Items
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int critBase = 5;
         int critStack = 5;
-        float attackSpeedBase = .07f;
-        float attackSpeedStack = .07f;
+        float attackSpeedBase = .075f;
+        float attackSpeedStack = .075f;
         public override string ItemName => "Metamorphic Ichor (Red)";
 
         public override string ItemLangTokenName => "ICHORRED";
 
-        public override string ItemPickupDesc => "Increase attack speed and critical strike chance. Corrupts all Replusion Armor Plates.";
+        public override string ItemPickupDesc => $"Increase attack speed and critical strike chance. .";
 
-        public override string ItemFullDescription => "Increase attack speed and critical strike chance. Corrupts all Replusion Armor Plates.";
+        public override string ItemFullDescription => $"Increase {DamageColor($"attack speed")} by " +
+            $"{DamageColor(ConvertDecimal(attackSpeedBase))} {StackText($"+{ConvertDecimal(attackSpeedStack)}")}. " +
+            $"Increase {DamageColor($"critical strike chance")} by {DamageColor(ConvertDecimal(critBase))} " +
+            $"{StackText($"+{ConvertDecimal(critStack)}")}. {VoidColor("Corrupts all Replusion Armor Plates and Yellow Ichors")}.";
 
         public override string ItemLore => "";
 

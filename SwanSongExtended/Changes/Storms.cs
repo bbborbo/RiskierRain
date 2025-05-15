@@ -49,9 +49,12 @@ namespace SwanSongExtended
                 if (meshRenderer)
                 {
                     Material mat = UnityEngine.Object.Instantiate(meshRenderer.material);
+                    mat.name = "matStormStrikeImpactIndicator";
                     meshRenderer.material = mat;
-                    mat.SetFloat("_Boost", 0.34f);
+                    mat.SetFloat("_Boost", 0.64f);
                     mat.SetFloat("_AlphaBoost", 4.29f);
+                    mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampArtifactShellSoft.png").WaitForCompletion());
+                    mat.SetColor("_TintColor", Color.white);
                 }
             }
             Content.CreateAndAddEffectDef(meteorWarningEffectPrefab);
@@ -172,7 +175,7 @@ namespace SwanSongExtended
         {
             SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
             StormType st = StormType.None;
-            if (currentScene.sceneType == SceneType.Stage)
+            if (currentScene.sceneType == SceneType.Stage && !currentScene.isFinalStage)
             {
                 switch (currentScene.baseSceneName)
                 {
@@ -227,7 +230,7 @@ namespace SwanSongExtended
         public static float waveMaxInterval = 2.5f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 10;
+        public static float meteorBlastDamageCoefficient = 30;
         public static float meteorBlastRadius = 11;
         public static float meteorBlastForce = 0;
 
@@ -260,29 +263,27 @@ namespace SwanSongExtended
         private void Stage_BeginServer(On.RoR2.Stage.orig_BeginServer orig, Stage self)
         {
             orig(self);
-            Debug.Log("A");
+
+            stormType = GetStormType();
+            if (stormType == StormType.None)
+                return;
+
             GameObject stormControllerObject = Instantiate(SwanSongPlugin.StormsControllerPrefab);
             stormControllerInstance = stormControllerObject.GetComponent<StormController>();
 
-            stormType = GetStormType();
-
-            if(stormType != StormType.None)
+            float a = drizzleStormDelayMinutes;
+            float b = drizzleStormWarningMinutes;
+            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard)
             {
-                float a = drizzleStormDelayMinutes;
-                float b = drizzleStormWarningMinutes;
-                if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard)
-                {
-                    a = monsoonStormDelayMinutes;
-                    b = monsoonStormWarningMinutes;
-                }
-                else if (Run.instance.selectedDifficulty == DifficultyIndex.Normal)
-                {
-                    a = rainstormStormDelayMinutes;
-                    b = rainstormStormWarningMinutes;
-                }
-                Debug.Log("B");
-                stormControllerInstance.BeginStormApproach(a + Run.instance.stageRng.RangeInt(0, 1), b);
+                a = monsoonStormDelayMinutes;
+                b = monsoonStormWarningMinutes;
             }
+            else if (Run.instance.selectedDifficulty == DifficultyIndex.Normal)
+            {
+                a = rainstormStormDelayMinutes;
+                b = rainstormStormWarningMinutes;
+            }
+            stormControllerInstance.BeginStormApproach(a + Run.instance.stageRng.RangeInt(0, 1), b);
         }
 
         private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
@@ -367,6 +368,11 @@ namespace SwanSongExtended
             {
                 base.OnEnter();
                 this.stormController = base.GetComponent<StormController>();
+            }
+
+            public void EnableDirector()
+            {
+                //stormController.combatDirector.enabled = true;
             }
         }
         internal class IdleState : BaseStormState
@@ -546,7 +552,7 @@ namespace SwanSongExtended
                 this.meteorWaves = new List<MeteorStormController.MeteorWave>();
 
                 On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
-                stormController.combatDirector.enabled = true;
+                EnableDirector();
             }
             public override void OnExit()
             {
@@ -612,7 +618,7 @@ namespace SwanSongExtended
                 new BlastAttack
                 {
                     inflictor = base.gameObject,
-                    baseDamage = StormRunBehaviorController.meteorBlastDamageCoefficient * Run.instance.ambientLevel,//multiplies by ambient level. if this is unsatisfactory change later
+                    baseDamage = StormRunBehaviorController.meteorBlastDamageCoefficient * (1 + 0.3f * Run.instance.ambientLevel),//multiplies by ambient level. if this is unsatisfactory change later
                     baseForce = StormRunBehaviorController.meteorBlastForce,
                     attackerFiltering = AttackerFiltering.Default,
                     crit = false,

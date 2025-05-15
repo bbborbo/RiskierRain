@@ -347,8 +347,8 @@ namespace RiskierRain
         #endregion
 
         #region weeping fungus
-        public float wungusRegenBase = 1;
-        public float wungusRegenStack = 1;
+        public float wungusRegenBase = 1.5f;
+        public float wungusRegenStack = 1.5f;
         public void ReworkWeepingFungus()
         {
             GetStatCoefficients += WungusRegen;
@@ -369,7 +369,7 @@ namespace RiskierRain
                 if (sender.inventory)
                 {
                     int wungusCount = sender.inventory.GetItemCount(DLC1Content.Items.MushroomVoid);
-                    args.baseRegenAdd += wungusRegenBase + wungusRegenStack * (wungusCount - 1);
+                    args.baseRegenAdd += wungusRegenBase + wungusRegenStack * (wungusCount - 1) * (1 + sender.level * 0.2f);
                 }
             }
         }

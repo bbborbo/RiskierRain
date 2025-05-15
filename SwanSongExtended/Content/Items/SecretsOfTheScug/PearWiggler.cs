@@ -35,7 +35,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => $"High damage attacks store pears. When struck, wiggle stored pears, which can be picked up for health and barrier.";
 
-        public override string ItemFullDescription => $"Attacks dealing 400% or more damage store up to 3 {StackText("+3")} {HealthColor("Pears.")} " +
+        public override string ItemFullDescription => $"Attacks dealing 400% or more damage store up to 3 {StackText("+3")} {HealthColor("Pears")}. " +
             $"When struck, release 1 pear per 5% max hp lost for {HealingColor(barrierBase.ToString() + " barrier")} {StackText($"+{barrierStack}")}, " +
             $"which can be {HealthColor($"picked up for {healingBase} health")} {StackText($"+{healingStack}")}.";
 

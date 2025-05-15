@@ -32,7 +32,10 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Gain flat health and armor.";
 
-        public override string ItemFullDescription => "";
+        public override string ItemFullDescription => $"Increase {HealingColor("max health")} by " +
+            $"{HealingColor(rapMaxHealthBase.ToString())} {StackText($"+{rapMaxHealthStack}")}. " +
+            $"Increase {HealingColor("armor")} by " +
+            $"{HealingColor(rapArmorBase.ToString())} {StackText($"+{rapArmorStack}")}. ";
 
         public override string ItemLore => "";
 

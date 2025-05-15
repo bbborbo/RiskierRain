@@ -230,7 +230,8 @@ namespace SwanSongExtended
         public static float waveMaxInterval = 2.5f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 30;
+        public static float meteorBlastDamageCoefficient = 45;
+        public static float meteorBlastDamageScalarPerLevel = 0.5f;
         public static float meteorBlastRadius = 11;
         public static float meteorBlastForce = 0;
 
@@ -618,7 +619,7 @@ namespace SwanSongExtended
                 new BlastAttack
                 {
                     inflictor = base.gameObject,
-                    baseDamage = StormRunBehaviorController.meteorBlastDamageCoefficient * (1 + 0.3f * Run.instance.ambientLevel),//multiplies by ambient level. if this is unsatisfactory change later
+                    baseDamage = StormRunBehaviorController.meteorBlastDamageCoefficient * (1 + meteorBlastDamageScalarPerLevel * Run.instance.ambientLevel),//multiplies by ambient level. if this is unsatisfactory change later
                     baseForce = StormRunBehaviorController.meteorBlastForce,
                     attackerFiltering = AttackerFiltering.Default,
                     crit = false,

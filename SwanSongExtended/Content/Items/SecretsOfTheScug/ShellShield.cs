@@ -14,6 +14,7 @@ namespace SwanSongExtended.Items
 {
     class ShellShield : ItemBase<ShellShield>
     {
+        public override bool isEnabled => false;
         #region config
         [AutoConfig("Percent Barrier Base", 0.2f)]
         public static float percentBase = 0.2f;

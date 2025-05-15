@@ -15,7 +15,7 @@ namespace SwanSongExtended.Skills
 {
     class DynamicPunchSkill : SkillBase<DynamicPunchSkill>
     {
-
+        public override bool isEnabled => false; 
         #region config
         public override string ConfigName => "Skills : Loader : Dynamic Punch";
 

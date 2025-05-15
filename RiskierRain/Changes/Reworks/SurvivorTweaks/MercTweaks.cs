@@ -22,7 +22,7 @@ namespace RiskierRain.SurvivorTweaks
 
         public float secondaryCooldown = 3f; //2.5f
         public float utilityCooldown = 11f; //8f
-        public float specialCooldown = 9f; //6f
+        public float specialCooldown = 12f; //6f
 
         public override void Init()
         {

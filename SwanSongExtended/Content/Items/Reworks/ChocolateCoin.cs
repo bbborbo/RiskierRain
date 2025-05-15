@@ -37,7 +37,12 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Chance on hit to spawn a chocolate coin for gold and healing.";
 
-        public override string ItemFullDescription => "yum";
+        public override string ItemFullDescription => 
+            $"On hit, gain a {UtilityColor(Tools.ConvertDecimal(fruitChanceBase) + " chance")} " +
+            $"to drop a chocolate coin that heals for " +
+            $"{HealingColor(healFlatBase.ToString() + " health")} {StackText($"+{healFlatStack}")} " +
+            $"plus {UtilityColor(goldBase.ToString() + " gold")} {StackText($"+{goldStack}")}. " +
+            $"{UtilityColor("Scales over time")}.";
 
         public override string ItemLore => "don't eat the wrapping!";
 
@@ -75,7 +80,7 @@ namespace SwanSongExtended.Items
             {
                 MoneyPickup chocolateMoney = healthPickup.gameObject.AddComponent<MoneyPickup>();
                 chocolateMoney.baseGoldReward = 1;
-                chocolateMoney.shouldScale = true;//idk
+                chocolateMoney.shouldScale = false; //we scale it manually
                 chocolateMoney.teamFilter = teamFilter;
             }
 
@@ -201,7 +206,8 @@ namespace SwanSongExtended.Items
                 MoneyPickup chocolateGold = chocolateInstance.GetComponent<MoneyPickup>();
                 if (chocolateGold)
                 {
-                    chocolateGold.baseGoldReward = goldBase + goldStack * (itemCount - 1);
+                    int baseGold = goldBase + goldStack * (itemCount - 1);
+                    chocolateGold.baseGoldReward = baseGold * Mathf.RoundToInt(attackerBody.level);
                 }
                 NetworkServer.Spawn(chocolateInstance);
             }

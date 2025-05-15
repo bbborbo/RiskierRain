@@ -75,6 +75,7 @@ namespace RiskierRain.States.Commando
 					this.outer.SetNextStateToMain();
 					return;
 				}
+				base.PlayAnimation("Body", "SlideForward", "SlideForward.playbackRate", 0.2f);
 
 				if (base.inputBank && base.characterDirection)
 				{

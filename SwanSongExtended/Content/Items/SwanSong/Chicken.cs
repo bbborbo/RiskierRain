@@ -104,7 +104,13 @@ namespace SwanSongExtended.Items
         {
             if (body)
             {
-                if (!Util.CheckRoll(100 - Chicken.regenPenaltyChance, body.master))
+                float regenPenaltyChance = Chicken.regenPenaltyChance;
+                if (Run.instance.stageClearCount < 1)
+                    regenPenaltyChance = Math.Min(0.01f, Chicken.regenPenaltyChance);
+                else if (Run.instance.stageClearCount < 2)
+                    regenPenaltyChance = Chicken.regenPenaltyChance / 2;
+
+                if (!Util.CheckRoll(100 - regenPenaltyChance, body.master))
                 {
                     for (int i = 0; i < this.stack; i++)
                     {

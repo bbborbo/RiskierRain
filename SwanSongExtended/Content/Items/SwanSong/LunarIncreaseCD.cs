@@ -21,7 +21,7 @@ namespace SwanSongExtended.Items
     {
         GameObject lunarShardProjectile => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
-        float lunarShardDamageCoefficient = 0.8f;
+        float lunarShardDamageCoefficient = 1f;
         float lunarShardProcCoefficient = 0.5f;
 
         float cdIncreaseBase = 1;

@@ -24,7 +24,7 @@ namespace MissileRework
     public partial class MissileReworkPlugin
     {
         public static GameObject missilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/MissileProjectile");
-        public float procCoefficient = 0.5f;
+        public float procCoefficient = 0.4f;
         public float procChance = 10;
         public static float atgMk3BaseDamageCoefficientPerRocket = 3;
         static int maxMissiles = 100;

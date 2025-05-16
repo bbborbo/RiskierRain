@@ -31,7 +31,7 @@ namespace SwanSongExtended
             CreateStormsRunBehaviorPrefab();
 
             meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion().InstantiateClone("StormStrikePredictionEffect");
-            meteorWarningEffectPrefab.transform.localScale = Vector3.one * StormRunBehaviorController.meteorBlastRadius;
+            meteorWarningEffectPrefab.transform.localScale = Vector3.one * StormRunBehaviorController.meteorBlastRadius * 0.85f;
             DestroyOnTimer DOT = meteorWarningEffectPrefab.GetComponent<DestroyOnTimer>();
             if (DOT)
             {
@@ -226,13 +226,13 @@ namespace SwanSongExtended
         //meteors:
         public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
         public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
-        public static float waveMinInterval = 1.5f;
-        public static float waveMaxInterval = 2.5f;
+        public static float waveMinInterval = 1.3f;
+        public static float waveMaxInterval = 2f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 35;
+        public static float meteorBlastDamageCoefficient = 55;
         public static float meteorBlastDamageScalarPerLevel = 0.5f;
-        public static float meteorBlastRadius = 11;
+        public static float meteorBlastRadius = 12;
         public static float meteorBlastForce = 0;
 
         public void Start()

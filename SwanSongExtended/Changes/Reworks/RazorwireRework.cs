@@ -8,11 +8,14 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using SwanSongExtended.Modules;
+using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended
 {
 	public partial class SwanSongPlugin
 	{
+		static float razorwireArmorBase = 8;
+		static float razorwireArmorStack = 8;
 		private static float razorwireRangeBase = 40; //25
 		private static float razorwireRangeStack = 0; //10
 		private static float razorwireTargetsBase = 5; //5
@@ -25,6 +28,7 @@ namespace SwanSongExtended
 
 		public void RazorwireRework()
 		{
+			GetStatCoefficients += RazorwireArmor;
 			On.RoR2.CharacterBody.OnInventoryChanged += AddRazorBehavior;
 
 			IL.RoR2.HealthComponent.TakeDamageProcess += RazorwireBegin;
@@ -34,7 +38,8 @@ namespace SwanSongExtended
 			LanguageAPI.Add("ITEM_THORNS_PICKUP", 
 				"Retaliate in a burst of bleeding razors on taking damage. Recharges over time.");
             LanguageAPI.Add("ITEM_THORNS_DESC",
-                $"Getting hit causes you to explode in a burst of razors, " +
+                $"Increase <style=cIsHealing>armor</style> by <style=cIsHealing>{razorwireArmorBase}</style> <style=cStack>(+{razorwireArmorStack} per stack)</stack>" +
+				$"Getting hit causes you to explode in a burst of razors, " +
 				$"<style=cIsDamage>bleeding</style> up to <style=cIsDamage>{razorwireTargetsBase}</style> " +
 				$"<style=cStack>(+{razorwireTargetsStack} per stack)</style> nearby enemies " +
 				$"for <style=cIsDamage>{Tools.ConvertDecimal(razorwireBleedDuration * 0.8f)}</style> base damage " +
@@ -43,7 +48,18 @@ namespace SwanSongExtended
 				$"razor charges, all reloading over <style=cIsUtility>{RazorwireBehavior.rechargeTime}</style> seconds.");
 		}
 
-		private void AddRazorBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
+        private void RazorwireArmor(CharacterBody sender, StatHookEventArgs args)
+        {
+			if (!sender.inventory)
+				return;
+			int itemCount = sender.inventory.GetItemCount(RoR2Content.Items.Thorns);
+			if(itemCount > 0)
+            {
+				args.armorAdd += razorwireArmorBase + razorwireArmorStack * (itemCount - 1);
+            }
+        }
+
+        private void AddRazorBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
 		{
 			orig(self);
 			int razorCount = self.inventory.GetItemCount(RoR2Content.Items.Thorns);

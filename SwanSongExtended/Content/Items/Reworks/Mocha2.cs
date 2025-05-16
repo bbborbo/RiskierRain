@@ -26,8 +26,8 @@ namespace SwanSongExtended.Items
         public static int stageDuration = 60;
         [AutoConfig("Seconds Of Boost On Item Pickup", 30)]
         public static int pickupDuration = 30;
-        [AutoConfig("Seconds Of Boost On Interactable Use", 10)]
-        public static int interactDuration = 10;
+        [AutoConfig("Seconds Of Boost On Interactable Use", 15)]
+        public static int interactDuration = 15;
 
         [AutoConfig("Free Movement/Atk Speed Bonus", 0.05f)]
         public static float spdBoostFree = 0.05f;

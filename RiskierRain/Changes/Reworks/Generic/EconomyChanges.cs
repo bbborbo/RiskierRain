@@ -20,6 +20,8 @@ using System.Linq;
 using On.EntityStates.CaptainSupplyDrop;
 using SwanSongExtended;
 using MonoMod.RuntimeDetour;
+using System.Reflection;
+using Stage = RoR2.Stage;
 
 namespace RiskierRain
 {
@@ -31,7 +33,7 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 1.7f;
+        float costExponent = 1.5f;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -172,8 +174,22 @@ namespace RiskierRain
         private float teleporterEnemyRewardCoefficient = 0.02f;
         private void TeleporterEnemyRewards()
         {
-            On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
+            ILHook deathRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
+            //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
         }
+
+        private static void FixGoldRewards(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<uint, uint>>((money) =>
+            {
+                float compensated = Stage.instance.entryDifficultyCoefficient / Run.instance.compensatedDifficultyCoefficient;
+                return (uint)(money * compensated);
+            });
+            c.Emit(OpCodes.Starg, 1);
+        }
+
         private void ReduceTeleDirectorReward(On.RoR2.TeleporterInteraction.orig_Awake orig, TeleporterInteraction self)
         {
             orig(self);

@@ -27,8 +27,8 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 1.35f; //1f
-        public static float difficultyIncreasePerMinute = 1.05f; //1f
+        public static float baseScalingMultiplier = 1.3f; //1f
+        public static float difficultyIncreasePerMinute = 1.04f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
         /// </summary>
@@ -47,7 +47,7 @@ namespace RiskierRain
         public static float normalTeleParticleRadius = 0.8f;
         public static float hardTeleParticleRadius = 0.4f;
         public static float eclipseTeleParticleRadius = 0.4f;
-        public static float defaultTeleParticleRadius = 0.8f;
+        public static float defaultTeleParticleRadius = 0.9f;
 
         #region tele particle scale
         private void DifficultyDependentTeleParticles()

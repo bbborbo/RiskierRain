@@ -23,12 +23,12 @@ namespace SwanSongExtended.Items
         GameObject lunarShardProjectile;// => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
         
-        [AutoConfig("Damage Coefficient", 1.2f)]
-        public static float shardDamageCoefficient = 1.2f;
+        [AutoConfig("Damage Coefficient", 1.6f)]
+        public static float shardDamageCoefficient = 1.6f;
         [AutoConfig("Proc Coefficient", 0.5f, desc = "Vanilla is 1.0")]
         public static float shardProcCoefficient = 0.5f;
-        [AutoConfig("Shard Steer Speed", 35, desc = "Vanilla is 20")]
-        public static float shardSteerSpeed = 35; //20
+        [AutoConfig("Shard Steer Speed", 55, desc = "Vanilla is 20")]
+        public static float shardSteerSpeed = 55; //20
         [AutoConfig("Cooldown Increase Base", 1)]
         public static float cdIncreaseBase = 1;
         [AutoConfig("Cooldown Increase Stack", 1)]
@@ -151,6 +151,27 @@ namespace SwanSongExtended.Items
             int itemCount = GetCount(self);
             if (itemCount > 0)
             {
+                int bonusShards = 0;
+                DamageTypeCombo damageType = DamageTypeCombo.Generic;
+                if (skill == self.skillLocator.primary)
+                {
+                    bonusShards += 1;
+                    damageType.damageSource = DamageSource.Primary;
+                }
+                else if (skill == self.skillLocator.secondary)
+                {
+                    damageType.damageSource = DamageSource.Secondary;
+                }
+                else if (skill == self.skillLocator.utility)
+                {
+                    damageType.damageSource = DamageSource.Utility;
+                }
+                else if (skill == self.skillLocator.special)
+                {
+                    damageType.damageSource = DamageSource.Special;
+                }
+
+
                 float secondsPerShard = secondsPerShardBase;
                 if (itemCount > 1)
                     secondsPerShard *= Mathf.Pow(1 - secondsPerShardReductionStack, itemCount - 1);
@@ -168,7 +189,7 @@ namespace SwanSongExtended.Items
                 }
                 Ray aimRay = new Ray(self.inputBank.aimOrigin, self.inputBank.aimDirection);
 
-                int shardCount = (int)Mathf.CeilToInt(skillCD / (skillStock * secondsPerShard));
+                int shardCount = bonusShards + (int)Mathf.CeilToInt(skillCD / (skillStock * secondsPerShard));
                 if (lunarShardProjectile != null)
                 {
                     bool crit = Util.CheckRoll(self.crit, self.master);
@@ -190,7 +211,8 @@ namespace SwanSongExtended.Items
                             crit = crit,
                             damageColorIndex = DamageColorIndex.Item,
                             speedOverride = projectileSpeed,
-                            useSpeedOverride = true
+                            useSpeedOverride = true,
+                            damageTypeOverride = damageType
                         };
                         ProjectileManager.instance.FireProjectile(fpi);
                     }

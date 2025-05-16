@@ -12,6 +12,8 @@ using RoR2.EntitlementManagement;
 using RoR2.ExpansionManagement;
 using System.Collections;
 using SwanSongExtended.Modules;
+using static SwanSongExtended.Modules.Language.Styling;
+using On.RoR2.Items;
 
 namespace SwanSongExtended.Items
 {
@@ -20,10 +22,12 @@ namespace SwanSongExtended.Items
         #region config
         public override string ConfigName => "Reworks : Mocha";
 
-        [AutoConfig("Seconds Of Boost On Stage Start", 90)]
-        public static int stageDuration = 90;
-        [AutoConfig("Seconds Of Boost On Item Pickup", 20)]
-        public static int pickupDuration = 20;
+        [AutoConfig("Seconds Of Boost On Stage Start", 60)]
+        public static int stageDuration = 60;
+        [AutoConfig("Seconds Of Boost On Item Pickup", 30)]
+        public static int pickupDuration = 30;
+        [AutoConfig("Seconds Of Boost On Interactable Use", 10)]
+        public static int interactDuration = 10;
 
         [AutoConfig("Free Movement/Atk Speed Bonus", 0.05f)]
         public static float spdBoostFree = 0.05f;
@@ -47,12 +51,12 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Gain a temporary speed boost after beginning a stage.";
 
         public override string ItemFullDescription => $"For <style=cIsUtility>{stageDuration}</style> seconds after entering any stage, " +
-            $"or <style=cIsUtility>{pickupDuration}</style> seconds after picking up a new copy of the item, increase " +
-            $"<style=cIsDamage>attack speed</style> and " +
-            $"<style=cIsDamage>movement speed</style> by <style=cIsDamage>{Tools.ConvertDecimal(spdBoostBuff)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(spdBoostBuff)} per stack)</style>, " +
-            $"and reduce <style=cIsUtility>skill cooldowns</style> by <style=cIsUtility>-{Tools.ConvertDecimal(cdrBoostBuff)}</style> " +
-            $"<style=cStack>(-{Tools.ConvertDecimal(cdrBoostBuff)} per stack)</style>.";
+            $"increase {DamageColor("attack speed")} and {DamageColor("movement speed")} " +
+            $"by {DamageColor(Tools.ConvertDecimal(spdBoostBuff))} {StackText($"+{Tools.ConvertDecimal(spdBoostBuff)}")}, " +
+            $"and reduce {UtilityColor("skill cooldowns")} by " +
+            $"{UtilityColor($"-{Tools.ConvertDecimal(cdrBoostBuff)}")} {StackText($"-{Tools.ConvertDecimal(cdrBoostBuff)}")}" +
+            $"Using {UtilityColor("any interactable")} while this buff is active will extend the duration of the buff " +
+            $"by {UtilityColor($"{interactDuration} seconds")}.";
 
         public override string ItemLore => "Order: To-Go Coffee Cup, 16 ounces" +
             "\r\nTracking Number: 32******" +
@@ -104,9 +108,29 @@ namespace SwanSongExtended.Items
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
             On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
+            On.RoR2.Items.MultiShopCardUtils.OnPurchase += MochaExtend;
             GetStatCoefficients += MochaSpeed;
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
             RoR2Application.onLoad += YoinkMochaAssets;
+        }
+
+        private void MochaExtend(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
+        {
+            orig(context, moneyCost);
+
+            CharacterBody body = context.activatorBody;
+            if (!body)
+                return;
+
+            int buffCount = body.GetBuffCount(mochaBuffActive);
+            if (buffCount <= 0)
+                return;
+
+            float newBuffCount = Mathf.Min(buffCount + interactDuration, stageDuration - 1);
+            for(int i = buffCount; i < newBuffCount; i++)
+            {
+                body.AddTimedBuffAuthority(mochaBuffActive.buffIndex, i + 1);
+            }
         }
 
         private void YoinkMochaAssets()

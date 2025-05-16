@@ -14,20 +14,29 @@ using UnityEngine.AddressableAssets;
 using System.Collections;
 using RoR2.ExpansionManagement;
 using static SwanSongExtended.Modules.Language.Styling;
+using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items
 {
     class LunarIncreaseCD : ItemBase<LunarIncreaseCD>
     {
-        GameObject lunarShardProjectile => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
+        GameObject lunarShardProjectile;// => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
-        float lunarShardDamageCoefficient = 1f;
-        float lunarShardProcCoefficient = 0.5f;
-
-        float cdIncreaseBase = 1;
-        float cdIncreaseStack = 1;
-        float secondsPerShardBase = 1;
-        float secondsPerShardReductionStack = 0.2f;
+        
+        [AutoConfig("Damage Coefficient", 1.2f)]
+        public static float shardDamageCoefficient = 1.2f;
+        [AutoConfig("Proc Coefficient", 0.5f, desc = "Vanilla is 1.0")]
+        public static float shardProcCoefficient = 0.5f;
+        [AutoConfig("Shard Steer Speed", 35, desc = "Vanilla is 20")]
+        public static float shardSteerSpeed = 35; //20
+        [AutoConfig("Cooldown Increase Base", 1)]
+        public static float cdIncreaseBase = 1;
+        [AutoConfig("Cooldown Increase Stack", 1)]
+        public static float cdIncreaseStack = 1;
+        [AutoConfig("Seconds Per Shard Base", 1)]
+        public static float secondsPerShardBase = 1;
+        [AutoConfig("Seconds Per Shard Reduction Per Stack", 0.2f)]
+        public static float secondsPerShardReductionStack = 0.2f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
@@ -35,11 +44,11 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "LUNARINCREASECD";
 
-        public override string ItemPickupDesc => $"On any skill use, fire {DamageColor("lunar shards")} " +
-            $"for {DamageValueText(lunarShardDamageCoefficient)} (increases with ability cooldown). " +
-            $"{RedText($"Increase the cooldowns of all skills by {cdIncreaseBase} second")} {StackText($"+{cdIncreaseStack}")}.";
+        public override string ItemPickupDesc => $"All skills fire lunar shards... {RedText($"BUT all skills have increased cooldowns")}";
 
-        public override string ItemFullDescription => "TBA";
+        public override string ItemFullDescription => $"On any skill use, fire {DamageColor("lunar shards")} " +
+            $"for {DamageValueText(shardDamageCoefficient)} (increases with ability cooldown). " +
+            $"{RedText($"Increase the cooldowns of all skills by {cdIncreaseBase} second")} {StackText($"+{cdIncreaseStack}")}.";
 
         public override string ItemLore => "";
 
@@ -53,6 +62,31 @@ namespace SwanSongExtended.Items
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
+        }
+
+        public override void Init()
+        {
+            CreateProjectile();
+            base.Init();
+        }
+
+        private void CreateProjectile()
+        {
+            lunarShardProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab").WaitForCompletion();
+
+            ProjectileImpactExplosion pie = lunarShardProjectile.GetComponent<ProjectileImpactExplosion>();
+            if (pie)
+            {
+                pie.blastDamageCoefficient = 1;
+                pie.blastProcCoefficient = shardProcCoefficient;
+            }
+            ProjectileSteerTowardTarget steer = lunarShardProjectile.GetComponent<ProjectileSteerTowardTarget>();
+            if (steer)
+            {
+                steer.rotationSpeed = shardSteerSpeed;
+            }
+
+            Content.AddProjectilePrefab(lunarShardProjectile);
         }
 
         public override void Hooks()
@@ -151,7 +185,7 @@ namespace SwanSongExtended.Items
                             position = aimRay.origin,
                             rotation = Util.QuaternionSafeLookRotation(forward),
                             owner = self.gameObject,
-                            damage = self.damage * lunarShardDamageCoefficient,
+                            damage = self.damage * shardDamageCoefficient,
                             force = 0,
                             crit = crit,
                             damageColorIndex = DamageColorIndex.Item,

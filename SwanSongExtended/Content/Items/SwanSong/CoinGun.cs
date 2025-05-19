@@ -132,6 +132,8 @@ What happened to all of our gold?";
             if(itemCount > 0)
             {
                 CoinGunBehavior coinGun = sender.GetComponent<CoinGunBehavior>();
+                if (!coinGun)
+                    return;
                 int damageBoostCount = coinGun.damageBoostCount;
 
                 //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;

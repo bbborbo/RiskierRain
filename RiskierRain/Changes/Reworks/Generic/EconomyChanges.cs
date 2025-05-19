@@ -33,7 +33,7 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 1.5f;
+        float costExponent = 1.65f;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -69,9 +69,9 @@ namespace RiskierRain
 
         void FixMoneyScaling()
         {
-            ChestCostScaling();
             ChestRebalance();
-            TeleporterEnemyRewards();
+            ChestCostScaling();
+            EnemyRewards();
         }
 
         private void ChestCostScaling()
@@ -172,10 +172,28 @@ namespace RiskierRain
 
         #region Economy
         private float teleporterEnemyRewardCoefficient = 0.02f;
-        private void TeleporterEnemyRewards()
+        static float goldRewardMultiplierGlobal = 1.4f;
+        static float expRewardMultiplierGlobal = 1;
+        private void EnemyRewards()
         {
-            ILHook deathRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
+            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
+            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
+        }
+
+        static float GetCompensatedDifficultyFraction(float multiplier)
+        {
+            float boost = GetAmbientLevelBoost();
+            float ambientLevel = Run.instance.ambientLevel;
+            // less than 1 allows for enemies to drop slightly more gold due to ALB
+            // greater than 1 is kinda pointless but it overcorrects for ALB
+
+            float actualLevelStat = 1 + (0.3f * ambientLevel);
+            float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost));
+            float rewardMult = intendedLevelStat / actualLevelStat;
+
+            float compensated = Stage.instance.entryDifficultyCoefficient / Run.instance.compensatedDifficultyCoefficient;
+            return rewardMult * compensated * multiplier;
         }
 
         private static void FixGoldRewards(ILContext il)
@@ -184,8 +202,19 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Func<uint, uint>>((money) =>
             {
-                float compensated = Stage.instance.entryDifficultyCoefficient / Run.instance.compensatedDifficultyCoefficient;
+                float compensated = GetCompensatedDifficultyFraction(goldRewardMultiplierGlobal);
                 return (uint)(money * compensated);
+            });
+            c.Emit(OpCodes.Starg, 1);
+        }
+        private static void FixExpRewards(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<uint, uint>>((exp) =>
+            {
+                float compensated = GetCompensatedDifficultyFraction(expRewardMultiplierGlobal);
+                return (uint)(exp * compensated);
             });
             c.Emit(OpCodes.Starg, 1);
         }

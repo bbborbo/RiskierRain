@@ -64,7 +64,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.0.10";
+        public const string version = "1.0.12";
 
         public static PluginInfo PInfo { get; private set; }
 

@@ -12,13 +12,13 @@ namespace SwanSongExtended.Items
 {
     class FlowerCrown : ItemBase<FlowerCrown>
     {
-        public static float shieldPercentBase = 0.08f;
+        public static float shieldPercentBase = 0.12f;
         public static float rechargeRateIncrease = 1.5f;
 
         float moveSpeedIncreaseBase = 0.15f;
         float moveSpeedIncreaseStack = 0.15f;
-        int armorIncreaseBase = 20;
-        int armorIncreaseStack = 20;
+        int armorIncreaseBase = 25;
+        int armorIncreaseStack = 25;
 
         public override string ItemName => "Flower Crown";
 

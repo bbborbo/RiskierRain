@@ -232,7 +232,7 @@ namespace SwanSongExtended
         public static float meteorImpactDelay = 2.5f;
         public static float meteorBlastDamageCoefficient = 55;
         public static float meteorBlastDamageScalarPerLevel = 0.5f;
-        public static float meteorBlastRadius = 12;
+        public static float meteorBlastRadius = 10;
         public static float meteorBlastForce = 0;
 
         public void Start()
@@ -549,6 +549,12 @@ namespace SwanSongExtended
             public override void OnEnter()
             {
                 base.OnEnter();
+
+                if (!Run.instance)
+                {
+                    outer.SetNextState(new StormController.IdleState());
+                    return;
+                }
                 this.meteorsToDetonate = new List<MeteorStormController.Meteor>();
                 this.meteorWaves = new List<MeteorStormController.MeteorWave>();
 
@@ -596,7 +602,9 @@ namespace SwanSongExtended
                     }
                 }
 
-                float num = Run.instance.time - StormRunBehaviorController.meteorImpactDelay;
+                float num = float.PositiveInfinity;
+                if(Run.instance)
+                    num = Run.instance.time - StormRunBehaviorController.meteorImpactDelay;
                 float num2 = num - StormRunBehaviorController.meteorTravelEffectDuration;
                 for (int j = this.meteorsToDetonate.Count - 1; j >= 0; j--)
                 {

@@ -27,8 +27,9 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 1.3f; //1f
-        public static float difficultyIncreasePerMinute = 1.04f; //1f
+        public static float baseScalingMultiplier = 1f; //1f
+        public static float difficultyIncreasePerMinutePerDifficulty = 0.01f; //0f
+        public static float difficultyIncreasePerMinuteBase = 1.0f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
         /// </summary>
@@ -98,7 +99,7 @@ namespace RiskierRain
         #endregion
 
         #region ambient level
-        internal float GetAmbientLevelBoost()
+        internal static float GetAmbientLevelBoost()
         {
             float difficultyBoost = 0f;
             if (!useAmbientLevel)
@@ -230,7 +231,7 @@ namespace RiskierRain
             float runTimerMinutes = self.GetRunStopwatch() * 0.016666668f;
             float baseScalingFactor = 0.0506f * baseScalingMultiplier;
 
-            float timeFactor = GetTimeDifficultyFactor(runTimerMinutes);
+            float timeFactor = GetTimeDifficultyFactor(runTimerMinutes, difficultyDef.scalingValue);
             float stageFactor = GetStageDifficultyFactor(self.stageClearCount);
             
             float playerBaseFactor = 1 + playerBaseDifficultyFactor * (self.participatingPlayerCount - 1);
@@ -252,9 +253,9 @@ namespace RiskierRain
                 self.OnAmbientLevelUp();
             }
 
-            float GetTimeDifficultyFactor(float timeInMinutes)
+            float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
             {
-                float timeFactor = Mathf.Pow(difficultyIncreasePerMinute, timeInMinutes);
+                float timeFactor = Mathf.Pow(difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * scalingValue, timeInMinutes);
                 return timeFactor;
             }
             float GetStageDifficultyFactor(int stageClearCount)
@@ -466,6 +467,9 @@ namespace RiskierRain
 
         private void EclipseSpiteArtifact(On.RoR2.RunArtifactManager.orig_SetArtifactEnabled orig, RunArtifactManager self, ArtifactDef artifactDef, bool newEnabled)
         {
+            if (Run.instance != null)
+                orig(self, artifactDef, newEnabled);
+
             if (Run.instance.selectedDifficulty >= eclipseLevelSpiteArtifact)
             {
                 if (artifactDef == RoR2Content.Artifacts.bombArtifactDef)

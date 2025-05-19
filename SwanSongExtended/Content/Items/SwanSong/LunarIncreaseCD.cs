@@ -121,7 +121,6 @@ namespace SwanSongExtended.Items
         private float EnableCooldownAddition(On.RoR2.GenericSkill.orig_CalculateFinalRechargeInterval orig, GenericSkill self)
         {
             //return self.baseRechargeInterval > 0 ? Mathf.Max(0.5f, self.baseRechargeInterval * self.cooldownScale - self.flatCooldownReduction) : 0
-
             float calculatedRechargeInterval = self.baseRechargeInterval * self.cooldownScale - self.flatCooldownReduction;
 
             if (self.baseRechargeInterval <= 0 && calculatedRechargeInterval <= self.baseRechargeInterval)

@@ -1,8 +1,11 @@
 ﻿using BepInEx.Configuration;
 using EntityStates;
 using EntityStates.GrandParent;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
+using SwanSongExtended.Items;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
@@ -12,61 +15,42 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static SwanSongExtended.Modules.Language.Styling;
 
-namespace SwanSongExtended.Items
+namespace SwanSongExtended
 {
-    class Planula : ItemBase<Planula>
+    public partial class SwanSongPlugin
     {
-        public override string ConfigName => "Reworks : Planula";
-        [AutoConfig("Sun Duration Base", 10f)]
         public static float sunDurationBase = 10;
-        [AutoConfig("Sun Duration Stack", 5f)]
         public static float sunDurationStack = 5;
-
-        public override AssetBundle assetBundle => null;
-        public override string ItemName => "Planula";
-
-        public override string ItemLangTokenName => "TPSUNULA";
-
-        public override string ItemPickupDesc => "Summon a sun during the teleporter event.";
-
-        public override string ItemFullDescription => $"After beginning the teleporter event, " +
-            $"{DamageColor("summon a sun overhead")} that lasts for " +
-            $"{DamageColor(sunDurationBase.ToString())} seconds {StackText($"+{sunDurationStack}")}. " +
-            $"{HealthColor("All enemies and allies burn near the sun")}.";
-
-        public override string ItemLore => "Placeholder";
-
-        public override ItemTier Tier => ItemTier.Boss;
-
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.AIBlacklist, ItemTag.Damage, ItemTag.HoldoutZoneRelated };
-
-        public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ParentEgg/PickupParentEgg.prefab").WaitForCompletion();
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ParentEgg/texParentEggIcon.png").WaitForCompletion();
-
-        public override ItemDisplayRuleDict CreateItemDisplayRules()
+        void PlanulaChanges()
         {
-            return null;
-        }
-
-        public override void Init()
-        {
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.ParentEgg));
-            base.Init();
-        }
-        public override void Hooks()
-        {
-            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.ParentEgg);
-
+            LanguageAPI.Add("ITEM_PARENTEGG_DESC",
+                $"After beginning the teleporter event, " +
+                $"{DamageColor("summon a sun overhead")} that lasts for " +
+                $"{DamageColor(sunDurationBase.ToString())} seconds {StackText($"+{sunDurationStack}")}. " +
+                $"{HealthColor("All enemies and allies burn near the sun")}."
+                );
+            IL.RoR2.HealthComponent.TakeDamageProcess += FuckPlanula;
             On.RoR2.TeleporterInteraction.IdleToChargingState.OnEnter += OnTeleporterEventPreStart;
             On.RoR2.TeleporterInteraction.ChargingState.OnEnter += OnTeleporterEventStart;
             On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += OnTeleporterEventUpdate;
         }
 
+        private void FuckPlanula(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdfld("RoR2.HealthComponent/ItemCounts", "parentEgg")
+                );
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Ldc_I4_0);
+        }
+
         private void OnTeleporterEventPreStart(On.RoR2.TeleporterInteraction.IdleToChargingState.orig_OnEnter orig, BaseState self)
         {
             orig(self);
-            int sunulaCount = Util.GetItemCountForTeam(TeamIndex.Player, ItemsDef.itemIndex, false, false);
-            if(sunulaCount > 0)
+            int sunulaCount = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.ParentEgg.itemIndex, false, false);
+            if (sunulaCount > 0)
             {
                 TeleporterInteraction tpInteraction = (self as TeleporterInteraction.BaseTeleporterState).teleporterInteraction;
                 GameObject activator = tpInteraction.chargeActivatorServer;
@@ -115,7 +99,7 @@ namespace SwanSongExtended.Items
 
         public void SetSunDuration(int stack)
         {
-            sunDuration = ItemBase.GetStackValue(Planula.sunDurationBase, Planula.sunDurationStack, stack);
+            sunDuration = ItemBase.GetStackValue(SwanSongPlugin.sunDurationBase, SwanSongPlugin.sunDurationStack, stack);
         }
         public void CreateBeamEffect(Transform parent)
         {
@@ -161,10 +145,10 @@ namespace SwanSongExtended.Items
 
         void FixedUpdate()
         {
-            if(NetworkServer.active && sunInstance != null)
+            if (NetworkServer.active && sunInstance != null)
             {
                 sunAge += Time.fixedDeltaTime;
-                if(sunAge >= sunDuration)
+                if (sunAge >= sunDuration)
                 {
                     DestroySun();
                 }

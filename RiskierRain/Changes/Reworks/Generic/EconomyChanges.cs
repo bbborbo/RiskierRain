@@ -171,8 +171,7 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        private float teleporterEnemyRewardCoefficient = 0.02f;
-        static float goldRewardMultiplierGlobal = 1.4f;
+        static float goldRewardMultiplierGlobal = 1.2f;
         static float expRewardMultiplierGlobal = 1;
         private void EnemyRewards()
         {
@@ -181,7 +180,7 @@ namespace RiskierRain
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
         }
 
-        static float GetCompensatedDifficultyFraction(float multiplier)
+        static float GetCompensatedDifficultyFraction()
         {
             float boost = GetAmbientLevelBoost();
             float ambientLevel = Run.instance.ambientLevel;
@@ -192,8 +191,13 @@ namespace RiskierRain
             float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost));
             float rewardMult = intendedLevelStat / actualLevelStat;
 
-            float compensated = Stage.instance.entryDifficultyCoefficient / Run.instance.compensatedDifficultyCoefficient;
-            return rewardMult * compensated * multiplier;
+            float compensated = 1;
+            float entryDiffCoeff = (Stage.instance.entryDifficultyCoefficient - boost);
+            if (entryDiffCoeff > 0)
+                compensated = entryDiffCoeff / (Run.instance.compensatedDifficultyCoefficient - boost);
+            else
+                return 1;
+            return rewardMult * compensated;
         }
 
         private static void FixGoldRewards(ILContext il)
@@ -202,8 +206,8 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Func<uint, uint>>((money) =>
             {
-                float compensated = GetCompensatedDifficultyFraction(goldRewardMultiplierGlobal);
-                return (uint)(money * compensated);
+                float compensated = GetCompensatedDifficultyFraction();
+                return (uint)(money * compensated * goldRewardMultiplierGlobal);
             });
             c.Emit(OpCodes.Starg, 1);
         }
@@ -213,20 +217,10 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Func<uint, uint>>((exp) =>
             {
-                float compensated = GetCompensatedDifficultyFraction(expRewardMultiplierGlobal);
-                return (uint)(exp * compensated);
+                float compensated = GetCompensatedDifficultyFraction();
+                return (uint)(exp * compensated * expRewardMultiplierGlobal);
             });
             c.Emit(OpCodes.Starg, 1);
-        }
-
-        private void ReduceTeleDirectorReward(On.RoR2.TeleporterInteraction.orig_Awake orig, TeleporterInteraction self)
-        {
-            orig(self);
-            if (self.bonusDirector)
-            {
-                self.bonusDirector.expRewardCoefficient *= teleporterEnemyRewardCoefficient;
-                self.bonusDirector.goldRewardCoefficient *= teleporterEnemyRewardCoefficient;
-            }
         }
 
         private int ChangeScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int_float orig, RoR2.Run self, int baseCost, float difficultyCoefficient)
@@ -253,35 +247,6 @@ namespace RiskierRain
             }
 
             return (int)((float)baseCost * endMultiplier);
-        }
-
-
-        private void EliteGoldReward()
-        {
-            On.RoR2.DeathRewards.Awake += FixEliteGoldReward;
-        }
-        private void FixEliteGoldReward(On.RoR2.DeathRewards.orig_Awake orig, RoR2.DeathRewards self)
-        {
-            orig(self);
-            CharacterBody body = self.GetComponent<CharacterBody>();
-            if (!body || !body.inventory) { return; }
-
-            int bonusHealthCount = body.inventory.GetItemCount(RoR2Content.Items.BoostHp);
-            if (bonusHealthCount > 0)
-            {
-                if (bonusHealthCount <= 70)
-                {
-                    //self.goldReward /= 0;
-                }
-                else if (bonusHealthCount <= 200)
-                {
-                    self.goldReward /= 3;
-                }
-                else
-                {
-                    self.goldReward /= 9;
-                }
-            }
         }
 
         private void ChestRebalance()
@@ -350,105 +315,7 @@ namespace RiskierRain
         }
         #endregion
 
-        #region State of Difficulty
-        public static float goldGainMultiplier = 0.07f;
-        void FixMoneyAndExpRewards()
-        {
-            On.RoR2.DeathRewards.Awake += FixMoneyAndExpRewards;
-        }
-
-        private void FixMoneyAndExpRewards(On.RoR2.DeathRewards.orig_Awake orig, RoR2.DeathRewards self)
-        {
-            orig(self);
-            float boost = GetAmbientLevelBoost();
-            float ambientLevel = Run.instance.ambientLevel;
-            // less than 1 allows for enemies to drop slightly more gold due to ALB
-            // greater than 1 is kinda pointless but it overcorrects for ALB
-            float ambientLevelBoostCorrection = 1f;
-
-            float actualLevelStat = 1 + (0.3f * ambientLevel);
-            float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost * ambientLevelBoostCorrection));
-            float rewardMult = intendedLevelStat / actualLevelStat;
-
-            self.goldReward = (uint)((float)self.goldReward * rewardMult * goldGainMultiplier);
-            self.expReward = (uint)((float)self.expReward * rewardMult);
-        }
-        #endregion
-
         #region void cradles
-        GameObject voidCradlePrefab;
-        public static float cradleHealthCost = 0.2f; //50
-        static float _cradleHealthCost;
-        void VoidCradleRework()
-        {
-            _cradleHealthCost = (1 / (1 - cradleHealthCost)) - 1;
-            voidCradlePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidChest/VoidChest.prefab").WaitForCompletion();
-            if (voidCradlePrefab)
-            {
-                PurchaseInteraction cradleInteraction = voidCradlePrefab.GetComponent<PurchaseInteraction>();
-                if (cradleInteraction)
-                {
-                    cradleInteraction.costType = CostTypeIndex.SoulCost;
-                    cradleInteraction.cost = (int)(cradleHealthCost * 100);
-                    cradleInteraction.setUnavailableOnTeleporterActivated = true;
-                }
-                //voidCradlePrefab.AddComponent<InteractableCurseController>();
-            }
-            //IL.RoR2.CostTypeCatalog.Init += FixSoulCost;
-            //On.RoR2.CostTypeDef.PayCost += VoidCradlePayCostHook;
-            //GetStatCoefficients += VoidCradleCurse;
-            RoR2Application.onLoad += FixSoulPayCost;
-        }
-
-        private void FixSoulPayCost()
-        {
-            CostTypeDef ctd = CostTypeCatalog.GetCostTypeDef(CostTypeIndex.SoulCost);
-            var method = ctd.payCost.Method;
-            ILHook hook = new ILHook(method, FixSoulCost);
-        }
-
-        private void FixSoulCost(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            bool b = c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
-                );
-            if (b)
-            {
-                c.Remove();
-                c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) =>
-                {
-                    for (int i = 0; i < buffCount; i++)
-                    {
-                        body.AddBuff((BuffIndex)buffIndex);
-                    }
-                });
-            }
-            else
-            {
-                Debug.LogError("Could not hook void cradle paycost");
-            }
-        }
-
-        private void VoidCradleCurse(CharacterBody sender, StatHookEventArgs args)
-        {
-            int buffCount = sender.GetBuffCount(CoreModules.Assets.voidCradleCurse);
-            if(buffCount > 0)
-            {
-                args.baseCurseAdd += _cradleHealthCost * buffCount;
-            }
-        }
-
-        private CostTypeDef.PayCostResults VoidCradlePayCostHook(On.RoR2.CostTypeDef.orig_PayCost orig, 
-            CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
-        {
-            if(purchasedObject.GetComponent<GenericDisplayNameProvider>()?.displayToken == "VOID_CHEST_NAME")
-            {
-                cost = 0;
-            }
-            return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
-        }
         #endregion
 
         #region Stage Credits

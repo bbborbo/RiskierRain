@@ -17,13 +17,16 @@ namespace SwanSongExtended
         BuffDef brittleCrownBuff => Modules.CommonAssets.brittleCrownCursePurchase;
         public static int brittleCrownStealCountBase = 2;
         public static int brittleCrownStealCountStack = 1;
+        public static float crownCommonStealSoulCost = 0.25f;
+        public static float crownUncommonStealSoulCost = 0.5f;
+        public static float crownRareStealSoulCost = 0.8f;
         public void BrittleCrownChanges()
         {
             LanguageAPI.Add("ITEM_GOLDONHIT_NAME", "Sunken Crown");
             LanguageAPI.Add("ITEM_GOLDONHIT_PICKUP", $"Steal from chests... {HealthColor("at the cost of health.")}");
             LanguageAPI.Add("ITEM_GOLDONHIT_DESC", $"Allows interacting with chests without the ability to afford them, " +
                 $"opening the chest {UtilityColor("without spending ANY money")}. " +
-                $"Stealing from chests costs {HealthColor("[ 25% / 50% / 80% ]")} " +
+                $"Stealing from chests costs {HealthColor($"[ {crownCommonStealSoulCost} / {crownUncommonStealSoulCost} / {crownRareStealSoulCost} ]")} " +
                 $"of your {HealthColor("maximum health")}, depending on the size of the chest. " +
                 $"Can steal up to {brittleCrownStealCountBase} {StackText($"+{brittleCrownStealCountStack}")} times per stage.");
 
@@ -103,20 +106,20 @@ namespace SwanSongExtended
                 {
                     if (self.costType == CostTypeIndex.Money && self.saleStarCompatible && activatorBody.master.money < self.cost)
                     {
-                        int common = Run.instance.GetDifficultyScaledCost(1, Stage.instance.entryDifficultyCoefficient);
+                        int common = 1;
                         int uncommon = Run.instance.GetDifficultyScaledCost(45, Stage.instance.entryDifficultyCoefficient);
                         int rare = Run.instance.GetDifficultyScaledCost(245, Stage.instance.entryDifficultyCoefficient);
                         if (self.cost >= common && self.cost < uncommon)
                         {
-                            CounterfeitCalculations(activatorBody, 3);
+                            CounterfeitCalculations(activatorBody, crownCommonStealSoulCost);
                         }
                         else if (self.cost >= uncommon && self.cost < rare)
                         {
-                            CounterfeitCalculations(activatorBody, 10);
+                            CounterfeitCalculations(activatorBody, crownUncommonStealSoulCost);
                         }
                         else
                         {
-                            CounterfeitCalculations(activatorBody, 40);
+                            CounterfeitCalculations(activatorBody, crownRareStealSoulCost);
                         }
                         //self.cost = 0;
                         canPurchase = true;
@@ -126,12 +129,13 @@ namespace SwanSongExtended
 
             return canPurchase;
         }
-        public void CounterfeitCalculations(CharacterBody activator, int buffCount)
+        public void CounterfeitCalculations(CharacterBody activator, float soulCost)
         {
-            for(int i = 0; i < buffCount; i++)
-            {
-                activator.AddBuff(DLC2Content.Buffs.SoulCost);
-            }
+            //for(int i = 0; i < buffCount; i++)
+            //{
+            //    activator.AddBuff(DLC2Content.Buffs.SoulCost);
+            //}
+            BetterSoulCost.SoulCostPlugin.AddSoulCostToBody(activator, soulCost);
             activator.AddBuff(DLC2Content.Buffs.FreeUnlocks);
 
             Util.PlaySound("sfx_lunarmoney_start", activator.gameObject);

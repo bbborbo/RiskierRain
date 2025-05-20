@@ -614,12 +614,6 @@ namespace RiskierRain
             {
                 BloodShrineRewardRework();
             }
-
-            //void cradle, cradle curse
-            if (GetConfigBool(true, "Economy: Void Cradle"))
-            {
-                VoidCradleRework();
-            }
             
             //void cradle
             if (GetConfigBool(true, "Economy: Crowdfunder Funny Money"))

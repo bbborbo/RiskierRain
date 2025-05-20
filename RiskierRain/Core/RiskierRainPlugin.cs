@@ -64,7 +64,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.0.12";
+        public const string version = "1.0.13";
 
         public static PluginInfo PInfo { get; private set; }
 
@@ -159,6 +159,7 @@ namespace RiskierRain
             MedkitNerf();
             MonsterToothNerf();
             ReworkWeepingFungus();
+            BuffBungus();
 
             // mobility
             GoatHoofNerf();
@@ -490,10 +491,9 @@ namespace RiskierRain
             DoubleChestHook();
 
             //ambient level
-            if (GetConfigBool(true, "Difficulty: Difficulty Dependent Ambient Difficulty Boost"))
+            if (GetConfigBool(true, "Difficulty: Difficulty Scaling Changes"))
             {
                 AmbientLevelDifficulty();
-                FixMoneyAndExpRewards(); //related to ambient difficulty boost
                 VoidFieldsStageType(); //related to ambient difficulty boost
             }
             //void fields time cost
@@ -569,12 +569,6 @@ namespace RiskierRain
             if (GetConfigBool(true, "Economy: Gold Gain and Chest Scaling"))
             {
                 FixMoneyScaling();
-            }
-
-            //elite gold
-            if (GetConfigBool(true, "Economy: Elite Gold Rewards"))
-            {
-                EliteGoldReward();
             }
 
             //stage interactable credits

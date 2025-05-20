@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
         public override string ConfigName => "Items : Cobalt Shield";
         public static BuffDef cobaltDefense;
-        public static float cobaltWaitTime = 0.25f;
+        public static float cobaltWaitTime = 0.1f;
 
         [AutoConfig("Armor Base", 20)]
         public static int baseArmor = 20;

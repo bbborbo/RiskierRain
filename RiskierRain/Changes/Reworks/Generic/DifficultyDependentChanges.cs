@@ -228,15 +228,18 @@ namespace RiskierRain
         private void DifficultyCoefficientChanges(On.RoR2.Run.orig_RecalculateDifficultyCoefficentInternal orig, Run self)
         {
             DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty);
+            float scalingValue = difficultyDef.scalingValue;
+            if (self.selectedDifficulty >= eclipseLevelVeryHard)
+                scalingValue += 1;
             float runTimerMinutes = self.GetRunStopwatch() * 0.016666668f;
             float baseScalingFactor = 0.0506f * baseScalingMultiplier;
 
-            float timeFactor = GetTimeDifficultyFactor(runTimerMinutes, difficultyDef.scalingValue);
+            float timeFactor = GetTimeDifficultyFactor(runTimerMinutes, scalingValue);
             float stageFactor = GetStageDifficultyFactor(self.stageClearCount);
             
             float playerBaseFactor = 1 + playerBaseDifficultyFactor * (self.participatingPlayerCount - 1);
             float playerScaleFactor = Mathf.Pow(self.participatingPlayerCount, playerScalingDifficultyFactor);
-            float scalingFactor = baseScalingFactor * difficultyDef.scalingValue * playerScaleFactor;
+            float scalingFactor = baseScalingFactor * scalingValue * playerScaleFactor;
 
 
             float difficultyCoefficient = (playerBaseFactor + scalingFactor * runTimerMinutes) * timeFactor * stageFactor;
@@ -340,7 +343,7 @@ namespace RiskierRain
 
         public static DifficultyIndex eclipseLevelVeryHard = DifficultyIndex.Eclipse7; //
         public static string eclipseSevenDesc =
-            $"\n<mspace=0.5em>(7)</mspace> Starting Difficulty: <style=cIsHealth>Very Hard</style>";
+            $"\n<mspace=0.5em>(7)</mspace> Difficulty: <style=cIsHealth>Very Hard</style>";
 
         public static DifficultyIndex eclipseLevelPlayerDegen = DifficultyIndex.Eclipse8; //
         public static float eclipsePlayerDegen = 0.2f;

@@ -201,9 +201,11 @@ namespace RiskierRain
         public static float monsterToothFlatHeal = 10;
         public static float monsterToothPercentHeal = 0.00f;
 
-        public static float medkitFlatHeal = 25;
+        public static float medkitFlatHeal = 40;
         public static float medkitPercentHeal = 0.00f;
 
+        public static float notMovingRequirement = 0.1f;
+        public static float fungusHealInterval = 0.125f;
 
         private void ScytheNerf()
         {
@@ -325,6 +327,40 @@ namespace RiskierRain
 
                 return newHealAmt;
             });
+        }
+
+        void BuffBungus()
+        {
+            LanguageAPI.Add("ITEM_MUSHROOM_PICKUP", "Heal all nearby allies while standing still.");
+            LanguageAPI.Add("ITEM_MUSHROOM_DESC", $"After standing still for <style=cIsHealing>{notMovingRequirement}</style> second, " +
+                $"create a zone that <style=cIsHealing>heals</style> for " +
+                $"<style=cIsHealing>4.5%</style> <style=cStack>(+2.25% per stack)</style> " +
+                $"of your <style=cIsHealing>health</style> every second to " +
+                $"all allies within <style=cIsHealing>3m</style> <style=cStack>(+1.5m per stack)</style>.");
+            IL.RoR2.CharacterBody.GetNotMoving += ReduceBungusWaitTime;
+            IL.RoR2.Items.MushroomBodyBehavior.FixedUpdate += ReduceBungusInterval;
+        }
+
+        private void ReduceBungusInterval(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchStfld<HealingWard>(nameof(HealingWard.interval)));
+            //c.Prev.Operand = fungusHealInterval;
+            c.EmitDelegate<Func<float, float>>((interval) =>
+            {
+                return fungusHealInterval;
+            });
+        }
+
+        private void ReduceBungusWaitTime(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.notMovingStopwatch)));
+            c.Next.Operand = notMovingRequirement;
         }
         #endregion
     }

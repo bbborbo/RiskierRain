@@ -27,7 +27,7 @@ namespace RiskierRain.SurvivorTweaks
         public static float phaseRoundDuration = 0.7f; //0.5f
 
         public static float phaseBlastDamageCoeff = 3f; //2f
-        public static float phaseBlastCooldown = 7; //3f
+        public static float phaseBlastCooldown = 5; //3f
 
         public static int rollStock = 2; //1
         public static float rollCooldown = 6f; //4f
@@ -46,7 +46,7 @@ namespace RiskierRain.SurvivorTweaks
         public static int soupMaxTargets = 4;
         public static int soupBaseShots = 8; //6
         public static float soupDamageCoeff = 1.8f; //1f
-        public static float soupProcCoeff = 0.7f; //1f
+        public static float soupProcCoeff = 1f; //1f
         public static float soupCooldown = 13f; //9f
 
         public static float nadeRadius = 16f; //11f

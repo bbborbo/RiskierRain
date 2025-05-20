@@ -17,11 +17,11 @@ namespace SwanSongExtended.Items
         public static BuffDef watchCritBuff;
         #region config
         public override string ConfigName => "Items : Destroyer Emblem";
-        [AutoConfig("Critical Strike Chance Bonus", 24)]
-        public static float critChanceBonus = 24;
+        [AutoConfig("Critical Strike Chance Bonus", 40)]
+        public static float critChanceBonus = 40;
         public static float critChancePerBuff => critChanceBonus / buffTotal;
-        [AutoConfig("Total Buffs", 6)]
-        public static int buffTotal = 6;
+        [AutoConfig("Total Buffs", 8)]
+        public static int buffTotal = 8;
         [AutoConfig("Base Duration Of Buffs", 8f)]
         public static float buffDurationBase = 8f;
         [AutoConfig("Stack Duration Of Buffs", 4f)]

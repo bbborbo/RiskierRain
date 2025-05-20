@@ -111,7 +111,7 @@ namespace RiskierRain.States.Commando
 					isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
 					radius = 0f,
 					smartCollision = true,
-					damageType = DamageTypeCombo.GenericSpecial & DamageType.Stun1s,
+					damageType = new DamageTypeCombo(DamageType.Stun1s, DamageTypeExtended.Generic, DamageSource.Special),
 				}.Fire();
 			}
 			base.characterBody.AddSpreadBloom(FireBarrage.spreadBloomValue);

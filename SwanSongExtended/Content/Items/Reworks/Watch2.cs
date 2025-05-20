@@ -24,8 +24,8 @@ namespace SwanSongExtended.Items
         public static float aspdBonusBase = 0.32f;
         [AutoConfig("Stack Attack Speed Bonus", 0.22f)]
         public static float aspdBonusStack = 0.22f;
-        [AutoConfig("Stationary Wait Time", 0.5f)]
-        public static float watchWaitTime = 0.2f;
+        [AutoConfig("Stationary Wait Time", 0.1f)]
+        public static float watchWaitTime = 0.1f;
         #endregion
         public override AssetBundle assetBundle => null;
         public static BuffDef watchAspdBuff;

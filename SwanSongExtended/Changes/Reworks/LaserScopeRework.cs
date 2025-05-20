@@ -55,7 +55,7 @@ namespace SwanSongExtended
                     int buffCount = sender.GetBuffCount(CommonAssets.combatTelescopeCritChance);
                     if (buffCount > 0)
                     {
-                        critAdd += scopeBaseStationaryCrit;// + scopeStackStationaryCrit * (buffCount - 1);
+                        critAdd = scopeBaseStationaryCrit;// + scopeStackStationaryCrit * (buffCount - 1);
                     }
 
                     args.critAdd += critAdd;

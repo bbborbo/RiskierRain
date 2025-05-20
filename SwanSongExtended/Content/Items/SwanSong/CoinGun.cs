@@ -132,16 +132,17 @@ What happened to all of our gold?";
             if(itemCount > 0)
             {
                 CoinGunBehavior coinGun = sender.GetComponent<CoinGunBehavior>();
-                if (!coinGun)
-                    return;
-                int damageBoostCount = coinGun.damageBoostCount;
-
-                //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
-                if(damageBoostCount > 0)
+                if (coinGun)
                 {
-                    float damageMult = bonusDamageMin + bonusDamagePerChunk * (damageBoostCount - 1);
+                    int damageBoostCount = coinGun.damageBoostCount;
 
-                    args.damageMultAdd += damageMult * itemCount;
+                    //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
+                    if (damageBoostCount > 0)
+                    {
+                        float damageMult = bonusDamageMin + bonusDamagePerChunk * (damageBoostCount - 1);
+
+                        args.damageMultAdd += damageMult * itemCount;
+                    }
                 }
             }
         }

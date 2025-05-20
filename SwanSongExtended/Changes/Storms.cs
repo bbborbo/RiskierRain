@@ -108,7 +108,7 @@ namespace SwanSongExtended
                 {
                     cd.creditMultiplier = 0.5f;
                     cd.expRewardCoefficient = 1f;
-                    cd.goldRewardCoefficient = 0f;
+                    cd.goldRewardCoefficient = 1f;
                     cd.minRerollSpawnInterval = 15f;
                     cd.maxRerollSpawnInterval = 25f;
                     cd.teamIndex = TeamIndex.Monster;
@@ -230,10 +230,11 @@ namespace SwanSongExtended
         public static float waveMaxInterval = 2f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 55;
+        public static float meteorBlastDamageCoefficient = 15;
         public static float meteorBlastDamageScalarPerLevel = 0.5f;
         public static float meteorBlastRadius = 10;
         public static float meteorBlastForce = 0;
+        public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
 
         public void Start()
         {
@@ -574,7 +575,11 @@ namespace SwanSongExtended
                 if (this.waveTimer <= 0f)
                 {
                     this.waveTimer = UnityEngine.Random.Range(StormRunBehaviorController.waveMinInterval, StormRunBehaviorController.waveMaxInterval);
-                    MeteorStormController.MeteorWave item = new MeteorStormController.MeteorWave(CharacterBody.readOnlyInstancesList.ToArray<CharacterBody>(), base.transform.position);
+                    MeteorStormController.MeteorWave item = 
+                        new MeteorStormController.MeteorWave(
+                            CharacterBody.readOnlyInstancesList.Where(body => body.teamComponent.teamIndex == TeamIndex.Player).ToArray<CharacterBody>(), 
+                            base.transform.position);
+                    item.hitChance = 0.2f;
                     this.meteorWaves.Add(item);
                 }
 
@@ -586,11 +591,11 @@ namespace SwanSongExtended
                     {
                         meteorWave.timer = UnityEngine.Random.Range(0.05f, 1f);
                         MeteorStormController.Meteor nextMeteor = meteorWave.GetNextMeteor(); // getnextmeteor handles some stuff here, we can look into canibalizing it for more adaptable stuff
-                        if (nextMeteor == null)
+                        if (nextMeteor == null || !nextMeteor.valid)
                         {
                             this.meteorWaves.RemoveAt(i);
                         }
-                        else if (nextMeteor.valid)
+                        else
                         {
                             this.meteorsToDetonate.Add(nextMeteor);
                             EffectManager.SpawnEffect(StormRunBehaviorController.meteorWarningEffectPrefab, new EffectData
@@ -631,7 +636,7 @@ namespace SwanSongExtended
                     baseForce = StormRunBehaviorController.meteorBlastForce,
                     attackerFiltering = AttackerFiltering.Default,
                     crit = false,
-                    falloffModel = BlastAttack.FalloffModel.SweetSpot,
+                    falloffModel = meteorFalloffModel,
                     attacker = this.gameObject,//this.teleporter ,
                     bonusForce = Vector3.zero,
                     damageColorIndex = DamageColorIndex.Fragile,

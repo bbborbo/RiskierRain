@@ -26,11 +26,11 @@ namespace SwanSongExtended.Items
         public override string ItemLangTokenName => "EGG";
 
         public override string ItemPickupDesc => "Slightly increase health. Start an egg hunt." +
-            "<style=cIsVoid>Corrupts most edible and animal matter.</style>";
+            "<style=cIsVoid>Corrupts most edible and animal matter</style>.";
 
-        public override string ItemFullDescription => $"Gain <style=cIsHealing>{eggHealth} max health, " +
-            $"<style=cIsUtility>Start an egg hunt.</style> " +
-            "<style=cIsVoid> Corrupts all Infusion, Bison Steak, and Alien Heads.</style>";
+        public override string ItemFullDescription => $"Gain <style=cIsHealing>{eggHealth} max health</style>. " +
+            $"<style=cIsUtility>Start an egg hunt</style>. " +
+            "<style=cIsVoid>Corrupts all Infusion, Bison Steak, and Alien Heads</style>.";
 
         public override string ItemLore => "this egg is so fuckign yummuy";
 

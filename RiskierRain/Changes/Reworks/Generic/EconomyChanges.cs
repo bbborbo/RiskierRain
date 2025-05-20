@@ -171,7 +171,7 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        static float goldRewardMultiplierGlobal = 1.2f;
+        static float goldRewardMultiplierGlobal = 0.8f;
         static float expRewardMultiplierGlobal = 1;
         private void EnemyRewards()
         {

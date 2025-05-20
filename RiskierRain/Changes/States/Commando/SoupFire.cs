@@ -25,7 +25,7 @@ namespace RiskierRain.States.Commando
 		public override void OnEnter()
 		{
 			base.OnEnter();
-			//crit = Util.CheckRoll(this.critStat, base.characterBody.master);
+			crit = Util.CheckRoll(this.critStat, base.characterBody.master);
 			shotsTotal = Mathf.CeilToInt(CommandoTweaks.soupBaseShots * this.attackSpeedStat);
 			durationPerShot = SoupFire.baseDuration / shotsTotal;
 			FireAtTarget();
@@ -108,7 +108,7 @@ namespace RiskierRain.States.Commando
 					tracerEffectPrefab = FireBarrage.tracerEffectPrefab,
 					muzzleName = targetMuzzle,
 					hitEffectPrefab = FireBarrage.hitEffectPrefab,
-					isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
+					isCrit = crit,
 					radius = 0f,
 					smartCollision = true,
 					damageType = new DamageTypeCombo(DamageType.Stun1s, DamageTypeExtended.Generic, DamageSource.Special),

@@ -20,13 +20,16 @@ namespace SwanSongExtended
         public static float crownCommonStealSoulCost = 0.25f;
         public static float crownUncommonStealSoulCost = 0.5f;
         public static float crownRareStealSoulCost = 0.8f;
+        private string common = Tools.ConvertDecimal(crownCommonStealSoulCost);
+        private string uncommon = Tools.ConvertDecimal(crownUncommonStealSoulCost);
+        private string rare = Tools.ConvertDecimal(crownRareStealSoulCost);
         public void BrittleCrownChanges()
         {
             LanguageAPI.Add("ITEM_GOLDONHIT_NAME", "Sunken Crown");
             LanguageAPI.Add("ITEM_GOLDONHIT_PICKUP", $"Steal from chests... {HealthColor("at the cost of health.")}");
             LanguageAPI.Add("ITEM_GOLDONHIT_DESC", $"Allows interacting with chests without the ability to afford them, " +
                 $"opening the chest {UtilityColor("without spending ANY money")}. " +
-                $"Stealing from chests costs {HealthColor($"[ {crownCommonStealSoulCost} / {crownUncommonStealSoulCost} / {crownRareStealSoulCost} ]")} " +
+                $"Stealing from chests costs {HealthColor($"[ {common} / {uncommon} / {rare} ]")} " +
                 $"of your {HealthColor("maximum health")}, depending on the size of the chest. " +
                 $"Can steal up to {brittleCrownStealCountBase} {StackText($"+{brittleCrownStealCountStack}")} times per stage.");
 

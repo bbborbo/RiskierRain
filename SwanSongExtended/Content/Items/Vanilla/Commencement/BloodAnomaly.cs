@@ -11,6 +11,8 @@ using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
 using SwanSongExtended;
+using System.Linq;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -20,29 +22,29 @@ namespace SwanSongExtended.Items
         #region config
         public override string ConfigName => "Items : Commencement : Relic of Blood";
 
-        public static float procChancePerPercentBase = 6f;
-        public static float procChancePerPercentStack = 4f;
-        public static float procChanceMultiplier = 0.5f;
+        [AutoConfig("Heal Fraction On Kill Base", 0.08f)]
+        public static float healFractionOnKillBase = 0.08f;
+        [AutoConfig("Heal Fraction On Kill Stack", 0.08f)]
+        public static float healFractionOnKillStack = 0.08f;
 
-        public static float fractionDamage = 0.03f;
-        public static float healFraction = 0.5f;
-        #endregion
-        public static BuffDef bloodBuff;
-        public static GameObject retaliateTracer;
-        public static GameObject retaliateExplosion;
+        [AutoConfig("On-Kill Force Triggers Base", 4)]
+        public static int onKillForceTriggersBase = 4;
+        [AutoConfig("On-Kill Force Triggers Stack", 2)]
+        public static int onKillForceTriggersStack = 2;
+		#endregion
+		public static BuffDef hiddenForceTriggerCount;
         public override string ItemName => "Relic of Blood";
 
         public override string ItemLangTokenName => "BLOODANOMALY";
 
-        public override string ItemPickupDesc => "Gain a chance to retaliate upon taking a large hit, sapping the health of a nearby enemy.";
+        public override string ItemPickupDesc => "Heal on kill. Damaging powerful enemies force-triggers on-kill effects.";
 
-        public override string ItemFullDescription => $"When taking damage, you gain a " +
-            $"<style=cIsDamage>{procChancePerPercentBase * procChanceMultiplier}%</style> " +
-            $"<style=cStack>(+{procChancePerPercentStack * procChanceMultiplier}% per stack)</style> chance " +
-            $"<style=cIsDamage>per % of maximum health taken</style> " +
-            $"to <style=cIsUtility>retaliate</style> against the enemy that hit you, " +
-            $"dealing {Tools.ConvertDecimal(fractionDamage)} of their max health " +
-            $"and healing for {Tools.ConvertDecimal(healFraction)} of that.";
+        public override string ItemFullDescription => 
+			$"On killing an enemy, immediately heal for " +
+			$"{HealingColor(Tools.ConvertDecimal(healFractionOnKillBase))} {StackText($"+{Tools.ConvertDecimal(healFractionOnKillStack)}")} " +
+			$"of {HealingColor("maximum health")}. Dealing damage to {UtilityColor("Champions")} will " +
+			$"force-trigger {DamageColor("On-Kill")} effects up to " +
+			$"{DamageColor($"{onKillForceTriggersBase}")} {StackText($"+{onKillForceTriggersStack}")} times.";
 
         public override string ItemLore => "";
 
@@ -51,254 +53,94 @@ namespace SwanSongExtended.Items
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist , ItemTag.WorldUnique, ItemTag.CannotSteal };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist , ItemTag.WorldUnique, ItemTag.CannotSteal, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
+		}
+
+		public override void Init()
+		{
+			hiddenForceTriggerCount = Content.CreateAndAddBuff(
+				"bdHiddenRelicForceTriggerCount",
+				null, Color.black, true, false);
+			hiddenForceTriggerCount.isHidden = true;
+			base.Init();
+		}
+
+		public override void Hooks()
+        {
+			On.RoR2.HealthComponent.TakeDamage += BloodRelicOnDamageDealt;
+            GlobalEventManager.onCharacterDeathGlobal += BloodRelicOnKill;
         }
 
-        public override void Hooks()
+        private void BloodRelicOnDamageDealt(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.HealthComponent.TakeDamageProcess += BloodAnomalyRetaliate;
-        }
+			orig(self, damageInfo);
+			if (!NetworkServer.active)
+				return;
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                self.AddItemBehavior<BloodAnomalyBehavior>(GetCount(self));
-            }
-        }
+			GameObject attacker = damageInfo.attacker;
+			if (!attacker)
+				return;
 
-        private void BloodAnomalyRetaliate(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
-        {
-            orig(self, damageInfo);
-
-            if (self.alive && !damageInfo.rejected && damageInfo.procCoefficient > 0 && damageInfo.attacker)
-            {
-                CharacterBody victimBody = self.body;
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if (attackerBody && victimBody && victimBody.inventory)
+			CharacterBody victimBody = self.body;
+			if (attacker.TryGetComponent(out CharacterBody attackerBody) && victimBody && victimBody.isChampion)
+			{
+				int itemCount = GetCount(attackerBody);
+				int itemCountTotal = attackerBody.teamComponent ? itemCount : Util.GetItemCountForTeam(attackerBody.teamComponent.teamIndex, ItemsDef.itemIndex, false, false);
+				int buffCount = victimBody.GetBuffCount(hiddenForceTriggerCount);
+				if(itemCountTotal > 0)
                 {
-                    int itemCount = GetCount(self.body);
+					int maxTriggers = onKillForceTriggersBase + onKillForceTriggersStack * (itemCountTotal - 1);
+					float thresholdPerTrigger = 1 / ((float)maxTriggers + 1);
+					float nextThreshold = thresholdPerTrigger * (buffCount + 1);
 
-                    if (itemCount > 0 && !victimBody.HasBuff(bloodBuff) && victimBody.teamComponent.teamIndex != attackerBody.teamComponent.teamIndex)
+					HealthComponent victimHealthComponent = victimBody.healthComponent;
+					if (victimHealthComponent.combinedHealthFraction <= 1 - nextThreshold)
                     {
-                        BloodAnomalyBehavior bloodAnomaly = victimBody.GetComponent<BloodAnomalyBehavior>();
-                        bloodAnomaly.ClearBuffCount();
-
-                        float victimMaxHealth = self.fullCombinedHealth;
-                        float attackEndDamage = damageInfo.damage;
-                        float retaliationChance = procChancePerPercentBase + procChancePerPercentStack * (itemCount - 1);
-
-                        float maxHealthFractionDealt = Mathf.Min(attackEndDamage / victimMaxHealth * 100, 90);
-                        float maxHealthFractionPerRetaliation = Mathf.RoundToInt(100 / retaliationChance);
-
-                        //Debug.Log($"Required: {maxHealthFractionPerRetaliation}% - Dealt: {maxHealthFractionDealt}%");
-
-                        float remainderFractionPercent = maxHealthFractionDealt % maxHealthFractionPerRetaliation;
-                        int wholeRetaliations = (int)((maxHealthFractionDealt - remainderFractionPercent) / maxHealthFractionPerRetaliation);
-                        //Debug.Log($"Whole: {wholeRetaliations} - Remainder: {remainderFractionPercent * retaliationChance}%");
-
-                        float rollMultiplier = 100;
-                        if (wholeRetaliations < 1)
-                            rollMultiplier = remainderFractionPercent * retaliationChance;
-
-                        if (Util.CheckRoll(rollMultiplier * procChanceMultiplier * damageInfo.procCoefficient, victimBody.master))
-                        {
-                            if (rollMultiplier < 1)
-                            {
-                                wholeRetaliations++;
-                            }
-                            else if (Util.CheckRoll(remainderFractionPercent * procChanceMultiplier * retaliationChance * damageInfo.procCoefficient, victimBody.master))
-                            {
-                                wholeRetaliations++;
-                            }
-
-                            if (wholeRetaliations > 0)
-                            {
-                                bloodAnomaly.SetTarget(attackerBody);
-                                bloodAnomaly.AddBuffCount(wholeRetaliations);
-                            }
-                        }
+						victimBody.AddBuff(hiddenForceTriggerCount);
+						List<CharacterBody> list = (from master in CharacterMaster.instancesList
+													select master.GetBody() into body
+													where body && body.teamComponent.teamIndex == TeamIndex.Player && base.GetCount(body) > 0
+													select body).ToList<CharacterBody>();
+						MakeFakeDeath(victimHealthComponent, damageInfo, list);
                     }
+				}
+			}
+        }
+
+        private void BloodRelicOnKill(DamageReport damageReport)
+        {
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if(attackerBody != null)
+            {
+                int count = GetCount(attackerBody);
+                if(count > 0)
+                {
+					float healFraction = Util.ConvertAmplificationPercentageIntoReductionNormalized(healFractionOnKillBase + healFractionOnKillStack * (count - 1));
+                    attackerBody.healthComponent.HealFraction(healFraction, new ProcChainMask());
                 }
             }
-        }
-        public override void Init()
-        {
-            bloodBuff = Content.CreateAndAddBuff(
-                "bdBloodRetaliateCharge",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffCrippleIcon.tif").WaitForCompletion(),
-                Color.red,
-                true, false
-                );
-            CreateEffects();
-
-            base.Init();
-        }
-
-        private void CreateEffects()
-        {
-            retaliateTracer = Resources.Load<GameObject>("prefabs/effects/tracers/TracerGolem").InstantiateClone("retaliateTracer", false);
-            Tracer buckshotTracer = retaliateTracer.GetComponent<Tracer>();
-            buckshotTracer.speed = 300f;
-            buckshotTracer.length = 15f;
-            buckshotTracer.beamDensity = 10f;
-            VFXAttributes buckshotAttributes = retaliateTracer.AddComponent<VFXAttributes>();
-            buckshotAttributes.vfxPriority = VFXAttributes.VFXPriority.Always;
-            buckshotAttributes.vfxIntensity = VFXAttributes.VFXIntensity.High;
-
-            Tools.GetParticle(retaliateTracer, "SmokeBeam", new Color(0.5f, 0.4f, 0.3f), 0.66f);
-            ParticleSystem.MainModule main = retaliateTracer.GetComponentInChildren<ParticleSystem>().main;
-            main.startSizeXMultiplier *= 0.5f;
-            main.startSizeYMultiplier *= 0.5f;
-            main.startSizeZMultiplier *= 2f;
-
-            Content.CreateAndAddEffectDef(retaliateTracer);
-
-            retaliateExplosion = Resources.Load<GameObject>("prefabs/effects/BleedOnHitAndExplode_Explosion").InstantiateClone("retaliateBlast", false);
-            ShakeEmitter shake = retaliateExplosion.GetComponent<ShakeEmitter>();
-            shake.radius = 150;
-            shake.duration = 0.7f;
-
-            Content.CreateAndAddEffectDef(retaliateExplosion);
-        }
-    }
-    public class BloodAnomalyBehavior : RoR2.CharacterBody.ItemBehavior
-    {
-        public CharacterBody target;
-        public int buffCount = 0;
-
-        float chargeMaxTimer = 0.3f;
-        float chargeTimerStartMultiplier = 4;
-        float currentChargeTimer = 0;
-
-        public void ClearBuffCount()
-        {
-            buffCount = 0;
-            currentChargeTimer = 0;
-            target = null;
-        }
-
-        public void AddBuffCount(int n)
-        {
-            for (int i = 0; i < n; i++)
-            {
-                body.AddBuff(BloodAnomaly.bloodBuff);
-                buffCount++;
-            }
-            currentChargeTimer = GetScaledDelay() * chargeTimerStartMultiplier;
-        }
-        public void RemoveBuff()
-        {
-            body.RemoveBuff(BloodAnomaly.bloodBuff);
-            buffCount--;
-        }
-
-        public void SetTarget(CharacterBody body)
-        {
-            target = body;
-        }
-
-        private void FixedUpdate()
-        {
-            if (buffCount > 0 && stack > 0)
-            {
-                while (currentChargeTimer <= 0f)
-                {
-                    if (body.HasBuff(BloodAnomaly.bloodBuff))
-                    {
-                        bool flag4 = body.healthComponent.itemCounts.invadingDoppelganger > 0;
-                        TeamIndex teamIndex = body.teamComponent.teamIndex;
-                        HealthComponent targetHealthComponent = null;
-
-                        if(target != null)
-                        {
-                            targetHealthComponent = target.healthComponent;
-                        }
-                        else
-                        {
-                            HurtBox[] hurtBoxes = new SphereSearch
-                            {
-                                origin = body.corePosition,
-                                radius = 150,
-                                mask = LayerIndex.entityPrecise.mask,
-                                queryTriggerInteraction = QueryTriggerInteraction.UseGlobal
-                            }.RefreshCandidates()
-                            .FilterCandidatesByHurtBoxTeam(TeamMask.GetEnemyTeams(teamIndex))
-                            .OrderCandidatesByDistance().FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes();
-                            if (hurtBoxes.Length > 0)
-                            {
-                                targetHealthComponent = hurtBoxes[0].healthComponent;
-                            }
-                        }
-
-                        if (targetHealthComponent != null)
-                        {
-                            RemoveBuff();
-
-                            float percentDamage = targetHealthComponent.fullCombinedHealth * BloodAnomaly.fractionDamage;
-                            float endDamage = Mathf.Clamp(percentDamage, 2 * body.damage, 20 * body.damage);
-
-                            Vector3 startPos = body.corePosition;
-                            Vector3 endPos = targetHealthComponent.body.corePosition;
-
-                            #region attack
-                            new BulletAttack
-                            {
-                                weapon = body.gameObject,
-                                origin = startPos,
-                                aimVector = (endPos - startPos).normalized,
-                                minSpread = 0f,
-                                maxSpread = 0f,
-                                damage = endDamage,
-                                damageType = DamageType.BypassArmor,
-                                procCoefficient = flag4 ? 0f : 0.5f,
-                                force = 0,
-                                tracerEffectPrefab = BloodAnomaly.retaliateTracer,
-                                isCrit = false,
-                                radius = 0.25f,
-                                falloffModel = BulletAttack.FalloffModel.None,
-                                smartCollision = true
-                            }.Fire();
-
-                            EffectManager.SpawnEffect(BloodAnomaly.retaliateExplosion, new EffectData
-                            {
-                                origin = endPos,
-                                scale = 1
-                            }, true);
-                            #endregion
-
-                            body.healthComponent.Heal(endDamage * BloodAnomaly.healFraction, default(ProcChainMask));
-                        }
-
-                        currentChargeTimer += GetScaledDelay();
-                    }
-                    else
-                    {
-                        ClearBuffCount();
-                        break;
-                    }
-                }
-
-                if (currentChargeTimer > 0f)
-                {
-                    currentChargeTimer -= Time.fixedDeltaTime;
-                }
-            }
-            else
-            {
-                ClearBuffCount();
-            }
-        }
-
-        private float GetScaledDelay()
-        {
-            return chargeMaxTimer / body.attackSpeed;
-        }
+		}
+		private void MakeFakeDeath(HealthComponent self, DamageInfo damageInfo, List<CharacterBody> attackers)
+		{
+			foreach (CharacterBody characterBody in attackers)
+			{
+				DamageInfo damageInfo2 = new DamageInfo
+				{
+					attacker = ((characterBody != null) ? characterBody.gameObject : null),
+					crit = false,
+					damage = damageInfo.damage,
+					position = damageInfo.position,
+					procCoefficient = damageInfo.procCoefficient,
+					damageType = damageInfo.damageType,
+					damageColorIndex = damageInfo.damageColorIndex
+				};
+				DamageReport damageReport = new DamageReport(damageInfo2, self, damageInfo.damage, self.combinedHealth);
+				GlobalEventManager.instance.OnCharacterDeath(damageReport);
+			}
+		}
     }
 }

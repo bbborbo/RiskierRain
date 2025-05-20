@@ -239,6 +239,10 @@ namespace SwanSongExtended
             {
                 BrittleCrownChanges();
             }
+            if (GetConfigBool(true, "Reworks : Planula"))
+            {
+                PlanulaChanges();
+            }
             if (GetConfigBool(true, "Reworks : Commencement"))
             {
                 MakePillarsFun();

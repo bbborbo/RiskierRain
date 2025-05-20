@@ -29,6 +29,8 @@ namespace SwanSongExtended
         {
             CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
+            On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
+            On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
             meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion().InstantiateClone("StormStrikePredictionEffect");
             meteorWarningEffectPrefab.transform.localScale = Vector3.one * StormRunBehaviorController.meteorBlastRadius * 0.85f;
@@ -64,6 +66,20 @@ namespace SwanSongExtended
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
+        }
+
+
+        private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            if (!StormRunBehaviorController.holdoutZones.Contains(self))
+                StormRunBehaviorController.holdoutZones.Add(self);
+        }
+        private void UnregisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnDisable orig, HoldoutZoneController self)
+        {
+            orig(self);
+            if (StormRunBehaviorController.holdoutZones.Contains(self))
+                StormRunBehaviorController.holdoutZones.Remove(self);
         }
 
         private void CreateStormEliteTiers()
@@ -171,6 +187,32 @@ namespace SwanSongExtended
     /// </summary>
     public class StormRunBehaviorController : MonoBehaviour
     {
+        public static List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
+
+        public const float drizzleStormDelayMinutes = 10;
+        public const float drizzleStormWarningMinutes = 3;
+        public const float rainstormStormDelayMinutes = 7;
+        public const float rainstormStormWarningMinutes = 2;
+        public const float monsoonStormDelayMinutes = 3.5f;
+        public const float monsoonStormWarningMinutes = 1f;
+
+        //meteors:
+        public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
+        public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
+        public static float waveMinInterval = 0.6f;
+        public static float waveMaxInterval = 0.9f;
+        public static float waveMissChance = 0.7f;
+        public static float meteorTravelEffectDuration = 0f;
+        public static float meteorImpactDelay = 2.5f;
+        public static float meteorBlastDamageCoefficient = 17;
+        public static float meteorBlastDamageScalarPerLevel = 0.5f;
+        public static float meteorBlastRadius = 10;
+        public static float meteorBlastForce = 0;
+        public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
+
+        public StormType stormType { get; private set; } = StormType.None;
+
+
         public static StormType GetStormType()
         {
             SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
@@ -187,13 +229,6 @@ namespace SwanSongExtended
 
             return st;
         }
-
-        public const float drizzleStormDelayMinutes = 10;
-        public const float drizzleStormWarningMinutes = 3;
-        public const float rainstormStormDelayMinutes = 7;
-        public const float rainstormStormWarningMinutes = 2;
-        public const float monsoonStormDelayMinutes = 3.5f;
-        public const float monsoonStormWarningMinutes = 1f;
 
         public enum StormType
         {
@@ -217,24 +252,6 @@ namespace SwanSongExtended
                 return false;
             }
         }
-        public StormType stormType { get; private set; } = StormType.None;
-
-
-        internal List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
-
-
-        //meteors:
-        public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
-        public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
-        public static float waveMinInterval = 1.3f;
-        public static float waveMaxInterval = 2f;
-        public static float meteorTravelEffectDuration = 0f;
-        public static float meteorImpactDelay = 2.5f;
-        public static float meteorBlastDamageCoefficient = 15;
-        public static float meteorBlastDamageScalarPerLevel = 0.5f;
-        public static float meteorBlastRadius = 10;
-        public static float meteorBlastForce = 0;
-        public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
 
         public void Start()
         {
@@ -245,26 +262,11 @@ namespace SwanSongExtended
             }
             instance = this;
 
-            On.RoR2.Stage.BeginServer += Stage_BeginServer;
-
-            On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
-            On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
-
+            RoR2.Stage.onServerStageBegin += OnServerStageBegin;
         }
 
-        public void OnDestroy()
+        private void OnServerStageBegin(Stage obj)
         {
-            On.RoR2.Stage.BeginServer -= Stage_BeginServer;
-
-            On.RoR2.HoldoutZoneController.OnEnable -= RegisterHoldoutZone;
-            On.RoR2.HoldoutZoneController.OnDisable -= UnregisterHoldoutZone;
-        }
-
-        #region hooks
-
-        private void Stage_BeginServer(On.RoR2.Stage.orig_BeginServer orig, Stage self)
-        {
-            orig(self);
 
             stormType = GetStormType();
             if (stormType == StormType.None)
@@ -288,17 +290,10 @@ namespace SwanSongExtended
             stormControllerInstance.BeginStormApproach(a + Run.instance.stageRng.RangeInt(0, 1), b);
         }
 
-        private void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
+        #region hooks
+        public void OnDestroy()
         {
-            orig(self);
-            if(!holdoutZones.Contains(self))
-                holdoutZones.Add(self);
-        }
-        private void UnregisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnDisable orig, HoldoutZoneController self)
-        {
-            orig(self);
-            if(holdoutZones.Contains(self))
-                holdoutZones.Remove(self);
+            RoR2.Stage.onServerStageBegin -= OnServerStageBegin;
         }
         #endregion
     }
@@ -327,7 +322,7 @@ namespace SwanSongExtended
                 return currentState.stormState;
             }
         }
-        protected List<HoldoutZoneController> holdoutZones => StormRunBehaviorController.instance.holdoutZones;
+        protected List<HoldoutZoneController> holdoutZones => StormRunBehaviorController.holdoutZones;
         internal float stormDelayTime = 0;
         internal float stormWarningTime = 0;
         
@@ -577,9 +572,13 @@ namespace SwanSongExtended
                     this.waveTimer = UnityEngine.Random.Range(StormRunBehaviorController.waveMinInterval, StormRunBehaviorController.waveMaxInterval);
                     MeteorStormController.MeteorWave item = 
                         new MeteorStormController.MeteorWave(
-                            CharacterBody.readOnlyInstancesList.Where(body => body.teamComponent.teamIndex == TeamIndex.Player).ToArray<CharacterBody>(), 
+                            CharacterBody.readOnlyInstancesList
+                                .Where(body => body.teamComponent.teamIndex == TeamIndex.Player && !body.isFlying)
+                                .ToArray<CharacterBody>(), 
                             base.transform.position);
-                    item.hitChance = 0.2f;
+                    item.hitChance = 1 - waveMissChance;
+                    this.meteorWaves.Add(item);
+                    this.meteorWaves.Add(item);
                     this.meteorWaves.Add(item);
                 }
 

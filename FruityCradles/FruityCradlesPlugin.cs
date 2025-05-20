@@ -81,6 +81,7 @@ namespace FruityCradles
                         optionChestBehavior.dropForwardVelocityStrength = 0;
                         optionChestBehavior.openState = chestBehavior.openState;
                         optionChestBehavior.pickupPrefab = voidPotentialPrefab;
+                        optionChestBehavior.numOptions = 1;
                         UnityEngine.Object.Destroy(chestBehavior);
                     }
                 }

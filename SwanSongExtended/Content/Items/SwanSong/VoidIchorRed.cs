@@ -61,7 +61,7 @@ namespace SwanSongExtended.Items
         {
             ItemDef.Pair transformation = new ItemDef.Pair()
             {
-                itemDef1 = RoR2Content.Items.ArmorPlate, //consumes RAP
+                itemDef1 = RAP.instance.ItemsDef,//RoR2Content.Items.ArmorPlate, //consumes RAP
                 itemDef2 = instance.ItemsDef
             };
             ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);

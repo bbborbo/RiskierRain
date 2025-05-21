@@ -20,6 +20,7 @@ namespace SwanSongExtended.States
         //stolen from FireSpine
         public static float procCoefficient = 1f;
         public static float forceScalar = 1f;
+        public static float fuseTime = .4f;
 
         public static float baseDuration = 2f;
         private float duration;
@@ -86,9 +87,11 @@ namespace SwanSongExtended.States
                 damage = damageCoefficient * base.characterBody.damage,
                 force = force,
                 crit = Util.CheckRoll(this.critStat, base.characterBody.master),
-                speedOverride = 30,
+                speedOverride = 60,
                 useSpeedOverride = true,
-            };
+                fuseOverride = fuseTime,
+                useFuseOverride = true
+            };           
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
         }
 

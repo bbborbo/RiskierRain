@@ -51,7 +51,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier3;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.BrotherBlacklist, ItemTag.AIBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab();
 

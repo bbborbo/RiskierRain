@@ -80,7 +80,6 @@ namespace SwanSongExtended.Items
         {
             CharacterBody body = self.body;
             int scugItemCount = GetCount(body);
-            int scugBuffCount = body.GetBuffCount(scugBuff);
             orig(self, damageInfo);
 
             if (scugItemCount <= 0 || body.GetBuffCount(scugBuff) <= 0)

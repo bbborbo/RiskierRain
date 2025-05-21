@@ -98,6 +98,8 @@ namespace RiskierRain.SurvivorTweaks
             spin.baseRechargeInterval = spinCooldown;
             spin.cancelSprintingOnActivation = false;
             On.EntityStates.Merc.WhirlwindBase.OnEnter += SpinChanges;
+            LanguageAPI.Add(spin.skillDescriptionToken,
+                $"Quickly slice horizontally twice, dealing <style=cIsDamage>2x{Tools.ConvertDecimal(spinDamageCoefficient)} damage</style>. If airborne, slice vertically instead.");
 
             SkillDef uppercut = family.variants[1].skillDef;
             uppercut.baseRechargeInterval = uppercutCooldown;

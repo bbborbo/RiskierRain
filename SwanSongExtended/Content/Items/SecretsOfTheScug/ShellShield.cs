@@ -24,8 +24,8 @@ namespace SwanSongExtended.Items
         public static int flatBase = 0;
         [AutoConfig("Flat Barrier Stack", 20)]
         public static int flatStack = 20;
-        [AutoConfig("Barrier Decay Freeze Base", 0)]
-        public static float decayFreezeBase = 0;
+        [AutoConfig("Barrier Decay Freeze Base", 0.5f)]
+        public static float decayFreezeBase = 0.5f;
         [AutoConfig("Barrier Decay Freeze Stack", 0.5f)]
         public static float decayFreezeStack = 0.5f;
 
@@ -109,6 +109,7 @@ namespace SwanSongExtended.Items
             self.AddBarrierAuthority(barrierToAdd);
 
             self.body.AddTimedBuffAuthority(shellShieldBuff.buffIndex, decayFreezeBase + (decayFreezeStack * itemCount));
+            self.body.AddTimedBuffAuthority(RoR2Content.Buffs.CrocoRegen.buffIndex, decayFreezeBase + (decayFreezeStack * itemCount));
             self.body.AddTimedBuffAuthority(shellShieldCooldown.buffIndex, 7);
         }
     }

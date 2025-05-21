@@ -23,8 +23,8 @@ namespace SwanSongExtended.Items
         public static GameObject rainbowWavePrefab;
         [AutoConfig("Max Rainbow Wave Fly-Out Time", 10f)]
         public static float maxFlyOutTime = 010f; //0.6f
-        [AutoConfig("Rainbow Wave Scale Factor", 0.3f)]
-        public static float rainbowWaveScale = 5f; //1.0f
+        [AutoConfig("Rainbow Wave Scale Factor", 10f)]
+        public static float rainbowWaveScale = 10f; //1.0f
         [AutoConfig("Rainbow Wave Speed", 100f)]
         public static float rainbowWaveSpeed = 100f; //1.0f
 
@@ -122,7 +122,7 @@ namespace SwanSongExtended.Items
 
             ProjectileController pc = rainbowWavePrefab.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
-            rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3 (10, 10, 0) ;//testig :3
+            rainbowWavePrefab.transform.localScale = new Vector3 (rainbowWaveScale, rainbowWaveScale, rainbowWaveScale) ;//testig :3
             //ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(10, 10, 0);//testig :3
 
             ProjectileSimple ps = rainbowWavePrefab.GetComponent<ProjectileSimple>();

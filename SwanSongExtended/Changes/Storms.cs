@@ -201,7 +201,8 @@ namespace SwanSongExtended
         public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
         public static float waveMinInterval = 0.6f;
         public static float waveMaxInterval = 0.9f;
-        public static float waveMissChance = 0.7f;
+        public static float waveMissChance = 0.6f;
+        public static float meteorTargetEnemyChance = 15f;
         public static float meteorTravelEffectDuration = 0f;
         public static float meteorImpactDelay = 2.5f;
         public static float meteorBlastDamageCoefficient = 17;
@@ -306,6 +307,10 @@ namespace SwanSongExtended
     {
         public CombatDirector combatDirector;
         public EntityStateMachine mainStateMachine;
+        public static bool IsCharacterStormElite(CharacterBody body)
+        {
+            return false;
+        }
         private StormController.BaseStormState currentState
         {
             get
@@ -573,11 +578,10 @@ namespace SwanSongExtended
                     MeteorStormController.MeteorWave item = 
                         new MeteorStormController.MeteorWave(
                             CharacterBody.readOnlyInstancesList
-                                .Where(body => body.teamComponent.teamIndex == TeamIndex.Player && !body.isFlying)
+                                .Where(body => (body.teamComponent.teamIndex == TeamIndex.Player && !body.isFlying) || IsCharacterStormElite(body) || Util.CheckRoll(meteorTargetEnemyChance))
                                 .ToArray<CharacterBody>(), 
-                            base.transform.position);
+                            TeleporterInteraction.instance ? TeleporterInteraction.instance.transform.position : base.transform.position);
                     item.hitChance = 1 - waveMissChance;
-                    this.meteorWaves.Add(item);
                     this.meteorWaves.Add(item);
                     this.meteorWaves.Add(item);
                 }

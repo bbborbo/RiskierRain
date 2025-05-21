@@ -26,7 +26,7 @@ namespace FruityCradles
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityCradles";
-        public const string version = "1.0.0";
+        public const string version = "1.0.3";
         #endregion
 
         #region config
@@ -41,14 +41,13 @@ namespace FruityCradles
         public static float cradleHealthCost = 0.2f; //50
         void Awake()
         {
-
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
 
-            DoCradleSoulCost = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Pocket ICBM (incl. Artifact of Warfare)", true,
-                "Set to TRUE to rework Pocket ICBM and turn its vanilla effect into an artifact.");
-            DoCradlePotential = CustomConfigFile.Bind<bool>(modName + ": Reworks", "AtG Missile Mk.3", true,
-                "Set to TRUE to rework AtG Missile Mk.1.");
-            CradleSoulPayCost = CustomConfigFile.Bind<float>(modName + ": Reworks", "Plasma Shrimp", cradleHealthCost,
+            DoCradleSoulCost = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Change Cradle To Soul Cost", true,
+                "");
+            DoCradlePotential = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Change Cradle To Drop Potentials", true,
+                "");
+            CradleSoulPayCost = CustomConfigFile.Bind<float>(modName + ": Reworks", "Cradle Pay Cost", cradleHealthCost,
                 "Expressed as a decimal, i.e 0.2 is 20%. Rounded to the nearest 10%");
 
             VoidCradleRework();
@@ -59,11 +58,14 @@ namespace FruityCradles
             if (voidCradlePrefab)
             {
                 PurchaseInteraction cradleInteraction = voidCradlePrefab.GetComponent<PurchaseInteraction>();
-                if (cradleInteraction && DoCradleSoulCost.Value)
+                if (cradleInteraction)
                 {
-                    cradleInteraction.costType = CostTypeIndex.SoulCost;
                     cradleInteraction.cost = (int)(Mathf.RoundToInt(cradleHealthCost * 10) * 10);
-                    cradleInteraction.setUnavailableOnTeleporterActivated = true;
+                    if (DoCradleSoulCost.Value)
+                    {
+                        cradleInteraction.costType = CostTypeIndex.SoulCost;
+                        cradleInteraction.setUnavailableOnTeleporterActivated = true;
+                    }
                 }
 
                 if (DoCradlePotential.Value)
@@ -110,6 +112,10 @@ namespace FruityCradles
                     PickupIndex voidPair = PickupCatalog.FindPickupIndex(pair.itemDef2.itemIndex);
                     if (voidPair != initialDrop)
                         continue;
+                    if (pair.itemDef2.tier == ItemTier.VoidTier3)
+                        break;
+                    //if (pair.itemDef2 == DLC1Content.Items.TreasureCacheVoid)
+                    //    break;
                     PickupIndex other = PickupCatalog.FindPickupIndex(pair.itemDef1.itemIndex);
                     drops.Add(other);
                 }

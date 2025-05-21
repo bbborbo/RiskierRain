@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using R2API;
@@ -19,11 +20,19 @@ namespace BetterSoulCost
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "BetterSoulCost";
-        public const string version = "1.0.0";
+        public const string version = "1.0.2";
+        #endregion
+        #region config
+        internal static ConfigFile CustomConfigFile { get; set; }
+        public static ConfigEntry<bool> DoCradleSoulCost { get; set; }
         #endregion
 
         void Awake()
         {
+            CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
+
+            DoCradleSoulCost = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Change Soul Cost Stacking", true,
+                "If true, soul penalties will increase exponentially to approximate consistent health loss, rather than hyperbolically.");
             RoR2Application.onLoad += FixSoulPayCost;
         }
 
@@ -34,6 +43,15 @@ namespace BetterSoulCost
 
         public static void AddSoulCostToBody(CharacterBody body, BuffIndex buffIndex, float soulCost)
         {
+            if (!DoCradleSoulCost.Value)
+            {
+                int num = Mathf.CeilToInt(soulCost * 10);
+                for(int i = 0; i < num; i++)
+                {
+                    body.AddBuff((BuffIndex)buffIndex);
+                }
+                return;
+            }
             float oneMinus = 1 - soulCost;
             int currentBuffCount = body.GetBuffCount((BuffIndex)buffIndex);
             float currentHealthFraction = 1 / (1 + 0.1f * currentBuffCount);
@@ -50,6 +68,7 @@ namespace BetterSoulCost
         }
 
         #region fixes
+        [SystemInitializer(typeof(CostTypeCatalog))]
         private void FixSoulPayCost()
         {
             CostTypeDef ctd = CostTypeCatalog.GetCostTypeDef(CostTypeIndex.SoulCost);

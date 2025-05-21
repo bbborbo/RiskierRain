@@ -26,15 +26,17 @@ namespace FruityCradles
                 this.Roll();
             }
 
-            if (TeleporterInteraction.instance)
-                TeleporterInteraction.onTeleporterBeginChargingGlobal += VoidCancel;
+            //its cursed 
+            //if (TeleporterInteraction.instance)
+            //    TeleporterInteraction.onTeleporterBeginChargingGlobal += VoidCancel;
         }
 
         private void VoidCancel(TeleporterInteraction obj)
         {
             TeleporterInteraction.onTeleporterBeginChargingGlobal -= VoidCancel;
             //base.PlayAnimation("Body", OpeningLunar.OpeningStateHash, OpeningLunar.OpeningParamHash, OpeningLunar.duration);
-
+            if (!gameObject)
+                return;
             if (voidExecuteEffect != null)
             {
                 EffectManager.SpawnEffect(voidExecuteEffect, new EffectData
@@ -48,6 +50,7 @@ namespace FruityCradles
 
         public void SoTrue(Interactor interactor)
         {
+            //TeleporterInteraction.onTeleporterBeginChargingGlobal -= VoidCancel;
             this.Open();
         }
 	}

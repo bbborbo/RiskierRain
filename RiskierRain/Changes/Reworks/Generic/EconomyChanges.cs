@@ -33,7 +33,9 @@ namespace RiskierRain
         float awuAdditionalArmor = 0;
         int awuAdaptiveArmorCount = 1;
 
-        float costExponent = 1.55f;
+        static float costExponent = 1.3f;
+        static float goldRewardMultiplierGlobal = 0.6f;
+        static float expRewardMultiplierGlobal = 1;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();
@@ -171,8 +173,6 @@ namespace RiskierRain
         #endregion
 
         #region Economy
-        static float goldRewardMultiplierGlobal = 0.7f;
-        static float expRewardMultiplierGlobal = 1;
         private void EnemyRewards()
         {
             ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);

@@ -122,8 +122,8 @@ namespace SwanSongExtended.Items
 
             ProjectileController pc = rainbowWavePrefab.GetComponent<ProjectileController>();
             pc.ghostPrefab = ghost;
-            rainbowWavePrefab.transform.localScale = new Vector3 (rainbowWaveScale, rainbowWaveScale, rainbowWaveScale) ;//testig :3
-            //ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(10, 10, 0);//testig :3
+            rainbowWavePrefab.transform.localScale = Vector3.one * rainbowWaveScale;//testig :3
+            ghost.transform.localScale = Vector3.one * rainbowWaveScale + new Vector3(10, 10, 0);
 
             ProjectileSimple ps = rainbowWavePrefab.GetComponent<ProjectileSimple>();
             ps.desiredForwardSpeed = rainbowWaveSpeed;

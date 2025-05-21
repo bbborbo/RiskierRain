@@ -161,10 +161,11 @@ namespace RiskierRain.SurvivorTweaks
         private void ChangeVanillaPrimary(SkillFamily family)
         {
             SkillDef primary = family.variants[0].skillDef;
-            primary.canceledFromSprinting = false;
-            primary.keywordTokens = new string[] { "KEYWORD_AGILE", "KEYWORD_RAPID_REGEN", SwanSongExtended.Modules.CommonAssets.AcridFesterKeywordToken };
+            //primary.canceledFromSprinting = false;
+            primary.keywordTokens = new string[] { /*"KEYWORD_AGILE",*/ "KEYWORD_RAPID_REGEN", SwanSongExtended.Modules.CommonAssets.AcridFesterKeywordToken };
             LanguageAPI.Add("CROCO_PRIMARY_DESCRIPTION", 
-                $"<style=cIsUtility>Agile</style>. Maul an enemy for <style=cIsDamage>200% damage</style>. Every 3rd hit is <style=cIsHealing>Regenerative</style> and <style=cIsVoid>Festering</style> for <style=cIsDamage>400% damage</style>.");
+                //$"<style=cIsUtility>Agile</style>. " +
+                $"Maul an enemy for <style=cIsDamage>200% damage</style>. Every 3rd hit is <style=cIsHealing>Regenerative</style> and <style=cIsVoid>Festering</style> for <style=cIsDamage>400% damage</style>.");
             On.EntityStates.Croco.Slash.OnEnter += ChangeCrocoSlashDuration;
             On.EntityStates.Croco.Slash.AuthorityModifyOverlapAttack += CrocoSlashDamageType;
         }

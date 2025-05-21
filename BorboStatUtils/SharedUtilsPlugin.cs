@@ -32,6 +32,7 @@ namespace RainrotSharedUtils
         #endregion
 
         public const string executeKeywordToken = "2R4R_EXECUTION_KEYWORD";
+        public const string noAttackSpeedKeywordToken = "2R4R_NOATTACKSPEED_KEYWORD";
         public const float survivorExecuteThreshold = 0.15f;
 
         public void Awake()
@@ -42,7 +43,11 @@ namespace RainrotSharedUtils
                 $"<style=cKeywordName>Finisher</style>" +
                 $"<style=cSub>Enemies targeted by this skill can be " +
                 $"<style=cIsHealth>instantly killed</style> if below " +
-                $"<style=cIsHealth>{survivorExecuteThreshold  * 100}% health</style>.</style>");
+                $"<style=cIsHealth>{survivorExecuteThreshold * 100}% health</style>.</style>");
+            LanguageAPI.Add(noAttackSpeedKeywordToken,
+                $"<style=cKeywordName>Exacting</style>" +
+                $"<style=cSub>This skill <style=cIsHealth>does not gain attack speed bonuses</style>. " +
+                $"Instead, attack speed <style=cIsDamage>increases total damage</style>.</style>");
         }
     }
 }

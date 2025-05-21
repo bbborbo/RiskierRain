@@ -105,6 +105,12 @@ namespace RiskierRain.SurvivorTweaks
             Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
             LanguageAPI.Add("MAGE_SPECIAL_FIRE_DESCRIPTION", $"Burn all enemies in front of you for <style=cIsDamage>{Tools.ConvertDecimal(flamethrowerDamage)} damage</style>. " +
                 $"Each hit has a <style=cIsDamage>50% chance</style> to <style=cIsDamage>Ignite</style>.");
+            On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
+            {
+                Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+                orig(self);
+                Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+            };
             if (false)
             {
                 On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>

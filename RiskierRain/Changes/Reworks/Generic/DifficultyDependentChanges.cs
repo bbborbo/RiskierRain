@@ -470,8 +470,11 @@ namespace RiskierRain
 
         private void EclipseSpiteArtifact(On.RoR2.RunArtifactManager.orig_SetArtifactEnabled orig, RunArtifactManager self, ArtifactDef artifactDef, bool newEnabled)
         {
-            if (Run.instance != null)
+            if (Run.instance == null)
+            {
                 orig(self, artifactDef, newEnabled);
+                return;
+            }
 
             if (Run.instance.selectedDifficulty >= eclipseLevelSpiteArtifact)
             {

@@ -183,21 +183,11 @@ namespace RiskierRain
         static float GetCompensatedDifficultyFraction()
         {
             float boost = GetAmbientLevelBoost();
-            float ambientLevel = Run.instance.ambientLevel;
-            // less than 1 allows for enemies to drop slightly more gold due to ALB
-            // greater than 1 is kinda pointless but it overcorrects for ALB
 
-            float actualLevelStat = 1 + (0.3f * ambientLevel);
-            float intendedLevelStat = 1 + (0.3f * (ambientLevel - boost));
-            float rewardMult = intendedLevelStat / actualLevelStat;
-
-            float compensated = 1;
             float entryDiffCoeff = (Stage.instance.entryDifficultyCoefficient - boost);
-            if (entryDiffCoeff > 0)
-                compensated = entryDiffCoeff / (Run.instance.compensatedDifficultyCoefficient - boost);
-            else
+            if (entryDiffCoeff <= 0)
                 return 1;
-            return rewardMult * compensated;
+            return entryDiffCoeff / (Run.instance.compensatedDifficultyCoefficient);
         }
 
         private static void FixGoldRewards(ILContext il)

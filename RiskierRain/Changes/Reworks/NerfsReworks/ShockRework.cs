@@ -19,7 +19,7 @@ namespace RiskierRain
 {
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
-        public static float shockForceExitFraction = 0.15f;
+        public static float shockForceExitFraction = 0.10f;
         private void ShockBuff()
         {
             LanguageAPI.Add("KEYWORD_SHOCKING",
@@ -39,7 +39,10 @@ namespace RiskierRain
         private void ShockSparkOnExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)
         {
             if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
-                orig(self);
+            {
+
+            }
+            orig(self);
         }
 
         private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)

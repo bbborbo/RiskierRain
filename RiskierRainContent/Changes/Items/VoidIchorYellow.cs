@@ -46,7 +46,8 @@ namespace RiskierRainContent.Items
         private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1));
+            if(itemCount > 0)
+                args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1));
         }
 
         public override void Init(ConfigFile config)

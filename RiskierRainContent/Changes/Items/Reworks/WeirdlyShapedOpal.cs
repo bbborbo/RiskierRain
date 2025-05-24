@@ -101,8 +101,11 @@ namespace RiskierRainContent.Items
 			int itemCount = GetCount(sender);
 			int buffCount = sender.GetBuffCount(opalStatBuff);
 
-			args.armorAdd += itemCount * ((buffCount * opalArmorPerBuff) + opalArmorBase);
-			args.baseRegenAdd += itemCount * ((buffCount * opalRegenPerBuff) + opalRegenBase) * (1 + (0.2f * sender.level));
+			if(itemCount > 0 && buffCount > 0)
+			{
+				args.armorAdd += itemCount * ((buffCount * opalArmorPerBuff) + opalArmorBase);
+				args.baseRegenAdd += itemCount * ((buffCount * opalRegenPerBuff) + opalRegenBase) * (1 + (0.2f * sender.level));
+			}
 		}
 
 		private void AddOpalItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)

@@ -250,7 +250,7 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldloc, countLoc);
             c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
             {
-                float newFlatHealAmt = monsterToothFlatHeal * (itemCount - 1);
+                float newFlatHealAmt = monsterToothFlatHeal * itemCount;
 
                 return newFlatHealAmt;
             });
@@ -286,7 +286,7 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldloc, countLoc);
             c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
             {
-                float newFlatHealAmt = medkitFlatHeal * (itemCount - 1);
+                float newFlatHealAmt = medkitFlatHeal * (itemCount);
 
                 return newFlatHealAmt;
             });

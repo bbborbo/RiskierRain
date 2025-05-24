@@ -27,7 +27,7 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 1f; //1f
+        public static float baseScalingMultiplier = 1.1f; //1f
         public static float difficultyIncreasePerMinutePerDifficulty = 0.01f; //0f
         public static float difficultyIncreasePerMinuteBase = 1.0f; //1f
         /// <summary>

@@ -20,7 +20,7 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         #region buffs
-        float deathMarkBonusDamage = 0.3f;
+        public static float deathMarkBonusDamage = 0.3f;
 
         float elephantBuffDuration = 10;
         int elephantArmor = 200;
@@ -47,85 +47,6 @@ namespace RiskierRain
         {
             self.characterBody.AddTimedBuff(RoR2Content.Buffs.ElephantArmorBoost, elephantBuffDuration);
             return true;
-        }
-
-        
-        private void ShockBuff()
-        {
-            
-            On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
-            On.EntityStates.ShockState.OnExit += ShockBuffExit;
-            On.RoR2.HealthComponent.TakeDamageProcess += ShockHit;
-        }
-
-        private void ShockHit(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
-        {
-            if (damageInfo.damageType.damageType.HasFlag(DamageType.Shock5s)) 
-            { 
-                //GameObject attacker = damageInfo.attacker;
-                self.body.AddTimedBuff(CoreModules.Assets.shockMarker, CoreModules.Assets.shockMarkerDuration);//add authority
-            }
-            orig(self, damageInfo);
-        }
-
-        
-        private void ShockBuffEnter(On.EntityStates.ShockState.orig_OnEnter orig, EntityStates.ShockState self)
-        {
-            orig(self);
-        }
-
-        private void ShockBuffExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)
-        {
-            if (self == null)
-            {
-                Debug.Log("shockstate null");
-            }
-            else
-            {
-                if (self.characterBody == null)
-                {
-                    Debug.Log("body null");
-                }
-                else
-                {
-                    if (self.characterBody.HasBuff(CoreModules.Assets.shockMarker))//it breaks here!
-                    {
-                        HealthComponent hcVictim = self.healthComponent;                        
-                        GameObject attackerObject = hcVictim.lastHitAttacker;
-                        if(attackerObject == null)
-                        {
-                        }
-                        else 
-                        {
-                            CharacterBody attacker = attackerObject.GetComponent<CharacterBody>();
-                            if (attacker != null)
-                            {
-                                if (attacker.maxShield > 0 && attacker.healthComponent?.shield != attacker.maxShield)
-                                {
-                                    ShockHeal(attacker.healthComponent);
-                                }
-
-                            }
-                        }                        
-                    }
-                }
-            }
-            //self.characterBody.RemoveBuff(Assets.shockMarker);
-            orig(self);
-        }
-        private void ShockHeal(HealthComponent attacker)
-        {
-            if (!attacker.body.HasBuff(CoreModules.Assets.shockHealCooldown))
-            {
-                float  missingShieldPercent = (attacker.body.maxShield - attacker.shield) / attacker.body.maxShield;
-                float maxShieldPercent = attacker.body.maxShield / attacker.fullCombinedHealth;
-                int cooldownToApply = (int)((maxShieldPercent * missingShieldPercent) * 20);
-                for(int i = 0; i < cooldownToApply; i++)
-                {
-                    attacker.body.AddTimedBuff(CoreModules.Assets.shockHealCooldown, i + 1);
-                }
-                attacker.ForceShieldRegen(); //the buff runs out slightly before the shockstate does, for some reason. im gonna call it a feature for now
-            }
         }
         #endregion
 
@@ -210,9 +131,10 @@ namespace RiskierRain
                 ILHook dmfs = new ILHook(typeof(GlobalEventManager).GetMethod("ProcDeathMark", (BindingFlags)(-1)), DeathMarkFix_Stacking);
                 IL.RoR2.HealthComponent.TakeDamageProcess += DeathMarkFix_Damage;
                 LanguageAPI.Add("ITEM_DEATHMARK_DESC",
-                    "Enemies with <style=cIsDamage>4</style> or more debuffs are <style=cIsDamage>marked for death</style>, " +
-                    "increasing damage taken by <style=cIsDamage>30%</style> <style=cStack>(+30% per stack)</style> " +
-                    "from all sources for <style=cIsUtility>7</style> seconds.");
+                    $"Enemies with <style=cIsDamage>4</style> or more debuffs are " +
+                    $"<style=cIsDamage>marked for death</style>, increasing damage taken by " +
+                    $"<style=cIsDamage>{Tools.ConvertDecimal(deathMarkBonusDamage)}</style> <style=cStack>(+{Tools.ConvertDecimal(deathMarkBonusDamage)} per stack)</style> " +
+                    $"from all sources for <style=cIsUtility>7</style> seconds.");
             }
         }
 

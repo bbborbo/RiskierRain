@@ -24,6 +24,7 @@ namespace RiskierRain.SurvivorTweaks
     {
         public static bool isLoaded;
 
+        public static float acridBaseDamage = 9; //15
         public static float poisonDuration = 10; //10
         public static float blightDuration = 5; //5
 
@@ -66,7 +67,7 @@ namespace RiskierRain.SurvivorTweaks
 
             CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             body.baseMoveSpeed = 8;//7
-            body.baseDamage = 12; //15
+            body.baseDamage = acridBaseDamage; //15
 
             ChangePassive();
 

@@ -76,7 +76,7 @@ namespace RainrotSharedUtils.Frost
                 blastAttack.baseForce = baseForce;
                 blastAttack.teamIndex = attackerBody.teamComponent.teamIndex;
                 blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
-                blastAttack.damageType = new DamageTypeCombo(DamageTypeExtended.Generic, DamageTypeExtended.Frost, damageSource);
+                blastAttack.damageType = new DamageTypeCombo(DamageType.Generic, DamageTypeExtended.Frost, damageSource);
                 blastAttack.Fire();
 
                 //return;

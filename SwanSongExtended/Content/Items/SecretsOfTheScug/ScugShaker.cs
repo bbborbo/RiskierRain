@@ -157,7 +157,7 @@ namespace SwanSongExtended.Items
                 delayBlast.maxTimer = 8f;//BombArtifactManager.bombFuseTimeout;
                 delayBlast.timerStagger = 0f;
                 delayBlast.falloffModel = BlastAttack.FalloffModel.None;
-                delayBlast.damageType.damageType = DamageType.Frost;
+                delayBlast.damageType = new DamageTypeCombo(DamageType.Generic, DamageTypeExtended.Frost, DamageSource.NoneSpecified);
                 component2.teamIndex = a.body.teamComponent.teamIndex;
                 NetworkServer.Spawn(gameObject);
             }

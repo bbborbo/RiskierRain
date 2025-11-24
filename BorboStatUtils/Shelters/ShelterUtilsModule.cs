@@ -109,9 +109,9 @@ namespace RainrotSharedUtils.Shelters
         }
 
 
-        private static void MockShelter_TP(On.RoR2.TeleporterInteraction.ChargingState.orig_OnExit orig, BaseState self)
+        private static void MockShelter_TP(On.RoR2.TeleporterInteraction.ChargingState.orig_OnExit orig, TeleporterInteraction.ChargingState self)
         {
-            HoldoutZoneController zone = (self as TeleporterInteraction.ChargingState).teleporterInteraction.holdoutZoneController;
+            HoldoutZoneController zone = self.teleporterInteraction.holdoutZoneController;
             float radius = zone.currentRadius;
             GameObject indicator = zone.radiusIndicator.gameObject;
             MakeMockShelter(indicator, radius, 25f);

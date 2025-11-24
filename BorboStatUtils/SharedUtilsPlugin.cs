@@ -30,7 +30,7 @@ namespace RainrotSharedUtils
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RainrotSharedUtils";
-        public const string version = "1.1.0";
+        public const string version = "1.1.1";
         #endregion
 
         public const string shelterKeywordToken = "2R4R_SHELTER_KEYWORD";

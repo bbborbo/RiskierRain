@@ -257,10 +257,17 @@ namespace MoreStats
             {
                 //get stats
                 CustomStats = GetMoreStatsFromBody(body);
+                if (body.master)
+                {
+                    body.master.luck -= CustomStats.luckFromBody;
+                }
                 CustomStats.ResetStats();
 
                 if (body.master)
-                    body.master.luck = CustomStats.luckFromMaster + StatMods.luckAdd;
+                {
+                    body.master.luck += StatMods.luckAdd;
+                    CustomStats.luckFromBody = StatMods.luckAdd;
+                }
 
                 CustomStats.burnChance = StatMods.burnChanceOnHit;
                 //CustomStats.chillChance = StatMods.chillChanceOnHit;
@@ -464,13 +471,14 @@ namespace MoreStats
         #region luck
         private static void GetMasterLuck(On.RoR2.CharacterMaster.orig_OnInventoryChanged orig, CharacterMaster self)
         {
-            orig(self);
             CharacterBody body = self.GetBody();
-            if (body == null)
-                return;
-            MoreStatCoefficients customStats = GetMoreStatsFromBody(body);
-            customStats.luckFromMaster = self.luck;
-            //body.RecalculateStats();
+            if (body != null)
+            {
+                MoreStatCoefficients customStats = GetMoreStatsFromBody(body);
+                customStats.luckFromBody = 0;
+            }
+
+            orig(self);
         }
 
         private static bool RoundLuckInCheckRoll(On.RoR2.Util.orig_CheckRoll_float_float_CharacterMaster orig, float percentChance, float luck, CharacterMaster effectOriginMaster)
@@ -601,6 +609,7 @@ namespace MoreStats
         public float barrierDecayDynamicHalfLife = 0;
         public float barrierGenRate = 0;
 
+        public float luckFromBody = 0;
         public float luckFromMaster = 0;
         public float burnChance = 0;
         //public float chillChance = 0;
@@ -622,6 +631,8 @@ namespace MoreStats
             barrierDecayFrozen = false;
             barrierDecayDynamicHalfLife = 0;
             barrierGenRate = 0;
+
+            luckFromBody = 0;
 
             burnChance = 0;
             //chillChance = 0;     

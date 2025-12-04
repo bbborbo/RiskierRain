@@ -30,7 +30,7 @@ namespace SwanSongExtended.Interactables
 
         public override string prefabName => "eggPile";
 
-        public override bool ShouldCloneModel => false;
+        public override bool ShouldCloneModel => true;
 
         public override float voidSeedWeight => 0.05f;
 
@@ -49,7 +49,7 @@ namespace SwanSongExtended.Interactables
             (
                 unavailableDuringTeleporter: false,
                 sacrificeWeightScalar: 1,
-                maxSpawnsPerStage: 1
+                maxSpawnsPerStage: 3
             );
 
         public override string[] validScenes => new string[]
@@ -72,10 +72,6 @@ namespace SwanSongExtended.Interactables
         public override void Init()
         {
             base.Init();
-            InteractableDropPickup idi = InteractionComponent.gameObject.AddComponent<InteractableDropPickup>();
-            idi.dropTable = GenerateWeightedSelection();
-            idi.destroyOnUse = true;
-            idi.purchaseInteraction = InteractionComponent;
             //InteractionComponent.onPurchase.AddListener(idi.OnInteractionBegin);
             //return new UnityAction<Interactor>(idi.OnInteractionBegin);
             //return idi.OnInteractionBegin;
@@ -92,16 +88,16 @@ namespace SwanSongExtended.Interactables
 
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
             int eggsToHide = 0;
-            using (IEnumerator<CharacterMaster> enumerator = CharacterMaster.readOnlyInstancesList.GetEnumerator())
+            foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
             {
-                while (enumerator.MoveNext())
+                if (master.inventory.GetItemCount(Egg.instance.ItemsDef) > 0)
                 {
-                    if (enumerator.Current.inventory.GetItemCount(Egg.instance.ItemsDef) > 0)
-                    {
-                        eggsToHide += eggsPerPlayer;
-                    }
+                    eggsToHide += eggsPerPlayer;
                 }
             }
+            if (eggsToHide <= 0)
+                return;
+
             for (int j = 0; j < eggsToHide; j++)
             {
                 DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(EggPile.instance.customInteractable.spawnCard, new DirectorPlacementRule
@@ -113,11 +109,9 @@ namespace SwanSongExtended.Interactables
 
         public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)
         {
-            return null;
             InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
             idi.destroyOnUse = true;
-            return new UnityAction<Interactor>(idi.OnInteractionBegin);
             return idi.OnInteractionBegin;
         }
         private ExplicitPickupDropTable GenerateWeightedSelection()

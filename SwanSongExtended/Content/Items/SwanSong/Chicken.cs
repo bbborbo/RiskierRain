@@ -18,8 +18,8 @@ namespace SwanSongExtended.Items
         public static BuffDef foodPoisoning;
         public static float baseMaxHealth = 0.3f;
         public static float stackMaxHealth = 0.2f;
-        public static float baseRegenPenalty = 5f;
-        public static float stackRegenPenalty = 5f;
+        public static float baseRegenPenalty = 2f;
+        public static float stackRegenPenalty = 2f;
         public static float regenPenaltyChance = 40f;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Raw Chicken";
@@ -104,11 +104,7 @@ namespace SwanSongExtended.Items
         {
             if (body)
             {
-                float regenPenaltyChance = Chicken.regenPenaltyChance;
-                if (Run.instance.stageClearCount < 1)
-                    regenPenaltyChance = Math.Min(0.01f, Chicken.regenPenaltyChance);
-                else if (Run.instance.stageClearCount < 2)
-                    regenPenaltyChance = Chicken.regenPenaltyChance / 2;
+                float regenPenaltyChance = GetPoisonChance();
 
                 if (!Util.CheckRoll(100 - regenPenaltyChance, body.master))
                 {
@@ -118,6 +114,17 @@ namespace SwanSongExtended.Items
                     }
                 }
             }
+        }
+
+        private float GetPoisonChance()
+        {
+            if (body.bodyIndex == BodyCatalog.FindBodyIndex("FalseSonBody"))
+                return 100;
+            if (Run.instance.stageClearCount < 1)
+                return Math.Min(0.01f, Chicken.regenPenaltyChance);
+            if (Run.instance.stageClearCount < 2)
+                return Chicken.regenPenaltyChance / 2;
+            return Chicken.regenPenaltyChance;
         }
     }
 }

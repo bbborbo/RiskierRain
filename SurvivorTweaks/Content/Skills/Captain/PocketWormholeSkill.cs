@@ -40,7 +40,7 @@ namespace SurvivorTweaks.Skills
         public override string TOKEN_IDENTIFIER => "CAPTAINTUNNEL";
 
         //public override Type RequiredUnlock => (typeof(UgornsMusicUnlock));
-        public override Sprite Icon => null;// assetBundle.LoadAsset<Sprite>(CommonAssets.iconsPath + "Skill/" + "PocketWormhole" + ".png");
+        public override Sprite Icon => assetBundle.LoadAsset<Sprite>("Assets/Icons/pocketwormhole.png");
 
         public override Type ActivationState => typeof(PocketWormhole);
 
@@ -52,8 +52,14 @@ namespace SurvivorTweaks.Skills
             (
                 mustKeyPress: true,
                 isCombatSkill: false,
-                beginSkillCooldownOnSkillEnd: true
+                beginSkillCooldownOnSkillEnd: true,
+                canceledFromSprinting: true
             );
+        public override void Init()
+        {
+            base.Init();
+            Content.AddEntityState(typeof(FireWormhole));
+        }
 
         public override void Hooks()
         {

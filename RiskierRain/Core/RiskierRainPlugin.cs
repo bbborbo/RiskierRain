@@ -19,6 +19,7 @@ using static R2API.RecalculateStatsAPI;
 using RainrotSharedUtils;
 using MonoMod.RuntimeDetour;
 using UnityEngine.Networking;
+using MonoMod.Cil;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -60,10 +61,9 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.0.18";
+        public const string version = "1.2.10";
 
         public static PluginInfo PInfo { get; private set; }
-
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
         public static string iconsPath => CoreModules.Assets.iconsPath;
         public static string eliteMaterialsPath => CoreModules.Assets.eliteMaterialsPath;
@@ -146,6 +146,23 @@ namespace RiskierRain
               typeof(RiskierRainPlugin).GetMethod(nameof(ReflectOnThatThang), (BindingFlags)(-1))
             );
 
+            IL.RoR2.GenericSkill.RunRecharge += FuckAspdScalingOnCooldowns;
+            IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
+
+            void FuckAspdScalingOnCooldowns(ILContext il)
+            {
+                ILCursor c = new ILCursor(il);
+
+                bool ilFound = c.TryGotoNext(MoveType.After,
+                    x => x.MatchLdfld<RoR2.Skills.SkillDef>(nameof(RoR2.Skills.SkillDef.attackSpeedBuffsRestockSpeed))
+                    );
+                if (ilFound)
+                {
+                    c.Emit(Mono.Cecil.Cil.OpCodes.Pop);
+                    c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+                }
+            }
+
             ///summary
             ///- nerfs healing
             ///- nerfs mobility
@@ -227,7 +244,7 @@ namespace RiskierRain
             //shock restores shield
             if (GetConfigBool(true, "Shock Buff"))
             {
-                //ShockBuff();
+                ShockBuff();
             }
             #endregion
 
@@ -338,6 +355,18 @@ namespace RiskierRain
             if (GetConfigBool(true, "Bottled Chaos"))
             {
                 BuffBottledChaos();
+            }
+
+            if(GetConfigBool(true, "Command/Potential Armor"))
+            {
+                On.RoR2.UI.PickupPickerPanel.Awake += CommandOrPotentialArmor;
+                void CommandOrPotentialArmor(On.RoR2.UI.PickupPickerPanel.orig_Awake orig, RoR2.UI.PickupPickerPanel self)
+                {
+                    RoR2.LocalUser user = RoR2.LocalUserManager.GetFirstLocalUser();
+                    RoR2.CharacterBody body = user.cachedBody;
+                    body.AddTimedBuffAuthority(RoR2.RoR2Content.Buffs.HiddenInvincibility.buffIndex, 4);
+                    orig(self);
+                };
             }
             //this.MakeMinionsInheritOnKillEffects();
 
@@ -499,13 +528,14 @@ namespace RiskierRain
             //ambient level
             if (GetConfigBool(true, "Difficulty: Difficulty Scaling Changes"))
             {
-                AmbientLevelDifficulty();
-                VoidFieldsStageType(); //related to ambient difficulty boost
+                ChangeDifficultyCoefficientCalculation();
+                FreezeTimeScalingOnFinalLevels();
+                //VoidFieldsStageType(); //related to ambient difficulty boost
             }
             //void fields time cost
             if (GetConfigBool(true, "Difficulty: Void Fields Time Cost"))
             {
-                VoidFieldsTimeCost();
+                //VoidFieldsTimeCost();
             }
 
             //elite stats
@@ -538,10 +568,10 @@ namespace RiskierRain
                 ChangeDirectorStats();
             }
 
-            //eclipse changes
-            if (GetConfigBool(true, "Difficulty: Post-Charge TP Boss Weaken"))
+            //pity charge
+            if (GetConfigBool(true, "Difficulty: pity charge"))
             {
-                AddTpBossWeaken();
+                AddPityCharge();
             }
 
             //newt shrine
@@ -646,6 +676,18 @@ namespace RiskierRain
             if (GetConfigBool(true, "Enemy: Xi Construct"))
             {
                 XiAIFix();
+            }
+
+            //xi construct
+            if (GetConfigBool(true, "Enemy: Templar"))
+            {
+                NerfTemplar();
+            }
+
+            //xi construct
+            if (GetConfigBool(true, "Enemy: Chimera Wisp"))
+            {
+                NerfChimeraWisp();
             }
 
             //gup

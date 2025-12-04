@@ -36,8 +36,8 @@ namespace RiskierRain
 
         static float costExponent = 1f;
         static float goldRewardMultiplierGlobal = 0.6f;
-        static float expRewardMultiplierGlobal = 1;
-        static float compensationForStartingLevel = 0;
+        static float expRewardMultiplierGlobal = 0.6f;
+        static float compensationForStartingLevel = 0.5f;
 
         public float interactableCreditsMultiplier = 1.5f;
         public float monsterCreditsMultiplier = 1.5f;
@@ -143,8 +143,27 @@ namespace RiskierRain
 
         private void BloodShrineRewardRework()
         {
-            On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
+            IL.RoR2.ShrineBloodBehavior.AddShrineStack += ShrineBloodReward;
+            //On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
         }
+
+        private void ShrineBloodReward(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            int rewardLoc = 1;
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdfld<ShrineBloodBehavior>(nameof(ShrineBloodBehavior.goldToPaidHpRatio))
+                );
+            c.GotoNext(MoveType.After,
+                x => x.MatchStloc(out rewardLoc)
+                );
+            c.EmitDelegate<Func<uint>>(() =>
+            {
+                return (uint)Run.instance.GetDifficultyScaledCost(25, RoR2.Stage.instance.entryDifficultyCoefficient);
+            });
+            c.Emit(OpCodes.Stloc, rewardLoc);
+        }
+
         private void ShrineBloodBehavior_Start(On.RoR2.ShrineBloodBehavior.orig_Start orig, ShrineBloodBehavior self)
         {
             orig(self);
@@ -188,13 +207,16 @@ namespace RiskierRain
         static float GetCompensatedDifficultyFraction()
         {
             float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
-            if (entryDiffCoeff <= 0)
-                return 1;
-            else if (compensationForStartingLevel > 0)
+            float startingLevel = GetAmbientLevelBoost();
+            if (entryDiffCoeff < startingLevel && compensationForStartingLevel > 0)
             {
-                entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - GetAmbientLevelBoost(), compensationForStartingLevel);
+                entryDiffCoeff = 0;
             }
-            return entryDiffCoeff / (Run.instance.compensatedDifficultyCoefficient);
+            else if(compensationForStartingLevel > 0)
+            {
+                entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingLevel, compensationForStartingLevel);
+            }
+            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
         }
 
         private static void FixGoldRewards(ILContext il)
@@ -204,7 +226,7 @@ namespace RiskierRain
             c.EmitDelegate<Func<uint, uint>>((money) =>
             {
                 float compensated = GetCompensatedDifficultyFraction();
-                return (uint)(money * compensated * goldRewardMultiplierGlobal);
+                return (uint)Mathf.CeilToInt(money * compensated * goldRewardMultiplierGlobal);
             });
             c.Emit(OpCodes.Starg, 1);
         }
@@ -215,7 +237,7 @@ namespace RiskierRain
             c.EmitDelegate<Func<uint, uint>>((exp) =>
             {
                 float compensated = GetCompensatedDifficultyFraction();
-                return (uint)(exp * compensated * expRewardMultiplierGlobal);
+                return (uint)Mathf.CeilToInt(exp * compensated * expRewardMultiplierGlobal);
             });
             c.Emit(OpCodes.Starg, 1);
         }
@@ -728,7 +750,7 @@ namespace RiskierRain
         #region hacking criteria
         void ChangeHackingCriteria()
         {
-            On.EntityStates.CaptainSupplyDrop.HackingMainState.PurchaseInteractionIsValidTarget += BlacklistGoldChest;
+            //On.EntityStates.CaptainSupplyDrop.HackingMainState.PurchaseInteractionIsValidTarget += BlacklistGoldChest;
         }
 
         private bool BlacklistGoldChest(HackingMainState.orig_PurchaseInteractionIsValidTarget orig, PurchaseInteraction purchaseInteraction)
@@ -740,9 +762,9 @@ namespace RiskierRain
         #endregion
 
         #region halcyonite shrine
-        public static int halcyoniteShrineLowGoldCost = 40;//75
-        public static int halcyoniteShrineMidGoldCost = 100;//150
-        public static int halcyoniteShrineMaxGoldCost = 150;//300
+        public static int halcyoniteShrineLowGoldCost = 35;//75
+        public static int halcyoniteShrineMidGoldCost = 75;//150
+        public static int halcyoniteShrineMaxGoldCost = 125;//300
         public static float halcyoniteShrineRadius = 30;//30
 
         void ChangeHalcyoniteShrineGoldRequirements()
@@ -753,17 +775,11 @@ namespace RiskierRain
                 HalcyoniteShrineInteractable hsi = halcyoniteShrinePrefab.GetComponent<HalcyoniteShrineInteractable>();
                 if (hsi)
                 {
-                    ShelterProviderBehavior shelter = halcyoniteShrinePrefab.AddComponent<ShelterProviderBehavior>();
-                    shelter.fallbackRadius = halcyoniteShrineRadius;
-                    shelter.enabled = false;
-
                     hsi.lowGoldCost = halcyoniteShrineLowGoldCost;
                     hsi.midGoldCost = halcyoniteShrineMidGoldCost;
                     hsi.maxGoldCost = halcyoniteShrineMaxGoldCost;
                 }
             }
-            On.EntityStates.ShrineHalcyonite.ShrineHalcyoniteNoQuality.OnEnter += ShrineHalcyoniteShelterStart;
-            On.EntityStates.ShrineHalcyonite.ShrineHalcyoniteFinished.OnEnter += ShrineHalcyoniteShelterEnd;
         }
 
         private void ShrineHalcyoniteShelterEnd(On.EntityStates.ShrineHalcyonite.ShrineHalcyoniteFinished.orig_OnEnter orig, EntityStates.ShrineHalcyonite.ShrineHalcyoniteFinished self)

@@ -8,17 +8,24 @@ using R2API;
 using RainrotSharedUtils;
 using RainrotSharedUtils.Shelters;
 using RoR2;
+using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using static SurvivorTweaks.Modules.Language.Styling;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
     class EngiTweaks : SurvivorTweakBase<EngiTweaks>
     {
+        public static float grenadeCooldown = 1.2f; 
+        public static float grenadeDamage = 1.3f; //1.0f
+        public static float grenadeStunChance = 25; //0
+        public static int grenadeCount = 3;
+        public static int grenadeStock = 1;
         public static float mineArmingDuration = 2f;//3f
         public static GameObject bubbleShieldPrefab;
         public static float bubbleShieldRadius = 15;//10
@@ -28,19 +35,67 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            ShelterUtilsModule.UseCustomShelters = true;
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
-
-            //primary
-            primary.variants[0].skillDef.cancelSprintingOnActivation = false;
-            LanguageAPI.Add("ENGI_PRIMARY_DESCRIPTION", "<style=cIsUtility>Agile.</style> Charge up to <style=cIsDamage>8</style> grenades that deal <style=cIsDamage>100% damage</style> each.");
 
             //secondary
             IL.EntityStates.Engi.Mine.Detonate.Explode += DetonationRadiusBoost;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += ChangeMineArmTime;
 
+            //primary
+            DoPrimary(primary);
             //utility
             DoUtility(utility);
+        }
+
+        private void DoPrimary(SkillFamily primary)
+        {
+            SkillDef nade = primary.variants[0].skillDef;
+            nade.cancelSprintingOnActivation = false;
+            nade.keywordTokens = new string[] { "KEYWORD_AGILE", "KEYWORD_STUNNING" };
+            nade.activationState = new SerializableEntityStateType(typeof(FireGrenades));
+            nade.stockToConsume = 1;
+            nade.baseMaxStock = grenadeStock;
+            nade.rechargeStock = grenadeStock;
+            nade.baseRechargeInterval = grenadeCooldown;
+            nade.beginSkillCooldownOnSkillEnd = true;
+            nade.resetCooldownTimerOnUse = false;
+
+            //primary
+            LanguageAPI.Add(nade.skillDescriptionToken, 
+                $"<style=cIsUtility>Agile</style>. <style=cIsDamage>Stunning</style>. " +
+                $"Fire <style=cIsDamage>{grenadeCount * grenadeStock}</style> grenades that deal " +
+                $"<style=cIsDamage>{ConvertDecimal(grenadeDamage)} damage</style> each.");
+
+            On.EntityStates.Engi.EngiWeapon.FireGrenades.OnEnter += GrenadeStats;
+            IL.EntityStates.Engi.EngiWeapon.FireGrenades.FireGrenade += GrenadeStunChance;
+        }
+
+        private void GrenadeStats(On.EntityStates.Engi.EngiWeapon.FireGrenades.orig_OnEnter orig, FireGrenades self)
+        {
+            FireGrenades.damageCoefficient = grenadeDamage;
+            self.grenadeCountMax = grenadeCount;
+            orig(self);
+        }
+
+        private void GrenadeStunChance(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<ProjectileManager>(nameof(ProjectileManager.FireProjectile))
+                );
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<FireProjectileInfo, EntityState, FireProjectileInfo>>((projectileInfo, self) =>
+            {
+                if(Util.CheckRoll(grenadeStunChance, self.characterBody.master))
+                {
+                    projectileInfo.damageTypeOverride = new DamageTypeCombo(DamageType.Stun1s, DamageTypeExtended.Generic, DamageSource.Primary);
+                }
+                projectileInfo.force = 100f;
+                return projectileInfo;
+            });
         }
 
         private void DoUtility(SkillFamily slot)

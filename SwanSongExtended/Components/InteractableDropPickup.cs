@@ -21,7 +21,6 @@ namespace SwanSongExtended.Components
             {
                 dropletOrigin = this.transform;
             }
-            purchaseInteraction.onPurchase.AddListener(new UnityAction<Interactor>(OnInteractionBegin));
         }
         public void OnInteractionBegin(Interactor activator)
         {

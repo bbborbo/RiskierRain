@@ -11,6 +11,8 @@ using RoR2.ExpansionManagement;
 using JumpRework;
 using static MoreStats.StatHooks;
 using static MoreStats.OnJump;
+using SwanSongExtended.Modules;
+using UnityEngine.AddressableAssets;
 
 namespace SwanSongExtended.Items
 {
@@ -19,6 +21,7 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Items : Cloud In A Bottle";
         public static float verticalBonusOnCloudJump = 0.15f;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
+        public static BuffDef cloudReadyBuff;
         internal static float smokeBombRadius = 13f;
         static float smokeBombDamageCoefficient = 1f;
         static float smokeBombProcCoefficient = 1f;
@@ -49,6 +52,14 @@ namespace SwanSongExtended.Items
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
+        }
+        public override void Init()
+        {
+            cloudReadyBuff = Content.CreateAndAddBuff(
+                "bdCloudReady",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion(),
+                Color.white, false, false);
+            base.Init();
         }
 
         public override void Hooks()
@@ -112,8 +123,8 @@ namespace SwanSongExtended.Items
 
     public class CloudBottleBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 15;
-        public static float cooldownReductionPerStack = 0.1f;
+        public static float cooldownDuration = 10;
+        public static float cooldownReductionPerStack = 0.15f;
         float cooldownTimer = 0;
         float bombRadiusSqr;
 
@@ -165,7 +176,7 @@ namespace SwanSongExtended.Items
 
             if (enemyCountWithinRadius > 0)
             {
-                cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
+                ResetCooldown();
                 BottleCloud.CreateNinjaSmokeBomb(motor.body);
                 verticalBonus += BottleCloud.verticalBonusOnCloudJump;
             }
@@ -178,12 +189,23 @@ namespace SwanSongExtended.Items
             }
         }
 
+        private void ResetCooldown()
+        {
+            cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
+            if (NetworkServer.active && body.HasBuff(BottleCloud.cloudReadyBuff))
+                body.RemoveBuff(BottleCloud.cloudReadyBuff);
+        }
+
         private void FixedUpdate()
         {
             if(cooldownTimer > 0)
             {
                 cooldownTimer -= Time.fixedDeltaTime;
+                return;
             }
+
+            if (NetworkServer.active && !body.HasBuff(BottleCloud.cloudReadyBuff))
+                body.AddBuff(BottleCloud.cloudReadyBuff);
         }
     }
 }

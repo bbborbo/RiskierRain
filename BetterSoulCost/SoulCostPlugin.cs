@@ -6,6 +6,7 @@ using R2API;
 using RoR2;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace BetterSoulCost
 {
@@ -20,7 +21,7 @@ namespace BetterSoulCost
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "BetterSoulCost";
-        public const string version = "1.0.2";
+        public const string version = "1.0.6";
         #endregion
         #region config
         internal static ConfigFile CustomConfigFile { get; set; }
@@ -34,6 +35,18 @@ namespace BetterSoulCost
             DoCradleSoulCost = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Change Soul Cost Stacking", true,
                 "If true, soul penalties will increase exponentially to approximate consistent health loss, rather than hyperbolically.");
             RoR2Application.onLoad += FixSoulPayCost;
+            IL.RoR2.ShrineColossusAccessBehavior.OnInteraction += ShapingShrineSoulSpread;
+        }
+
+        private void ShapingShrineSoulSpread(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
+                );
+            c.Remove();
+            c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) => AddSoulCostToBody(body, (BuffIndex)buffIndex, (int)buffCount * 0.1f));
         }
 
         public static void AddSoulCostToBody(CharacterBody body, float soulCost)
@@ -43,28 +56,22 @@ namespace BetterSoulCost
 
         public static void AddSoulCostToBody(CharacterBody body, BuffIndex buffIndex, float soulCost)
         {
-            if (!DoCradleSoulCost.Value)
-            {
-                int num = Mathf.CeilToInt(soulCost * 10);
-                for(int i = 0; i < num; i++)
-                {
-                    body.AddBuff((BuffIndex)buffIndex);
-                }
+            if (!NetworkServer.active)
                 return;
-            }
-            float oneMinus = 1 - soulCost;
+            soulCost = Mathf.Min(soulCost, 0.99f);
             int currentBuffCount = body.GetBuffCount((BuffIndex)buffIndex);
-            float currentHealthFraction = 1 / (1 + 0.1f * currentBuffCount);
-            float idealHealthFraction = currentHealthFraction * oneMinus;
-
-            int nextBuffCount = currentBuffCount;
-            float nextMaxHealthFraction = 1;
-            while (nextMaxHealthFraction > idealHealthFraction)
+            float buffsToAdd = soulCost * 10;
+            if (DoCradleSoulCost.Value)
             {
-                body.AddBuff((BuffIndex)buffIndex);
-                nextBuffCount++;
-                nextMaxHealthFraction = 1 / (1 + 0.1f * nextBuffCount);
+                float currentHealthFraction = 1;
+                if(currentBuffCount > 0)
+                    currentHealthFraction = 1 / (1 + 0.1f * currentBuffCount); //10 stacks = 0.5
+                //float oneMinus = 1 - soulCost;
+                //float idealHealthFraction = currentHealthFraction * oneMinus;
+                float conversion = (buffsToAdd * buffsToAdd) / (currentHealthFraction * (10 - buffsToAdd));
+                buffsToAdd += conversion;
             }
+            body.SetBuffCount((BuffIndex)buffIndex, currentBuffCount + Mathf.CeilToInt(buffsToAdd));
         }
 
         #region fixes

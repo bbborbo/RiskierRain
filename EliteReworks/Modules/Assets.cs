@@ -29,7 +29,6 @@ namespace EliteReworks.Modules
         {
             get
             {
-                return null;
                 if (_mainAssetBundle == null)
                     _mainAssetBundle = Assets.LoadAssetBundle("elitereworks");
                 return _mainAssetBundle;

@@ -70,7 +70,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSlungus.prefab");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_SLUNGUS.png");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/slungus.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -79,6 +79,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
 
         public override void Init()
         {
+            ShelterUtilsModule.UseCustomShelters = true;
             slungusBuff = Content.CreateAndAddBuff(
                 "bdSlungusActive",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(), //replace me

@@ -38,7 +38,7 @@ namespace SwanSongExtended.Items
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Damage };
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/coralite.prefab");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_HEALFROMBLEEDINGENEMIES.png");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/voidvampirism.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

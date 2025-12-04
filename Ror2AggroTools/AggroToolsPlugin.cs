@@ -33,7 +33,7 @@ namespace Ror2AggroTools
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "Ror2AggroTools";
-        public const string version = "1.0.0";
+        public const string version = "1.0.1";
         #endregion
 
         public const float lowPriorityAggroWeight = 3;

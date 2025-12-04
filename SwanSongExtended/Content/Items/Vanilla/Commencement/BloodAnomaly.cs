@@ -52,8 +52,8 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist , ItemTag.WorldUnique, ItemTag.CannotSteal, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
+		public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/bloodanomaly.png");
+		public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist , ItemTag.WorldUnique, ItemTag.CannotSteal, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

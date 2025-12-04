@@ -27,7 +27,7 @@ namespace SwanSongExtended.Equipment
 
         public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
-        public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/quickstartequipment.png");
         public override float BaseCooldown => 0;
         public override bool EnigmaCompatible => false;
         public override bool CanBeRandomlyActivated => false;
@@ -50,13 +50,13 @@ namespace SwanSongExtended.Equipment
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
             Transform origin = slot.characterBody.gameObject.transform;
-            /*PickupIndex pickupIndex = PickupCatalog.FindPickupIndex(RoR2Content.Items.);
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position, Vector3.zero);*/
-            PickupIndex pickupIndex = new PickupIndex(wishPickupIndex);//common  = 2, uncommon = 3, rare = 4
+            PickupIndex pickupIndex = PickupCatalog.itemTierToPickupIndex[ItemTier.Tier2/*(ItemTier)wishPickupIndex*/]; //common = 0, uncommon = 1, rare = 2
+
             GameObject commandCube = UnityEngine.Object.Instantiate<GameObject>(CommandArtifactManager.commandCubePrefab, origin.position, origin.rotation);
             commandCube.GetComponent<PickupIndexNetworker>().NetworkpickupIndex = pickupIndex;
             commandCube.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(commandCube);
+
             slot.inventory.SetEquipmentIndex(EquipmentIndex.None);
             return true;
         }

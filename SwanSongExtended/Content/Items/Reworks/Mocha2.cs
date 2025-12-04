@@ -109,25 +109,35 @@ namespace SwanSongExtended.Items
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
             On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
             On.RoR2.Items.MultiShopCardUtils.OnPurchase += MochaExtend;
+            On.RoR2.TeleporterInteraction.OnInteractionBegin += MochaExtendTP;
             GetStatCoefficients += MochaSpeed;
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
             RoR2Application.onLoad += YoinkMochaAssets;
         }
 
+        private void MochaExtendTP(On.RoR2.TeleporterInteraction.orig_OnInteractionBegin orig, TeleporterInteraction self, Interactor activator)
+        {
+            orig(self, activator);
+
+            ExtendMochaBuff(activator.GetComponent<CharacterBody>());
+        }
+
         private void MochaExtend(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
         {
             orig(context, moneyCost);
+            ExtendMochaBuff(context.activatorBody);
+        }
 
-            CharacterBody body = context.activatorBody;
+        private static void ExtendMochaBuff(CharacterBody body)
+        {
             if (!body)
                 return;
-
             int buffCount = body.GetBuffCount(mochaBuffActive);
             if (buffCount <= 0)
                 return;
 
             float newBuffCount = Mathf.Min(buffCount + interactDuration, stageDuration - 1);
-            for(int i = buffCount; i < newBuffCount; i++)
+            for (int i = buffCount; i < newBuffCount; i++)
             {
                 body.AddTimedBuffAuthority(mochaBuffActive.buffIndex, i + 1);
             }

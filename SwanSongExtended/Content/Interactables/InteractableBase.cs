@@ -132,7 +132,7 @@ namespace SwanSongExtended.Interactables
 			if(onPurchaseAction != null)
 			{
 				Debug.Log("adding purchase action for " + InteractableName);
-				InteractionComponent.onPurchase.AddListener(onPurchaseAction);
+				InteractionComponent.onPurchase.AddPersistentListener(onPurchaseAction);
 			}
 
 			PingInfoProvider pingInfoProvider = interactablePrefab.GetComponent<PingInfoProvider>();
@@ -196,7 +196,7 @@ namespace SwanSongExtended.Interactables
 
 						component.targetRenderer = (from x in interactablePrefab.GetComponentsInChildren<MeshRenderer>()
 													where x.gameObject.name.Contains(modelName)
-													select x).First<MeshRenderer>();
+													select x).FirstOrDefault<MeshRenderer>();
 
 						component.strength = 1f;
 						component.highlightColor = Highlight.HighlightColor.interactive;
@@ -292,19 +292,20 @@ namespace SwanSongExtended.Interactables
 		}
 
 		public void AddInteractable(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self, 
-			DirectorCardCategorySelection forcedMonsterCategory = null, DirectorCardCategorySelection forcedInteractableCategory = null)
+			DirectorCardCategorySelection forcedMonsterCategory, DirectorCardCategorySelection forcedInteractableCategory)
 		{
 			orig(self, forcedMonsterCategory, forcedInteractableCategory);
-			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
-			{
-				self.interactableCategories.AddCard((int)category, customInteractable.directorCard);
-			}
 			if (customInteractable.HasFavoredStages())
-            {
+			{
 				if (customInteractable.favoredScenes.ToList().Contains(SceneManager.GetActiveScene().name))
 				{
 					self.interactableCategories.AddCard((int)category, customInteractable.directorCardFavored);
+					return;
 				}
+			}
+			if (customInteractable.validScenes.ToList().Contains(SceneManager.GetActiveScene().name))
+			{
+				self.interactableCategories.AddCard((int)category, customInteractable.directorCard);
 			}
 		}
 	}

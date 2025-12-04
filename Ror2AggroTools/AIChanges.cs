@@ -116,24 +116,28 @@ namespace Ror2AggroTools
 
         private static void BaseAI_OnBodyDamaged(On.RoR2.CharacterAI.BaseAI.orig_OnBodyDamaged orig, RoR2.CharacterAI.BaseAI self, DamageReport damageReport)
         {
-            if(damageReport.damageInfo == null || damageReport.damageInfo.attacker == null || (self.body != null && damageReport.damageInfo.attacker == self.body.gameObject))
+            if(damageReport.damageInfo != null && damageReport.damageInfo.attacker != null)
             {
-                orig(self, damageReport);
-                return;
-            }
-            AggroPriority currentTargetPriority = Aggro.GetAggroPriority(self.currentEnemy?.characterBody);
-            AggroPriority attackerPriority = Aggro.GetAggroPriority(damageReport.attackerBody);
+                //if the damage report is for self damage, dont run aggro code at all
+                if (!self.body || damageReport.damageInfo.attacker == self.body.gameObject)
+                {
+                    return;
+                }
 
-            //if the current target is higher priority, ignore the attacker and keep prioritizing the current target
-            if(currentTargetPriority > attackerPriority)
-            {
-                return;
-            }
+                AggroPriority currentTargetPriority = Aggro.GetAggroPriority(self.currentEnemy?.characterBody);
+                AggroPriority attackerPriority = Aggro.GetAggroPriority(damageReport.attackerBody);
 
-            //if the current target is lower priority, immediately prioritize the attacker
-            if(currentTargetPriority < attackerPriority && currentTargetPriority != AggroPriority.None)
-            {
-                self.currentEnemy.gameObject = null;
+                //if the current target is higher priority, ignore the attacker and keep prioritizing the current target
+                if (currentTargetPriority > attackerPriority)
+                {
+                    return;
+                }
+
+                //if the current target is lower priority, immediately prioritize the attacker
+                if (currentTargetPriority < attackerPriority && currentTargetPriority != AggroPriority.None)
+                {
+                    self.currentEnemy.gameObject = null;
+                }
             }
             //if the current target is of equal priority, the behavior stays the same
             orig(self, damageReport);

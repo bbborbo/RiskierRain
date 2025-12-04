@@ -11,6 +11,8 @@ using R2API;
 using SwanSongExtended.Modules;
 using UnityEngine.Events;
 using static RoR2.CombatDirector;
+using SwanSongExtended.Components;
+using SwanSongExtended.Items;
 
 namespace SwanSongExtended.Interactables
 {
@@ -22,7 +24,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "CONSTRUCTCONSTRUCT";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/constructConstruct.prefab");
+        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlConstructConstruct.prefab");
 
         public override string modelName => "mdlConstructConstruct";
 
@@ -76,17 +78,38 @@ namespace SwanSongExtended.Interactables
             cd.teamIndex = TeamIndex.Monster;
             cd.fallBackToStageMonsterCards = false;
             cd.onSpawnedServer = new OnSpawnedServer();
-            cd.onSpawnedServer.AddListener(OnGalleryDirectorSpawnServer);
+            cd.onSpawnedServer.AddPersistentListener(OnGalleryDirectorSpawnServer);
+            cd.combatSquad = cs;
             ConstructCombatShrineBehavior ccsb = interaction.gameObject.AddComponent<ConstructCombatShrineBehavior>();
             ccsb.baseMonsterCredit = 200; // quote orange, "//this might be way too much well see :3"
             ccsb.maxPurchaseCount = 1;
             ccsb.monsterCreditCoefficientPerPurchase = 2;
+
+            GameObject symbolTransform = new GameObject();
+            symbolTransform.transform.parent = interaction.transform;
+            ccsb.symbolTransform = symbolTransform.transform;
 
             return ccsb.OnInteractionBegin;
 
             void OnGalleryDirectorSpawnServer(GameObject masterObject)
             {
             }
+        }
+        private ExplicitPickupDropTable GenerateWeightedSelection()
+        {
+            ExplicitPickupDropTable dropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+
+            List<ExplicitPickupDropTable.PickupDefEntry> pickupDefEntries = new List<ExplicitPickupDropTable.PickupDefEntry>();
+            pickupDefEntries.Add(
+                    new ExplicitPickupDropTable.PickupDefEntry
+                    {
+                        pickupDef = Wishbone.instance.ItemsDef,
+                        pickupWeight = 1f
+                    }
+                );
+            dropTable.pickupEntries = pickupDefEntries.ToArray();
+
+            return dropTable;
         }
 
         public override void Hooks()
@@ -96,10 +119,18 @@ namespace SwanSongExtended.Interactables
 
         public class ConstructCombatShrineBehavior : ShrineCombatBehavior
         {
+            void OnEnable()
+            {
+               //PurchaseInteraction interaction = GetComponent<PurchaseInteraction>();
+               //interaction.onPurchase.AddListener(OnInteractionBegin);
+            }
             public void OnInteractionBegin(Interactor activator)
             {
+                if (purchaseCount >= maxPurchaseCount)
+                    return;
                 chosenDirectorCard = DirectorCards.AlphaConstructNear;
                 AddShrineStack(activator);
+                purchaseInteraction.SetAvailable(false);
             }
         }
     }

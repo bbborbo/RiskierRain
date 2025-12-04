@@ -55,7 +55,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/SecretsOfTheScug/Items/mdlRainbowWave.prefab");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/rainbowwave.png");
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;
         #endregion
 

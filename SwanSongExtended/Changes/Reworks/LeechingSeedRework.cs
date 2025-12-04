@@ -5,6 +5,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static MoreStats.OnHit;
 using static SwanSongExtended.Modules.Language;
@@ -18,7 +19,12 @@ namespace SwanSongExtended
         public static float seedRegenDurationStack = 0.25f;
         public void ReworkLeechingSeed()
         {
-            seedItemDef = RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/Seed/Seed.asset").WaitForCompletion(), ItemTier.Tier1);
+            seedItemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/Seed/Seed.asset").WaitForCompletion();
+            RetierItem(seedItemDef, ItemTier.Tier1);
+            Sprite sprite = retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Leeching_Seed.png");
+            if (sprite)
+                seedItemDef.pickupIconSprite = sprite;
+
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += FuckLeechingSeed;
             GetHitBehavior += NewSeedBehavior;
             LanguageAPI.Add("ITEM_SEED_PICKUP", "Dealing damage heals you.");

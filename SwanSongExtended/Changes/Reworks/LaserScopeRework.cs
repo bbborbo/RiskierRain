@@ -23,7 +23,12 @@ namespace SwanSongExtended
 		public void ReworkLaserScope()
         {
             //IL.RoR2.CharacterBody.RecalculateStats += RevokeScopeRights;
-            RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/CritDamage/CritDamage.asset").WaitForCompletion(), ItemTier.Tier2);
+            ItemDef itemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/CritDamage/CritDamage.asset").WaitForCompletion();
+            RetierItem(itemDef, ItemTier.Tier2);
+            Sprite sprite = retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Laser_Scope.png");
+            if (sprite)
+                itemDef.pickupIconSprite = sprite;
+
             GetStatCoefficients += ScopeCritChance;
             On.RoR2.CharacterBody.OnInventoryChanged += AddScopeItemBehavior;
 

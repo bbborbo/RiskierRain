@@ -35,9 +35,9 @@ namespace SwanSongExtended.Items
         public static float opalAreaRadiusSqr => opalAreaRadius * opalAreaRadius;
 		public static BuffDef opalStatBuff;
 		public static GameObject opalAreaIndicator = null;
-		public override AssetBundle assetBundle => null;
+		public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
 
-        static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
+		static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
 		public override string ItemName => "Weirdly-shaped Opal";
 
@@ -61,7 +61,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/pickupmodels/PickupOddlyShapedOpal");
 
-        public override Sprite ItemIcon => Resources.Load<Sprite>("textures/itemicons/texOddlyShapedOpalIcon");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Oddly-shaped_Opal.png");
 		public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
 		public override ItemDisplayRuleDict CreateItemDisplayRules()

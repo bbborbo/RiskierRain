@@ -45,7 +45,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlDestroyerEmblem.prefab");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/critretaliate.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

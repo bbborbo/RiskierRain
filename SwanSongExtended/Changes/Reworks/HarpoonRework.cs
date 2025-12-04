@@ -10,14 +10,17 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static MoreStats.OnHit;
+using static MoreStats.StatHooks;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended
 {
     public partial class SwanSongPlugin
     {
-        public static float harpoonBarrierBase = 5;
-        public static float harpoonBarrierStack = 5;
+        public static float harpoonBarrierBase = 6;
+        public static float harpoonBarrierStack = 6;
         public static float harpoonTargetTime = 15;
+        public static float harpoonDecayReduction = 0.2f;
 
         public static Material harpoonTargetMaterial;
 
@@ -28,11 +31,24 @@ namespace SwanSongExtended
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHarpoonRights;
             On.RoR2.CharacterBody.OnInventoryChanged += AddHarpoonBehavior;
             GetHitBehavior += HarpoonOnHit;
+            GetMoreStatCoefficients += HarpoonDecay;
             LanguageAPI.Add("ITEM_MOVESPEEDONKILL_PICKUP", "Target a nearby enemy, gaining barrier on hit.");
-            LanguageAPI.Add("ITEM_MOVESPEEDONKILL_DESC", $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
+            LanguageAPI.Add("ITEM_MOVESPEEDONKILL_DESC", $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>." +
+                $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
                 $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
                 $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.");
         }
+
+        private void HarpoonDecay(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if(sender.inventory && sender.inventory)
+            {
+                int count = sender.inventory.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+                if (count > 0)
+                    args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
+            }
+        }
+
         public static Material CreateMatRecolor(Color32 blueEquivalent)
         {
             var mat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashExpanded.mat").WaitForCompletion());

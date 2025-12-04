@@ -51,8 +51,6 @@ namespace RiskierRain
         #endregion
 
         #region slows
-        GameObject templarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/ClayBruiserBody");
-        GameObject chimeraWispPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/LunarWispBody");
         public static float tarSlowAspdReduction = 0.3f;
         public static float kitSlowAspdReduction = 0.3f;
         public static float chronoSlowAspdReduction = 0.5f;
@@ -66,8 +64,6 @@ namespace RiskierRain
                 "<style=cIsUtility>Slow</style> enemies on hit for <style=cIsUtility>-60% movement speed and attack speed</style> " +
                 "for <style=cIsUtility>2s</style> <style=cStack>(+2s per stack)</style>.");
 
-            //this.templarPrefab.GetComponent<CharacterBody>().baseAttackSpeed *= 1 + kitSlowAspdReduction;
-            this.chimeraWispPrefab.GetComponent<CharacterBody>().baseAttackSpeed = 0.7f;
         }
 
         private void AttackSpeedSlowCoefficient(CharacterBody sender, StatHookEventArgs args)

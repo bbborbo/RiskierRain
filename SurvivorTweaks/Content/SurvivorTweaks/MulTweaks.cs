@@ -54,6 +54,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             ToolbotWeaponSkillDef scrapGun = (ToolbotWeaponSkillDef)primary.variants[2].skillDef;
             scrapGun.resetCooldownTimerOnUse = false;
             scrapGun.baseRechargeInterval = scrapCooldown;
+            scrapGun.attackSpeedBuffsRestockSpeed = true;
 
             //On.EntityStates.Toolbot.FireBuzzsaw.FixedUpdate += SawFixedUpdate;
             ToolbotWeaponSkillDef saw = (ToolbotWeaponSkillDef)primary.variants[3].skillDef;

@@ -53,7 +53,7 @@ namespace SwanSongExtended.Items
 
         public static GameObject molotovProjectile;
         public static GameObject molotovDotZone;
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override string ItemName => "Molotov (1-Pack)";
@@ -77,7 +77,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Molotov/PickupMolotov.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/Molotov/texMolotovIcon.png").WaitForCompletion();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Molotov_29.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -183,6 +183,17 @@ namespace SwanSongExtended.Items
                 pie2.blastDamageCoefficient = 1;
                 pie2.blastProcCoefficient = impactProcCoefficient;
                 pie2.childrenProjectilePrefab = molotovDotZone;
+            }
+
+            ProjectileDamage pda = molotovProjectile.GetComponent<ProjectileDamage>();
+            if (pda)
+            {
+                pda.damageType.damageSource = DamageSource.NoneSpecified;
+            }
+            ProjectileDamage odoen = molotovDotZone.GetComponent<ProjectileDamage>();
+            if (odoen)
+            {
+                odoen.damageType.damageSource = DamageSource.NoneSpecified;
             }
 
             ProjectileDotZone pdz2 = molotovDotZone.GetComponent<ProjectileDotZone>();

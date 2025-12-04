@@ -34,7 +34,7 @@ namespace RainrotSharedUtils.Components
         {
             get
             {
-                if (_ownerObject == null)
+                if (_ownerObject == null && projectileController != null)
                 {
                     _ownerObject = projectileController.owner;
                 }
@@ -51,7 +51,7 @@ namespace RainrotSharedUtils.Components
         {
             get
             {
-                if (_ownerBody == null)
+                if (_ownerBody == null && ownerObject != null)
                 {
                     _ownerBody = ownerObject.GetComponent<CharacterBody>();
                 }
@@ -68,7 +68,7 @@ namespace RainrotSharedUtils.Components
         {
             get
             {
-                if (_ownerInventory == null)
+                if (_ownerInventory == null && ownerBody != null)
                 {
                     _ownerInventory = ownerBody.inventory;
                 }

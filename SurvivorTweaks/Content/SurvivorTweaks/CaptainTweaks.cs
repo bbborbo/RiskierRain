@@ -25,20 +25,24 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float microbotRechargeRate = 1.5f; //0.5
         public static float microbotRadius = 20f; //20
 
-        public static float shotgunCooldown = 1.5f;
+        public bool attackSpeedDamageAdditive = false;
+        public static float shotgunCooldown = 2f;
         public static int shotgunStock = 2;
-        public static float shotgunWindDown = 0.35f;
+        public static float shotgunChargeDuration = 0.8f; //1.2
+        public static float shotgunWindDownDuration = 0.2f; //1.0
         public static float shotgunPelletDamageCoeff = 1f; //1.2
         public static float shotgunPelletProcCoeff = 0.5f; //0.75
 
         public static GameObject tazerPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/CaptainTazer");
-        public static float tazerAoeRadius = 6; //2
+        public static float tazerAoeRadius = 2; //2
         public static float tazerDamage = 2f; //1
-        public static float tazerDamageBonus = 2f; 
+        public static float tazerDamageBonus = 3f; 
         public static float tazerCooldown = 5; //6
 
+        public static int tazerTotalTargets = 3; //1
+
         public static GameObject diabloPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
-        float diabloMaxDuration = 20;
+        float diabloMaxDuration = 40; //40
 
 
         public static bool refreshSupplyDrops = true;
@@ -49,8 +53,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public static GameObject shockBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Shocking");
         public static float shockRadius = 12;
-        public static float shockDamageCoefficient = 1f; //0
-        public static float shockRate = 2f; //3
+        public static float shockDamageCoefficient = 3f; //0
+        public static float shockTimeInSeconds = 6f; //3
+        public static float shockProcCoefficient = 1.0f;
         public static float shockForce = 500f; //0
 
         public static GameObject hackBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Hacking");
@@ -76,7 +81,10 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             //passive
             ItemDef microbot = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/CaptainDefenseMatrix/CaptainDefenseMatrix.asset").WaitForCompletion();
-            SurvivorTweaksPlugin.RetierItem(microbot);
+            SurvivorTweaksPlugin.RetierItem(microbot, ItemTier.Tier2);
+            Sprite sprite = assetBundle.LoadAsset<Sprite>("Assets/Icons/Defensive_Microbots.png");
+            if(sprite)
+                microbot.pickupIconSprite = sprite;
             //microbot.tags |= ItemTag.
             //On.RoR2.CaptainDefenseMatrixController.TryGrantItem += MicrobotGuh;
             //On.RoR2.CaptainDefenseMatrixController.OnServerMasterSummonGlobal += MicrobotGah;
@@ -89,25 +97,10 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             //primary
             ChangeVanillaPrimaries(primary);
-            On.EntityStates.Captain.Weapon.FireCaptainShotgun.OnEnter += CaptainShotgunFixes;
-            LanguageAPI.Add("CAPTAIN_PRIMARY_DESCRIPTION", 
-                $"Fire a blast of pellets that deal <style=cIsDamage>8x{Tools.ConvertDecimal(shotgunPelletDamageCoeff)} damage</style>. " +
-                $"Charging the attack narrows the <style=cIsUtility>spread</style>. Hold up to {shotgunStock} charges.");
 
             //secondary
             ChangeVanillaSecondaries(secondary);
             On.EntityStates.Captain.Weapon.FireTazer.OnEnter += CaptainTazerBuff;
-            #region taser
-            ProjectileImpactExplosion taserPie = tazerPrefab.GetComponent<ProjectileImpactExplosion>();
-            taserPie.blastRadius = tazerAoeRadius;
-            tazerPrefab.AddComponent<ProjectileIncreaseDamageOnStick>().damageMultiplier = tazerDamageBonus;
-
-            On.RoR2.Projectile.ProjectileStickOnImpact.TrySticking += StickDamageBonus;
-            LanguageAPI.Add("CAPTAIN_SECONDARY_DESCRIPTION",
-                $"<style=cIsDamage>Shocking</style>. " +
-                $"Fire a fast tazer that deals <style=cIsDamage>{Tools.ConvertDecimal(tazerDamage)} damage</style>. " +
-                $"If bounced, it can travel further and gains up to <style=cIsDamage>{tazerDamageBonus}x damage</style>.");
-            #endregion
 
             //utility
             On.EntityStates.AimThrowableBase.ModifyProjectile += ModifyDiabloDuration;
@@ -324,28 +317,96 @@ namespace SurvivorTweaks.SurvivorTweaks
         #region primary
         private void ChangeVanillaPrimaries(SkillFamily family)
         {
-            family.variants[0].skillDef.baseRechargeInterval = shotgunCooldown;
-            family.variants[0].skillDef.beginSkillCooldownOnSkillEnd = true;
-            family.variants[0].skillDef.baseMaxStock = shotgunStock;
-            family.variants[0].skillDef.rechargeStock = shotgunStock;
-            family.variants[0].skillDef.stockToConsume = 1;
-            family.variants[0].skillDef.resetCooldownTimerOnUse = true;
-            family.variants[0].skillDef.mustKeyPress = false;
+            SkillDef shotgun = family.variants[0].skillDef;
+            shotgun.baseRechargeInterval = shotgunCooldown;
+            shotgun.beginSkillCooldownOnSkillEnd = true;
+            shotgun.baseMaxStock = shotgunStock;
+            shotgun.rechargeStock = shotgunStock;
+            shotgun.stockToConsume = 1;
+            shotgun.resetCooldownTimerOnUse = true;
+            shotgun.mustKeyPress = false;
+            shotgun.attackSpeedBuffsRestockSpeed = true;
+            shotgun.keywordTokens = new string[] { RainrotSharedUtils.SharedUtilsPlugin.noAttackSpeedKeywordToken };
+
+            On.EntityStates.Captain.Weapon.ChargeCaptainShotgun.OnEnter += CaptainShotgunCharge;
+            On.EntityStates.Captain.Weapon.FireCaptainShotgun.OnEnter += CaptainShotgunFixes;
+            On.EntityStates.Captain.Weapon.FireCaptainShotgun.ModifyBullet += CaptainShotgunModifyBullet;
+            LanguageAPI.Add("CAPTAIN_PRIMARY_DESCRIPTION",
+                $"<style=cIsUtility>Exacting</style>. Fire a blast of pellets that deal <style=cIsDamage>8x{Tools.ConvertDecimal(shotgunPelletDamageCoeff)} damage</style>. " +
+                $"Charging the attack narrows the <style=cIsUtility>spread</style>. Hold up to {shotgunStock} charges.");
+        }
+
+        private void CaptainShotgunCharge(On.EntityStates.Captain.Weapon.ChargeCaptainShotgun.orig_OnEnter orig, ChargeCaptainShotgun self)
+        {
+            orig(self);
+            self.chargeDuration = shotgunChargeDuration;
+            self.minChargeDuration = 0.05f;
         }
 
         private void CaptainShotgunFixes(On.EntityStates.Captain.Weapon.FireCaptainShotgun.orig_OnEnter orig, FireCaptainShotgun self)
         {
             self.damageCoefficient = shotgunPelletDamageCoeff;
             self.procCoefficient = shotgunPelletProcCoeff;
-            self.baseDuration = shotgunWindDown;
+            self.baseDuration = shotgunWindDownDuration;
             orig(self);
+        }
+
+        private void CaptainShotgunModifyBullet(On.EntityStates.Captain.Weapon.FireCaptainShotgun.orig_ModifyBullet orig, FireCaptainShotgun self, BulletAttack bulletAttack)
+        {
+            orig(self, bulletAttack);
+            if (attackSpeedDamageAdditive)
+            {
+                bulletAttack.damage += self.characterBody.baseDamage * self.attackSpeedStat;
+            }
+            else
+            {
+                bulletAttack.damage *= self.attackSpeedStat;
+            }
         }
         #endregion
 
         #region secondary
         private void ChangeVanillaSecondaries(SkillFamily family)
         {
-            family.variants[0].skillDef.baseRechargeInterval = tazerCooldown;
+            SkillDef tazer = family.variants[0].skillDef;
+            tazer.baseRechargeInterval = tazerCooldown;
+            tazer.keywordTokens = new string[] { "KEYWORD_SHOCKING", RainrotSharedUtils.SharedUtilsPlugin.sparkPickupKeywordToken };
+
+            #region taser
+            GameObject tazerPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Captain.CaptainTazer_prefab).WaitForCompletion();
+            if(tazerPrefab.TryGetComponent<ProjectileStickOnImpact>(out ProjectileStickOnImpact sticky))
+            {
+                UnityEngine.Object.Destroy(sticky);
+            }
+
+            ProjectileLightningOnImpact beam = tazerPrefab.AddComponent<ProjectileLightningOnImpact>();
+            beam.attackFireCount = 1;
+            beam.attackInterval = 99;
+            beam.attackRange = 21;
+            beam.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;
+            beam.inheritDamageType = true;
+            beam.damageCoefficient = 1;
+            beam.procCoefficient = 1;
+            beam.bounces = tazerTotalTargets - 1;
+            beam.enabled = true;
+
+            if (tazerPrefab.TryGetComponent<ProjectileImpactExplosion>(out ProjectileImpactExplosion pie))
+            {
+                pie.blastRadius = 3;// tazerAoeRadius;
+                pie.blastDamageCoefficient = 0.25f;
+                pie.blastProcCoefficient = 0;
+                pie.timerAfterImpact = true;
+                pie.lifetimeAfterImpact = 1f;
+                pie.impactOnWorld = true;
+                pie.destroyOnWorld = true;
+                //UnityEngine.Object.Destroy(pie);
+            }
+
+            On.RoR2.Projectile.ProjectileStickOnImpact.TrySticking += StickDamageBonus;
+            LanguageAPI.Add("CAPTAIN_SECONDARY_DESCRIPTION",
+                $"<style=cIsDamage>Shocking</style>. " +
+                $"Fire a fast tazer that deals <style=cIsDamage>{tazerTotalTargets}x{Tools.ConvertDecimal(tazerDamage)} damage</style>.");
+            #endregion
         }
 
         private void CaptainTazerBuff(On.EntityStates.Captain.Weapon.FireTazer.orig_OnEnter orig, FireTazer self)
@@ -357,22 +418,18 @@ namespace SurvivorTweaks.SurvivorTweaks
         private bool StickDamageBonus(On.RoR2.Projectile.ProjectileStickOnImpact.orig_TrySticking orig, ProjectileStickOnImpact self, Collider hitCollider, Vector3 impactNormal)
         {
             bool ret = orig(self, hitCollider, impactNormal);
-            if (!ret && hitCollider.GetComponent<HurtBox>() == null)
-            {
-                ProjectileIncreaseDamageOnStick pidos = self.gameObject.GetComponent<ProjectileIncreaseDamageOnStick>();
-                if (pidos != null)
-                {
-                    if (pidos.currentApplications < pidos.maxApplications)
-                    {
-                        ProjectileDamage damage = self.gameObject.GetComponent<ProjectileDamage>();
-                        if (damage != null)
-                        {
-                            pidos.currentApplications++;
-                            damage.damage *= pidos.damageMultiplier;
-                        }
-                    }
-                }
-            }
+            //bool hitColliderHasHurtbox = hitCollider.GetComponent<HurtBox>() != null;
+            //if (!ret)
+            //{
+            //    if (!hitColliderHasHurtbox)
+            //    {
+            //        ProjectileIncreaseDamageOnStick pidos = self.gameObject.GetComponent<ProjectileIncreaseDamageOnStick>();
+            //        if (pidos != null)
+            //        {
+            //            pidos.IncreaseDamage(self);
+            //        }
+            //    }
+            //}
             return ret;
         }
         #endregion
@@ -381,7 +438,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void ShockZoneChanges(On.EntityStates.CaptainSupplyDrop.ShockZoneMainState.orig_OnEnter orig, EntityStates.CaptainSupplyDrop.ShockZoneMainState self)
         {
             ShockZoneMainState.shockRadius = shockRadius;
-            ShockZoneMainState.shockFrequency = 1 / shockRate;
+            ShockZoneMainState.shockFrequency = 1 / shockTimeInSeconds;
 
             ProjectileDamage pd = self.gameObject.GetComponent<ProjectileDamage>();
             if (pd != null)
@@ -408,7 +465,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 position = self.transform.position,
                 //baseForce = shockForce,
                 bonusForce = Vector3.up * shockForce,
-                procCoefficient = (shockRate / 5)
+                procCoefficient = shockProcCoefficient
             }.Fire();
             if (ShockZoneMainState.shockEffectPrefab)
             {
@@ -433,6 +490,20 @@ namespace SurvivorTweaks.SurvivorTweaks
         }
         #endregion
     }
+    class ProjectileLightningOnImpact : ProjectileProximityBeamController, IProjectileImpactBehavior
+    {
+        public void OnProjectileImpact(ProjectileImpactInfo impactInfo)
+        {
+            DoLightning();
+        }
+        public void DoLightning()
+        {
+            Log.Warning("B");
+            if (!NetworkServer.active)
+                return;
+            this.attackTimer = 0;
+        }
+    }
 
     class ProjectileIncreaseDamageOnStick : MonoBehaviour
     {
@@ -443,6 +514,24 @@ namespace SurvivorTweaks.SurvivorTweaks
         void Start()
         {
             currentApplications = 0;
+        }
+        public void IncreaseDamage(ProjectileStickOnImpact sticky)
+        {
+            //if NOT STUCK then skip
+            if (sticky.stuck || sticky.stuckTransform != null || sticky.stuckBody != null)
+            {
+                return;
+            }
+
+            if (this.currentApplications < this.maxApplications)
+            {
+                ProjectileDamage damage = gameObject.GetComponent<ProjectileDamage>();
+                if (damage != null)
+                {
+                    this.currentApplications++;
+                    damage.damage *= this.damageMultiplier;
+                }
+            }
         }
     }
 }

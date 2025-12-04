@@ -242,7 +242,7 @@ namespace BossDropRework
             }
 
             bool boss = body.isChampion;// || body.isBoss;
-            bool elite = body.isElite;
+            bool elite = body.isElite || enemyBodyIndex == BodyCatalog.FindBodyIndex("ElectricWormBody");
 
             if (boss)
             {

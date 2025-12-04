@@ -13,8 +13,25 @@ namespace RainrotSharedUtils.Shelters
         public static ReadOnlyCollection<ShelterProviderBehavior> readOnlyInstancesList = new ReadOnlyCollection<ShelterProviderBehavior>(ShelterProviderBehavior.instancesList);
 
 
-        internal bool isSuperShelter = false;
-        public float fallbackRadius;
+        public HoldoutZoneController holdoutZoneController;
+        public bool isSuperShelter = false;
+        public bool isHazardZone = false;
+        public float _fallbackRadius;
+        public float fallbackRadius
+        {
+            get
+            {
+                if (!holdoutZoneController)
+                    return _fallbackRadius;
+                if (holdoutZoneController.charge <= 0 || holdoutZoneController.charge >= 1 || !holdoutZoneController.isActiveAndEnabled)
+                    return 0;
+                return holdoutZoneController.currentRadius;
+            }
+            set
+            {
+                _fallbackRadius = value;
+            }
+        }
         public IZone zoneBehavior;
 
         public bool IsInBounds(Vector3 position, float radius = 0)
@@ -39,11 +56,17 @@ namespace RainrotSharedUtils.Shelters
 
         void OnEnable()
         {
+            if(!ShelterUtilsModule.UseGlobalShelters && !ShelterUtilsModule.UseCustomShelters)
+            {
+                Debug.LogError("Shelter Provider cannot initialize: Shelter Module not enabled. (Set UseGlobalShelters or UseCustomShelters to true!)");
+                Destroy(this);
+            }
             instancesList.Add(this);
         }
         void OnDisable()
         {
-            instancesList.Remove(this);
+            if(instancesList.Contains(this))
+                instancesList.Remove(this);
         }
     }
 }

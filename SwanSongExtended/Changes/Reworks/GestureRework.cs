@@ -12,7 +12,6 @@ namespace SwanSongExtended
 {
     public partial class SwanSongPlugin
     {
-        public static List<EquipmentIndex> gestureBreakBlacklist = new List<EquipmentIndex>();
         public static float gestureEquipBreakChance = 40;
         public static int gestureStockBase = 4;
         public static int gestureStockStack = 2;
@@ -29,15 +28,33 @@ namespace SwanSongExtended
                 $"Using your equipment without charges {UtilityColor($"under-casts")} it, " +
                 $"allowing it to be used {HealthColor($"with a {gestureEquipBreakChance}% chance to break")}. " +
                 $"{UtilityColor("Unaffected by luck.")}");
-            On.RoR2.EquipmentCatalog.Init += CreateGestureBlacklist;
-            On.RoR2.EquipmentSlot.ExecuteIfReady += AddGestureUndercast;
-            On.RoR2.EquipmentSlot.OnEquipmentExecuted += AddGestureBreak;
             IL.RoR2.EquipmentSlot.MyFixedUpdate += RemoveGestureAutocast;
-            IL.RoR2.EquipmentSlot.MyFixedUpdate += AddPreonAccumulatorBreak;
             IL.RoR2.Inventory.CalculateEquipmentCooldownScale += RemoveGestureCdr;
+
+            IL.RoR2.EquipmentSlot.ExecuteIfReady += AllowGestureUndercast;
+            On.RoR2.EquipmentSlot.OnEquipmentExecuted += AddGestureUndercast;
+            //IL.RoR2.EquipmentSlot.MyFixedUpdate += AddPreonAccumulatorBreak;
             On.RoR2.Inventory.CalculateEquipmentCooldownScale += AddGestureCdi;
             On.RoR2.Inventory.GetEquipmentSlotMaxCharges += AddGestureStock;
+            On.RoR2.EquipmentSlot.MyFixedUpdate += AddGestureBreak;
             IL.RoR2.Inventory.UpdateEquipment += FixMaxStock;
+        }
+
+        private void AllowGestureUndercast(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<EquipmentSlot>("get_stock"));
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, EquipmentSlot, int>>((stock, slot) => 
+            {
+                if (stock > 0)
+                    return stock;
+                if (slot.inventory.GetItemCount(RoR2Content.Items.AutoCastEquipment) > 0)
+                    return 1;
+                return 0;
+            });
         }
 
         private void FixMaxStock(ILContext il)
@@ -97,11 +114,32 @@ namespace SwanSongExtended
             c.Emit(OpCodes.Ldc_I4, 0);
         }
 
-        private void AddGestureBreak(On.RoR2.EquipmentSlot.orig_OnEquipmentExecuted orig, EquipmentSlot self)
+        private void AddGestureUndercast(On.RoR2.EquipmentSlot.orig_OnEquipmentExecuted orig, EquipmentSlot self)
         {
+            bool undercast = false;
+            if (NetworkServer.active && self.stock <= 0 && self.inventory.GetItemCount(RoR2Content.Items.AutoCastEquipment) > 0)
+            {
+                self.inventory.RestockEquipmentCharges(self.activeEquipmentSlot, 1);
+                undercast = true;
+            }
+
             orig(self);
-            if (!gestureBreakBlacklist.Contains(self.equipmentIndex))
+
+            if (undercast)
+            {
+                self.characterBody.AddBuff(Modules.CommonAssets.gestureQueueEquipBreak);
+                if (self.subcooldownTimer <= 0)
+                    TryGestureEquipmentBreak(self);
+            }
+        }
+
+        private void AddGestureBreak(On.RoR2.EquipmentSlot.orig_MyFixedUpdate orig, EquipmentSlot self, float deltaTime)
+        {
+            orig(self, deltaTime);
+            if (NetworkServer.active && self.subcooldownTimer <= 0)
+            {
                 TryGestureEquipmentBreak(self);
+            }
         }
 
         private void AddPreonAccumulatorBreak(ILContext il)
@@ -117,23 +155,6 @@ namespace SwanSongExtended
             {
                 TryGestureEquipmentBreak(self);
             });
-        }
-
-        private void CreateGestureBlacklist(On.RoR2.EquipmentCatalog.orig_Init orig)
-        {
-            orig();
-            gestureBreakBlacklist.Add(EquipmentIndex.None);
-            gestureBreakBlacklist.Add(RoR2Content.Equipment.BFG.equipmentIndex);
-        }
-
-        private bool AddGestureUndercast(On.RoR2.EquipmentSlot.orig_ExecuteIfReady orig, EquipmentSlot self)
-        {
-            if (NetworkServer.active && self.inventory?.GetItemCount(RoR2Content.Items.AutoCastEquipment) > 0 && self.inputBank.activateEquipment.justPressed && self.stock <= 0)
-            {
-                self.stock += 1;
-                self.characterBody.AddBuff(Modules.CommonAssets.gestureQueueEquipBreak);
-            }
-            return orig(self);
         }
 
         public static void TryGestureEquipmentBreak(EquipmentSlot self)

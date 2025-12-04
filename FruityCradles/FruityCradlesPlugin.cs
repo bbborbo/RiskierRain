@@ -26,7 +26,7 @@ namespace FruityCradles
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityCradles";
-        public const string version = "1.0.3";
+        public const string version = "1.0.5";
         #endregion
 
         #region config
@@ -35,6 +35,7 @@ namespace FruityCradles
         public static ConfigEntry<float> CradleSoulPayCost { get; set; }
         public static ConfigEntry<bool> DoCradlePotential { get; set; }
         #endregion
+
 
         GameObject voidPotentialPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
         GameObject voidCradlePrefab;
@@ -60,11 +61,12 @@ namespace FruityCradles
                 PurchaseInteraction cradleInteraction = voidCradlePrefab.GetComponent<PurchaseInteraction>();
                 if (cradleInteraction)
                 {
-                    cradleInteraction.cost = (int)(Mathf.RoundToInt(cradleHealthCost * 10) * 10);
+                    cradleInteraction.cost = (int)(Mathf.RoundToInt(CradleSoulPayCost.Value * 10) * 10);
                     if (DoCradleSoulCost.Value)
                     {
                         cradleInteraction.costType = CostTypeIndex.SoulCost;
                         cradleInteraction.setUnavailableOnTeleporterActivated = true;
+                        cradleInteraction.saleStarCompatible = false;
                     }
                 }
 

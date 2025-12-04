@@ -30,12 +30,13 @@ namespace RainrotSharedUtils
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RainrotSharedUtils";
-        public const string version = "1.0.3";
+        public const string version = "1.1.1";
         #endregion
 
         public const string shelterKeywordToken = "2R4R_SHELTER_KEYWORD";
         public const string executeKeywordToken = "2R4R_EXECUTION_KEYWORD";
         public const string noAttackSpeedKeywordToken = "2R4R_NOATTACKSPEED_KEYWORD";
+        public const string sparkPickupKeywordToken = "2R4R_SPARKPICKUP_KEYWORD";
         public const float survivorExecuteThreshold = 0.15f;
 
         public void Awake()
@@ -57,6 +58,12 @@ namespace RainrotSharedUtils
             LanguageAPI.Add(shelterKeywordToken,
                 $"<style=cKeywordName>Shelter</style>" +
                 $"<style=cSub>Protects from storms and fog.</style>");
+            LanguageAPI.Add(sparkPickupKeywordToken,
+                $"<style=cKeywordName>Energizing Sparks</style>" +
+                $"<style=cSub>Creates <style=cIsDamage>spark pickups</style> that increase the " +
+                $"<style=cIsDamage>attack speed</style> of all allies within <style=cIsDamage>{Assets.nebulaBoosterBuffRadius}m</style> " +
+                $"by <style=cIsDamage>{Assets.sparkBoosterAspdBonus * 100}%</style> for {Assets.nebulaBoosterBuffDuration} seconds. " +
+                $"Can stack up to {Assets.maxNebulaBoosterStackCount} times.</style>");
         }
         //public void FixedUpdate()
         //{

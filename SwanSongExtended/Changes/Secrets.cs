@@ -22,16 +22,18 @@ namespace SwanSongExtended
 
         public static void AddSecrets()
         {
+            InteractableSpawnCard shrineCombatSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_ShrineCombat.iscShrineCombat_asset).WaitForCompletion();
+            InteractableSpawnCard equipBarrelSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_EquipmentBarrel.iscEquipmentBarrel_asset).WaitForCompletion();
             InteractableSpawnCard greenPrinterSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/DuplicatorLarge/iscDuplicatorLarge.asset").WaitForCompletion();
             InteractableSpawnCard bigChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/Chest2/iscChest2.asset").WaitForCompletion();
             InteractableSpawnCard lunarPodSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/LunarChest/iscLunarChest.asset").WaitForCompletion();
-            InteractableSpawnCard constructConstructSpawnCard = null;// ConstructConstruct.instance.customInteractable.spawnCard;
+            InteractableSpawnCard constructConstructSpawnCard = ConstructConstruct.instance.customInteractable.spawnCard;
             InteractableSpawnCard flameAltarSpawnCard = null;//FlameAltar.instance.customInteractable.spawnCard;
             InteractableSpawnCard lunarBrandMakerSpawnCard = null;//LunarBrandMaker.instance.customInteractable.spawnCard;
             InteractableSpawnCard spineSpawnCard = null;//SpineAltar.instance.customInteractable.spawnCard;
             InteractableSpawnCard spineChargerCard = null;//SpineCharger.instance.customInteractable.spawnCard;
 
-            //ancient loft
+            //ancient loft (sanctuary)
             SpawnSecret("ancientloft", greenPrinterSpawnCard, new Vector3(-86, 29, 34));
             SpawnSecret("ancientloft", bigChestSpawnCard, new Vector3(-104, 106, 265));
             SpawnSecret("ancientloft", greenPrinterSpawnCard, new Vector3(-68, 40, -59));

@@ -103,11 +103,11 @@ namespace SwanSongExtended
 
             CharacterBody activatorBody = null;
 
-            if (activator.gameObject.TryGetComponent(out activatorBody))
+            if (self.costType == CostTypeIndex.Money && self.saleStarCompatible)
             {
-                if (activatorBody.HasBuff(brittleCrownBuff))
+                if (activator.gameObject.TryGetComponent(out activatorBody))
                 {
-                    if (self.costType == CostTypeIndex.Money && self.saleStarCompatible && activatorBody.master.money < self.cost)
+                    if (activatorBody.HasBuff(brittleCrownBuff) && activatorBody.master.money < self.cost)
                     {
                         int common = 1;
                         int uncommon = Run.instance.GetDifficultyScaledCost(45, Stage.instance.entryDifficultyCoefficient);

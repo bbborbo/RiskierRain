@@ -15,6 +15,7 @@ using RoR2.ExpansionManagement;
 using JumpRework;
 using static MoreStats.StatHooks;
 using static MoreStats.OnJump;
+using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items
 {
@@ -23,6 +24,7 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Items : Fart In A Jar";
         static GameObject fartZone;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
+        public static BuffDef fartReadyBuff;
         internal static float smokeBombRadius = 9f;
         static float resetFrequency = 3f;
         static float fartBaseDamageCoefficient = 1f;
@@ -61,6 +63,10 @@ namespace SwanSongExtended.Items
         }
         public override void Init()
         {
+            fartReadyBuff = Content.CreateAndAddBuff(
+                "bdCloudReady",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion(),
+                Color.magenta, false, false);
             CreateProjectile();
             base.Init();
         }
@@ -196,8 +202,15 @@ namespace SwanSongExtended.Items
             {
                 BottleFart.CreateFartCloud(motor.body, stack);
                 verticalBonus += BottleCloud.verticalBonusOnCloudJump;
-                cooldownTimer = cooldownDuration;// * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
+                ResetCooldown();// cooldownTimer = cooldownDuration;// * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
             }
+        }
+
+        private void ResetCooldown()
+        {
+            cooldownTimer = cooldownDuration;
+            if (NetworkServer.active && body.HasBuff(BottleFart.fartReadyBuff))
+                body.RemoveBuff(BottleFart.fartReadyBuff);
         }
 
         private void FixedUpdate()
@@ -205,7 +218,11 @@ namespace SwanSongExtended.Items
             if (cooldownTimer > 0)
             {
                 cooldownTimer -= Time.fixedDeltaTime;
+                return;
             }
+
+            if (NetworkServer.active && !body.HasBuff(BottleFart.fartReadyBuff))
+                body.AddBuff(BottleFart.fartReadyBuff);
         }
     }
 }

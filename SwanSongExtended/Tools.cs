@@ -5,9 +5,57 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2;
+using UnityEngine.Events;
 
 namespace SwanSongExtended
 {
+    public static class PersistentListeners
+    {
+        public static void AddPersistentListener(this HoldoutZoneController.HoldoutZoneControllerChargedUnityEvent unityEvent, UnityAction<HoldoutZoneController> action)
+        {
+            unityEvent.m_PersistentCalls.AddListener(new PersistentCall
+            {
+                m_Target = action.Target as UnityEngine.Object,
+                m_TargetAssemblyTypeName = UnityEventTools.TidyAssemblyTypeName(action.Method.DeclaringType.AssemblyQualifiedName),
+                m_MethodName = action.Method.Name,
+                m_CallState = UnityEventCallState.RuntimeOnly,
+                m_Mode = PersistentListenerMode.EventDefined,
+            });
+        }
+        public static void AddPersistentListener(this UnityEvent<Interactor> unityEvent, UnityAction<Interactor> action)
+        {
+            unityEvent.m_PersistentCalls.AddListener(new PersistentCall
+            {
+                m_Target = action.Target as UnityEngine.Object,
+                m_TargetAssemblyTypeName = UnityEventTools.TidyAssemblyTypeName(action.Method.DeclaringType.AssemblyQualifiedName),
+                m_MethodName = action.Method.Name,
+                m_CallState = UnityEventCallState.RuntimeOnly,
+                m_Mode = PersistentListenerMode.EventDefined,
+            });
+        }
+        public static void AddPersistentListener(this UnityEvent<CharacterMaster> unityEvent, UnityAction<CharacterMaster> action)
+        {
+            unityEvent.m_PersistentCalls.AddListener(new PersistentCall
+            {
+                m_Target = action.Target as UnityEngine.Object,
+                m_TargetAssemblyTypeName = UnityEventTools.TidyAssemblyTypeName(action.Method.DeclaringType.AssemblyQualifiedName),
+                m_MethodName = action.Method.Name,
+                m_CallState = UnityEventCallState.RuntimeOnly,
+                m_Mode = PersistentListenerMode.EventDefined,
+            });
+        }
+        public static void AddPersistentListener(this UnityEvent<GameObject> unityEvent, UnityAction<GameObject> action)
+        {
+            unityEvent.m_PersistentCalls.AddListener(new PersistentCall
+            {
+                m_Target = action.Target as UnityEngine.Object,
+                m_TargetAssemblyTypeName = UnityEventTools.TidyAssemblyTypeName(action.Method.DeclaringType.AssemblyQualifiedName),
+                m_MethodName = action.Method.Name,
+                m_CallState = UnityEventCallState.RuntimeOnly,
+                m_Mode = PersistentListenerMode.EventDefined,
+            });
+        }
+    }
     public static class Tools
     {
         #region AssetBundle

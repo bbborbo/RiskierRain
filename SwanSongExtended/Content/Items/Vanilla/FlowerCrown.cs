@@ -51,7 +51,7 @@ Thank you for always sending us gifts. I made some of them into this flower crow
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlFlowerCrown.prefab");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_FLOWERCROWN.png");
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/flowercrown.png");
 
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

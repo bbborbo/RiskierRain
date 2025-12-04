@@ -15,7 +15,7 @@ namespace SwanSongExtended.Items
 {
     class ChimeraScrap : ItemBase<ChimeraScrap>
     {
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
         #region config
 
         public override string ConfigName => "Reworks : Regenerating Scrap";
@@ -53,7 +53,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/RegeneratingScrap/PickupRegeneratingScrap.prefab").WaitForCompletion();
 
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/RegeneratingScrap/texRegeneratingScrapIcon.png").WaitForCompletion();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Regenerating_Scrap.png");
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

@@ -22,7 +22,7 @@ namespace EliteReworks.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => EliteReworksPlugin.mainAssetBundle;
         public static BuffDef luckBuff;
         public static BuffDef executionDebuff;
         #region config
@@ -84,7 +84,7 @@ namespace EliteReworks.Equipment
 
         public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/pickupmodels/PickupGuillotine");
 
-        public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/itemicons/texGuillotineIcon");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Old_Guillotine.png");
 
         public override float BaseCooldown => 25f;
         public override bool EnigmaCompatible => false;

@@ -53,7 +53,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/SecretsOfTheScug/Items/mdlPeaShooter.prefab");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/peashooter.png");
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;
         #endregion
 

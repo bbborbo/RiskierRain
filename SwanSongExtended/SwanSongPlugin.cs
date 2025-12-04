@@ -63,7 +63,7 @@ namespace SwanSongExtended
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SwanSongExtended";
-        public const string version = "1.0.0";
+        public const string version = "0.1.0";
         public const string expansionName = "Swan Song";
         public const string expansionName2 = "Secrets of the Scug";
         public const string expansionToken = "EXPANSION2R4R";
@@ -74,6 +74,7 @@ namespace SwanSongExtended
         public static SwanSongPlugin instance;
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
         public static AssetBundle orangeAssetBundle => CommonAssets.orangeAssetBundle;
+        public static AssetBundle retierAssetBundle => CommonAssets.retierAssetBundle;
 
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;
@@ -126,7 +127,8 @@ namespace SwanSongExtended
             Storms.StormsCore.Init();
 
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
-            
+
+            InitializeChangesPreContent();
             InitializeContent();
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
@@ -139,7 +141,6 @@ namespace SwanSongExtended
 
             ////refer to guide on how to build and distribute your mod with the proper folders
         }
-
 
         private void CreateExpansionDef()
         {
@@ -189,6 +190,15 @@ namespace SwanSongExtended
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
             BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
+        }
+
+        private void InitializeChangesPreContent()
+        {
+            if (GetConfigBool(true, "Reworks : Commencement"))
+            {
+                MakePillarsFun();
+                LunarExplodersDuringBrother();
+            }
         }
         private void InitializeChanges()
         {
@@ -242,10 +252,9 @@ namespace SwanSongExtended
             {
                 PlanulaChanges();
             }
-            if (GetConfigBool(true, "Reworks : Commencement"))
+            if (GetConfigBool(true, "Reworks : Resonance Disc"))
             {
-                MakePillarsFun();
-                LunarExplodersDuringBrother();
+                DeworkResonanceDisc();
             }
             //interactables bc they need to load after items:
             //InitializeInteractables();
@@ -336,9 +345,8 @@ namespace SwanSongExtended
             }
             return def;
         }
-        internal static void BlacklistSingleItem(string name, ItemTag itemTag = ItemTag.AIBlacklist)
+        internal static void BlacklistSingleItem(ItemDef itemDef, ItemTag itemTag = ItemTag.AIBlacklist)
         {
-            ItemDef itemDef = LoadItemDef(name);
             if (itemDef != null)
             {
                 List<ItemTag> itemTags = new List<ItemTag>(itemDef.tags);
@@ -348,8 +356,13 @@ namespace SwanSongExtended
             }
             else
             {
-                Log.Error($"ItemDef {name} failed to load - unable to blacklist");
+                Log.Error($"ItemDef null - unable to blacklist");
             }
+        }
+        internal static void BlacklistSingleItem(string name, ItemTag itemTag = ItemTag.AIBlacklist)
+        {
+            ItemDef itemDef = LoadItemDef(name);
+            BlacklistSingleItem(itemDef, itemTag);
         }
 
         public static void RemoveEquipment(string equipName)

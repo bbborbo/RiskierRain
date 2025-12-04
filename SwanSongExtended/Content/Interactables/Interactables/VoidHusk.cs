@@ -22,7 +22,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "VOID_HUSK";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/VoidHusk.prefab");
+        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlVoidHusk.prefab");
 
         public override string modelName => "mdlVoidHusk";
 
@@ -92,14 +92,9 @@ namespace SwanSongExtended.Interactables
             );
         #endregion
 
-
         public override void Init()
         {
             base.Init();
-            InteractableDropPickup idi = InteractionComponent.gameObject.AddComponent<InteractableDropPickup>();
-            idi.dropTable = GenerateWeightedSelection();
-            idi.destroyOnUse = true;
-            idi.purchaseInteraction = InteractionComponent;
         }
 
         private void VoidHuskBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
@@ -157,7 +152,6 @@ namespace SwanSongExtended.Interactables
             InteractableDropPickup idp = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idp.dropTable = GenerateWeightedSelection();
             idp.destroyOnUse = true;
-            return new UnityAction<Interactor>(idp.OnInteractionBegin);
             return idp.OnInteractionBegin;
 
         }

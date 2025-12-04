@@ -43,11 +43,11 @@ namespace MoreStats
             IL.RoR2.CharacterBody.RecalculateStats += RecalculateMoreStats;
             // Continuously Update Shield Ready
             On.RoR2.CharacterBody.UpdateOutOfCombatAndDanger += UpdateDangerMoreStats;
-            // Luck Stat Fixes
-            ILHook luckHook = new ILHook(typeof(CharacterMaster).GetMethod("get_luck", (BindingFlags)(-1)), ModifyLuck);
+            On.RoR2.Util.CheckRoll_float_float_CharacterMaster += RoundLuckInCheckRoll;
 
             // Barrier Decay And Shield Recharge
             IL.RoR2.HealthComponent.ServerFixedUpdate += HookHealthComponentUpdate;
+            IL.RoR2.HealthComponent.GetBarrierDecayRate += HookBarrierDecayRate;
 
             // Execution
             IL.RoR2.HealthComponent.TakeDamageProcess += InterceptExecutionThreshold;
@@ -55,6 +55,13 @@ namespace MoreStats
 
             // Healing
             IL.RoR2.HealthComponent.Heal += ModifyHealing;
+        }
+
+        private static void HookHealthComponentUpdate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            ModifyBarrierDecayRate_ServerFixedUpdate(c);
+            ModifyShieldRechargeReady(c);
         }
 
         private static void ModifyHealing(ILContext il)
@@ -79,6 +86,8 @@ namespace MoreStats
                     }
                     return healAmt;
                 });
+                c.Emit(OpCodes.Starg, 1);
+                c.Emit(OpCodes.Ldarg_1);
             }
             else
             {
@@ -89,50 +98,6 @@ namespace MoreStats
                 Debug.LogError("MoreStats Healing Hook Failed!!!!");
             }
         }
-
-        private static void ModifyLuck(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            if(c.TryGotoNext(MoveType.Before,
-                x => x.MatchRet()
-                ))
-            {
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<Single, CharacterMaster, Single>>((baseLuck, master) =>
-                {
-                    if (master == null || !master.hasBody)
-                        return baseLuck;
-
-                    CharacterBody body = master.GetBody();
-                    if (body == null)
-                        return baseLuck;
-                    MoreStatCoefficients msc = GetMoreStatsFromBody(body);
-                    float newLuck = baseLuck + msc.luckAdd;
-                    float remainder = newLuck % 1;
-                    if (remainder < 0)
-                        remainder += 1;
-                    if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
-                    {
-                        newLuck = Mathf.CeilToInt(newLuck);
-                    }
-                    else
-                    {
-                        newLuck = Mathf.FloorToInt(newLuck);
-                    }
-                    return newLuck;
-                });
-            }
-            else
-            {
-                Debug.LogError("MoreStats Luck Hook Failed!!!!");
-                Debug.LogError("MoreStats Luck Hook Failed!!!!");
-                Debug.LogError("MoreStats Luck Hook Failed!!!!");
-                Debug.LogError("MoreStats Luck Hook Failed!!!!");
-                Debug.LogError("MoreStats Luck Hook Failed!!!!");
-            }
-        }
-
-
 
         #region events
         public static FixedConditionalWeakTable<CharacterBody, MoreStatCoefficients> characterCustomStats = new FixedConditionalWeakTable<CharacterBody, MoreStatCoefficients>();
@@ -199,7 +164,6 @@ namespace MoreStats
             /// </summary>
             public float burnChanceOnHit = 0;
             #endregion
-
 
             #region shield
             /// <summary>
@@ -297,13 +261,30 @@ namespace MoreStats
             c.EmitDelegate<Action<CharacterBody>>((body) =>
             {
                 //get stats
-                CustomStats = characterCustomStats.GetOrCreateValue(body);
+                CustomStats = GetMoreStatsFromBody(body);
+                if (body.master)
+                {
+                    body.master.luck -= CustomStats.luckFromBody;
+                }
                 CustomStats.ResetStats();
 
-                CustomStats.luckAdd = StatMods.luckAdd;
+                if (body.master)
+                {
+                    body.master.luck += StatMods.luckAdd;
+                    CustomStats.luckFromBody = StatMods.luckAdd;
+                }
+
                 CustomStats.burnChance = StatMods.burnChanceOnHit;
                 //CustomStats.chillChance = StatMods.chillChanceOnHit;
                 CustomStats.healingMult = StatMods.healingPercentIncreaseMult;
+
+                //process barrier decay
+                #region barrier
+                CustomStats.barrierDecayFrozen = StatMods.barrierFreezeCount > 0;
+                CustomStats.barrierDrainRate = StatMods.barrierDecayRateAddPreMult;
+                CustomStats.barrierDecayMult = StatMods.barrierDecayMultiplier;
+                CustomStats.barrierGenRate = StatMods.barrierGenerationRateAddPostMult;
+                #endregion
 
                 //process shield recharge delay
                 #region shield delay
@@ -318,7 +299,7 @@ namespace MoreStats
                 CustomStats.selfExecutionThresholdBase = StatMods.selfExecutionThresholdBase;
             });
 
-            ProcessBarrierDecayRate_RecalcStats(c);
+            ProcessLuck(c);
             ProcessMaxJumpCount(c);
         }
 
@@ -331,75 +312,57 @@ namespace MoreStats
             }
         }
 
-        private static void HookHealthComponentUpdate(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            ModifyShieldRechargeReady(c);
-            ModifyBarrierDecayRate_ServerFixedUpdate(c);
-        }
-
         #region barrier
-        private static void ProcessBarrierDecayRate_RecalcStats(ILCursor c)
+
+        private static void ProcessLuck(ILCursor c)
         {
             c.Index = 0;
 
-            if(
-                c.TryGotoNext(MoveType.Before,
-                    x => x.MatchCallOrCallvirt<CharacterBody>("set_barrierDecayRate")
-                    ) &&
-                c.TryGotoPrev(MoveType.After,
-                    x => x.MatchLdcR4(out _)
-                    )
-                )
+            bool ILFound = c.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<CharacterMaster>("set_luck"));
+
+            if (ILFound)
             {
-                c.Remove(); //remove div
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<float, float, CharacterBody, float>>((maxBarrier, decayTime, body) =>
-                {
-                    //process barrier decay stats
-                    float decayRate = 0;
-                    bool decayFrozen = StatMods.barrierFreezeCount > 0;
-                    float decayMultiplier = StatMods.barrierDecayRatePercentDecreaseDiv > 0 ? StatMods.barrierDecayRatePercentIncreaseMult / StatMods.barrierDecayRatePercentDecreaseDiv : 0;
-
-                    CustomStats.barrierDecayFrozen = decayFrozen;
-                    CustomStats.barrierDecayDynamicHalfLife = decayMultiplier > 0 ? BaseStats.BarrierDecayDynamicHalfLife / decayMultiplier : 0;
-
-                    if (!decayFrozen && decayMultiplier > 0)
-                    {
-                        decayRate = StatMods.barrierDecayRateAddPreMult;
-                        if (BaseStats.BarrierDecayStaticMaxHealthTime > 0)
-                        {
-                            decayRate += maxBarrier / BaseStats.BarrierDecayStaticMaxHealthTime;
-                        }
-                        decayRate *= decayMultiplier;
-                    }
-
-                    decayRate -= StatMods.barrierGenerationRateAddPostMult;
-                    //if(StatMods.barrierGenPerSecondFlat > 0)
-                    //{
-                    //    if(StatMods.barrierGenPerSecondFlat > decayRate)
-                    //    {
-                    //        float excessBarrierGen = StatMods.barrierGenPerSecondFlat - decayRate;
-                    //        decayRate = 0;
-                    //        CustomStats.barrierGenRate = excessBarrierGen;
-                    //    }
-                    //    else
-                    //    {
-                    //        decayRate -= StatMods.barrierGenPerSecondFlat;
-                    //    }
-                    //}
-
-                    return decayRate;
-                });
-                //c.EmitDelegate<Func<float>>(() => StatMods.barrierBaseStaticDecayRateMaxHealthTime);
+                c.EmitDelegate<Func<float>>(() => StatMods.luckAdd);
+                c.Emit(OpCodes.Add);
             }
             else
             {
-                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY STAT HOOK FAILED!!!!");
+                Debug.LogError("MORE STATS LUCK STAT HOOK FAILED!!!!");
+            }
+        }
+
+        private static void HookBarrierDecayRate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool ILFound = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _)
+                );
+            if (ILFound)
+            {
+                c.Remove();
+                c.Remove();
+                c.Emit(OpCodes.Ldc_R4, BaseStats.BarrierLowDecayFactor);
+                c.Emit(OpCodes.Ldc_R4, BaseStats.BarrierHighDecayFactor);
+            }
+            else
+            {
+                Debug.LogError("MORE STATS DYNAMIC BARRIER DECAY HOOK FAILED!!!!");
+            }
+
+            bool ILFound2 = c.TryGotoNext(MoveType.Before, 
+                x => x.MatchLdcR4(out _),
+                x => x.MatchDiv()
+                );
+            if (ILFound2)
+            {
+                c.Remove();
+                c.Emit(OpCodes.Ldc_R4, BaseStats.BarrierDecayStaticMaxHealthTime);
+            }
+            else
+            {
+                Debug.LogError("MORE STATS STATIC BARRIER DECAY HOOK FAILED!!!!");
             }
         }
 
@@ -407,52 +370,29 @@ namespace MoreStats
         {
             c.Index = 0;
 
-            if(c.TryGotoNext(MoveType.After,
-                x => x.MatchLdfld<HealthComponent>("barrier"),
-                x => x.MatchLdcR4(out _)
-                ))
+            bool ILFound = c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<HealthComponent>(nameof(HealthComponent.GetBarrierDecayRate)));
+
+            if(ILFound)
             {
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<float, HealthComponent, float>>((minBarrier, healthComponent) =>
-                {
-                    CharacterBody body = healthComponent.body;
-                    if (body)
-                    {
-                        if (body.barrierDecayRate < 0)
-                        {
-                            //return -1;
-                            minBarrier += body.barrierDecayRate;
-                        }
-                    }
-                    return minBarrier;
-                });
-
-                c.GotoNext(MoveType.After,
-                    x => x.MatchCallOrCallvirt<CharacterBody>("get_barrierDecayRate")
-                    );
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<float, HealthComponent, float>>((barrierDecayRate, healthComponent) =>
+                c.EmitDelegate<Func<float, HealthComponent, float>>((barrierDecayRatePerSecond, healthComponent) =>
                 {
                     MoreStatCoefficients stats = GetMoreStatsFromBody(healthComponent.body);
                     if (stats == null)
-                        return barrierDecayRate;
+                        return barrierDecayRatePerSecond;
 
-                    if (!stats.barrierDecayFrozen && stats.barrierDecayDynamicHalfLife > 0)
+                    if (!stats.barrierDecayFrozen)
                     {
-                        barrierDecayRate += Mathf.Max(BaseStats.MinBarrierDecayWithDynamicRate - stats.barrierGenRate, healthComponent.barrier * Mathf.Log(2) / stats.barrierDecayDynamicHalfLife);
+                        barrierDecayRatePerSecond += stats.barrierDrainRate;
+                        barrierDecayRatePerSecond *= stats.barrierDecayMult;
                     }
+                    barrierDecayRatePerSecond -= stats.barrierGenRate;
 
-                    //healthComponent.AddBarrier(stats.barrierGenRate * Time.fixedDeltaTime);
-
-                    return barrierDecayRate;
+                    return barrierDecayRatePerSecond;
                 });
             }
             else
             {
-                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
                 Debug.LogError("MORE STATS BARRIER DECAY HOOK FAILED!!!!");
             }
         }
@@ -500,16 +440,20 @@ namespace MoreStats
         }
         #endregion
 
-        #region luck
-        private static void UpdateMoreLuckStat(On.RoR2.CharacterMaster.orig_OnInventoryChanged orig, CharacterMaster self)
+        private static bool RoundLuckInCheckRoll(On.RoR2.Util.orig_CheckRoll_float_float_CharacterMaster orig, float percentChance, float luck, CharacterMaster effectOriginMaster)
         {
-            CharacterBody body = self.GetBody();
-            if (body)
+            float remainder = luck % 1;
+            if (remainder < 0)
+                remainder += 1;
+            if (remainder > Single.Epsilon && Util.CheckRoll(remainder * 100, 0))
             {
-                MoreStatCoefficients stats = GetMoreStatsFromBody(body);
-                stats.luckAdd = 0;
+                luck = (float)Math.Ceiling(luck);
             }
-            orig(self);
+            else
+            {
+                luck = (float)Math.Floor(luck);
+            }
+            return orig(percentChance, luck, effectOriginMaster);
         }
         #endregion
 
@@ -623,8 +567,11 @@ namespace MoreStats
         public bool  barrierDecayFrozen = false;
         public float barrierDecayDynamicHalfLife = 0;
         public float barrierGenRate = 0;
+        public float barrierDrainRate = 0;
+        public float barrierDecayMult = 1;
 
-        public float luckAdd = 0;
+        public float luckFromBody = 0;
+        public float luckFromMaster = 0;
         public float burnChance = 0;
         //public float chillChance = 0;
 
@@ -637,13 +584,17 @@ namespace MoreStats
 
         public float healingMult = 1;
 
-        public void ResetStats()
+        /// <summary>
+        /// Does not reset luckFromMaster
+        /// </summary>
+        internal void ResetStats()
         {
             barrierDecayFrozen = false;
             barrierDecayDynamicHalfLife = 0;
             barrierGenRate = 0;
 
-            luckAdd = 0;
+            luckFromBody = 0;
+
             burnChance = 0;
             //chillChance = 0;     
             

@@ -35,12 +35,12 @@ namespace BarrierRework
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityBarrierDecay";
-        public const string version = "2.1.2";
+        public const string version = "2.1.3";
         #endregion
 
         private bool _useDynamicDecay = true;
         private float _barrierDecayRateStatic = 0f; //30
-        private float _barrierDecayRateDynamic = 2f; //0
+        private float _barrierDecayRateDynamic = 3f; //0
 
         #region config
         internal static ConfigFile CustomConfigFile { get; private set; }

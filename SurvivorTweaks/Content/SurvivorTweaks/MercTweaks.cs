@@ -57,7 +57,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             DoSpecial(special);
         }
 
-        #region
+        #region primary
         private void DoPrimary(SkillFamily family)
         {
             On.EntityStates.Merc.Weapon.GroundLight2.OnEnter += RemovePrimaryAspdScaling;

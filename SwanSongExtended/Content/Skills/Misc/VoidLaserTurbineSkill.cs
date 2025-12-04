@@ -16,7 +16,7 @@ namespace SwanSongExtended.Skills
     class VoidLaserTurbineSkill : SkillBase<VoidLaserTurbineSkill>
     {
         public static GameObject tracerLaser;
-        public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
+        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
 
         [AutoConfig("Damage Coefficient", 32f)]
         public static float damageCoefficient = 32f;
@@ -43,7 +43,7 @@ namespace SwanSongExtended.Skills
 
         public override UnlockableDef UnlockDef => null;
 
-        public override Sprite Icon => null;
+        public override Sprite Icon => assetBundle.LoadAsset<Sprite>("Assets/Icons/heavenpiercer.png");
 
         public override Type ActivationState => typeof(VoidLaserBeam);
 

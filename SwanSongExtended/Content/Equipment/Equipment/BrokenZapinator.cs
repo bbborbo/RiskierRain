@@ -62,7 +62,7 @@ namespace SwanSongExtended.Equipment
 
         public override GameObject EquipmentModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlZappinator.prefab");
 
-        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_BROKENZAPINATOR.png");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/zapinator.png");
         public override float BaseCooldown => 35f;
         public override bool EnigmaCompatible => true;
         public override bool CanBeRandomlyActivated => true;

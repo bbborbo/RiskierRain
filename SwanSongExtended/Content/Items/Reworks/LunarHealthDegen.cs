@@ -46,11 +46,11 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Your health degenerates over time. Gain barrier and luck at low health.";
 
-        public override string ItemFullDescription => $"For every missing {ConvertDecimal(1 / LunarHealthDegenBehavior.maxBuffCount)} of health, gain a stack of Rot. " +
-            $"After {rotStacksForFirstBonus} stacks have accumulated, increase base damage by {damageBase} {StackText($"+{damageStack}")}. " +
-            $"After {rotStacksForFirstBonus} stacks, gain {ConvertDecimal(LunarHealthDegenBehavior.barrierFraction)} barrier " +
+        public override string ItemFullDescription => $"For every missing {ConvertDecimal(1f / (float)LunarHealthDegenBehavior.maxBuffCount)} of health, gain Rot. " +
+            $"After {rotStacksForFirstBonus} Rot has accumulated, increase base damage by {damageBase} {StackText($"+{damageStack}")}. " +
+            $"After {rotStacksForSecondBonus} Rot, gain {ConvertDecimal(LunarHealthDegenBehavior.barrierFraction)} barrier " +
             $"and increase Luck by {luckBase} {StackText($"+{luckStack}")}. " +
-            $"{RedText($"Reduce base health regeneration by {healthRegenBase} hp/s")} {StackText($"-{healthRegenStack}")}.";
+            $"{RedText($"Reduce base health regeneration by {healthRegenBase} hp/s")} {StackText($"{healthRegenStack}")}.";
 
         public override string ItemLore => "";
 
@@ -184,10 +184,15 @@ namespace SwanSongExtended.Items
                 buffCount--;
             }//FIX THIS ITS WEIRD
         }
-        //void OnDestroy()
-        //{
-            //while (buffCount > 0)
-                //this.body.RemoveBuff(luckUpBuffIndex);
-        //}
+        void OnDestroy()
+        {
+            if (!NetworkServer.active)
+                return;
+            while (buffCount > 0)
+            {
+                this.body.RemoveBuff(luckUpBuffIndex);
+                buffCount--;
+            }
+        }
     }
 }

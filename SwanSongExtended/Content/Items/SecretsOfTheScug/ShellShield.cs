@@ -54,7 +54,7 @@ namespace SwanSongExtended.Items
 
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/SecretsOfTheScug/Items/mdlShellShield.prefab");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/shellshield.png");
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSOTS;
         #endregion
         public static BuffDef shellShieldBuff;

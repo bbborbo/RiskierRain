@@ -54,7 +54,7 @@ namespace SwanSongExtended.Equipment
 
         public override GameObject EquipmentModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
 
-        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupEQUIPMENT_NINJAGEAR.png");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/ninjagear.png");
 
         public override float BaseCooldown => 7f;
         public override bool EnigmaCompatible => true;

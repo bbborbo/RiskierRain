@@ -63,8 +63,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
 
-            FirePistol2.baseDuration = primaryDuration;
-            FirePistol2.damageCoefficient = primaryDamageCoeff;
+            On.EntityStates.Commando.CommandoWeapon.FirePistol2.OnEnter += FirePistol2_OnEnter;
             LanguageAPI.Add("COMMANDO_PRIMARY_DESCRIPTION", $"Rapidly shoot an enemy for <style=cIsDamage>{Tools.ConvertDecimal(primaryDamageCoeff)} damage</style>.");
 
             ChangeSecondaries(secondary);
@@ -72,6 +71,13 @@ namespace SurvivorTweaks.SurvivorTweaks
             ChangeUtilities();
 
             ChangeSpecials();
+        }
+
+        private void FirePistol2_OnEnter(On.EntityStates.Commando.CommandoWeapon.FirePistol2.orig_OnEnter orig, FirePistol2 self)
+        {
+            FirePistol2.baseDuration = primaryDuration;
+            FirePistol2.damageCoefficient = primaryDamageCoeff;
+            orig(self);
         }
 
         private void ChangeSpecials()

@@ -16,7 +16,7 @@ namespace SwanSongExtended.Equipment
 {
     class TeslaEquipment : EquipmentBase<TeslaEquipment>
     {
-        public override AssetBundle assetBundle => null;
+        public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
         #region config
         public override string ConfigName => "Reworks : Unstable Tesla Coil";
         [AutoConfig("Base Shield Gain", 0.2f)]
@@ -76,7 +76,7 @@ namespace SwanSongExtended.Equipment
 
         public override GameObject EquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/pickupmodels/PickupTeslaCoil");
 
-        public override Sprite EquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/itemicons/texTeslaCoilIcon");
+        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Unstable_Tesla_Coil.png");
 
         public override float BaseCooldown => 45;
         public override bool EnigmaCompatible => false;

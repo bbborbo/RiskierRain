@@ -147,6 +147,8 @@ namespace SwanSongExtended.Elites
             EliteDef.modifierToken = "BORBO_ELITE_" + EliteAffixToken + "_MODIFIER";
             EliteDef.color = EliteBuffColor;
             EliteDef.shaderEliteRampIndex = 0;
+            EliteDef.damageBoostCoefficient = this.EliteDamageModifier - 1;
+            EliteDef.healthBoostCoefficient = this.EliteHealthModifier - 1;
             Texture2D eliteRamp = CommonAssets.mainAssetBundle.LoadAsset<Texture2D>(CommonAssets.eliteMaterialsPath + EliteRampTextureName + ".png");
             if(eliteRamp != null)
             {

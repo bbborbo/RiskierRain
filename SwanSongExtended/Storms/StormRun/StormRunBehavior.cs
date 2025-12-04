@@ -1,9 +1,11 @@
 ﻿using RoR2;
+using SwanSongExtended.Interactables;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using static SwanSongExtended.Storms.StormsCore;
 
 namespace SwanSongExtended.Storms
@@ -20,9 +22,9 @@ namespace SwanSongExtended.Storms
         public StormType stormType { get; private set; } = StormType.None;
 
 
-        private static StormType GetStormType()
+        public static StormType GetStormType(SceneDef currentScene)
         {
-            SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
+            //SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
             StormType st = StormType.None;
             if (currentScene.sceneType == SceneType.Stage && !currentScene.isFinalStage)
             {
@@ -57,13 +59,12 @@ namespace SwanSongExtended.Storms
             }
             instance = this;
 
-            RoR2.Stage.onServerStageBegin += OnServerStageBegin;
+            RoR2.Stage.onStageStartGlobal += OnStageBeginGlobal;
         }
 
-        private void OnServerStageBegin(Stage obj)
+        private void OnStageBeginGlobal(Stage obj)
         {
-
-            stormType = GetStormType();
+            stormType = GetStormType(obj.sceneDef);
             if (stormType == StormType.None)
                 return;
 
@@ -82,7 +83,17 @@ namespace SwanSongExtended.Storms
                 a = rainstormStormDelayMinutes;
                 b = rainstormStormWarningMinutes;
             }
-            stormControllerInstance.BeginStormApproach(a + Run.instance.stageRng.RangeInt(0, 1), b);
+
+            if (Run.instance.stageClearCount == 0)
+                a += 1.5f;
+            a += Run.instance.stageRng.RangeFloat(0, 1);
+
+            stormControllerInstance.BeginStormApproach(a, b);
+
+            if (NetworkServer.active)
+            {
+                WishboneCarcass.ScatterWishbones();
+            }
         }
 
         #region hooks
@@ -90,7 +101,7 @@ namespace SwanSongExtended.Storms
         {
             if(instance == this)
             {
-                RoR2.Stage.onServerStageBegin -= OnServerStageBegin;
+                RoR2.Stage.onStageStartGlobal -= OnStageBeginGlobal;
             }
         }
         #endregion

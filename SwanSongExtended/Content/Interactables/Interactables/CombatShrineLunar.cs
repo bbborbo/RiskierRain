@@ -23,7 +23,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "LUNAR_GALLERY";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/lunarGallery.prefab");
+        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarGallery.prefab");
 
         public override bool ShouldCloneModel => false;
 
@@ -104,9 +104,13 @@ namespace SwanSongExtended.Interactables
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.LunarTrinket));
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.FocusConvergence));
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.MonstersOnShrineUse));
-            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.LunarSun));
-            SwanSongPlugin.BlacklistSingleItem(nameof(DLC1Content.Items.RandomlyLunar));
-            SwanSongPlugin.BlacklistSingleItem(nameof(DLC2Content.Items.OnLevelUpFreeUnlock));
+
+            Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_DLC1_LunarSun.LunarSun_asset).Completed += (ctx) =>
+                SwanSongPlugin.BlacklistSingleItem(ctx.Result);
+            Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_DLC1_RandomlyLunar.RandomlyLunar_asset).Completed += (ctx) =>
+                SwanSongPlugin.BlacklistSingleItem(ctx.Result);
+            Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_DLC2_Items_OnLevelUpFreeUnlock.OnLevelUpFreeUnlock_asset).Completed += (ctx) =>
+                SwanSongPlugin.BlacklistSingleItem(ctx.Result);
         }
 
         public override void Hooks()
@@ -125,7 +129,7 @@ namespace SwanSongExtended.Interactables
 
         GameObject enemySpawned;
         ItemDef[] itemPool;
-        internal ItemIndex itemToGive;
+        public static ItemIndex itemToGive;
         public void ChooseItem()
         {
             int i = UnityEngine.Random.RandomRangeInt(0, itemPool.Length - 1);
@@ -143,39 +147,31 @@ namespace SwanSongExtended.Interactables
             cd.teamIndex = TeamIndex.Lunar;
             cd.fallBackToStageMonsterCards = true;
             cd.onSpawnedServer = new OnSpawnedServer();
-            cd.onSpawnedServer.AddListener(OnGalleryDirectorSpawnServer);
+            cd.combatSquad = cs;
             LunarCombatShrineBehavior lscb = interaction.gameObject.AddComponent<LunarCombatShrineBehavior>();
             lscb.baseMonsterCredit = 40;
             lscb.maxPurchaseCount = 1;
             lscb.monsterCreditCoefficientPerPurchase = 2;
 
-            InteractionComponent.onPurchase.AddListener(lscb.OnInteractionBegin);
-            return lscb.OnInteractionBegin;
+            GameObject symbolTransform = new GameObject();
+            symbolTransform.transform.parent = interaction.transform;
+            lscb.symbolTransform = symbolTransform.transform;
 
-            void OnGalleryDirectorSpawnServer(GameObject masterObject)
-            {
-                CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
-                if(master != null)
-                {
-                    Inventory inv = master.GetBody()?.inventory;
-                    if(inv != null)
-                    {
-                        inv.GiveItem(itemToGive);
-                        inv.GiveItem(GalleryItemDrop.instance.ItemsDef);
-                    }
-                }
-            }
+            return lscb.OnInteractionBegin;
         }
     }
     public class LunarCombatShrineBehavior : ShrineCombatBehavior
     {
         public void OnInteractionBegin(Interactor activator)
         {
+            if (purchaseCount >= maxPurchaseCount)
+                return;
+            combatDirector.onSpawnedServer.AddListener(OnGalleryDirectorSpawnServer);
             CombatShrineLunar.instance.ChooseItem();
             CharacterBody interactorBody = activator.GetComponent<CharacterBody>();
             if (interactorBody)
             {
-                string nameToken = ItemCatalog.GetItemDef(CombatShrineLunar.instance.itemToGive)?.nameToken;
+                string nameToken = ItemCatalog.GetItemDef(CombatShrineLunar.itemToGive)?.nameToken;
                 Chat.SendBroadcastChat(new Chat.SubjectFormatChatMessage
                 {
                     subjectAsCharacterBody = interactorBody,
@@ -187,6 +183,26 @@ namespace SwanSongExtended.Interactables
                 });
             }
             base.AddShrineStack(activator);
+            //combatDirector.onSpawnedServer.RemoveListener(OnGalleryDirectorSpawnServer);
+            purchaseInteraction.SetAvailable(false);
+
+            void OnGalleryDirectorSpawnServer(GameObject masterObject)
+            {
+                CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
+                OnGallerySquadSpawnServer(master);
+            }
+            void OnGallerySquadSpawnServer(CharacterMaster master)
+            {
+                if (master != null)
+                {
+                    Inventory inv = master.inventory;
+                    if (inv != null)
+                    {
+                        inv.GiveItem(CombatShrineLunar.itemToGive);
+                        inv.GiveItem(GalleryItemDrop.instance.ItemsDef);
+                    }
+                }
+            }
         }
     }
 }

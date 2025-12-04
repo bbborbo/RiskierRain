@@ -8,6 +8,9 @@ using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
+using static SwanSongExtended.Modules.Language.Styling;
+using System.Linq;
+using RoR2.Orbs;
 
 namespace SwanSongExtended.Items
 {
@@ -18,12 +21,15 @@ namespace SwanSongExtended.Items
         public static BuffDef fuseRecharge;
         public static float fuseRechargeTime = 1;
 
-        public static float baseShield = 40;
-        public static float radiusBase = 16;
+        public static float baseShield = 25;
+        public static float radiusBase = 40;
         public static float radiusStack = 4;
 
-        public static float minStunDuration = 1f;
-        public static float maxStunDuration = 6f;
+        public static float minStunDuration = 2f;
+        public static float maxStunDuration = 10f;
+
+        public static int targetCountBase = 3;
+        public static int targetCountStack = 1;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
         public override string ItemName => "Volatile Fuse";
@@ -33,8 +39,8 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Creates a stunning nova when your shields break.";
 
         public override string ItemFullDescription => $"Gain <style=cIsHealing>{baseShield} shield</style> <style=cStack>(+{baseShield} per stack)</style>. " +
-            $"<style=cIsUtility>Breaking your shields</style> creates a nova that " +
-            $"<style=cIsUtility>Stuns</style> enemies within <style=cIsUtility>{radiusBase}m</style> " +
+            $"Breaking your shields <style=cIsUtility>Shocks</style> up to " +
+            $"{targetCountBase} {StackText($"+{targetCountStack}")} enemies within <style=cIsUtility>{radiusBase}m</style> " +
             $"<style=cStack>(+{radiusStack} per stack)</style>. " +
             $"<style=cIsDamage>Shock duration scales with shield health</style>.";
 
@@ -101,28 +107,62 @@ namespace SwanSongExtended.Items
                     float maxHealth = self.body.maxHealth;
                     float shieldHealthFraction = maxShield / (maxHealth + maxShield);
 
+                    TeamIndex team = TeamIndex.Player;
+                    if (self.body.teamComponent)
+                        team = self.body.teamComponent.teamIndex;
+                    bool crit = Util.CheckRoll(self.body.crit, self.body.master);
+                    float procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction) / 5;
                     float currentRadius = radiusBase + radiusStack * (fuseItemCount - 1);
+                    int targetCount = targetCountBase + targetCountStack * (fuseItemCount - 1);
 
+                    BullseyeSearch search = new BullseyeSearch();
+                    search.searchOrigin = self.transform.position;
+                    search.maxDistanceFilter = currentRadius;
+                    search.teamMaskFilter.RemoveTeam(team);
+                    search.sortMode = BullseyeSearch.SortMode.Distance;
+                    search.RefreshCandidates();
+
+                    List<HurtBox> results = search.GetResults().ToList();
+                    for (int i = 0; i < Mathf.Min(targetCount, results.Count()); i++)
+                    {
+                        HurtBox hurtBox = results[i];
+                        if (hurtBox)
+                        {
+                            LightningOrb lightningOrb = new LightningOrb();
+                            lightningOrb.bouncedObjects = new List<HealthComponent>();
+                            lightningOrb.attacker = self.gameObject;
+                            lightningOrb.teamIndex = team;
+                            lightningOrb.damageValue = self.body.damage;
+                            lightningOrb.isCrit = crit;
+                            lightningOrb.origin = self.body.corePosition;
+                            lightningOrb.bouncesRemaining = 0;
+                            lightningOrb.lightningType = LightningOrb.LightningType.Loader;
+                            lightningOrb.procCoefficient = procCoefficient;
+                            lightningOrb.target = hurtBox;
+                            lightningOrb.damageType = new DamageTypeCombo(DamageType.Shock5s, DamageTypeExtended.Generic, DamageSource.NoneSpecified);
+                            OrbManager.instance.AddOrb(lightningOrb);
+                        }
+                    }
+
+                    self.body.AddTimedBuffAuthority(fuseRecharge.buffIndex, fuseRechargeTime);
                     EffectManager.SpawnEffect(fuseNovaEffectPrefab, new EffectData
                     {
                         origin = self.transform.position,
                         scale = currentRadius
                     }, true);
-                    BlastAttack fuseNova = new BlastAttack()
-                    {
-                        baseDamage = self.body.damage,
-                        radius = currentRadius,
-                        procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction),
-                        position = self.transform.position,
-                        attacker = self.gameObject,
-                        crit = Util.CheckRoll(self.body.crit, self.body.master),
-                        falloffModel = BlastAttack.FalloffModel.None,
-                        damageType = DamageType.Stun1s,
-                        teamIndex = TeamComponent.GetObjectTeam(self.gameObject)
-                    };
-                    fuseNova.Fire();
-
-                    self.body.AddTimedBuffAuthority(fuseRecharge.buffIndex, fuseRechargeTime);
+                    //BlastAttack fuseNova = new BlastAttack()
+                    //{
+                    //    baseDamage = self.body.damage,
+                    //    radius = currentRadius,
+                    //    procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction),
+                    //    position = self.transform.position,
+                    //    attacker = self.gameObject,
+                    //    crit = Util.CheckRoll(self.body.crit, self.body.master),
+                    //    falloffModel = BlastAttack.FalloffModel.None,
+                    //    damageType = DamageType.Stun1s,
+                    //    teamIndex = TeamComponent.GetObjectTeam(self.gameObject)
+                    //};
+                    //fuseNova.Fire();
                 }
             }
         }

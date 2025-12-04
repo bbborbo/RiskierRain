@@ -526,8 +526,14 @@ namespace RiskierRain
         public static int fuelCellStock = 2;
         void ReworkFuelCell()
         {
-            RetierItem(nameof(RoR2Content.Items.EquipmentMagazine), ItemTier.Tier3);
-            RetierItem(nameof(DLC1Content.Items.EquipmentMagazineVoid), ItemTier.VoidTier3);
+            ItemDef itemDef = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_EquipmentMagazine.EquipmentMagazine_asset).WaitForCompletion();
+            ItemDef itemDef2 = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_DLC1_EquipmentMagazineVoid.EquipmentMagazineVoid_asset).WaitForCompletion();
+            RetierItem(itemDef, ItemTier.Tier3);
+            RetierItem(itemDef2, ItemTier.VoidTier3);
+            Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Fuel_Cell.png");
+            if (sprite)
+                itemDef.pickupIconSprite = sprite;
+
             IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
             IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
             IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;

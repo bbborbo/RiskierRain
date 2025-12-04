@@ -83,7 +83,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"<style=cSub>Deal damage equal to <style=cIsDamage>up to {poisonDuration}%</style> of their maximum health over {poisonDuration}s. " +
                 $"<i>Poison cannot kill enemies.</i></style>");
             LanguageAPI.Add(AcridBlightKeywordToken,
-                $"<style=cKeywordName>Blight</style>" +
+                $"<style=cKeywordName>Blighted</style>" +
                 $"<style=cSub>Deal <style=cIsDamage>60% base damage</style> over <style=cIsUtility>{blightDuration}s</style>. " +
                 $"<i>Blight can stack.</i></style>");
         }
@@ -189,7 +189,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             secondary.baseMaxStock = spitBaseStock;
             secondary.keywordTokens = new string[] { AcridBlightKeywordToken };
             LanguageAPI.Add("CROCO_SECONDARY_DESCRIPTION",
-                $"<style=cIsVoid>Blight</style>. " +
+                $"<style=cIsVoid>Blighted</style>. " +
                 $"Spit toxic bile for <style=cIsDamage>{Tools.ConvertDecimal(spitDamageCoeff)} damage</style>, " +
                 $"or <style=cIsDamage>{Tools.ConvertDecimal(spitDamageCoeffAfterDistance)} damage</style> after " +
                 $"<style=cIsUtility>{spitDistanceForBoost}m</style>. Hold up to {spitBaseStock}.");
@@ -212,7 +212,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             secondaryAlt.keywordTokens = new string[] { AcridBlightKeywordToken, "KEYWORD_SLAYER", "KEYWORD_RAPID_REGEN" };
             On.EntityStates.Croco.Bite.OnEnter += BuffBite;
             LanguageAPI.Add("CROCO_SECONDARY_ALT_DESCRIPTION",
-                $"<style=cIsVoid>Blight</style>. <style=cIsDamage>Slayer</style>. <style=cIsHealing>Regenerative</style>. " +
+                $"<style=cIsVoid>Blighted</style>. <style=cIsDamage>Slayer</style>. <style=cIsHealing>Regenerative</style>. " +
                 $"Bite an enemy for <style=cIsDamage>{Tools.ConvertDecimal(biteDamageCoeff)} damage</style>.");
         }
 

@@ -14,6 +14,7 @@ using RiskierRain.CoreModules;
 using System.Runtime.CompilerServices;
 using MonoMod.RuntimeDetour;
 using System.Reflection;
+using RainrotSharedUtils.Components;
 
 namespace RiskierRain
 {
@@ -28,7 +29,7 @@ namespace RiskierRain
                 $"The stun is broken if the target takes more than " +
                 $"<style=cIsHealth>{Tools.ConvertDecimal(shockForceExitFraction)}</style> " +
                 $"of their maximum health in damage. " +
-                $"</style>");
+                $"Breaking shock creates <style=cIsUtility>Energizing Sparks</style>.</style>");
             ShockState.healthFractionToForceExit = shockForceExitFraction;
             On.EntityStates.ShockState.OnExit += ShockSparkOnExit;
             //On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
@@ -38,9 +39,21 @@ namespace RiskierRain
 
         private void ShockSparkOnExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)
         {
-            if (self.healthFraction - self.characterBody.healthComponent.combinedHealthFraction > ShockState.healthFractionToForceExit)
+            //entry health fraction
+            float damageTaken = self.healthFraction - self.healthComponent.combinedHealthFraction;
+            Debug.Log(damageTaken);
+            if (damageTaken >= ShockState.healthFractionToForceExit)
             {
-
+                GameObject lastHitAttacker = self.healthComponent.lastHitAttacker;
+                if (lastHitAttacker != null)
+                {
+                    CharacterBody attackerBody = lastHitAttacker.GetComponent<CharacterBody>();
+                    if (attackerBody)
+                    {
+                        Debug.Log("break make spark");
+                        NebulaPickup.CreateBoosterPickup(self.transform.position, attackerBody.teamComponent.teamIndex, RainrotSharedUtils.Assets.sparkBoosterObject, 1);
+                    }
+                }
             }
             orig(self);
         }

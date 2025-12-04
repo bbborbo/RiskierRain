@@ -34,6 +34,8 @@ namespace SwanSongExtended.Elites
         [AutoConfig("Mortar Blast Radius", 15f)]
         public static float volatileMortarRadius = 15f;
 
+        [AutoConfig("Landmine Count Per Size", 1f)]
+        public static float minesPerSize = 1f;
         [AutoConfig("Landmine Damage", "Scales with level", 10)]
         public static float volatileLandmineDamage = 10f;
 
@@ -109,6 +111,27 @@ namespace SwanSongExtended.Elites
                         force = volatileMortarForce,
                         crit = Util.CheckRoll(victimBody.crit, victimBody.master)
                     });
+
+                    float radiusForBonus = Mathf.Round(victimBody.radius - 1);
+                    int bonusMineCount = (int)Mathf.Ceil(radiusForBonus * VolatileAspect.minesPerSize);
+                    if (bonusMineCount > 0)
+                    {
+                        for(int i = 0; i <= bonusMineCount; i++)
+                        {
+                            Vector3 dir = UnityEngine.Random.insideUnitSphere + Vector3.up * 1.6f;
+                            ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                            {
+                                projectilePrefab = volatileLandminePrefab,
+                                position = spawnPosition,
+                                rotation = Util.QuaternionSafeLookRotation(dir),
+                                owner = victimBody.gameObject,
+                                damage = (1 + 0.3f * victimBody.level) * volatileLandmineDamage,
+                                force = volatileMortarForce,
+                                crit = Util.CheckRoll(victimBody.crit, victimBody.master)
+                            });
+                        }
+                    }
+
 
                     /*List<BombArtifactManager.BombRequest> bombRequests = new List<BombArtifactManager.BombRequest>();
 

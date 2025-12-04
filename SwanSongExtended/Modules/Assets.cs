@@ -54,6 +54,20 @@ namespace SwanSongExtended.Modules
                 _orangeAssetBundle = value;
             }
         }
+        private static AssetBundle _retierAssetBundle;
+        public static AssetBundle retierAssetBundle
+        {
+            get
+            {
+                if (_retierAssetBundle == null)
+                    _retierAssetBundle = Assets.LoadAssetBundle("retier");
+                return _retierAssetBundle;
+            }
+            set
+            {
+                _retierAssetBundle = value;
+            }
+        }
 
         public static string dropPrefabsPath = "Assets/Models/DropPrefabs";
         public static string iconsPath = "Assets/Textures/Icons/";

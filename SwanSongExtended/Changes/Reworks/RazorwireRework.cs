@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using SwanSongExtended.Modules;
 using static R2API.RecalculateStatsAPI;
+using UnityEngine.Networking;
 
 namespace SwanSongExtended
 {
@@ -119,6 +120,8 @@ namespace SwanSongExtended
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<Int32, HealthComponent, Int32>>((itemCount, hc) =>
 			{
+				if (!NetworkServer.active)
+					return 0;
 				CharacterBody body = hc.body;
 				buffCount = 0;
 				while (body.HasBuff(CommonAssets.razorChargeBuff))

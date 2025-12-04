@@ -57,7 +57,7 @@ namespace SurvivorTweaks.Skills
 
         //public override Type RequiredUnlock => (typeof(UgornsMusicUnlock));
 
-        public override Sprite Icon => null;
+        public override Sprite Icon => assetBundle.LoadAsset<Sprite>("Assets/Icons/laserrangskill.png");
 
         public override Type ActivationState => typeof(ThrowLaserrang);
 

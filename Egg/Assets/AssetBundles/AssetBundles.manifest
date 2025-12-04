@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 3617227559
+CRC: 498447974
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: orangecontent
+      Dependencies: {}
+    Info_1:
+      Name: skillicons
       Dependencies: {}

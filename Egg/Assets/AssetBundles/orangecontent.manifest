@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 628156366
+CRC: 2937117577
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e58eb5c74893fa294cbaec6927a4ed85
+    Hash: 4842cfdc1a719e7e502332a904e7429c
   TypeTreeHash:
     serializedVersion: 2
     Hash: 62c740542924f0e77561298e5ba99840
@@ -124,6 +124,7 @@ Assets:
 - Assets/zappinator.fbx
 - Assets/Prefabs/mdlTragicFacade.prefab
 - Assets/Icons/texIconPickupITEM_LUNARINCREASECD.png
+- Assets/Prefabs/mdlJellyfishNecklace.prefab
 - Assets/Prefabs/flameAltar.prefab
 - Assets/Icons/chefreference.png
 - Assets/aaaaaaa.fbx

@@ -48,7 +48,7 @@ namespace BossDropRework
             CharacterBody body = self.characterBody;
             if (body && /*!body.isChampion &&*/ body.isBoss)
             {
-                Debug.Log(body.name);
+                //Debug.Log(body.name);
                 if (self.bossDropTable == null)
                     self.bossDropTable = hordeDropTable;
             }

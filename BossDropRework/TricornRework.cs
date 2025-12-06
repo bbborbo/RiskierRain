@@ -97,7 +97,7 @@ namespace BossDropRework
                                 enemyHealthComponent.TakeDamage(damageInfo);
 
                                 enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
-                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker, enemyBody.mainHurtBox,
+                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker, hurtBox,
                                     DotController.DotIndex.SuperBleed, tricornDebuffDuration, 1f);
                             }
                             else
@@ -186,7 +186,7 @@ namespace BossDropRework
                         #region replace equipment
                         if (((attackerBody != null) ? attackerBody.inventory : null) && destroyTricorn == true)
                         {
-                            CharacterMasterNotificationQueue.PushEquipmentTransformNotification(self.characterBody.master,
+                            CharacterMasterNotificationQueue.SendTransformNotification(self.characterBody.master,
                                 self.characterBody.inventory.currentEquipmentIndex, DLC1Content.Equipment.BossHunterConsumed.equipmentIndex,
                                 CharacterMasterNotificationQueue.TransformationType.Default);
                             self.characterBody.inventory.SetEquipmentIndex(DLC1Content.Equipment.BossHunterConsumed.equipmentIndex);

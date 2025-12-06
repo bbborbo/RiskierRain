@@ -203,15 +203,15 @@ namespace BossDropRework
             {
                 if(InvokeModifyBossItemDropChance(enemyBody, attackerBody, ref dropChance) > 0)
                 {
-                    PickupIndex drop = dropTable.GenerateDrop(Run.instance.bossRewardRng);
 
-                    if (Util.CheckRoll(dropChance, killerMaster) && drop != PickupCatalog.FindPickupIndex("VoidCoin"))
+                    if (Util.CheckRoll(dropChance, killerMaster)) //&& drop != PickupCatalog.FindPickupIndex("VoidCoin"))
                     {
+                        UniquePickup drop = dropTable.GeneratePickup(Run.instance.bossRewardRng);
                         Vector3 vector = enemyBody ? enemyBody.corePosition : Vector3.zero;
                         Vector3 normalized = (vector - attackerBody.corePosition).normalized;
 
                         PickupDropletController.CreatePickupDroplet(
-                            drop, vector, normalized * 15f);
+                            drop, vector, normalized * 15f, false);
                     }
                 }
             }
@@ -219,6 +219,7 @@ namespace BossDropRework
 
         public static float GetBaseBossItemDropChanceFromBody(CharacterBody body, out PickupDropTable dropTable)
         {
+            //if no drop table, no drops
             DeathRewards deathRewards = GetDeathRewardsFromTarget(body);
             if (deathRewards == null || deathRewards.bossDropTable == null)
             {
@@ -227,16 +228,19 @@ namespace BossDropRework
             }
             dropTable = deathRewards.bossDropTable;
 
+            //if aurelionite, use drops determined by config
             BodyIndex enemyBodyIndex = body.bodyIndex;
             if (enemyBodyIndex == BodyCatalog.FindBodyIndex("TitanGoldBody"))
             {
                 return ForceDropsFromAurelionite.Value ? 100 : 0;
             }
 
+            //if enemy has no rewards, no drops
             if (deathRewards.goldReward <= 0)
                 return 0;
 
-            if (enemyBodyIndex == BodyCatalog.FindBodyIndex("SuperRoboBallBossBody"))
+            //if enemy is a rare boss
+            if (enemyBodyIndex == BodyCatalog.FindBodyIndex("SuperRoboBallBossBody") || enemyBodyIndex == BodyCatalog.FindBodyIndex("VultureHunterBody"))
             {
                 return SpecialBossDropChance.Value;
             }

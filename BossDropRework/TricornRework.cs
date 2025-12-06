@@ -97,7 +97,7 @@ namespace BossDropRework
                                 enemyHealthComponent.TakeDamage(damageInfo);
 
                                 enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
-                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker,
+                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker, enemyBody.mainHurtBox,
                                     DotController.DotIndex.SuperBleed, tricornDebuffDuration, 1f);
                             }
                             else

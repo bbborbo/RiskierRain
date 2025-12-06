@@ -103,10 +103,10 @@ namespace FruityCradles
                     return;
                 }
 
-                List<PickupIndex> drops = new List<PickupIndex>();
+                List<UniquePickup> drops = new List<UniquePickup>();
 
                 PickupIndex initialDrop = self.dropTable.GenerateDrop(self.rng);
-                drops.Add(initialDrop);
+                drops.Add(new UniquePickup(initialDrop));
 
                 ItemDef.Pair[] voidPairs = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem];
                 foreach (ItemDef.Pair pair in voidPairs)
@@ -119,10 +119,10 @@ namespace FruityCradles
                     //if (pair.itemDef2 == DLC1Content.Items.TreasureCacheVoid)
                     //    break;
                     PickupIndex other = PickupCatalog.FindPickupIndex(pair.itemDef1.itemIndex);
-                    drops.Add(other);
+                    drops.Add(new UniquePickup(other));
                 }
 
-                self.generatedDrops = drops.ToArray();
+                self.generatedPickups = drops;
                 return;
             }
             orig(self);

@@ -85,7 +85,7 @@ namespace SwanSongExtended
                 {
 					for(int i = 0; i < orb.procCoefficient; i++)
                     {
-						DotController.InflictDot(hc.gameObject, orb.attacker, DotController.DotIndex.Bleed, razorwireBleedDuration, orb.damageValue);
+						DotController.InflictDot(hc.gameObject, orb.attacker, hc.body.mainHurtBox, DotController.DotIndex.Bleed, razorwireBleedDuration, orb.damageValue);
                     }
 					return null;
 				}

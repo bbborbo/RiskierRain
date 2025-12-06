@@ -50,10 +50,10 @@ namespace SwanSongExtended.Equipment
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
             Transform origin = slot.characterBody.gameObject.transform;
-            PickupIndex pickupIndex = PickupCatalog.itemTierToPickupIndex[ItemTier.Tier2/*(ItemTier)wishPickupIndex*/]; //common = 0, uncommon = 1, rare = 2
+            UniquePickup pickupIndex = new UniquePickup(PickupCatalog.itemTierToPickupIndex[ItemTier.Tier2/*(ItemTier)wishPickupIndex*/]); //common = 0, uncommon = 1, rare = 2
 
             GameObject commandCube = UnityEngine.Object.Instantiate<GameObject>(CommandArtifactManager.commandCubePrefab, origin.position, origin.rotation);
-            commandCube.GetComponent<PickupIndexNetworker>().NetworkpickupIndex = pickupIndex;
+            commandCube.GetComponent<PickupIndexNetworker>().NetworkpickupState = pickupIndex;
             commandCube.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(commandCube);
 

@@ -75,9 +75,9 @@ namespace SwanSongExtended
             });
         }
 
-        private int AddGestureStock(On.RoR2.Inventory.orig_GetEquipmentSlotMaxCharges orig, Inventory self, byte slot)
+        private int AddGestureStock(On.RoR2.Inventory.orig_GetEquipmentSlotMaxCharges orig, Inventory self)
         {
-            int stock = orig(self, slot);
+            int stock = orig(self);
             stock += GetGestureStockFromInventory(self);
             return stock;
         }

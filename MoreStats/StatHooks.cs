@@ -455,7 +455,6 @@ namespace MoreStats
             }
             return orig(percentChance, luck, effectOriginMaster);
         }
-        #endregion
 
         #region shield recharge delay
         private static void UpdateDangerMoreStats(On.RoR2.CharacterBody.orig_UpdateOutOfCombatAndDanger orig, CharacterBody self)

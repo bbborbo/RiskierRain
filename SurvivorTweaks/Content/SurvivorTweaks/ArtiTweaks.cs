@@ -101,22 +101,22 @@ namespace SurvivorTweaks.SurvivorTweaks
             #endregion
 
             #region Flamethrower
-            Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+            //self.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
             LanguageAPI.Add("MAGE_SPECIAL_FIRE_DESCRIPTION", $"Burn all enemies in front of you for <style=cIsDamage>{Tools.ConvertDecimal(flamethrowerDamage)} damage</style>. " +
                 $"Each hit has a <style=cIsDamage>50% chance</style> to <style=cIsDamage>Ignite</style>.");
             On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
             {
-                Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+                self.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
                 orig(self);
-                Flamethrower.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
+                self.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
             };
             if (false)
             {
                 On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
                 {
-                    Flamethrower.baseFlamethrowerDuration = 3;
-                    Flamethrower.tickFrequency = 7;
-                    Flamethrower.totalDamageCoefficient = 16.23f;
+                    self.baseFlamethrowerDuration = 3;
+                    self.tickFrequency = 7;
+                    self.totalDamageCoefficient = 16.23f;
                     Flamethrower.procCoefficientPerTick = 0.8f;
 
                     orig(self);
@@ -125,15 +125,15 @@ namespace SurvivorTweaks.SurvivorTweaks
 
                     if (aspd != 0)
                     {
-                        float damageCoeff = Flamethrower.totalDamageCoefficient * aspdSqrt;
-                        float endDuration = Flamethrower.baseFlamethrowerDuration / aspdSqrt;
+                        float damageCoeff = self.totalDamageCoefficient * aspdSqrt;
+                        float endDuration = self.baseFlamethrowerDuration / aspdSqrt;
 
                         //total ticks increases by aspdSqrt, end duration
-                        float totalTicks = Flamethrower.baseFlamethrowerDuration * Flamethrower.tickFrequency * aspdSqrt;
+                        float totalTicks = self.baseFlamethrowerDuration * self.tickFrequency * aspdSqrt;
 
                         //self.flamethrowerDuration = endDuration;
                         //self.tickDamageCoefficient = (damageCoeff / totalTicks);
-                        Flamethrower.tickFrequency *= aspdSqrt;
+                        self.tickFrequency *= aspdSqrt;
                     }
                 };
                 flamethrowerDesc = "Burn all enemies in front of you for <style=cIsDamage>1700% damage</style>. " +

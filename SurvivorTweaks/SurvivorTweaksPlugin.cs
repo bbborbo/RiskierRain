@@ -93,6 +93,7 @@ namespace SurvivorTweaks
             Modules.Config.Init();
             Log.Init(Logger);
 
+            RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();

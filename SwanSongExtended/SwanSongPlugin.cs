@@ -118,6 +118,7 @@ namespace SwanSongExtended
             Log.Init(Logger);
 
             CreateExpansionDef();
+            RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();

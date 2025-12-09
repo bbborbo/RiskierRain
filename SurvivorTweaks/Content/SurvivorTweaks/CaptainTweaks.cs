@@ -370,7 +370,6 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             SkillDef tazer = family.variants[0].skillDef;
             tazer.baseRechargeInterval = tazerCooldown;
-            tazer.keywordTokens = new string[] { "KEYWORD_SHOCKING", RainrotSharedUtils.SharedUtilsPlugin.sparkPickupKeywordToken };
 
             #region taser
             GameObject tazerPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Captain.CaptainTazer_prefab).WaitForCompletion();

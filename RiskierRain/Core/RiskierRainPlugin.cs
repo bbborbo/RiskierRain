@@ -239,13 +239,6 @@ namespace RiskierRain
                     "Set how much additional armor this item gives. Vanilla 0."
                     ).Value;
             }
-
-
-            //shock restores shield
-            if (GetConfigBool(true, "Shock Buff"))
-            {
-                ShockBuff();
-            }
             #endregion
 
             ///summary

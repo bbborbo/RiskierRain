@@ -73,175 +73,9 @@ namespace RainrotSharedUtils
         public static void Init()
         {
             CreateFrostNovaAssets();
-            CreateSparkPickup();
+            CreateShockReworkAssets();
         }
 
-        #region spark pickup
-        public const int maxNebulaBoosterStackCount = 5;
-        public static float nebulaBoosterBuffDuration = 5;
-        public static float nebulaBoosterBuffRadius = 50;
-
-        public static GameObject sparkBoosterObject;
-        public static Color32 sparkBoosterColor = new Color32(35, 115, 255, 255);
-        public static BuffDef sparkBoosterBuff;
-        public static float sparkBoosterDuration = 8f;
-        public static float sparkBoosterAspdBonus = 0.25f;
-
-        private static void CreateSparkPickup()
-        {
-            sparkBoosterBuff = ScriptableObject.CreateInstance<BuffDef>();
-            sparkBoosterBuff.name = "bdSparkBoost";
-            sparkBoosterBuff.buffColor = sparkBoosterColor;
-            sparkBoosterBuff.canStack = maxNebulaBoosterStackCount > 1 ? true : false;
-            Addressables.LoadAssetAsync<Sprite>("1597fa78f3a39cc4c9c58e8ed2cd42f0").Completed += ctx => 
-                sparkBoosterBuff.iconSprite = ctx.Result;
-            R2API.ContentAddition.AddBuffDef(sparkBoosterBuff);
-
-            sparkBoosterObject = NewNebulaBooster("SparkBoosterPickup", sparkBoosterBuff, sparkBoosterColor, sparkBoosterDuration, 0.8f, 1.8f);
-
-            GetStatCoefficients += SparkBoosterStats;
-        }
-
-        private static void SparkBoosterStats(CharacterBody sender, StatHookEventArgs args)
-        {
-            int buffCount = sender.GetBuffCount(sparkBoosterBuff);
-            if (buffCount > 0)
-                args.attackSpeedMultAdd += sparkBoosterAspdBonus * buffCount;
-        }
-
-        static GameObject NewNebulaBooster(string boosterName, BuffDef boosterBuff, Color32 boosterColor, float boosterDuration, float antiGravity = 1, float pickupRangeMultiplier = 3f)
-        {
-            GameObject baseObject = Addressables.LoadAssetAsync<GameObject>("7f9217d45f824f245862e65716abc746").WaitForCompletion();
-
-            GameObject newBooster = baseObject.InstantiateClone(boosterName, true);
-
-            //Tools.DebugMaterial(newBooster);
-            //Tools.DebugParticleSystem(newBooster);
-
-
-            ParticleSystemRenderer[] psrs = newBooster.GetComponentsInChildren<ParticleSystemRenderer>();
-            for (int i = 0; i < psrs.Length; i++)
-            {
-                ParticleSystemRenderer psr = psrs[i];
-                string name = psr.gameObject.name;
-                Color32 color = Color.white;
-                string matName = "";
-                if (name == "Core")
-                {
-                    matName = "matSparkPickupCore";
-                    color = boosterColor;
-                }
-                if (name == "Trail")
-                {
-                    matName = "matSparkPickupTrail";
-                    color = Color.clear;
-                }
-                if (name == "Pulseglow")
-                {
-                    matName = "matSparkPickupGlow";
-                    color = boosterColor;
-                }
-
-                if (matName != "")
-                {
-                    Material mat = UnityEngine.Object.Instantiate(psr.material);
-                    psr.material = mat;
-                    mat.name = matName;
-                    mat.DisableKeyword("VERTEXCOLOR");
-                    mat.SetFloat("_VertexColorOn", 0);
-                    mat.SetColor("_TintColor", color);
-                }
-            }
-
-            VelocityRandomOnStart boosterVROS = newBooster.GetComponent<VelocityRandomOnStart>();
-            if (boosterVROS != null)
-            {
-                boosterVROS.minSpeed = 15;
-                boosterVROS.maxSpeed = 25;
-                boosterVROS.coneAngle = 360;
-                boosterVROS.directionMode = VelocityRandomOnStart.DirectionMode.Sphere;
-            }
-            else
-            {
-                Debug.Log(boosterName + " HAS NO VROS????");
-            }
-
-            DestroyOnTimer boosterDOT = newBooster.GetComponent<DestroyOnTimer>();
-            if (boosterDOT != null)
-            {
-                boosterDOT.duration = boosterDuration;
-            }
-            else
-            {
-                Debug.Log(boosterName + " HAS NO DOT????");
-            }
-
-            BeginRapidlyActivatingAndDeactivating boosterBRAAD = newBooster.GetComponent<BeginRapidlyActivatingAndDeactivating>();
-            if (boosterBRAAD != null)
-            {
-                boosterBRAAD.delayBeforeBeginningBlinking = boosterDuration - 2;
-                boosterBRAAD.blinkFrequency = 5;
-            }
-            else
-            {
-                Debug.Log(boosterName + " HAS NO BRAAD????");
-            }
-
-            if(antiGravity != 0)
-            {
-                Rigidbody rb = newBooster.GetComponent<Rigidbody>();
-                if (antiGravity == 1)
-                {
-                    rb.useGravity = true;
-                }
-                else
-                {
-                    AntiGravityForce antiGrav = newBooster.AddComponent<AntiGravityForce>();
-                    antiGrav.rb = rb;
-                    antiGrav.antiGravityCoefficient = antiGravity;
-                }
-            }
-
-
-            HealthPickup healthpickup = newBooster.GetComponentInChildren<HealthPickup>();
-            NebulaPickup boosterPickup = healthpickup.gameObject.AddComponent<NebulaPickup>();
-            boosterPickup.pickupEffect = healthpickup.pickupEffect;
-            boosterPickup.baseObject = healthpickup.baseObject;
-            boosterPickup.teamFilter = newBooster.GetComponent<TeamFilter>();
-
-            if (boosterBuff != null)
-            {
-                boosterPickup.buffDef = boosterBuff;
-            }
-            else
-            {
-                Debug.Log(boosterName + "BOOSTER BUFFDEF WAS NULL");
-            }
-
-            GravitatePickup boosterGravitate = newBooster.GetComponentInChildren<GravitatePickup>();
-            if (boosterGravitate != null)
-            {
-                boosterGravitate.acceleration = 2f;
-                boosterGravitate.maxSpeed = 50;
-                Collider gravitateTrigger = boosterGravitate.gameObject.GetComponent<Collider>();
-                if (gravitateTrigger.isTrigger)
-                {
-                    gravitateTrigger.transform.localScale *= pickupRangeMultiplier;
-                }
-            }
-            else
-            {
-                Debug.Log(boosterName + " HAS NO GRAVITATION????");
-            }
-
-
-            UnityEngine.Object.Destroy(healthpickup);
-
-            R2API.ContentAddition.AddNetworkedObject(newBooster);
-
-            return newBooster;
-        }
-#endregion
 
         #region chill rework
         internal static GameObject iceDelayBlastPrefab;
@@ -353,7 +187,214 @@ namespace RainrotSharedUtils
         #endregion
 
         #region shock rework
+        public static BuffDef shockMarker;
+        public static int shockMarkerDuration = 4;
+        public static BuffDef shockHealCooldown;
+        public static Color32 sparkBoosterColor = new Color32(35, 115, 255, 255);
+        public static BuffDef sparkBoosterBuff;
+        public static float sparkBoosterDuration = 8f;
+        public static float sparkBoosterAspdBonus = 0.25f;
 
+        private static void CreateShockReworkAssets()
+        {
+            AddShockDebuff();
+            AddShockCooldown();
+            CreateSparkBuff();
+            CreateSparkPickup();
+        }
+
+        #region spark pickup
+        public const int maxNebulaBoosterStackCount = 5;
+        public static float nebulaBoosterBuffDuration = 5;
+        public static float nebulaBoosterBuffRadius = 50;
+
+        public static GameObject sparkBoosterObject;
+        private static void CreateSparkPickup()
+        {
+            sparkBoosterObject = NewNebulaBooster("SparkBoosterPickup", sparkBoosterBuff, sparkBoosterColor, sparkBoosterDuration, 0.8f, 1.8f);
+
+            GetStatCoefficients += SparkBoosterStats;
+        }
+
+        private static void SparkBoosterStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(sparkBoosterBuff);
+            if (buffCount > 0)
+                args.attackSpeedMultAdd += sparkBoosterAspdBonus * buffCount;
+        }
+
+        static GameObject NewNebulaBooster(string boosterName, BuffDef boosterBuff, Color32 boosterColor, float boosterDuration, float antiGravity = 1, float pickupRangeMultiplier = 3f)
+        {
+            GameObject baseObject = Addressables.LoadAssetAsync<GameObject>("7f9217d45f824f245862e65716abc746").WaitForCompletion();
+
+            GameObject newBooster = baseObject.InstantiateClone(boosterName, true);
+
+            //Tools.DebugMaterial(newBooster);
+            //Tools.DebugParticleSystem(newBooster);
+
+
+            ParticleSystemRenderer[] psrs = newBooster.GetComponentsInChildren<ParticleSystemRenderer>();
+            for (int i = 0; i < psrs.Length; i++)
+            {
+                ParticleSystemRenderer psr = psrs[i];
+                string name = psr.gameObject.name;
+                Color32 color = Color.white;
+                string matName = "";
+                if (name == "Core")
+                {
+                    matName = "matSparkPickupCore";
+                    color = boosterColor;
+                }
+                if (name == "Trail")
+                {
+                    matName = "matSparkPickupTrail";
+                    color = Color.clear;
+                }
+                if (name == "Pulseglow")
+                {
+                    matName = "matSparkPickupGlow";
+                    color = boosterColor;
+                }
+
+                if (matName != "")
+                {
+                    Material mat = UnityEngine.Object.Instantiate(psr.material);
+                    psr.material = mat;
+                    mat.name = matName;
+                    mat.DisableKeyword("VERTEXCOLOR");
+                    mat.SetFloat("_VertexColorOn", 0);
+                    mat.SetColor("_TintColor", color);
+                }
+            }
+
+            VelocityRandomOnStart boosterVROS = newBooster.GetComponent<VelocityRandomOnStart>();
+            if (boosterVROS != null)
+            {
+                boosterVROS.minSpeed = 15;
+                boosterVROS.maxSpeed = 25;
+                boosterVROS.coneAngle = 360;
+                boosterVROS.directionMode = VelocityRandomOnStart.DirectionMode.Sphere;
+            }
+            else
+            {
+                Debug.Log(boosterName + " HAS NO VROS????");
+            }
+
+            DestroyOnTimer boosterDOT = newBooster.GetComponent<DestroyOnTimer>();
+            if (boosterDOT != null)
+            {
+                boosterDOT.duration = boosterDuration;
+            }
+            else
+            {
+                Debug.Log(boosterName + " HAS NO DOT????");
+            }
+
+            BeginRapidlyActivatingAndDeactivating boosterBRAAD = newBooster.GetComponent<BeginRapidlyActivatingAndDeactivating>();
+            if (boosterBRAAD != null)
+            {
+                boosterBRAAD.delayBeforeBeginningBlinking = boosterDuration - 2;
+                boosterBRAAD.blinkFrequency = 5;
+            }
+            else
+            {
+                Debug.Log(boosterName + " HAS NO BRAAD????");
+            }
+
+            if (antiGravity != 0)
+            {
+                Rigidbody rb = newBooster.GetComponent<Rigidbody>();
+                if (antiGravity == 1)
+                {
+                    rb.useGravity = true;
+                }
+                else
+                {
+                    AntiGravityForce antiGrav = newBooster.AddComponent<AntiGravityForce>();
+                    antiGrav.rb = rb;
+                    antiGrav.antiGravityCoefficient = antiGravity;
+                }
+            }
+
+
+            HealthPickup healthpickup = newBooster.GetComponentInChildren<HealthPickup>();
+            NebulaPickup boosterPickup = healthpickup.gameObject.AddComponent<NebulaPickup>();
+            boosterPickup.pickupEffect = healthpickup.pickupEffect;
+            boosterPickup.baseObject = healthpickup.baseObject;
+            boosterPickup.teamFilter = newBooster.GetComponent<TeamFilter>();
+
+            if (boosterBuff != null)
+            {
+                boosterPickup.buffDef = boosterBuff;
+            }
+            else
+            {
+                Debug.Log(boosterName + "BOOSTER BUFFDEF WAS NULL");
+            }
+
+            GravitatePickup boosterGravitate = newBooster.GetComponentInChildren<GravitatePickup>();
+            if (boosterGravitate != null)
+            {
+                boosterGravitate.acceleration = 2f;
+                boosterGravitate.maxSpeed = 50;
+                Collider gravitateTrigger = boosterGravitate.gameObject.GetComponent<Collider>();
+                if (gravitateTrigger.isTrigger)
+                {
+                    gravitateTrigger.transform.localScale *= pickupRangeMultiplier;
+                }
+            }
+            else
+            {
+                Debug.Log(boosterName + " HAS NO GRAVITATION????");
+            }
+
+
+            UnityEngine.Object.Destroy(healthpickup);
+
+            R2API.ContentAddition.AddNetworkedObject(newBooster);
+
+            return newBooster;
+        }
+        #endregion
+
+
+
+        private static void CreateSparkBuff()
+        {
+            sparkBoosterBuff = ScriptableObject.CreateInstance<BuffDef>();
+            sparkBoosterBuff.name = "bdSparkBoost";
+            sparkBoosterBuff.buffColor = sparkBoosterColor;
+            sparkBoosterBuff.canStack = maxNebulaBoosterStackCount > 1 ? true : false;
+            Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ShockNearby.texBuffTeslaIcon_tif).Completed += ctx =>
+                sparkBoosterBuff.iconSprite = ctx.Result;
+            R2API.ContentAddition.AddBuffDef(sparkBoosterBuff);
+        }
+
+        private static void AddShockDebuff()
+        {
+            shockMarker = ScriptableObject.CreateInstance<BuffDef>();
+            shockMarker.name = "bdShockDebuff";
+            shockMarker.buffColor = new Color(0f, 0f, 0.6f);
+            shockMarker.canStack = false;
+            shockMarker.isDebuff = true;
+            shockMarker.isHidden = true;
+            Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ShockNearby.texBuffTeslaIcon_tif).Completed += ctx =>
+                shockMarker.iconSprite = ctx.Result;
+            R2API.ContentAddition.AddBuffDef(shockMarker);
+
+        }
+        private static void AddShockCooldown()
+        {
+            shockHealCooldown = ScriptableObject.CreateInstance<BuffDef>();
+            shockHealCooldown.name = "bdShockDebuff";
+            shockHealCooldown.buffColor = new Color(0f, 0f, 0.6f);
+            shockHealCooldown.canStack = true;
+            shockHealCooldown.isDebuff = false;
+            shockHealCooldown.isCooldown = true;
+            Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ShockNearby.texBuffTeslaIcon_tif).Completed += ctx =>
+                shockHealCooldown.iconSprite = ctx.Result;
+            R2API.ContentAddition.AddBuffDef(shockHealCooldown);
+        }
         #endregion
     }
 }

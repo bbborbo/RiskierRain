@@ -44,7 +44,7 @@ namespace MissileRework
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
 
             LanguageAPI.Add("ITEM_MISSILE_NAME", "AtG Missile Mk.3");
-            LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Chance to fire a volley of missiles. Missiles fired are increased by higher damage hits.");
+            LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Chance to fire a volley of missiles. Missiles fired are increased by higher damage hits. Watch for the backblast.");
             LanguageAPI.Add("ITEM_MISSILE_DESC", 
                 $"<style=cIsDamage>{procChance}%</style> chance to fire a volley of " +
                 $"<style=cIsDamage>{missilesPerOverspillBase}</style> <style=cStack>(+{missilesPerOverspillStack} per stack)</style> missiles on hit " +

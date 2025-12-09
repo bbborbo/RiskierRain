@@ -229,13 +229,17 @@ namespace EliteReworks.Equipment
                             dropChance = aspectDropChance;
                         }
 
-                        if(damageReport.damageInfo.procChainMask.HasProc(ProcType.SureProc) || Util.CheckRoll0To1(equipmentActivationChance, damageReport.attackerMaster.luck))
+                        CharacterMaster attackerMaster = damageReport.attackerMaster;
+                        if(attackerMaster != null)
                         {
-                            CharacterBody body = damageReport.attackerBody;
-                            if (body.hasAuthority)
-                                body.equipmentSlot.OnEquipmentExecuted();
-                            else
-                                body.equipmentSlot.CallCmdOnEquipmentExecuted();
+                            if (damageReport.damageInfo.procChainMask.HasProc(ProcType.SureProc) 
+                                || Util.CheckRoll0To1(equipmentActivationChance, attackerMaster.luck))
+                            {
+                                if (attackerBody.hasAuthority)
+                                    attackerBody.equipmentSlot.OnEquipmentExecuted();
+                                else
+                                    attackerBody.equipmentSlot.CallCmdOnEquipmentExecuted();
+                            }
                         }
                     }
                     return dropChance;

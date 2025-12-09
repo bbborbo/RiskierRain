@@ -39,15 +39,18 @@ namespace BarrierRework
         #endregion
 
         private bool _useDynamicDecay = true;
-        private float _barrierDecayRateStatic = 0f; //30
-        private float _barrierDecayRateDynamic = 3f; //0
+        private float _barrierDecayRateStatic = 30f; //30
+        private float _barrierDecayHighFactor = 5f; //3f
+        private float _barrierDecayLowFactor = 0.33f; //0.5f
 
         #region config
         internal static ConfigFile CustomConfigFile { get; private set; }
         public static ConfigEntry<float> BarrierDecayRateStatic { get; set; }
-        public static ConfigEntry<float> BarrierDecayRateDynamic { get; set; }
+        public static ConfigEntry<float> BarrierDecayHighFactor { get; set; }
+        public static ConfigEntry<float> BarrierDecayLowFactor { get; set; }
         public static ConfigEntry<bool> AegisRework { get; set; }
         public static ConfigEntry<float> AegisBarrierFlat { get; set; }
+        public static ConfigEntry<float> AegisBarrierPercent { get; set; }
         #endregion
 
         public void Awake()
@@ -66,27 +69,38 @@ namespace BarrierRework
                 "Aegis Barrier On Interactable",
                 _aegisBarrierFlat,
                 "How much barrier the reworked Aegis grants on using interactables.");
+            AegisBarrierPercent = CustomConfigFile.Bind<float>(
+                "Aegis Rework",
+                "Aegis Barrier On Interactable",
+                _aegisBarrierFraction,
+                "How much barrier the reworked Aegis grants on using interactables.");
 
             BarrierDecayRateStatic = CustomConfigFile.Bind<float>(
                 "Barrier Stats",
                 "Flat Decay Time",
                 _barrierDecayRateStatic,
-                "Flat barrier decay, vanilla is 30 seconds. Expressed in seconds to deplete maximum barrier.");
+                "Base barrier decay rate before modifiers, vanilla is 30. Expressed in seconds to deplete maximum barrier.");
 
-            BarrierDecayRateDynamic = CustomConfigFile.Bind<float>(
+            BarrierDecayHighFactor = CustomConfigFile.Bind<float>(
                 "Barrier Stats",
-                "Dynamic Decay Half-Life",
-                _barrierDecayRateDynamic,
-                "Fruity dynamic barrier decay. Expressed in seconds of half-life.");
+                "Dynamic Decay Factor (High)",
+                _barrierDecayHighFactor,
+                "Decay rate modifier when at HIGH barrier, vanilla is 3. Expressed as a multiplication of base decay.");
+            BarrierDecayLowFactor = CustomConfigFile.Bind<float>(
+                "Barrier Stats",
+                "Dynamic Decay Factor (Low)",
+                _barrierDecayLowFactor,
+                "Decay rate modifier when at LOW barrier, vanilla is 0.5. Expressed as a multiplication of base decay.");
 
-            if(AegisRework.Value == true)
+            if (AegisRework.Value == true)
                 ReworkAegis();
             RoR2Application.onLoad += BuffBarrier;
         }
         void BuffBarrier()
         {
             BaseStats.BarrierDecayStaticMaxHealthTime = BarrierDecayRateStatic.Value;
-            BaseStats.BarrierDecayDynamicHalfLife = BarrierDecayRateDynamic.Value;
+            BaseStats.BarrierHighDecayFactor = BarrierDecayHighFactor.Value;
+            BaseStats.BarrierLowDecayFactor = BarrierDecayLowFactor.Value;
             //GetMoreStatCoefficients += ChangeBarrierDecay;
         }
 

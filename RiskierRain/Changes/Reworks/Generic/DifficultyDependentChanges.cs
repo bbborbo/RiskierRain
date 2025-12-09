@@ -267,7 +267,7 @@ namespace RiskierRain
             self.difficultyCoefficient = difficultyCoefficient;
             self.compensatedDifficultyCoefficient = difficultyCoefficient;
             self.oneOverCompensatedDifficultyCoefficientSquared = 1 / (self.compensatedDifficultyCoefficient * self.compensatedDifficultyCoefficient);
-            self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + 3f * (difficultyCoefficient - playerBaseFactor), (float)Run.ambientLevelCap);
+            self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + 3f * (difficultyCoefficient - playerBaseFactor), (float)Run.ambientLevelCap) - (scalingValue - 1);
 
             int ambientLevelFloor = self.ambientLevelFloor;
             self.ambientLevelFloor = Mathf.FloorToInt(self.ambientLevel);

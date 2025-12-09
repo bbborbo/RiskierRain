@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using R2API;
-using static MoreStats.StatHooks;
+using static R2API.RecalculateStatsAPI;
 
 namespace BarrierRework
 {
@@ -28,7 +28,10 @@ namespace BarrierRework
             LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_PICKUP", "Gain barrier on any interaction. While out of danger, barrier stops decaying.");
             LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_DESC", 
                 $"Using any interactable grants a <style=cIsHealing>temporary barrier</style> " +
-                $"for <style=cIsHealing>{AegisBarrierFlat.Value} health</style> <style=cStack>(+{AegisBarrierFlat.Value} per stack)</style>. " +
+                $"for <style=cIsHealing>{AegisBarrierFlat.Value} health</style> <style=cStack>(+{AegisBarrierFlat.Value} per stack)</style> " +
+                $"plus an additional " +
+                $"<style=cIsHealing>{AegisBarrierPercent.Value}%</style> <style=cStack>(+{AegisBarrierPercent.Value}% per stack)</style> " +
+                $"of <style=cIsHealing>maximum health</style>. " +
                 $"While outside of danger, <style=cIsUtility>barrier will not decay</style>.");
         }
 
@@ -60,13 +63,13 @@ namespace BarrierRework
             MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
             MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase; 
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            GetMoreStatCoefficients += AegisDecayFreeze;
+            GetStatCoefficients += AegisDecayFreeze;
         }
 
-        private void AegisDecayFreeze(CharacterBody body, MoreStatHookEventArgs args)
+        private void AegisDecayFreeze(CharacterBody body, StatHookEventArgs args)
         {
             if(body.HasBuff(aegisDecayBuff))
-                args.barrierFreezeCount += 1;
+                args.shouldFreezeBarrier = true;
         }
 
         private void OnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)

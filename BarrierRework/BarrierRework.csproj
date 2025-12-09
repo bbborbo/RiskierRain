@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
@@ -24,7 +24,9 @@
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.*" />
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" />
-    <PackageReference Include="R2API" Version="5.0.5" />
+    <PackageReference Include="R2API.ContentManagement" Version="1.0.1" />
+    <PackageReference Include="R2API.Language" Version="1.0.1" />
+    <PackageReference Include="R2API.RecalculateStats" Version="1.6.5" />
   </ItemGroup>
 
   <ItemGroup>

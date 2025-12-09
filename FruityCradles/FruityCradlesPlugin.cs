@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using BetterSoulCost;
 using RoR2;
+using RoR2.Items;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -105,15 +106,17 @@ namespace FruityCradles
 
                 List<UniquePickup> drops = new List<UniquePickup>();
 
-                PickupIndex initialDrop = self.dropTable.GenerateDrop(self.rng);
-                drops.Add(new UniquePickup(initialDrop));
+                UniquePickup initialDrop = self.dropTable.GeneratePickupPreReplacement(self.rng);
+                drops.Add(initialDrop);
 
                 ItemDef.Pair[] voidPairs = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem];
                 foreach (ItemDef.Pair pair in voidPairs)
                 {
                     PickupIndex voidPair = PickupCatalog.FindPickupIndex(pair.itemDef2.itemIndex);
-                    if (voidPair != initialDrop)
+                    //skip this item pair if the void item of the pair is not the chosen item
+                    if (voidPair != initialDrop.pickupIndex)
                         continue;
+                    //if the void item of the pair is a void tier 3, skip it. this is a temporary feature and should be replaced
                     if (pair.itemDef2.tier == ItemTier.VoidTier3)
                         break;
                     //if (pair.itemDef2 == DLC1Content.Items.TreasureCacheVoid)
@@ -123,6 +126,7 @@ namespace FruityCradles
                 }
 
                 self.generatedPickups = drops;
+                RandomlyLunarUtils.CheckForLunarReplacementUniqueArray<List<UniquePickup>>(self.generatedPickups, self.rng);
                 return;
             }
             orig(self);

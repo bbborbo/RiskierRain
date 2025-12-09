@@ -15,8 +15,8 @@ namespace BarrierRework
 {
     public partial class BarrierReworkPlugin
     {
-        public static float _aegisBarrierFlat = 60;
-        public static float _aegisBarrierFraction = 0.1f;
+        public static float _aegisBarrierFlat = 40;
+        public static float _aegisBarrierPercent = 10f;
         public static BuffDef aegisDecayBuff;
 
         protected void ReworkAegis()
@@ -99,7 +99,7 @@ namespace BarrierRework
                 HealthComponent hc = activator.healthComponent;
                 if (aegisCount > 0 && hc != null)
                 {
-                    float barrierPercent = Util.ConvertAmplificationPercentageIntoReductionNormalized(aegisCount * AegisBarrierPercent.Value * 100) * hc.fullCombinedHealth;
+                    float barrierPercent = Util.ConvertAmplificationPercentageIntoReductionNormalized(aegisCount * AegisBarrierPercent.Value) * hc.fullCombinedHealth;
                     float barrierFlat = aegisCount * AegisBarrierFlat.Value;
                     hc.AddBarrierAuthority(barrierPercent + barrierFlat);
                 }

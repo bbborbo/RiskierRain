@@ -66,14 +66,14 @@ namespace BarrierRework
 
             AegisBarrierFlat = CustomConfigFile.Bind<float>(
                 "Aegis Rework",
-                "Aegis Barrier On Interactable",
+                "Aegis Barrier On Interactable (Flat)",
                 _aegisBarrierFlat,
                 "How much barrier the reworked Aegis grants on using interactables.");
             AegisBarrierPercent = CustomConfigFile.Bind<float>(
                 "Aegis Rework",
-                "Aegis Barrier On Interactable",
-                _aegisBarrierFraction,
-                "How much barrier the reworked Aegis grants on using interactables.");
+                "Aegis Barrier On Interactable (Percent)",
+                _aegisBarrierPercent,
+                "How much barrier the reworked Aegis grants on using interactables. Approaches and does not exceed 100%.");
 
             BarrierDecayRateStatic = CustomConfigFile.Bind<float>(
                 "Barrier Stats",

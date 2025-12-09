@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using R2API;
-using static R2API.RecalculateStatsAPI;
+using static MoreStats.StatHooks;
 
 namespace BarrierRework
 {
@@ -63,13 +63,13 @@ namespace BarrierRework
             MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
             MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase; 
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            GetStatCoefficients += AegisDecayFreeze;
+            GetMoreStatCoefficients += AegisDecayFreeze;
         }
 
-        private void AegisDecayFreeze(CharacterBody body, StatHookEventArgs args)
+        private void AegisDecayFreeze(CharacterBody body, MoreStatHookEventArgs args)
         {
             if(body.HasBuff(aegisDecayBuff))
-                args.shouldFreezeBarrier = true;
+                args.barrierFreezeCount += 1;
         }
 
         private void OnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
@@ -102,7 +102,7 @@ namespace BarrierRework
                 HealthComponent hc = activator.healthComponent;
                 if (aegisCount > 0 && hc != null)
                 {
-                    float barrierPercent = Util.ConvertAmplificationPercentageIntoReductionNormalized(aegisCount * AegisBarrierPercent.Value) * hc.fullCombinedHealth;
+                    float barrierPercent = Util.ConvertAmplificationPercentageIntoReductionNormalized(aegisCount * AegisBarrierPercent.Value * 0.01f) * hc.fullCombinedHealth;
                     float barrierFlat = aegisCount * AegisBarrierFlat.Value;
                     hc.AddBarrierAuthority(barrierPercent + barrierFlat);
                 }

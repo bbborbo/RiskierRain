@@ -386,6 +386,8 @@ namespace MoreStats
                         barrierDecayRatePerSecond += stats.barrierDrainRate;
                         barrierDecayRatePerSecond *= stats.barrierDecayMult;
                     }
+                    else
+                        barrierDecayRatePerSecond = 0;
                     barrierDecayRatePerSecond -= stats.barrierGenRate;
 
                     return barrierDecayRatePerSecond;

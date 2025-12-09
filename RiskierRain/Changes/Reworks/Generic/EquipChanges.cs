@@ -34,10 +34,10 @@ namespace RiskierRain
         }
         void ChangeEquipmentBlacklists()
         {
-            On.RoR2.Inventory.SetEquipmentIndex += BlacklistEquipmentFromScavengers;
+            On.RoR2.Inventory.SetEquipmentIndex_EquipmentIndex_bool += BlacklistEquipmentFromScavengers;
         }
 
-        private void BlacklistEquipmentFromScavengers(On.RoR2.Inventory.orig_SetEquipmentIndex orig, Inventory self, EquipmentIndex newEquipmentIndex)
+        private void BlacklistEquipmentFromScavengers(On.RoR2.Inventory.orig_SetEquipmentIndex_EquipmentIndex_bool orig, Inventory self, EquipmentIndex newEquipmentIndex, bool isRemovingEquipment)
         {
             CharacterBody body = self.gameObject.GetComponent<CharacterBody>();
             if (body != null && body.bodyIndex == BodyCatalog.FindBodyIndex("ScavBody"))
@@ -58,7 +58,7 @@ namespace RiskierRain
                 }
             }
 
-            orig(self, newEquipmentIndex);
+            orig(self, newEquipmentIndex, isRemovingEquipment);
         }
         #endregion
 

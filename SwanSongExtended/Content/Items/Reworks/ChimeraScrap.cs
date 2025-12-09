@@ -68,6 +68,7 @@ namespace SwanSongExtended.Items
             On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
             On.RoR2.CharacterMaster.TryRegenerateScrap += SuperScrapRegenerate;
         }
+
         public override void Init()
         {
             SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.RegeneratingScrap));
@@ -103,8 +104,16 @@ namespace SwanSongExtended.Items
             return printerCredit;
         }
 
-        private CostTypeDef.PayCostResults SuperScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, int cost, Interactor activator, GameObject purchasedObject, Xoroshiro128Plus rng, ItemIndex avoidedItemIndex)
+        private void SuperScrapPayCost2(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults result)
         {
+            orig(self, context, result);
+        }
+        private void SuperScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults result)
+        {
+            int cost = context.cost;
+            Interactor activator = context.activator;
+            GameObject purchasedObject = context.purchasedObject;
+
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
             if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null && self.itemTier != ItemTier.Lunar)
             {
@@ -126,7 +135,7 @@ namespace SwanSongExtended.Items
                         if (cost > printerCredit)
                         {
                             int remainder = cost - printerCredit;
-                            payCostResults = orig(self, remainder, activator, purchasedObject, rng, avoidedItemIndex);
+                            orig(self, context, result);
                         }
                         else if (printerCredit > cost)
                         {
@@ -140,12 +149,12 @@ namespace SwanSongExtended.Items
                             payCostResults.itemsTaken.Add(ChimeraScrap.instance.ItemsDef.itemIndex);
                         }
 
-                        return payCostResults;
+                        return;
                     }
                 }
             }
             // this runs if only one of the other ifs are false
-            return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
+            orig(self, context, result);
         }
 
         private bool SuperScrapIsAffordable(On.RoR2.CostTypeDef.orig_IsAffordable orig, CostTypeDef self, int cost, Interactor activator)

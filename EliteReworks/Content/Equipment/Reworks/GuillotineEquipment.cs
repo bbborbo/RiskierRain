@@ -30,6 +30,8 @@ namespace EliteReworks.Equipment
 
         [AutoConfig("Bonus Aspect Drop Chance", 0.1f)]
         public static float aspectDropChance = 0.1f;
+        [AutoConfig("Bonus Equipment Activation Chance", 0.4f)]
+        public static float equipmentActivationChance = 0.4f;
 
         [AutoConfig("Base Execution Threshold", 0.20f)]
         public static float newExecutionThresholdBase = 0.20f;
@@ -225,6 +227,15 @@ namespace EliteReworks.Equipment
                         if (attackerBody != null && attackerBody.executeEliteHealthFraction > 0)
                         {
                             dropChance = aspectDropChance;
+                        }
+
+                        if(damageReport.damageInfo.procChainMask.HasProc(ProcType.SureProc) || Util.CheckRoll0To1(equipmentActivationChance, damageReport.attackerMaster.luck))
+                        {
+                            CharacterBody body = damageReport.attackerBody;
+                            if (body.hasAuthority)
+                                body.equipmentSlot.OnEquipmentExecuted();
+                            else
+                                body.equipmentSlot.CallCmdOnEquipmentExecuted();
                         }
                     }
                     return dropChance;

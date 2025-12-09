@@ -586,7 +586,7 @@ namespace RiskierRain
             AddDoubleChestSecrets();
 
             On.RoR2.RouletteChestController.Cycling.OnEnter += DoubleChestOnInteract;
-            On.RoR2.RouletteChestController.GetPickupIndexForTime += DoubleChestScrap;
+            On.RoR2.RouletteChestController.GetPickupForTime += DoubleChestScrap;
             On.RoR2.RouletteChestController.EjectPickupServer += DoubleChestDoubleLoot;            
         }
         private void AddDoubleChestSecrets()
@@ -682,17 +682,17 @@ namespace RiskierRain
             DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.SiphonedForest);
         }
 
-        private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, PickupIndex pickupIndex)
+        private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, UniquePickup pickup)
         {
-            orig(self, pickupIndex);
-            if (pickupIndex == PickupIndex.none)
+            orig(self, pickup);
+            if (pickup.pickupIndex == PickupIndex.none)
             {
                 return;
             }
-            PickupDropletController.CreatePickupDroplet(pickupIndex, self.ejectionTransform.position, self.ejectionTransform.rotation * (self.localEjectionVelocity + new Vector3(2, 0, 0)));
+            PickupDropletController.CreatePickupDroplet(pickup, self.ejectionTransform.position, self.ejectionTransform.rotation * (self.localEjectionVelocity + new Vector3(2, 0, 0)));
         }
 
-        private PickupIndex DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupIndexForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
+        private UniquePickup DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
         {
             float threshHold = 5;
             bool isFirstItem;
@@ -701,7 +701,7 @@ namespace RiskierRain
 
             if (!isFirstItem)
             {
-                return PickupCatalog.FindPickupIndex(RoR2Content.Items.ScrapWhite.itemIndex);
+                return new UniquePickup(PickupCatalog.FindPickupIndex(RoR2Content.Items.ScrapWhite.itemIndex));
             }
             self.bonusTime += 0.01f;
             return orig(self, time);

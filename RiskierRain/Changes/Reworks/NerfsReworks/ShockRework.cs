@@ -30,9 +30,8 @@ namespace RiskierRain
                 $"<style=cIsHealth>{Tools.ConvertDecimal(shockForceExitFraction)}</style> " +
                 $"of their maximum health in damage. " +
                 $"Breaking shock creates <style=cIsUtility>Energizing Sparks</style>.</style>");
-            ShockState.healthFractionToForceExit = shockForceExitFraction;
             On.EntityStates.ShockState.OnExit += ShockSparkOnExit;
-            //On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
+            On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
             //On.EntityStates.ShockState.OnExit += ShockBuffExit;
             //On.RoR2.HealthComponent.TakeDamageProcess += ShockHit;
         }
@@ -42,7 +41,7 @@ namespace RiskierRain
             //entry health fraction
             float damageTaken = self.healthFraction - self.healthComponent.combinedHealthFraction;
             Debug.Log(damageTaken);
-            if (damageTaken >= ShockState.healthFractionToForceExit)
+            if (damageTaken >= self.healthFractionToForceExit)
             {
                 GameObject lastHitAttacker = self.healthComponent.lastHitAttacker;
                 if (lastHitAttacker != null)
@@ -72,6 +71,7 @@ namespace RiskierRain
         private void ShockBuffEnter(On.EntityStates.ShockState.orig_OnEnter orig, EntityStates.ShockState self)
         {
             orig(self);
+            self.healthFractionToForceExit = shockForceExitFraction;
         }
 
         private void ShockBuffExit(On.EntityStates.ShockState.orig_OnExit orig, EntityStates.ShockState self)

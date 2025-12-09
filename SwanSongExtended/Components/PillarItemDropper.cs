@@ -83,19 +83,19 @@ namespace SwanSongExtended.Components
 
         private void CreatePillarPickup(Vector3 dropPosition, PickupIndex pickupIndex, Vector3 vector)
         {
-            bool canDropPotential = shouldDropPotential;
-            if (!canDropPotential)
+            UniquePickup pickupA = new UniquePickup(pickupIndex);
+            if (!shouldDropPotential)
             {
-                PickupDropletController.CreatePickupDroplet(pickupIndex, dropPosition, vector);
+                PickupDropletController.CreatePickupDroplet(pickupA, dropPosition, vector, false);
                 return;
             }
 
-            PickupIndex pickupB = dtTier3.GenerateDrop(this.rng);
-            PickupIndex pickupC = dtBoss.GenerateDrop(this.rng);
+            UniquePickup pickupB = dtTier3.GeneratePickupPreReplacement(this.rng);
+            UniquePickup pickupC = dtBoss.GeneratePickupPreReplacement(this.rng);
 
             GenericPickupController.CreatePickupInfo createPickupInfo = new GenericPickupController.CreatePickupInfo
             {
-                pickerOptions = PickupPickerController.GenerateOptionsFromArray(new PickupIndex[3] { pickupIndex, pickupB, pickupC }),
+                pickerOptions = PickupPickerController.GenerateOptionsFromList(new List<UniquePickup>(3) { pickupA, pickupB, pickupC }),
                 prefabOverride = voidPotentialPrefab,
                 position = dropPosition,
                 rotation = Quaternion.identity,

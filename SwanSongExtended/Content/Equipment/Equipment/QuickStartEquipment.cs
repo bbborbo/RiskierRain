@@ -57,7 +57,7 @@ namespace SwanSongExtended.Equipment
             commandCube.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(commandCube);
 
-            slot.inventory.SetEquipmentIndex(EquipmentIndex.None);
+            slot.inventory.SetEquipmentIndex(EquipmentIndex.None, false);
             return true;
         }
     }

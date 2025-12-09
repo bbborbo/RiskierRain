@@ -143,7 +143,7 @@ namespace SwanSongExtended
                 while (i < num)
 				{
 					Log.Warning(holdoutZone.gameObject.name + "6");
-					PickupDropletController.CreatePickupDroplet(pickupIndex, dropPosition, vector);
+					PickupDropletController.CreatePickupDroplet(new UniquePickup(pickupIndex), dropPosition, vector, false);
                     i++;
                     vector = rotation * vector;
                 }

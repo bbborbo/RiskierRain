@@ -28,11 +28,11 @@ namespace SwanSongExtended.Components
                 return;
             Debug.Log("AAAAAAAAAAAAAHHHHHHHHHHHHHHH");
             
-            UniquePickup pickupIndex = UniquePickup.none;
+            UniquePickup pickup = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
             dropTable.GenerateWeightedSelection();
-            pickupIndex = dropTable.GeneratePickup(rng);
-            PickupDropletController.CreatePickupDroplet(pickupIndex, 
+            pickup = dropTable.GeneratePickup(rng);
+            PickupDropletController.CreatePickupDroplet(pickup, 
                 dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f, 
                 false);
             if (destroyOnUse)

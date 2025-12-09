@@ -31,7 +31,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Boss;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.CannotCopy, ItemTag.InteractableRelated, ItemTag.HoldoutZoneRelated };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.CannotCopy, ItemTag.InteractableRelated, ItemTag.HoldoutZoneRelated, ItemTag.ObjectiveRelated };
 
         public override GameObject ItemModel => LoadDropPrefab();
 
@@ -173,7 +173,7 @@ namespace SwanSongExtended.Items
             {
                 c.Index = 0;
                 bool ILFound2 = c.TryGotoNext(MoveType.After,
-                        x => x.MatchLdsfld<PickupIndex>(nameof(PickupIndex.none)),
+                        x => x.MatchLdsfld<UniquePickup>(nameof(UniquePickup.none)),
                         x => x.MatchStloc(out rewardLoc))
                     && c.TryGotoNext(MoveType.Before,
                         x => x.MatchCallOrCallvirt<PickupDropletController>(nameof(PickupDropletController.CreatePickupDroplet)));
@@ -182,40 +182,48 @@ namespace SwanSongExtended.Items
                     c.Remove();
                     c.Emit(OpCodes.Ldloc, rewardCountLoc);
                     c.Emit(OpCodes.Ldloc, rewardIndexLoc);
-                    c.EmitDelegate<Action<PickupIndex, Vector3, Vector3, int, int>>((pickupIndex, position, velocity, rewardCount, rewardIndex) => CreatePickupDroplet(pickupIndex, position, velocity, rewardCount, rewardIndex));
-                    void CreatePickupDroplet(PickupIndex pickupIndex, Vector3 position, Vector3 velocity, int rewardCount, int rewardIndex)
-                    {
-                        GenericPickupController.CreatePickupInfo pickupInfo = new GenericPickupController.CreatePickupInfo
-                        {
-                            rotation = Quaternion.identity,
-                            pickupIndex = pickupIndex,
-                            position = position
-                        };
-                        if(serverWishboneCount > 0 && rewardIndex == rewardCount % Run.instance.participatingPlayerCount)
-                        {
-                            PickupIndex pickupAlt1 = GetWishPickup(ref wishPickupAlt1);
-                            PickupIndex pickupAlt2 = GetWishPickup(ref wishPickupAlt2);
-
-                            PickupIndex[] options = new PickupIndex[] { wishPickupAlt1, pickupIndex, wishPickupAlt2 };
-                            pickupInfo.pickerOptions = PickupPickerController.GenerateOptionsFromArray(options);
-                            pickupInfo.prefabOverride = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
-                            pickupInfo.pickupIndex = PickupCatalog.FindPickupIndex(ItemTier.Tier2);
-
-                            if (rewardIndex == rewardCount - 1)
-                                serverWishboneCount = 0;
-                        }
-                        PickupDropletController.CreatePickupDroplet(pickupInfo, position, velocity);
-                    }
+                    c.EmitDelegate<Action<UniquePickup, Vector3, Vector3, int, int>>
+                        ((pickup, position, velocity, rewardCount, rewardIndex) => 
+                        CreateBossRewardDroplet(pickup, position, velocity, rewardCount, rewardIndex));
                 }
+            }
+
+            void CreateBossRewardDroplet(UniquePickup pickup, Vector3 position, Vector3 velocity, int rewardTotal, int indexOfCurrentReward)
+            {
+                GenericPickupController.CreatePickupInfo pickupInfo = new GenericPickupController.CreatePickupInfo
+                {
+                    rotation = Quaternion.identity,
+                    pickup = pickup,
+                    position = position
+                };
+                int rewardIndexPerPlayer = indexOfCurrentReward % Run.instance.participatingPlayerCount;
+                //bool idk = indexOfCurrentReward == rewardIndexPerPlayer;
+                //if any wishbones have been added and the current reward is the first for each player
+                if (serverWishboneCount > 0 && rewardIndexPerPlayer == 0)
+                {
+                    bool first = indexOfCurrentReward == 0 || indexOfCurrentReward == 1;
+                    //subtract a wishbone from the total
+                    serverWishboneCount--;
+                    UniquePickup pickupAlt1 = GetWishPickup(ref wishPickupAlt1, first);
+                    UniquePickup pickupAlt2 = GetWishPickup(ref wishPickupAlt2, first);
+
+                    pickupInfo.pickerOptions = PickupPickerController.GenerateOptionsFromList(new List<UniquePickup>(3) { pickupAlt1, pickup, pickupAlt2 });
+                    pickupInfo.prefabOverride = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
+                    pickupInfo.pickupIndex = PickupCatalog.FindPickupIndex(ItemTier.Tier2);
+
+                    if (indexOfCurrentReward == rewardTotal - 1)
+                        serverWishboneCount = 0;
+                }
+                PickupDropletController.CreatePickupDroplet(pickupInfo, position, velocity);
             }
         }
 
-        private static PickupIndex GetWishPickup(ref PickupIndex pickupIndex)
+        private static UniquePickup GetWishPickup(ref PickupIndex pickupIndex, bool isFirst)
         {
             if (pickupIndex != PickupIndex.none)
-                return pickupIndex;
+                return new UniquePickup(pickupIndex);
             List<PickupIndex> list = Run.instance.availableTier2DropList;
-            bool shouldTryUpgrade = serverWishboneCount > Run.instance.participatingPlayerCount;
+            bool shouldTryUpgrade = isFirst && serverWishboneCount > Run.instance.participatingPlayerCount;
             if (shouldTryUpgrade)
             {
                 serverWishboneCount--;
@@ -225,7 +233,7 @@ namespace SwanSongExtended.Items
                 }
             }
             pickupIndex = Run.instance.bossRewardRng.NextElementUniform<PickupIndex>(list);
-            return pickupIndex;
+            return new UniquePickup(pickupIndex);
         }
     }
 }

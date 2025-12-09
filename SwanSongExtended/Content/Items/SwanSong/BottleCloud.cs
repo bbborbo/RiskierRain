@@ -143,7 +143,7 @@ namespace SwanSongExtended.Items
             if (cooldownTimer > 0)
                 return;
 
-            if (body.inventory?.GetItemCount(BottleCloud.instance.ItemsDef) <= 0)
+            if (body.inventory?.GetItemCountEffective(BottleCloud.instance.ItemsDef) <= 0)
                 return;
 
             int maxJumpCount = body.maxJumpCount;

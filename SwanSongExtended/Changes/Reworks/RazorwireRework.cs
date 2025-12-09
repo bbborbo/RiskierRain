@@ -53,7 +53,7 @@ namespace SwanSongExtended
         {
 			if (!sender.inventory)
 				return;
-			int itemCount = sender.inventory.GetItemCount(RoR2Content.Items.Thorns);
+			int itemCount = sender.inventory.GetItemCountEffective(RoR2Content.Items.Thorns);
 			if(itemCount > 0)
             {
 				args.armorAdd += razorwireArmorBase + razorwireArmorStack * (itemCount - 1);
@@ -63,7 +63,7 @@ namespace SwanSongExtended
         private void AddRazorBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
 		{
 			orig(self);
-			int razorCount = self.inventory.GetItemCount(RoR2Content.Items.Thorns);
+			int razorCount = self.inventory.GetItemCountEffective(RoR2Content.Items.Thorns);
 			self.AddItemBehavior<RazorwireBehavior>(razorCount);
 		}
 

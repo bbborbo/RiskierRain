@@ -54,7 +54,7 @@ namespace EliteReworks.Modules
                                 ).ToArray();
 
                                 int total = 0;
-                                bool hasLysate = self.master.minionOwnership.ownerMaster.inventory.GetItemCount(DLC1Content.Items.EquipmentMagazineVoid) > 1;
+                                bool hasLysate = self.master.minionOwnership.ownerMaster.inventory.GetItemCountEffective(DLC1Content.Items.EquipmentMagazineVoid) > 1;
                                 int max = hasLysate ? cap.lysateCap : cap.cap;
 
                                 foreach (MinionOwnership minion in minions)

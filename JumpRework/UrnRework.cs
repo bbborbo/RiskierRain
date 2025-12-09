@@ -64,7 +64,7 @@ namespace JumpRework
             Inventory inv = body.inventory;
             if (inv)
             {
-                itemCount = body.inventory.GetItemCount(RoR2Content.Items.SiphonOnLowHealth);
+                itemCount = body.inventory.GetItemCountEffective(RoR2Content.Items.SiphonOnLowHealth);
             }
             if (Util.CheckRoll((1 - Mathf.Pow(1 - UrnBallChance.Value, itemCount)) * 100, body.master))
             {

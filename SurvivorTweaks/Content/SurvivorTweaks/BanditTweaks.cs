@@ -97,7 +97,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 Inventory inv = self.inventory;
                 if (inv)
                 {
-                    int itemCount = inv.GetItemCount(DLC1Content.Items.ConvertCritChanceToCritDamage);
+                    int itemCount = inv.GetItemCountEffective(DLC1Content.Items.ConvertCritChanceToCritDamage);
                     if (itemCount <= 0)
                     {
                         inv.GiveItem(DLC1Content.Items.ConvertCritChanceToCritDamage);

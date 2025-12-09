@@ -69,7 +69,7 @@ namespace SwanSongExtended
         private void AddMaskBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
         {
             orig(self);
-            int maskCount = self.inventory.GetItemCount(RoR2Content.Items.GhostOnKill);
+            int maskCount = self.inventory.GetItemCountEffective(RoR2Content.Items.GhostOnKill);
             self.AddItemBehavior<HappiestMaskBehavior>(maskCount);
         }
 
@@ -82,7 +82,7 @@ namespace SwanSongExtended
                 Inventory inventory = attackerBody.inventory;
                 if (inventory)
                 {
-                    int maskCount = inventory.GetItemCount(RoR2Content.Items.GhostOnKill);
+                    int maskCount = inventory.GetItemCountEffective(RoR2Content.Items.GhostOnKill);
                     if (maskCount > 0 && victimBody && Util.CheckRoll(ghostSpawnChanceOnExecute, attackerBody.master))
                     {
                         if (victimBody.HasBuff(CommonAssets.hauntDebuff))
@@ -99,7 +99,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "GhostOnKill"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);

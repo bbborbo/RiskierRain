@@ -46,7 +46,7 @@ namespace SwanSongExtended
             orig(self);
             if (NetworkServer.active)
             {
-                self.AddItemBehavior<BrittleCrownBehavior>(self.inventory.GetItemCount(RoR2Content.Items.GoldOnHit));
+                self.AddItemBehavior<BrittleCrownBehavior>(self.inventory.GetItemCountEffective(RoR2Content.Items.GoldOnHit));
             }
         }
 
@@ -56,7 +56,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "GoldOnHit"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);

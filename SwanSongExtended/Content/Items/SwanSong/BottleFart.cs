@@ -170,7 +170,7 @@ namespace SwanSongExtended.Items
             if (cooldownTimer > 0)
                 return;
 
-            if (body && body.inventory?.GetItemCount(BottleFart.instance.ItemsDef) <= 0)
+            if (body && body.inventory?.GetItemCountEffective(BottleFart.instance.ItemsDef) <= 0)
                 return;
 
             if (!IsDoubleJump(motor, body))

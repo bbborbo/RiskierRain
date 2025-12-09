@@ -35,7 +35,7 @@ namespace JumpRework
             Inventory inv = body.inventory;
             if (inv)
             {
-                int count = inv.GetItemCount(RoR2Content.Items.Feather);
+                int count = inv.GetItemCountEffective(RoR2Content.Items.Feather);
                 if (count > 0 && IsDoubleJump(motor, body))
                 {
                     int increments = 5;

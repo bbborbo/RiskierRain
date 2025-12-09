@@ -196,11 +196,11 @@ namespace JumpRework
             Inventory inv = sender.inventory;
             if (inv)
             {
-                if (inv.GetItemCount(RoR2Content.Items.SiphonOnLowHealth) > 0 && ReworkUrn.Value)
+                if (inv.GetItemCountEffective(RoR2Content.Items.SiphonOnLowHealth) > 0 && ReworkUrn.Value)
                 {
                     args.jumpCountAdd += UrnJumpCount.Value;
                 }
-                if (inv.GetItemCount(RoR2Content.Items.FallBoots) > 0 && ReworkHeadstomper.Value)
+                if (inv.GetItemCountEffective(RoR2Content.Items.FallBoots) > 0 && ReworkHeadstomper.Value)
                 {
                     args.jumpCountAdd += HeadstomperJumpCount.Value;
                 }

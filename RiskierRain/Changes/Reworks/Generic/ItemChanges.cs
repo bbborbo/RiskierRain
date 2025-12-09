@@ -109,7 +109,7 @@ namespace RiskierRain
             int countLoc = -1;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "CritGlasses"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -232,7 +232,7 @@ namespace RiskierRain
                         Inventory inventory = master.inventory;
                         if (inventory)
                         {
-                            justiceCount = inventory.GetItemCount(RoR2Content.Items.ArmorReductionOnHit);
+                            justiceCount = inventory.GetItemCountEffective(RoR2Content.Items.ArmorReductionOnHit);
                         }
 
                         if (component2 != null && justiceCount > 0)
@@ -289,7 +289,7 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Infusion"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -322,10 +322,10 @@ namespace RiskierRain
         #region minion on kill
         void MakeMinionsInheritOnKillEffects()
         {
-            On.RoR2.Inventory.GetItemCount_ItemIndex += GetItemCountInheritOnKills;
+            On.RoR2.Inventory.GetItemCountEffective_ItemIndex += GetItemCountEffectiveInheritOnKills;
         }
 
-        private int GetItemCountInheritOnKills(On.RoR2.Inventory.orig_GetItemCount_ItemIndex orig, Inventory self, ItemIndex itemIndex)
+        private int GetItemCountEffectiveInheritOnKills(On.RoR2.Inventory.orig_GetItemCountEffective_ItemIndex orig, Inventory self, ItemIndex itemIndex)
         {
             int itemCount = orig(self, itemIndex);
             if (ItemCatalog.GetItemDef(itemIndex).ContainsTag(ItemTag.OnKillEffect) && itemCount == 0)
@@ -337,7 +337,7 @@ namespace RiskierRain
                     CharacterMaster ownerMaster = mo.ownerMaster;
                     if (ownerMaster)
                     {
-                        int masterItemCount = ownerMaster.inventory.GetItemCount(itemIndex);
+                        int masterItemCount = ownerMaster.inventory.GetItemCountEffective(itemIndex);
                         itemCount = masterItemCount;
                     }
                 }
@@ -368,7 +368,7 @@ namespace RiskierRain
             {
                 if (sender.inventory)
                 {
-                    int wungusCount = sender.inventory.GetItemCount(DLC1Content.Items.MushroomVoid);
+                    int wungusCount = sender.inventory.GetItemCountEffective(DLC1Content.Items.MushroomVoid);
                     args.baseRegenAdd += wungusRegenBase + wungusRegenStack * (wungusCount - 1) * (1 + sender.level * 0.2f);
                 }
             }
@@ -405,7 +405,7 @@ namespace RiskierRain
             int luteLoc = 14;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "ChainLightningVoid"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out luteLoc)
                 );
             c.GotoNext(MoveType.After,
@@ -505,7 +505,7 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "CritGlassesVoid"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
 
             c.Emit(OpCodes.Ldarg_0);
@@ -550,7 +550,7 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Ldc_I4, fuelCellStock);
             c.Emit(OpCodes.Mul);
@@ -593,7 +593,7 @@ namespace RiskierRain
         private float BottledChaosCdr(On.RoR2.Inventory.orig_CalculateEquipmentCooldownScale orig, Inventory self)
         {
             float scale = orig(self);
-            int chaosCount = self.GetItemCount(DLC1Content.Items.RandomEquipmentTrigger);
+            int chaosCount = self.GetItemCountEffective(DLC1Content.Items.RandomEquipmentTrigger);
             if (chaosCount > 0)
                 scale *= Mathf.Pow(chaosCooldownMultiplier, chaosCount);
             return scale;
@@ -625,7 +625,7 @@ namespace RiskierRain
             int stickyLoc = 14;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "StickyBomb"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out stickyLoc)
                 );
 

@@ -80,7 +80,7 @@ namespace BossDropRework
                                 enemyBody.AddBuff(bossHunterDebuff);
                                 destroyTricorn = true;
                             }
-                            /*bool hasScalpel = (self.characterBody.inventory.GetItemCount(DisposableScalpel.instance.ItemsDef) > 0);
+                            /*bool hasScalpel = (self.characterBody.inventory.GetItemCountEffective(DisposableScalpel.instance.ItemsDef) > 0);
                             if (hasScalpel)
                             {
                                 DisposableScalpel.ConsumeScalpel(attackerBody);

@@ -53,7 +53,7 @@ namespace SwanSongExtended.Items
                 {
                     while (enumerator.MoveNext())
                     {
-                        int itemCount = enumerator.Current.inventory.GetItemCount(this.ItemsDef);
+                        int itemCount = enumerator.Current.inventory.GetItemCountEffective(this.ItemsDef);
                         if (itemCount > 0)
                         {
                             num += itemCount;

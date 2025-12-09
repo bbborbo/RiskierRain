@@ -86,7 +86,7 @@ namespace SwanSongExtended.Modules
             {
                 while (enumerator.MoveNext())
                 {
-                    int itemCount = enumerator.Current.inventory.GetItemCount(RoR2Content.Items.Squid);
+                    int itemCount = enumerator.Current.inventory.GetItemCountEffective(RoR2Content.Items.Squid);
                     if (itemCount > 0 && enumerator.Current.teamIndex == team)
                     {
                         num += itemCount;

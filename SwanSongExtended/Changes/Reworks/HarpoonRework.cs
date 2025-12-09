@@ -43,7 +43,7 @@ namespace SwanSongExtended
         {
             if(sender.inventory && sender.inventory)
             {
-                int count = sender.inventory.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+                int count = sender.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
                 if (count > 0)
                     args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
             }
@@ -65,7 +65,7 @@ namespace SwanSongExtended
             HealthComponent hc = attackerBody.healthComponent;
             if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(CommonAssets.harpoonDebuff))
             {
-                int harpoonCount = inv.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+                int harpoonCount = inv.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
                 if(harpoonCount > 0)
                 {
                     float barrierGrant = harpoonBarrierBase + harpoonBarrierStack * (harpoonCount - 1);
@@ -77,7 +77,7 @@ namespace SwanSongExtended
         private void AddHarpoonBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
         {
             orig(self);
-            int maskCount = self.inventory.GetItemCount(DLC1Content.Items.MoveSpeedOnKill);
+            int maskCount = self.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
             self.AddItemBehavior<HuntersHarpoonBehavior>(maskCount);
         }
 
@@ -87,7 +87,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoveSpeedOnKill"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);

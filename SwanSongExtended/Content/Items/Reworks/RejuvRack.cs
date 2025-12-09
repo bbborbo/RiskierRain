@@ -67,7 +67,7 @@ namespace SwanSongExtended.Items
             SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.IncreaseHealing));
 
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.IncreaseHealing);
-            On.RoR2.Inventory.GetItemCount_ItemIndex += OverrideItemCount;
+            On.RoR2.Inventory.GetItemCountEffective_ItemIndex += OverrideItemCount;
             On.RoR2.HealthComponent.RepeatHealComponent.FixedUpdate += RepeatHealWhileHurt;
             IL.RoR2.HealthComponent.Heal += RejuvOverheal;
         }
@@ -149,7 +149,7 @@ namespace SwanSongExtended.Items
             }
         }
 
-        private int OverrideItemCount(On.RoR2.Inventory.orig_GetItemCount_ItemIndex orig, Inventory self, ItemIndex itemIndex)
+        private int OverrideItemCount(On.RoR2.Inventory.orig_GetItemCountEffective_ItemIndex orig, Inventory self, ItemIndex itemIndex)
         {
             if(itemIndex == RoR2Content.Items.RepeatHeal.itemIndex)
             {

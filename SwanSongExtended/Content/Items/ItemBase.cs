@@ -173,27 +173,27 @@ namespace SwanSongExtended.Items
         {
             if (!body || !body.inventory) { return 0; }
 
-            return body.inventory.GetItemCount(ItemsDef);
+            return body.inventory.GetItemCountEffective(ItemsDef);
         }
         public int GetCount(Inventory inventory)
         {
             if (!inventory) { return 0; }
 
-            return inventory.GetItemCount(ItemsDef);
+            return inventory.GetItemCountEffective(ItemsDef);
         }
 
         public int GetCount(CharacterMaster master)
         {
             if (!master || !master.inventory) { return 0; }
 
-            return master.inventory.GetItemCount(ItemsDef);
+            return master.inventory.GetItemCountEffective(ItemsDef);
         }
 
         public int GetCountSpecific(CharacterBody body, ItemDef itemIndex)
         {
             if (!body || !body.inventory) { return 0; }
 
-            return body.inventory.GetItemCount(itemIndex);
+            return body.inventory.GetItemCountEffective(itemIndex);
         }
 
         public static float GetStackValue(float baseValue, float stackValue, int itemCount)

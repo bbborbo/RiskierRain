@@ -202,7 +202,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 {
                     flag = (self.characterBody.master.playerStatsComponent.currentStats.GetStatValueDouble(PerBodyStatDef.totalTimeAlive, BodyCatalog.GetBodyName(self.characterBody.bodyIndex)) > 0.0);
                 }
-                if (!flag && self.characterBody.master.inventory.GetItemCount(RoR2Content.Items.ScrapRed) <= 0)
+                if (!flag && self.characterBody.master.inventory.GetItemCountEffective(RoR2Content.Items.ScrapRed) <= 0)
                 {
                     self.characterBody.master.inventory.GiveItem(RoR2Content.Items.ScrapRed, self.defenseMatrixToGrantPlayer);
                 }

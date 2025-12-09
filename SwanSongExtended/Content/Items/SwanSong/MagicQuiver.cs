@@ -65,7 +65,7 @@ namespace SwanSongExtended.Items
 
             if (self.inventory != null && skill.CanApplyAmmoPack())
             {
-                int quiverCount = self.inventory.GetItemCount(this.ItemsDef);
+                int quiverCount = self.inventory.GetItemCountEffective(this.ItemsDef);
                 if (quiverCount > 0)
                 {
                     float totalRefundChance = refundChargeChanceBase + (refundChargeChanceStack * (quiverCount - 1)) + refundChanceCourtesy;

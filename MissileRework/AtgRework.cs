@@ -62,7 +62,7 @@ namespace MissileRework
                 Inventory inv = attackerBody.inventory;
                 if (attackerMaster != null && inv != null)
                 {
-                    int missileItemCount = inv.GetItemCount(RoR2Content.Items.Missile);
+                    int missileItemCount = inv.GetItemCountEffective(RoR2Content.Items.Missile);
                     if(missileItemCount > 0 && Util.CheckRoll(procChance * GetProcRate(damageInfo), attackerMaster))
                     {
                         DoMissileProc(damageInfo, victimBody.gameObject, attackerBody, attackerMaster, missileItemCount);
@@ -77,7 +77,7 @@ namespace MissileRework
             orig(self);
             if (NetworkServer.active)
             {
-                self.AddItemBehavior<Mk3MissileBehavior>(self.inventory.GetItemCount(RoR2Content.Items.Missile));
+                self.AddItemBehavior<Mk3MissileBehavior>(self.inventory.GetItemCountEffective(RoR2Content.Items.Missile));
             }
         }
         private void RemoveVanillaAtgLogic(ILContext il)
@@ -86,7 +86,7 @@ namespace MissileRework
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Missile"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);

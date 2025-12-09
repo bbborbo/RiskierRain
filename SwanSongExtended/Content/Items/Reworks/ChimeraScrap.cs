@@ -111,7 +111,7 @@ namespace SwanSongExtended.Items
                 Inventory activatorInventory = activatorBody.inventory;
                 if (activatorInventory)
                 {
-                    int regenScrapCount = activatorInventory.GetItemCount(ChimeraScrap.instance.ItemsDef.itemIndex);
+                    int regenScrapCount = activatorInventory.GetItemCountEffective(ChimeraScrap.instance.ItemsDef.itemIndex);
                     if (regenScrapCount > 0)
                     {
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
@@ -156,7 +156,7 @@ namespace SwanSongExtended.Items
                 Inventory activatorInventory = activatorBody.inventory;
                 if (activatorInventory)
                 {
-                    int regenScrapCount = activatorInventory.GetItemCount(ChimeraScrap.instance.ItemsDef.itemIndex);
+                    int regenScrapCount = activatorInventory.GetItemCountEffective(ChimeraScrap.instance.ItemsDef.itemIndex);
                     if (regenScrapCount > 0)
                     {
                         int printerCredits = GetSuperScrapPrinterCredit(self.itemTier) * regenScrapCount;

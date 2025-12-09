@@ -112,7 +112,7 @@ namespace SwanSongExtended.Items
             if (self.body)
             {
                 self.itemCounts.adaptiveArmor = GetCount(self.body) +
-                    (self.body.inventory.GetItemCount(RoR2.RoR2Content.Items.AdaptiveArmor) * baseArmorCount);
+                    (self.body.inventory.GetItemCountEffective(RoR2.RoR2Content.Items.AdaptiveArmor) * baseArmorCount);
             }
         }
     }

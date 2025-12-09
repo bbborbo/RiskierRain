@@ -77,7 +77,7 @@ namespace RiskierRain
         private void ShatterspleenBleedChance(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
-            if (self.inventory?.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode) > 0)
+            if (self.inventory?.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode) > 0)
             {
                 self.bleedChance += shatterspleenBleedChance;
             }
@@ -88,7 +88,7 @@ namespace RiskierRain
             if (sender.inventory)
             {
                 Inventory inv = sender.inventory;
-                if (inv.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode) > 0)
+                if (inv.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode) > 0)
                 {
                     args.critAdd -= 5;
                 }
@@ -99,7 +99,7 @@ namespace RiskierRain
         {
             if (buffType == CoreModules.Assets.shatterspleenSpikeBuff.buffIndex)
             {
-                int itemCount = self.inventory.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode);
+                int itemCount = self.inventory.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode);
                 if (itemCount > 0)
                 {
                     Util.PlaySound(FireVoidspikes.attackSoundString, self.gameObject);
@@ -137,7 +137,7 @@ namespace RiskierRain
                     Inventory inventory = attackerBody.inventory;
                     if (inventory)
                     {
-                        spleenCount = inventory.GetItemCount(RoR2Content.Items.BleedOnHitAndExplode);
+                        spleenCount = inventory.GetItemCountEffective(RoR2Content.Items.BleedOnHitAndExplode);
 
                         if (victimBody != null && spleenCount > 0)
                         {
@@ -164,7 +164,7 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "BleedOnHitAndExplode"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);
@@ -176,7 +176,7 @@ namespace RiskierRain
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "BleedOnHitAndExplode"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);

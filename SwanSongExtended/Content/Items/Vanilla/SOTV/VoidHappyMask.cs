@@ -56,7 +56,7 @@ namespace SwanSongExtended.Items
         {
             if(damageReport.attackerBody != null && damageReport.attackerMaster != null && damageReport.victimTeamIndex != TeamIndex.Void)
             {
-                int maskCount = GetCount(damageReport.attackerBody);//inventory.GetItemCount(RoR2Content.Items.GhostOnKill);
+                int maskCount = GetCount(damageReport.attackerBody);//inventory.GetItemCountEffective(RoR2Content.Items.GhostOnKill);
                 if (maskCount > 0 && Util.CheckRoll(procChance, damageReport.attackerMaster))
                 {
                     int infestorCount = baseInfestors + stackInfestors * (maskCount - 1);

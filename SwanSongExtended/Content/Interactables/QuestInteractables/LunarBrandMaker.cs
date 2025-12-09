@@ -92,7 +92,7 @@ namespace RiskierRainContent.Interactables
                 {
                     return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);
                 }
-                int flameOrbCount = activatorInventory.GetItemCount(Items.FlameOrb.instance.ItemsDef);
+                int flameOrbCount = activatorInventory.GetItemCountEffective(Items.FlameOrb.instance.ItemsDef);
                 if (flameOrbCount == 0)
                 {
                     return orig(self, cost, activator, purchasedObject, rng, avoidedItemIndex);

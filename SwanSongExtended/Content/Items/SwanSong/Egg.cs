@@ -78,7 +78,7 @@ namespace SwanSongExtended.Items
             if (interactorObject == null) return;
             CharacterBody interactorBody = interactorObject.GetComponent<CharacterBody>();
             if (interactorBody == null) return;           
-            if (interactorBody.inventory.GetItemCount(this.ItemsDef) > 0) //can proc on picking up items, if i decide to fix this look into interactionprocfilter i guess
+            if (interactorBody.inventory.GetItemCountEffective(this.ItemsDef) > 0) //can proc on picking up items, if i decide to fix this look into interactionprocfilter i guess
             {
                 int i = UnityEngine.Random.RandomRangeInt(0, 99);
                 if (i <= 6) //5/100
@@ -94,7 +94,7 @@ namespace SwanSongExtended.Items
             orig(self, damageReport);
             if (damageReport.attackerBody == null) return;
             if (damageReport.attackerBody.inventory == null) return;
-            if (damageReport.attackerBody.inventory.GetItemCount(this.ItemsDef) > 0)
+            if (damageReport.attackerBody.inventory.GetItemCountEffective(this.ItemsDef) > 0)
             {
                 int i = UnityEngine.Random.RandomRangeInt(0, 99);
                 if (i <= 3) //1/100

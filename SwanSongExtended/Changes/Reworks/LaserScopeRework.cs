@@ -45,14 +45,14 @@ namespace SwanSongExtended
         {
             orig(self);
 
-            self.AddItemBehavior<CombatTelescopeBehavior>(self.inventory.GetItemCount(DLC1Content.Items.CritDamage));
+            self.AddItemBehavior<CombatTelescopeBehavior>(self.inventory.GetItemCountEffective(DLC1Content.Items.CritDamage));
         }
 
         private void ScopeCritChance(CharacterBody sender, StatHookEventArgs args)
         {
             if (sender.inventory)
             {
-                int scopeCount = sender.inventory.GetItemCount(DLC1Content.Items.CritDamage);
+                int scopeCount = sender.inventory.GetItemCountEffective(DLC1Content.Items.CritDamage);
                 if (scopeCount > 0)
                 {
                     int critAdd = scopeBaseCrit;// + scopeStackCrit * (scopeCount - 1);
@@ -74,7 +74,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "CritDamage"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);

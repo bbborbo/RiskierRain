@@ -42,7 +42,7 @@ namespace MissileRework
         private void ShrimpShieldFix(CharacterBody sender, StatHookEventArgs args)
         {
             Inventory inv = sender.inventory;
-            if (inv && inv.GetItemCount(DLC1Content.Items.MissileVoid) > 0)
+            if (inv && inv.GetItemCountEffective(DLC1Content.Items.MissileVoid) > 0)
             {
                 args.shieldMultAdd -= 0.1f;
                 args.baseShieldAdd += shrimpShieldBase;
@@ -57,7 +57,7 @@ namespace MissileRework
             int shrimpLoc = 32;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MissileVoid"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out shrimpLoc)
                 );
 

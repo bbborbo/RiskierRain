@@ -90,7 +90,7 @@ namespace SwanSongExtended.Interactables
             int eggsToHide = 0;
             foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
             {
-                if (master.inventory.GetItemCount(Egg.instance.ItemsDef) > 0)
+                if (master.inventory.GetItemCountEffective(Egg.instance.ItemsDef) > 0)
                 {
                     eggsToHide += eggsPerPlayer;
                 }

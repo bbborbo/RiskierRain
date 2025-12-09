@@ -24,7 +24,7 @@ namespace SwanSongExtended
             if (attackerBody != null && attackerBody.inventory != null)
             {
                 Inventory inv = attackerBody.inventory;
-                int meatCount = inv.GetItemCount(RoR2Content.Items.FlatHealth);
+                int meatCount = inv.GetItemCountEffective(RoR2Content.Items.FlatHealth);
                 if (meatCount > 0)
                 {
                     attackerBody.AddTimedBuffAuthority(JunkContent.Buffs.MeatRegenBoost.buffIndex, 3 * meatCount);
@@ -45,7 +45,7 @@ namespace SwanSongExtended
             if (inv != null)
             {
                 //this is so fucking lazy but whatever
-                args.baseHealthAdd -= inv.GetItemCount(RoR2Content.Items.FlatHealth) * 25;
+                args.baseHealthAdd -= inv.GetItemCountEffective(RoR2Content.Items.FlatHealth) * 25;
             }
         }
     }

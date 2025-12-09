@@ -69,11 +69,11 @@ namespace SwanSongExtended.Items
                 {
 					ItemDef itemDefToUse = usedItemDef;
 					ItemDef nextItemDef = spentItemDef;
-					if(inventory.GetItemCount(itemDefToUse) <= 0)
+					if(inventory.GetItemCountEffective(itemDefToUse) <= 0)
                     {
 						nextItemDef = itemDefToUse;
 						itemDefToUse = instance.ItemsDef;
-						if (inventory.GetItemCount(itemDefToUse) <= 0)
+						if (inventory.GetItemCountEffective(itemDefToUse) <= 0)
 							return;
                     }
 

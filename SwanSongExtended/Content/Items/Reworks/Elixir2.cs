@@ -134,7 +134,7 @@ namespace SwanSongExtended.Items
             orig(self, stage);
             if (NetworkServer.active && self.inventory)
             {
-                int count = self.inventory.GetItemCount(brokenItemDef);
+                int count = self.inventory.GetItemCountEffective(brokenItemDef);
                 if (count > 0)
                 {
                     RegeneratePotions(count, self);
@@ -163,7 +163,7 @@ namespace SwanSongExtended.Items
             }
             if (sender.inventory)
             {
-                int stack = sender.inventory.GetItemCount(brokenItemDef);
+                int stack = sender.inventory.GetItemCountEffective(brokenItemDef);
                 if (stack > 0)
                 {
                     args.attackSpeedMultAdd += attackSpeedBuff * stack;

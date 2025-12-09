@@ -51,7 +51,7 @@ namespace SwanSongExtended
             {
                 if (stock > 0)
                     return stock;
-                if (slot.inventory.GetItemCount(RoR2Content.Items.AutoCastEquipment) > 0)
+                if (slot.inventory.GetItemCountEffective(RoR2Content.Items.AutoCastEquipment) > 0)
                     return 1;
                 return 0;
             });
@@ -63,7 +63,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.GotoNext(MoveType.Before,
                 x => x.MatchStloc(out _));
@@ -83,7 +83,7 @@ namespace SwanSongExtended
         }
         public static int GetGestureStockFromInventory(Inventory inv)
         {
-            int gestureCount = inv.GetItemCount(RoR2Content.Items.AutoCastEquipment);
+            int gestureCount = inv.GetItemCountEffective(RoR2Content.Items.AutoCastEquipment);
             if (gestureCount > 0)
             {
                 return 4 + 2 * (gestureCount - 1);
@@ -94,7 +94,7 @@ namespace SwanSongExtended
         private float AddGestureCdi(On.RoR2.Inventory.orig_CalculateEquipmentCooldownScale orig, Inventory self)
         {
             float scale = orig(self);
-            int gestureCount = self.GetItemCount(RoR2Content.Items.AutoCastEquipment);
+            int gestureCount = self.GetItemCountEffective(RoR2Content.Items.AutoCastEquipment);
             if(gestureCount > 0)
             {
                 scale *= 1 + gestureCdiBase + gestureCdiStack * (gestureCount - 1);
@@ -108,7 +108,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "AutoCastEquipment"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
@@ -117,7 +117,7 @@ namespace SwanSongExtended
         private void AddGestureUndercast(On.RoR2.EquipmentSlot.orig_OnEquipmentExecuted orig, EquipmentSlot self)
         {
             bool undercast = false;
-            if (NetworkServer.active && self.stock <= 0 && self.inventory.GetItemCount(RoR2Content.Items.AutoCastEquipment) > 0)
+            if (NetworkServer.active && self.stock <= 0 && self.inventory.GetItemCountEffective(RoR2Content.Items.AutoCastEquipment) > 0)
             {
                 self.inventory.RestockEquipmentCharges(self.activeEquipmentSlot, 1);
                 undercast = true;
@@ -175,7 +175,7 @@ namespace SwanSongExtended
 
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "AutoCastEquipment"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCount))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);

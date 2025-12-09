@@ -94,7 +94,7 @@ namespace SwanSongExtended.Items
             if (inventory)
             {
                 int itemCount = GetCount(inventory);
-                int permanentBuffCount = inventory.GetItemCount(statBoostItemDef);
+                int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
                 if (itemCount > 0 && permanentBuffCount > 0)
                 {
                     float cdrBoost = Mathf.Pow(1 - cdrBonus, permanentBuffCount);
@@ -117,7 +117,7 @@ namespace SwanSongExtended.Items
             if (inventory)
             {
                 int itemCount = GetCount(inventory);
-                int permanentBuffCount = inventory.GetItemCount(statBoostItemDef);
+                int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
                 if (itemCount > 0 && permanentBuffCount > 0)
                 {
                     args.baseAttackSpeedAdd += attackSpeedBonus * permanentBuffCount;
@@ -147,7 +147,7 @@ namespace SwanSongExtended.Items
                     float buffDuration = luckBonusDuration;// * itemCount;
                     attackerBody.AddTimedBuffAuthority(gammaKnifeTemporaryBuff.buffIndex, buffDuration);
 
-                    int permanentBuffCount = attackerInventory.GetItemCount(statBoostItemDef);
+                    int permanentBuffCount = attackerInventory.GetItemCountEffective(statBoostItemDef);
                     if(permanentBuffCount < gammaKnifeMaxBuffs * itemCount)
                     {
                         attackerInventory.GiveItem(statBoostItemDef);

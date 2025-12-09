@@ -77,7 +77,7 @@ namespace MoreStatsPlus
             Inventory inv = sender.inventory;
             if (inv != null)
             {
-                int irradiantPearlCount = inv.GetItemCount(RoR2Content.Items.ShinyPearl);
+                int irradiantPearlCount = inv.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
                 if (irradiantPearlCount > 0 && enablePearlChanges.Value)
                 {
                     float pow = MathF.Pow(1.1f, irradiantPearlCount);
@@ -86,7 +86,7 @@ namespace MoreStatsPlus
                     args.barrierDecayRatePercentDecreaseDiv *= pow;
                     args.shieldDelayPercentDecreaseDiv *= pow;
                 }
-                int afflictionCount = inv.GetItemCount(RoR2Content.Items.TonicAffliction);
+                int afflictionCount = inv.GetItemCountEffective(RoR2Content.Items.TonicAffliction);
                 if (afflictionCount > 0 && enableAfflictionChanges.Value)
                 {
                     float pow = MathF.Pow(0.95f, afflictionCount);
@@ -111,7 +111,7 @@ namespace MoreStatsPlus
             Inventory inv = sender.inventory;
             if (inv != null)
             {
-                int afflictionCount = inv.GetItemCount(RoR2Content.Items.TonicAffliction);
+                int afflictionCount = inv.GetItemCountEffective(RoR2Content.Items.TonicAffliction);
                 if (afflictionCount > 0)
                 {
                     float pow = MathF.Pow(0.95f, afflictionCount);
@@ -140,7 +140,7 @@ namespace MoreStatsPlus
             Inventory inv = sender.inventory;
             if (inv != null)
             {
-                int irradiantPearlCount = inv.GetItemCount(RoR2Content.Items.ShinyPearl);
+                int irradiantPearlCount = inv.GetItemCountEffective(RoR2Content.Items.ShinyPearl);
                 if (irradiantPearlCount > 0)
                 {
                     float pow = MathF.Pow(1.1f, irradiantPearlCount);

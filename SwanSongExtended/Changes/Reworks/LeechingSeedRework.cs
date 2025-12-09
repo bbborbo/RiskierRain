@@ -39,7 +39,7 @@ namespace SwanSongExtended
                 Inventory inv = body.inventory;
                 if(inv != null)
                 {
-                    int seedCount = inv.GetItemCount(seedItemDef);
+                    int seedCount = inv.GetItemCountEffective(seedItemDef);
                     if (seedCount > 0)
                     {
                         ProcChainMask procChainMask = damageInfo.procChainMask;
@@ -57,7 +57,7 @@ namespace SwanSongExtended
             int seedLoc = 14;
             c.GotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Seed"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCount)),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out seedLoc)
                 );
             c.Index--;

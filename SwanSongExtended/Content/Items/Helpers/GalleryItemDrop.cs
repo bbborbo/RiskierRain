@@ -45,7 +45,7 @@ namespace SwanSongExtended.Items
         {
             orig(self, damageReport);
             CharacterBody victim = damageReport.victimBody;
-            if (victim.inventory?.GetItemCount(this.ItemsDef) > 0)
+            if (victim.inventory?.GetItemCountEffective(this.ItemsDef) > 0)
             {
                 RollReward(victim);
             }

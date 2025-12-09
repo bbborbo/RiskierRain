@@ -110,7 +110,7 @@ namespace SwanSongExtended.Elites
                     return false;
 
                 Inventory inv = body.inventory;
-                if (inv && inv.GetItemCount(RoR2Content.Items.Ghost) > 0)
+                if (inv && inv.GetItemCountEffective(RoR2Content.Items.Ghost) > 0)
                     return true;
 
                 return false;
@@ -179,7 +179,7 @@ namespace SwanSongExtended.Elites
                 sender.bodyFlags |= CharacterBody.BodyFlags.Void;
                 Debug.Log(sender.bodyFlags);
 
-                if(sender.inventory && sender.inventory.GetItemCount(RoR2Content.Items.HealthDecay) <= 0)
+                if(sender.inventory && sender.inventory.GetItemCountEffective(RoR2Content.Items.HealthDecay) <= 0)
                 {
                     args.baseRegenAdd -= 8f;
                 }
@@ -188,7 +188,7 @@ namespace SwanSongExtended.Elites
 
         internal static void RemoveAllOfItem(Inventory inv, ItemDef itemDef)
         {
-            int damageBoostCount = inv.GetItemCount(itemDef);
+            int damageBoostCount = inv.GetItemCountEffective(itemDef);
             inv.RemoveItem(itemDef, damageBoostCount);
         }
 

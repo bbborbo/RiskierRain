@@ -49,7 +49,7 @@ namespace SwanSongExtended
         private void IgniTankBurnChance(CharacterBody sender, MoreStatHookEventArgs args)
         {
             Inventory inv = sender.inventory;
-            if (inv && inv.GetItemCount(DLC1Content.Items.StrengthenBurn) > 0)
+            if (inv && inv.GetItemCountEffective(DLC1Content.Items.StrengthenBurn) > 0)
             {
                 args.burnChanceOnHit += ignitionTankBurnChance;
             }
@@ -59,7 +59,7 @@ namespace SwanSongExtended
         {
             if (dotInfo.dotIndex == DotController.DotIndex.Burn || dotInfo.dotIndex == DotController.DotIndex.Helfire)
             {
-                int itemCount = inventory.GetItemCount(DLC1Content.Items.StrengthenBurn);
+                int itemCount = inventory.GetItemCountEffective(DLC1Content.Items.StrengthenBurn);
                 if (itemCount > 0)
                 {
                     dotInfo.preUpgradeDotIndex = new DotController.DotIndex?(dotInfo.dotIndex);

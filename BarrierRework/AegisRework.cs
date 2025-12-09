@@ -86,7 +86,7 @@ namespace BarrierRework
             orig(self);
             if (NetworkServer.active)
             {
-                self.AddItemBehavior<AegisDecayBehavior>(self.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal));
+                self.AddItemBehavior<AegisDecayBehavior>(self.inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal));
             }
         }
 
@@ -95,7 +95,7 @@ namespace BarrierRework
             CharacterBody activator = context.activatorMaster?.GetBody();
             if (activator)
             {
-                int aegisCount = activator.inventory.GetItemCount(RoR2Content.Items.BarrierOnOverHeal);
+                int aegisCount = activator.inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal);
                 HealthComponent hc = activator.healthComponent;
                 if (aegisCount > 0 && hc != null)
                 {

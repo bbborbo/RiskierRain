@@ -39,7 +39,7 @@ namespace RiskierRain
         static float expRewardMultiplierGlobal = 1.0f;
         static float compensationForStartingLevel = 1.0f;
 
-        public float interactableCreditsMultiplier = 1.5f;
+        public float interactableCreditsAdd = 125f;
         public float monsterCreditsMultiplier = 1.0f;
 
 
@@ -340,7 +340,7 @@ namespace RiskierRain
         #region Stage Credits
         public void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
-            settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits * interactableCreditsMultiplier);
+            settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits + interactableCreditsAdd);
         }
         public void IncreaseStageMonsterCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {

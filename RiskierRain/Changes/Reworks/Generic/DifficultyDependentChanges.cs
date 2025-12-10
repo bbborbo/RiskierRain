@@ -20,9 +20,9 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         public static float drizzleDifficultyBoost = 0;
-        public static float rainstormDifficultyBoost = 3;
-        public static float monsoonDifficultyBoost = 6;
-        public static float eclipseDifficultyBoost = 9;
+        public static float rainstormDifficultyBoost = 2;
+        public static float monsoonDifficultyBoost = 4;
+        public static float eclipseDifficultyBoost = 6;
 
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value

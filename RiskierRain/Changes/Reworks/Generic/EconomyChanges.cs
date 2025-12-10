@@ -36,11 +36,11 @@ namespace RiskierRain
 
         static float costExponent = 1f;
         static float goldRewardMultiplierGlobal = 0.4f;
-        static float expRewardMultiplierGlobal = 0.8f;
+        static float expRewardMultiplierGlobal = 1.0f;
         static float compensationForStartingLevel = 1.0f;
 
         public float interactableCreditsMultiplier = 1.5f;
-        public float monsterCreditsMultiplier = 1.5f;
+        public float monsterCreditsMultiplier = 1.0f;
 
 
         PurchaseInteraction smallChest = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Chest1/Chest1.prefab").WaitForCompletion().GetComponent<PurchaseInteraction>();

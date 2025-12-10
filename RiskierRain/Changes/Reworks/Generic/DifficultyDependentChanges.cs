@@ -595,7 +595,8 @@ namespace RiskierRain
         public static float teleLesserEliteBias = 1f;//1
         public static float teleLesserCreditMultiplier = 0.8f;//1f
         public static float teleBossEliteBias = 1f;//1
-        public static float teleBossCreditMultiplier = 0.8f;//1f
+        public static float teleBossCreditMultiplier = 1.0f;//1f
+        public static float teleBossCreditMultiplierStage1 = 0.5f;//1f
         void ChangeDirectorStats()
         {
             GameObject baseDirector = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
@@ -631,6 +632,8 @@ namespace RiskierRain
                         {
                             director.eliteBias = teleBossEliteBias;
                             director.creditMultiplier = teleBossCreditMultiplier;
+                            if (Run.instance.stageClearCount == 0)
+                                director.creditMultiplier = teleBossCreditMultiplierStage1;
                         }
                         if (director.customName == "Monsters")
                         {

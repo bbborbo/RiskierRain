@@ -20,7 +20,7 @@ namespace RiskierRain
     {
         #region vagrant
         float genesisLoopBlastDamageCoefficient = 30; //60
-        float vagrantBaseHealth = 1300; //2100
+        float vagrantBaseHealth = 1600; //2100
         GameObject vagrantPrefab;
         void VagrantChanges()
         {

@@ -617,8 +617,8 @@ namespace RiskierRain
                     slowDirector.eliteBias = slowDirectorCreditMultiplier;
                 }
             }
-            GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
-            GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
+            GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.Teleporter1_prefab).WaitForCompletion();
+            GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.LunarTeleporter_Variant_prefab).WaitForCompletion();
             AdjustTeleporterDirectors(teleporterDefault.GetComponents<CombatDirector>());
             AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
 

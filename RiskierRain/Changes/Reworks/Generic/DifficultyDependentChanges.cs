@@ -160,6 +160,21 @@ namespace RiskierRain
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
             IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
+            IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
+        }
+
+        private void CorrectDifficultyBar(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<Run>("get_ambientLevel"));
+            if (b)
+            {
+                c.EmitDelegate<Func<float, float>>((levelIn) =>
+                {
+                    return levelIn + (GetAmbientLevelBoost() * 0.5f);
+                });
+            }
         }
 
         private void DirectorCreditGainChanges(ILContext il)
@@ -262,16 +277,19 @@ namespace RiskierRain
             float scalingFactor = baseScalingFactor * scalingValue * playerScaleFactor;
 
 
+            float difficultyFactor = GetAmbientLevelBoost() / 2;
             float difficultyCoefficient = (playerBaseFactor + scalingFactor * runTimerMinutes) * timeFactor * stageFactor;
 
+            //difficulty coefficient used for interactable costs and etc
             self.difficultyCoefficient = difficultyCoefficient;
-            self.compensatedDifficultyCoefficient = difficultyCoefficient;
+            //difficulty coefficient used for enemy spawns
+            self.compensatedDifficultyCoefficient = difficultyCoefficient + difficultyFactor;
             self.oneOverCompensatedDifficultyCoefficientSquared = 1 / (self.compensatedDifficultyCoefficient * self.compensatedDifficultyCoefficient);
-            self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + 3f * (difficultyCoefficient - playerBaseFactor), (float)Run.ambientLevelCap) - (scalingValue - 1);
+            self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + (3f * (difficultyCoefficient - playerBaseFactor)), (float)Run.ambientLevelCap);
 
-            int ambientLevelFloor = self.ambientLevelFloor;
+            int ambientLevelFloorLast = self.ambientLevelFloor;
             self.ambientLevelFloor = Mathf.FloorToInt(self.ambientLevel);
-            if (ambientLevelFloor != self.ambientLevelFloor && ambientLevelFloor != 0 && self.ambientLevelFloor > ambientLevelFloor)
+            if (ambientLevelFloorLast != self.ambientLevelFloor && ambientLevelFloorLast != 0 && self.ambientLevelFloor > ambientLevelFloorLast)
             {
                 self.OnAmbientLevelUp();
             }

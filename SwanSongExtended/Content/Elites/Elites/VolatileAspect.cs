@@ -37,7 +37,7 @@ namespace SwanSongExtended.Elites
         [AutoConfig("Landmine Count Per Size", 1f)]
         public static float minesPerSize = 1f;
         [AutoConfig("Landmine Damage", "Scales with level", 10)]
-        public static float volatileLandmineDamage = 10f;
+        public static float volatileLandmineDamage = 15f;
 
         [AutoConfig("On Hit Force Multiplier", 3f)]
         public static float forceMultiplier = 3f;

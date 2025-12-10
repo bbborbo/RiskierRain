@@ -207,14 +207,14 @@ namespace RiskierRain
         static float GetCompensatedDifficultyFraction()
         {
             float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
-            float startingLevel = GetAmbientLevelBoost();
-            if (entryDiffCoeff < startingLevel && compensationForStartingLevel > 0)
+            float startingDifficulty = GetDifficultyCoefficient(Run.instance, 0, 0, out _);//GetAmbientLevelBoost();
+            if (entryDiffCoeff < startingDifficulty && compensationForStartingLevel > 0)
             {
                 entryDiffCoeff = 0;
             }
             else if(compensationForStartingLevel > 0)
             {
-                entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingLevel, compensationForStartingLevel);
+                entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingDifficulty, compensationForStartingLevel);
             }
             return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
         }

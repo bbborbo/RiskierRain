@@ -262,23 +262,11 @@ namespace RiskierRain
 
         private void DifficultyCoefficientChanges(On.RoR2.Run.orig_RecalculateDifficultyCoefficentInternal orig, Run self)
         {
-            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty);
-            float scalingValue = difficultyDef.scalingValue;
-            if (self.selectedDifficulty >= eclipseLevelVeryHard)
-                scalingValue += 1;
             float runTimerMinutes = self.GetRunStopwatch() * 0.016666668f;
-            float baseScalingFactor = 0.0506f * baseScalingMultiplier;
+            int stageClearCount = self.stageClearCount;
 
-            float timeFactor = GetTimeDifficultyFactor(runTimerMinutes, scalingValue);
-            float stageFactor = GetStageDifficultyFactor(self.stageClearCount);
-            
-            float playerBaseFactor = 1 + playerBaseDifficultyFactor * (self.participatingPlayerCount - 1);
-            float playerScaleFactor = Mathf.Pow(self.participatingPlayerCount, playerScalingDifficultyFactor);
-            float scalingFactor = baseScalingFactor * scalingValue * playerScaleFactor;
-
-
+            float difficultyCoefficient = GetDifficultyCoefficient(self, runTimerMinutes, stageClearCount, out float playerBaseFactor);
             float difficultyFactor = GetAmbientLevelBoost() / 2;
-            float difficultyCoefficient = (playerBaseFactor + scalingFactor * runTimerMinutes) * timeFactor * stageFactor;
 
             //difficulty coefficient used for interactable costs and etc
             self.difficultyCoefficient = difficultyCoefficient;
@@ -293,6 +281,23 @@ namespace RiskierRain
             {
                 self.OnAmbientLevelUp();
             }
+        }
+        public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)
+        {
+            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty);
+            float scalingValue = difficultyDef.scalingValue;
+            if (run.selectedDifficulty >= eclipseLevelVeryHard)
+                scalingValue += 1;
+            float baseScalingFactor = 0.0506f * baseScalingMultiplier;
+
+            float timeFactor = GetTimeDifficultyFactor(timeInMinutes, scalingValue);
+            float stageFactor = GetStageDifficultyFactor(stageClearCount);
+
+            playerBaseFactor = 1 + playerBaseDifficultyFactor * (run.participatingPlayerCount - 1);
+            float playerScaleFactor = Mathf.Pow(run.participatingPlayerCount, playerScalingDifficultyFactor);
+            float scalingFactor = baseScalingFactor * scalingValue * playerScaleFactor;
+
+            return (playerBaseFactor + scalingFactor * timeInMinutes) * timeFactor * stageFactor;
 
             float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
             {
@@ -303,8 +308,8 @@ namespace RiskierRain
             {
                 float stageFactor = Mathf.Pow(difficultyIncreasePerStage, (float)stageClearCount);
 
-                int totalLoops = Mathf.FloorToInt((float)self.stageClearCount / 5);
-                if (self.stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
+                int totalLoops = Mathf.FloorToInt((float)stageClearCount / 5);
+                if (stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
                     totalLoops -= 1;
                 float loopFactor = Mathf.Pow(difficultyIncreasePerLoop, totalLoops);
 
@@ -588,9 +593,9 @@ namespace RiskierRain
         public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
 
         public static float teleLesserEliteBias = 1f;//1
-        public static float teleLesserCreditMultiplier = 1f;//1f
+        public static float teleLesserCreditMultiplier = 0.8f;//1f
         public static float teleBossEliteBias = 1f;//1
-        public static float teleBossCreditMultiplier = 1f;//1f
+        public static float teleBossCreditMultiplier = 0.8f;//1f
         void ChangeDirectorStats()
         {
             GameObject baseDirector = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();

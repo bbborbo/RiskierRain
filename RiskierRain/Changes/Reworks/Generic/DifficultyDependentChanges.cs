@@ -617,29 +617,35 @@ namespace RiskierRain
                     slowDirector.eliteBias = slowDirectorCreditMultiplier;
                 }
             }
-            GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.Teleporter1_prefab).WaitForCompletion();
-            GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.LunarTeleporter_Variant_prefab).WaitForCompletion();
-            AdjustTeleporterDirectors(teleporterDefault.GetComponents<CombatDirector>());
-            AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
+            On.RoR2.TeleporterInteraction.Start += AdjustDirectorsForTeleporter;
+            //GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.Teleporter1_prefab).WaitForCompletion();
+            //GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.LunarTeleporter_Variant_prefab).WaitForCompletion();
+            //AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
 
-            void AdjustTeleporterDirectors(CombatDirector[] directors)
+        }
+
+        private void AdjustDirectorsForTeleporter(On.RoR2.TeleporterInteraction.orig_Start orig, TeleporterInteraction self)
+        {
+            AdjustTeleporterDirectors(new CombatDirector[] { self.bossDirector, self.bonusDirector });
+            orig(self);
+        }
+        void AdjustTeleporterDirectors(CombatDirector[] directors)
+        {
+            if (directors != null && directors.Length > 0)
             {
-                if (directors != null && directors.Length > 0)
+                foreach (CombatDirector director in directors)
                 {
-                    foreach (CombatDirector director in directors)
+                    if (director.customName == "Boss")
                     {
-                        if (director.customName == "Boss")
-                        {
-                            director.eliteBias = teleBossEliteBias;
-                            director.creditMultiplier = teleBossCreditMultiplier;
-                            if (Run.instance.stageClearCount == 0)
-                                director.creditMultiplier = teleBossCreditMultiplierStage1;
-                        }
-                        if (director.customName == "Monsters")
-                        {
-                            director.eliteBias = teleLesserEliteBias;
-                            director.creditMultiplier = teleLesserCreditMultiplier;
-                        }
+                        director.eliteBias = teleBossEliteBias;
+                        director.creditMultiplier = teleBossCreditMultiplier;
+                        if (Run.instance.stageClearCount == 0)
+                            director.creditMultiplier *= teleBossCreditMultiplierStage1;
+                    }
+                    if (director.customName == "Monsters")
+                    {
+                        director.eliteBias = teleLesserEliteBias;
+                        director.creditMultiplier = teleLesserCreditMultiplier;
                     }
                 }
             }

@@ -20,7 +20,7 @@ namespace RiskierRain
     {
         #region vagrant
         float genesisLoopBlastDamageCoefficient = 30; //60
-        float vagrantBaseHealth = 1600; //2100
+        float vagrantBaseHealth = 1300; //2100
         GameObject vagrantPrefab;
         void VagrantChanges()
         {
@@ -247,7 +247,7 @@ namespace RiskierRain
         #endregion
         #region wisp
         GameObject lesserWispPrefab;
-        float wispBaseDamage = 1.5f;
+        float wispBaseDamage = 1.5f; //3.5f
 
         void LesserWispCHanges()
         {

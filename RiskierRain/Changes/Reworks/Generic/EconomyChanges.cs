@@ -36,7 +36,7 @@ namespace RiskierRain
 
         static float costExponent = 1f;
         static float goldRewardMultiplierGlobal = 0.4f;
-        static float expRewardMultiplierGlobal = 1.0f;
+        static float expRewardMultiplierGlobal = 0.8f;
         static float compensationForStartingLevel = 1.0f;
 
         public float interactableCreditsAdd = 125f;

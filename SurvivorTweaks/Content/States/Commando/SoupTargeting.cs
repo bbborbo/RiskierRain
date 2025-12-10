@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using System.Linq;
 
 namespace SurvivorTweaks.States.Commando
 {
@@ -68,6 +69,18 @@ namespace SurvivorTweaks.States.Commando
 			this.cancelTargetingDummySkillDef = SkillCatalog.GetSkillDef(SkillCatalog.FindSkillIndexByName("EngiCancelTargetingDummy"));
 			base.skillLocator.primary.SetSkillOverride(this, this.confirmTargetDummySkillDef, GenericSkill.SkillOverridePriority.Contextual);
 			base.skillLocator.secondary.SetSkillOverride(this, this.cancelTargetingDummySkillDef, GenericSkill.SkillOverridePriority.Contextual);
+
+			for(int i = 0; i < CommandoTweaks.soupMaxTargets; i++)
+            {
+
+				HurtBox hurtBox;
+				HealthComponent y;
+				this.GetCurrentTargetInfo(out hurtBox, out y, maxAngle * 2, targetsList);
+				if (hurtBox)
+					this.AddTargetAuthority(hurtBox);
+				else
+					continue;
+			}
 		}
 
 		public override void OnExit()
@@ -175,15 +188,17 @@ namespace SurvivorTweaks.States.Commando
 			}
 		}
 
-		private void GetCurrentTargetInfo(out HurtBox currentTargetHurtBox, out HealthComponent currentTargetHealthComponent)
+		private void GetCurrentTargetInfo(out HurtBox currentTargetHurtBox, out HealthComponent currentTargetHealthComponent, float maxAngle = -1, List<HurtBox> filterTargets = null)
 		{
+			if (maxAngle < 0)
+				maxAngle = SoupTargeting.maxAngle;
 			Ray aimRay = base.GetAimRay();
 			this.search.filterByDistinctEntity = true;
 			this.search.filterByLoS = true;
 			this.search.minDistanceFilter = 0f;
 			this.search.maxDistanceFilter = SoupTargeting.maxDistance;
 			this.search.minAngleFilter = 0f;
-			this.search.maxAngleFilter = SoupTargeting.maxAngle;
+			this.search.maxAngleFilter = maxAngle;
 			this.search.viewer = base.characterBody;
 			this.search.searchOrigin = aimRay.origin;
 			this.search.searchDirection = aimRay.direction;
@@ -191,7 +206,14 @@ namespace SurvivorTweaks.States.Commando
 			this.search.teamMaskFilter = TeamMask.GetUnprotectedTeams(base.GetTeam());
 			this.search.RefreshCandidates();
 			this.search.FilterOutGameObject(base.gameObject);
-			foreach (HurtBox hurtBox in this.search.GetResults())
+
+			IEnumerable<HurtBox> results = this.search.GetResults();
+			if(filterTargets != null && filterTargets.Count > 0)
+            {
+				results = results.Where(candidate => !filterTargets.Contains(candidate));
+            }
+
+			foreach (HurtBox hurtBox in results)
 			{
 				if (hurtBox.healthComponent && hurtBox.healthComponent.alive)
 				{

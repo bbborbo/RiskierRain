@@ -68,12 +68,12 @@ namespace SwanSongExtended.Items
 
         void SpawnItem(CharacterMaster characterMaster)
         {
-            PickupIndex pickupIndex = PickupIndex.none;
+            UniquePickup pickupIndex = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
 
-            pickupIndex = dropTable.GenerateDrop(rng);
+            pickupIndex = dropTable.GeneratePickup(rng);
             Transform dropletOrigin = characterMaster.bodyInstanceObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f);
+            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f, false);
         }
     }
 }

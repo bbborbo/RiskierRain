@@ -74,16 +74,30 @@ namespace MissileRework
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.Before,
-                x => x.MatchLdloc(0),
-                x => x.MatchLdcI4(0),
-                x => x.MatchBle(out _)
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoreMissile"),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
-            c.Remove();
-            c.EmitDelegate<Func<int>>(() =>
+            if (!b)
+            {
+                Debug.LogError("IAmBecomeMissiles OverrideIcbmMissiles hook failed");
+                return;
+            }
+            c.EmitDelegate<Func<int, int>>((icbmCount) =>
             {
                 return RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact) ? 1 : 0;
             });
+
+            //bool b = c.TryGotoNext(MoveType.Before,
+            //    x => x.MatchLdloc(0),
+            //    x => x.MatchLdcI4(0),
+            //    x => x.MatchBle(out _)
+            //    );
+            //c.Remove();
+            //c.EmitDelegate<Func<int>>(() =>
+            //{
+            //    return RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact) ? 1 : 0;
+            //});
         }
 
         private void DoMissileArtifactEffects()

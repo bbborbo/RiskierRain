@@ -55,11 +55,16 @@ namespace MissileRework
 
             //jump to shrimp implementation
             int shrimpLoc = 32;
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MissileVoid"),
                 x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out shrimpLoc)
                 );
+            if (!b1)
+            {
+                Debug.LogError("IAmBecomeMissiles: Shrimp rework hook failed (breakpoint 1)");
+                return;
+            }
 
             /*int dmgLoc = 37;
             c.GotoNext(MoveType.Before,
@@ -71,9 +76,14 @@ namespace MissileRework
                 );*/
 
             //inject our new damage coefficient
-            c.GotoNext(MoveType.Before,
+            bool b2 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt("RoR2.Util", nameof(RoR2.Util.OnHitProcDamage))
                 );
+            if (!b2)
+            {
+                Debug.LogError("IAmBecomeMissiles: Shrimp rework hook failed (breakpoint 2)");
+                return;
+            }
             c.Emit(OpCodes.Ldloc, shrimpLoc);
             c.EmitDelegate<Func<float, int, float>>((damageCoefficient, itemCount) =>
             {
@@ -84,13 +94,16 @@ namespace MissileRework
             if(ShouldReworkIcbm.Value == true)
             {
                 //override for missile artifact
-                c.GotoNext(MoveType.Before,
-                    x => x.MatchLdloc(out _),
-                    x => x.MatchLdcI4(out _),
-                    x => x.MatchBgt(out _)
+                bool b3 = c.TryGotoPrev(MoveType.After,
+                    x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoreMissile"),
+                    x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                     );
-                c.Remove();
-                c.EmitDelegate<Func<int>>(() =>
+                if (!b3)
+                {
+                    Debug.LogError("IAmBecomeMissiles: Shrimp rework hook failed (breakpoint 3)");
+                    return;
+                }
+                c.EmitDelegate<Func<int, int>>((icbmCount) =>
                 {
                     return RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact) ? 1 : 0;
                 });

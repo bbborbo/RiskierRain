@@ -33,7 +33,8 @@ namespace SwanSongExtended.Components
             dropTable.GenerateWeightedSelection();
             pickup = dropTable.GeneratePickup(rng);
             PickupDropletController.CreatePickupDroplet(pickup, 
-                dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f, 
+                dropletOrigin.position + (dropletOrigin.forward * 3f) + (Vector3.up * 3f), 
+                dropletOrigin.forward * 3f + Vector3.up * 5f, 
                 false);
             if (destroyOnUse)
             {

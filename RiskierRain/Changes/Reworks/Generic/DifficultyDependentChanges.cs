@@ -617,16 +617,40 @@ namespace RiskierRain
                     slowDirector.eliteBias = slowDirectorCreditMultiplier;
                 }
             }
-            On.RoR2.TeleporterInteraction.Start += AdjustDirectorsForTeleporter;
+            On.RoR2.CombatDirector.Awake += AdjustTpDirectors;
+            On.RoR2.CombatDirector.SetNextSpawnAsBoss += FixBossDirectorCredits;
+            //On.RoR2.TeleporterInteraction.Awake += AdjustDirectorsForTeleporter;
             //GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.Teleporter1_prefab).WaitForCompletion();
             //GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.LunarTeleporter_Variant_prefab).WaitForCompletion();
             //AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
 
         }
 
-        private void AdjustDirectorsForTeleporter(On.RoR2.TeleporterInteraction.orig_Start orig, TeleporterInteraction self)
+        private void FixBossDirectorCredits(On.RoR2.CombatDirector.orig_SetNextSpawnAsBoss orig, CombatDirector self)
         {
-            AdjustTeleporterDirectors(new CombatDirector[] { self.bossDirector, self.bonusDirector });
+            int stageNumber = Run.instance.stageClearCount + 1;
+            self.monsterCredit *= (stageNumber / stageNumber + 1) * teleBossCreditMultiplier;
+            orig(self);
+        }
+
+        private void AdjustTpDirectors(On.RoR2.CombatDirector.orig_Awake orig, CombatDirector director)
+        {
+            if (director.customName == "Boss")
+            {
+                AdjustTpBossDirector(director);
+            }
+            if (director.customName == "Monsters")
+            {
+                AdjustTpMonsterDirector(director);
+            }
+            orig(director);
+        }
+
+        private void AdjustDirectorsForTeleporter(On.RoR2.TeleporterInteraction.orig_Awake orig, TeleporterInteraction self)
+        {
+            AdjustTpBossDirector(self.bossDirector);
+            AdjustTpBossDirector(self.companionBoss);
+            AdjustTpMonsterDirector(self.bonusDirector);
             orig(self);
         }
         void AdjustTeleporterDirectors(CombatDirector[] directors)
@@ -635,20 +659,20 @@ namespace RiskierRain
             {
                 foreach (CombatDirector director in directors)
                 {
-                    if (director.customName == "Boss")
-                    {
-                        director.eliteBias = teleBossEliteBias;
-                        director.creditMultiplier = teleBossCreditMultiplier;
-                        if (Run.instance.stageClearCount == 0)
-                            director.creditMultiplier *= teleBossCreditMultiplierStage1;
-                    }
-                    if (director.customName == "Monsters")
-                    {
-                        director.eliteBias = teleLesserEliteBias;
-                        director.creditMultiplier = teleLesserCreditMultiplier;
-                    }
                 }
             }
+        }
+        void AdjustTpBossDirector(CombatDirector director)
+        {
+            director.eliteBias = teleBossEliteBias;
+            director.creditMultiplier = teleBossCreditMultiplier;
+            if (Run.instance.stageClearCount == 0)
+                director.creditMultiplier *= teleBossCreditMultiplierStage1;
+        }
+        void AdjustTpMonsterDirector(CombatDirector director)
+        {
+            director.eliteBias = teleLesserEliteBias;
+            director.creditMultiplier = teleLesserCreditMultiplier;
         }
         #endregion
 

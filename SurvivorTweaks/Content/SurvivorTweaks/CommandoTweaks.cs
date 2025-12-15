@@ -19,7 +19,8 @@ namespace SurvivorTweaks.SurvivorTweaks
     class CommandoTweaks : SurvivorTweakBase<CommandoTweaks>
     {
         public static float primaryDamageCoeff = 1.4f; //1.0f
-        public static float primaryDuration = 0.2f; //0.167f
+        public static float primaryDurationLeft = 0.16f; //0.167f
+        public static float primaryDurationRight = 0.24f; //0.167f
 
         public static GameObject phaseRoundPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FMJ");
         public static float phaseRoundDamageCoeff = 5f; //3
@@ -75,9 +76,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void FirePistol2_OnEnter(On.EntityStates.Commando.CommandoWeapon.FirePistol2.orig_OnEnter orig, FirePistol2 self)
         {
-            FirePistol2.baseDuration = primaryDuration;
             FirePistol2.damageCoefficient = primaryDamageCoeff;
             orig(self);
+            self.duration = (self.pistol % 2 == 0 ? primaryDurationLeft : primaryDurationRight) / self.attackSpeedStat;
         }
 
         private void ChangeSpecials()

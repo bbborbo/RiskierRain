@@ -50,6 +50,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public void GetBodyObject()
         {
+            Debug.LogWarning($"FruitySurvivorTweaks: Using GetBodyObject for {bodyName}.");
             this.bodyObject = GetBodyObject(bodyName);
         }
         public static GameObject GetBodyObject(string name)

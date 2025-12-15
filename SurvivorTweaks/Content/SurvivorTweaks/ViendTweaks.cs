@@ -11,12 +11,14 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
+using RoR2.Projectile;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
     class ViendTweaks : SurvivorTweakBase<ViendTweaks>
     {
-        static float corruptModeArmor = 100;
+        public static GameObject viendPrimaryDamagePool;
+        static float corruptModeArmor = 100; //100
 
         static float minimumCorruptionPerVoidItem = 2; //2
         static float corruptionForFullDamage = 50; //50
@@ -29,9 +31,10 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public static float primaryUnchargedDamage = 0.9f;
         public static float primaryChargedDamage = 4.8f;
+        public static int primaryStepCount = 3;
 
-        public static float primaryCorruptDps = 20;
-        public static float primaryCorruptTickRate = 8;
+        public static float primaryCorruptDps = 20; //20
+        public static float primaryCorruptTickRate = 8; //8
 
         public static float secondaryCooldown = 5f; //4f
 
@@ -41,7 +44,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
+            //GetBodyObject();
+            bodyObject = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab).WaitForCompletion();
+            GetSkillsFromBodyObject(bodyObject);
             //CharacterBody body = bodyObject.GetComponent<CharacterBody>();
             //body.
             On.RoR2.HealthComponent.Heal += ViendNoHealing;
@@ -52,27 +57,14 @@ namespace SurvivorTweaks.SurvivorTweaks
             //On.RoR2.Skills.VoidSurvivorSkillDef.HasRequiredCorruption += VoidSurvivorSkillDef_HasRequiredCorruption;
             #endregion
 
-            #region primary
-            SkillDef viendPrimary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireHandBeam.asset").WaitForCompletion();
-            Content.AddEntityState(typeof(FireHandBeamNew));
-            SerializableEntityStateType newViendPrimaryCharge = new SerializableEntityStateType(typeof(FireHandBeamNew));
-            viendPrimary.activationState = newViendPrimaryCharge;
-            LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION", 
-                $"Charge a <style=cIsUtility>slowing</style> long-range beam for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(primaryUnchargedDamage)}-{Tools.ConvertDecimal(primaryChargedDamage)} damage</style>.");
-
-            On.EntityStates.VoidSurvivor.Weapon.FireCorruptHandBeam.OnEnter += FireCorruptHandBeam_OnEnter;
-            LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_UPRADE_TOOLTIP", //uprade is intentional
-                $"<style=cKeywordName>【Corruption Upgrade】</style><style=cSub>Transform into a " +
-                $"{Tools.ConvertDecimal(primaryCorruptDps)} damage short-range beam.</style>");
-            #endregion
+            DoViendPrimary();
 
             #region secondary
             SkillDef viendSecondary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/ChargeMegaBlaster.asset").WaitForCompletion();
             viendSecondary.cancelSprintingOnActivation = false;
             viendSecondary.beginSkillCooldownOnSkillEnd = true;
             viendSecondary.baseRechargeInterval = secondaryCooldown;
-            viendSecondary.keywordTokens = new string[]{ "VOIDSURVIVOR_SECONDARY_UPRADE_TOOLTIP", "KEYWORD_AGILE" };
+            viendSecondary.keywordTokens = new string[] { "VOIDSURVIVOR_SECONDARY_UPRADE_TOOLTIP", "KEYWORD_AGILE" };
 
             LanguageAPI.Add("VOIDSURVIVOR_SECONDARY_DESCRIPTION",
                 "<style=cIsUtility>Agile.</style> " +
@@ -104,6 +96,90 @@ namespace SurvivorTweaks.SurvivorTweaks
                 viendSpecialHurt.baseRechargeInterval = 15;
             }
             #endregion
+        }
+
+        private void DoViendPrimary()
+        {
+            Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidRaidCrab.VoidRaidCrabMultiBeamDotZone_prefab).Completed += (ctx) => CreateSloshProjectile(ctx.Result);
+
+            SkillDef viendPrimary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireHandBeam.asset").WaitForCompletion();
+            SteppedSkillDef viendComboPrimary = ScriptableObject.CreateInstance<SteppedSkillDef>();
+
+            viendComboPrimary.stepCount = primaryStepCount;
+            viendComboPrimary.stepGraceDuration = 0.15f;
+
+            viendComboPrimary.keywordTokens = viendPrimary.keywordTokens;
+            viendComboPrimary.icon = viendPrimary.icon;
+            viendComboPrimary.skillName = "FSTViendPrimary";
+            viendComboPrimary.skillNameToken = viendPrimary.skillNameToken;
+            viendComboPrimary.skillDescriptionToken = viendPrimary.skillDescriptionToken;
+            viendComboPrimary.activationStateMachineName = viendPrimary.activationStateMachineName;
+            viendComboPrimary.baseRechargeInterval = viendPrimary.baseRechargeInterval;
+            viendComboPrimary.baseMaxStock = viendPrimary.baseMaxStock;
+            viendComboPrimary.rechargeStock = viendPrimary.rechargeStock;
+            viendComboPrimary.interruptPriority = viendPrimary.interruptPriority;
+            viendComboPrimary.beginSkillCooldownOnSkillEnd = viendPrimary.beginSkillCooldownOnSkillEnd;
+            viendComboPrimary.dontAllowPastMaxStocks = viendPrimary.dontAllowPastMaxStocks;
+            viendComboPrimary.fullRestockOnAssign = viendPrimary.fullRestockOnAssign;
+            viendComboPrimary.isCombatSkill = viendPrimary.isCombatSkill;
+            viendComboPrimary.mustKeyPress = viendPrimary.mustKeyPress;
+            viendComboPrimary.requiredStock = viendPrimary.requiredStock;
+            viendComboPrimary.resetCooldownTimerOnUse = viendPrimary.resetCooldownTimerOnUse;
+            viendComboPrimary.stockToConsume = viendPrimary.stockToConsume;
+            viendComboPrimary.cancelSprintingOnActivation = viendPrimary.cancelSprintingOnActivation;
+            viendComboPrimary.forceSprintDuringState = viendPrimary.forceSprintDuringState;
+            viendComboPrimary.canceledFromSprinting = viendPrimary.canceledFromSprinting;
+
+            primary.variants[0] = new SkillFamily.Variant
+            {
+                skillDef = viendComboPrimary,
+                unlockableDef = null,
+                viewableNode = new ViewablesCatalog.Node(viendComboPrimary.skillNameToken, false, null)
+            };             
+            Content.AddSkillDef(viendComboPrimary);
+            Content.AddEntityState(typeof(FireHandBeamLight));
+            SerializableEntityStateType newViendPrimaryCharge = new SerializableEntityStateType(typeof(FireHandBeamLight));
+            viendComboPrimary.activationState = newViendPrimaryCharge;
+            LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION",
+                $"Fire a <style=cIsUtility>slowing</style> long-range beam for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)}-{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientHeavy)} damage</style>.");
+            //On.EntityStates.VoidSurvivor.Weapon.FireHandBeam.OnEnter += Idk;
+
+            On.EntityStates.VoidSurvivor.Weapon.FireCorruptHandBeam.OnEnter += FireCorruptHandBeam_OnEnter;
+            LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_UPRADE_TOOLTIP", //uprade is intentional
+                $"<style=cKeywordName>【Corruption Upgrade】</style><style=cSub>Transform into a " +
+                $"{Tools.ConvertDecimal(primaryCorruptDps)} damage short-range beam.</style>");
+        }
+
+        private void CreateSloshProjectile(GameObject result)
+        {
+            viendPrimaryDamagePool = result.InstantiateClone("ViendDamagePoolProjectile", true);
+
+            ProjectileDotZone pdz = viendPrimaryDamagePool.GetComponent<ProjectileDotZone>();
+            if (pdz)
+            {
+                pdz.lifetime = 3;
+            }
+
+            viendPrimaryDamagePool.transform.localScale *= 0.5f;
+
+            Transform particles = viendPrimaryDamagePool.transform.Find("Fire, Stretched");
+            if (particles)
+            {
+                GameObject.Destroy(particles);
+            }
+
+
+            Content.AddProjectilePrefab(viendPrimaryDamagePool);
+        }
+
+        private void Idk(On.EntityStates.VoidSurvivor.Weapon.FireHandBeam.orig_OnEnter orig, FireHandBeam self)
+        {
+            Debug.Log($"maxdistance {self.maxDistance}, force {self.force}, bulletcount {self.bulletCount}, bulletradius {self.bulletRadius}," +
+                $"baseduration {self.baseDuration}, attacksoundstring {self.attackSoundString}, recoilamplitude {self.recoilAmplitude}," +
+                $"spreadbloomvalue {self.spreadBloomValue}, maxspread {self.maxSpread}, muzzlename {self.muzzle}, animationlayername {self.animationLayerName}," +
+                $"animationstatename {self.animationStateName}, animationplaybackrateparam {self.animationPlaybackRateParam}, trajectoryaimassistmultiplier {self.trajectoryAimAssistMultiplier}");
+            orig(self);
         }
 
         private float ViendNoHealing(On.RoR2.HealthComponent.orig_Heal orig, HealthComponent self, float amount, ProcChainMask procChainMask, bool nonRegen)

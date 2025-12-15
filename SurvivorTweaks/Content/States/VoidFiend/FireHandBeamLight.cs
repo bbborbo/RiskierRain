@@ -22,7 +22,7 @@ namespace SurvivorTweaks.States.VoidFiend
 
 		public static float damageCoefficientLight = 3.8f;
 		public static float damageCoefficientHeavy = 5.4f;
-		public float poolDamageCoefficientPerSecond = 2.5f;
+		public static float poolDamageCoefficientPerSecond = 2.5f;
 		public float maxDistance = 1000; //1000
 		public float force = 1000; //1000
 		public int bulletCount = 1; //1

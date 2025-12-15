@@ -27,15 +27,16 @@ namespace SurvivorTweaks.SurvivorTweaks
         static float minimumCorruptionPerVoidItem = 2; //2
         static float corruptionForFullDamage = 50; //50
         static float corruptionForFullHeal = -50; //-100
-        static float corruptionFractionPerSecondWhileCorrupted = -0.04f; //aka 25s; -0.06666667f aka 15s
-        static float corruptionPerSecondInCombat = 1.5f; //aka 66.6s; 3 aka 33.3s
-        static float corruptionPerSecondOutOfCombat = 1.5f; //3
+        static float corruptionFractionPerSecondWhileCorrupted = -0.05f; //aka 20s; -0.06666667f aka 15s
+        static float corruptionPerSecondInCombat = 2f; //aka 50s; 3 aka 33.3s
+        static float corruptionPerSecondOutOfCombat = 2f; //3
         static float corruptionPerCrit = 0; //2
         static float maxCorruption = 100; //100
 
         public static float primaryUnchargedDamage = 0.9f;
         public static float primaryChargedDamage = 4.8f;
         public static int primaryStepCount = 3;
+        static int primaryPoolDuration = 3;
 
         public static float primaryCorruptDps = 20; //20
         public static float primaryCorruptTickRate = 8; //8
@@ -102,7 +103,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                         pie.fireChildren = true;
                     }
                 };
-                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorCorruptDiskProjectile_prefab).Completed += (ctx) =>
+                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab).Completed += (ctx) =>
                 {
                     GameObject viendCorruptBomb = ctx.Result;
 
@@ -252,7 +253,9 @@ namespace SurvivorTweaks.SurvivorTweaks
             viendComboPrimary.activationState = newViendPrimaryCharge;
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION",
                 $"Fire a <style=cIsUtility>slowing</style> long-range beam for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)}-{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientHeavy)} damage</style>.");
+                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)} damage</style>. " +
+                $"Every third shot leaves a lingering pool for <style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientHeavy)} damage</style> " +
+                $"plus <style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.poolDamageCoefficientPerSecond * primaryPoolDuration)} damage over time</style>.");
             //On.EntityStates.VoidSurvivor.Weapon.FireHandBeam.OnEnter += Idk;
 
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptHandBeam.OnEnter += FireCorruptHandBeam_OnEnter;
@@ -271,7 +274,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             }
             if (viendPrimaryDamagePool.TryGetComponent(out ProjectileDotZone pdz))
             {
-                pdz.lifetime = 3;
+                pdz.lifetime = primaryPoolDuration;
             }
 
             viendPrimaryDamagePool.transform.localScale *= 0.5f;

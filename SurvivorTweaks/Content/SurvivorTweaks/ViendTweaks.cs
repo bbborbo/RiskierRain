@@ -13,6 +13,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using RoR2.Projectile;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -22,6 +23,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static GameObject viendDelayKnockback;
         static float corruptModeArmor = 100; //100
 
+        static float corruptionPerCleanse = 3; //0
         static float minimumCorruptionPerVoidItem = 2; //2
         static float corruptionForFullDamage = 50; //50
         static float corruptionForFullHeal = -50; //-100
@@ -141,6 +143,14 @@ namespace SurvivorTweaks.SurvivorTweaks
             };
             #endregion
 
+            #region utility
+            On.EntityStates.VoidSurvivor.VoidBlinkBase.OnEnter += VoidBlinkBase_OnEnter;
+            LanguageAPI.Add("VOIDSURVIVOR_UTILITY_DESCRIPTION",
+                $"<style=cIsUtility>Disappear</style> into the Void, <style=cIsUtility>cleansing all debuffs</style> " +
+                $"while moving in an <style=cIsUtility>upward arc</style>. " +
+                $"Gain <style=cIsVoid>{corruptionPerCleanse}% Corruption</style> per debuff cleansed.");
+            #endregion
+
             #region special
             SkillDef viendSpecialHeal = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/CrushCorruption.asset").WaitForCompletion();
             if (viendSpecialHeal)
@@ -159,6 +169,36 @@ namespace SurvivorTweaks.SurvivorTweaks
                 viendSpecialHurt.baseRechargeInterval = 15;
             }
             #endregion
+        }
+
+        private void VoidBlinkBase_OnEnter(On.EntityStates.VoidSurvivor.VoidBlinkBase.orig_OnEnter orig, EntityStates.VoidSurvivor.VoidBlinkBase self)
+        {
+            if (NetworkServer.active)
+            {
+                if(self.outer.TryGetComponent(out VoidSurvivorController voidSurvivorController))
+                {
+                    int debuffCount = 0;
+                    foreach (BuffIndex buffType in BuffCatalog.debuffBuffIndices)
+                    {
+                        debuffCount += self.characterBody.GetBuffCount(buffType);
+                    }
+                    DotController dotController = DotController.FindDotController(self.characterBody.gameObject);
+                    if (dotController)
+                    {
+                        for (DotController.DotIndex dotIndex = DotController.DotIndex.Bleed; dotIndex < DotController.DotIndex.Count; dotIndex++)
+                        {
+                            if (dotController.HasDotActive(dotIndex))
+                            {
+                                BuffDef buffType = DotController.GetDotDef(dotIndex).associatedBuff;
+                                debuffCount += self.characterBody.GetBuffCount(buffType);
+                            }
+                        }
+                    }
+
+                    voidSurvivorController.AddCorruption(corruptionPerCleanse * debuffCount);
+                }
+            }
+            orig(self);
         }
 
         private void DoViendPrimary()

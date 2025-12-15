@@ -12,12 +12,14 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using RoR2.Projectile;
+using UnityEngine.Events;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
     class ViendTweaks : SurvivorTweakBase<ViendTweaks>
     {
         public static GameObject viendPrimaryDamagePool;
+        public static GameObject viendDelayKnockback;
         static float corruptModeArmor = 100; //100
 
         static float minimumCorruptionPerVoidItem = 2; //2
@@ -36,7 +38,12 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float primaryCorruptDps = 20; //20
         public static float primaryCorruptTickRate = 8; //8
 
-        public static float secondaryCooldown = 5f; //4f
+        public static float secondaryUncorruptCooldown = 5f; //4f
+        public static float secondaryCorruptCooldown = 7f; //4f
+        public static int secondaryCorruptStock = 2; //1
+        public static int secondaryCorruptRechargeStock = 2; //1
+        public static float secondaryUncorruptBlastRadius = 10f;//5f
+        public static float secondaryCorruptBlastRadius = 10f;//10f
 
         public override string survivorName => "Void Fiend";
         public override string bodyName => "VoidSurvivorBody";
@@ -60,11 +67,51 @@ namespace SurvivorTweaks.SurvivorTweaks
             DoViendPrimary();
 
             #region secondary
-            SkillDef viendSecondary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/ChargeMegaBlaster.asset").WaitForCompletion();
-            viendSecondary.cancelSprintingOnActivation = false;
-            viendSecondary.beginSkillCooldownOnSkillEnd = true;
-            viendSecondary.baseRechargeInterval = secondaryCooldown;
-            viendSecondary.keywordTokens = new string[] { "VOIDSURVIVOR_SECONDARY_UPRADE_TOOLTIP", "KEYWORD_AGILE" };
+            Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
+            {
+                viendDelayKnockback = ctx.Result.InstantiateClone("ViendDelayKnockback", true);
+                Content.AddNetworkedObjectPrefab(viendDelayKnockback);
+                if (viendDelayKnockback.TryGetComponent(out ProjectileDamage pd))
+                {
+                    pd.force = 100;
+                }
+                if (viendDelayKnockback.TryGetComponent(out ProjectileImpactExplosion explode))
+                {
+                    explode.blastAttackerFiltering = AttackerFiltering.AlwaysHitSelf;
+                    explode.explosionEffect = null;
+                    explode.bonusBlastForce = Vector3.up * 200;
+                    explode.canRejectForce = false;
+                    explode.lifetime = 0.01f;
+                    explode.explodeOnLifeTimeExpiration = true;
+                }
+
+                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
+                {
+                    GameObject viendUncorruptBomb = ctx.Result;
+
+                    if (viendUncorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
+                    {
+                        pie.childrenCount = 1;
+                        pie.childrenDamageCoefficient = 0;
+                        pie.childrenInheritDamageType = true;
+                        pie.childrenProjectilePrefab = viendDelayKnockback;
+                        pie.fireChildren = true;
+                    }
+                };
+                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab).Completed += (ctx) =>
+                {
+                    GameObject viendCorruptBomb = ctx.Result;
+
+                    if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
+                    {
+                        pie.childrenCount = 1;
+                        pie.childrenDamageCoefficient = 0;
+                        pie.childrenInheritDamageType = true;
+                        pie.childrenProjectilePrefab = viendDelayKnockback;
+                        pie.fireChildren = true;
+                    }
+                };
+            };
 
             LanguageAPI.Add("VOIDSURVIVOR_SECONDARY_DESCRIPTION",
                 "<style=cIsUtility>Agile.</style> " +
@@ -72,10 +119,26 @@ namespace SurvivorTweaks.SurvivorTweaks
                 "Fully charge it for an explosive plasma ball instead, " +
                 "dealing <style=cIsDamage>1100% damage</style>.");
 
-            SkillDef viendSecondaryCorrupt = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireCorruptDisk.asset").WaitForCompletion();
-            viendSecondaryCorrupt.cancelSprintingOnActivation = false;
-            viendSecondaryCorrupt.beginSkillCooldownOnSkillEnd = true;
-            viendSecondaryCorrupt.baseRechargeInterval = secondaryCooldown;
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.ChargeMegaBlaster_asset).Completed += (ctx) =>
+            {
+                SkillDef viendSecondary = ctx.Result;
+
+                viendSecondary.cancelSprintingOnActivation = false;
+                viendSecondary.beginSkillCooldownOnSkillEnd = true;
+                viendSecondary.baseRechargeInterval = secondaryUncorruptCooldown;
+                viendSecondary.keywordTokens = new string[] { "VOIDSURVIVOR_SECONDARY_UPRADE_TOOLTIP", "KEYWORD_AGILE" };
+            };
+
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.FireCorruptDisk_asset).Completed += (ctx) =>
+            {
+                SkillDef viendSecondaryCorrupt = ctx.Result;
+
+                viendSecondaryCorrupt.cancelSprintingOnActivation = false;
+                viendSecondaryCorrupt.beginSkillCooldownOnSkillEnd = true;
+                viendSecondaryCorrupt.baseRechargeInterval = secondaryCorruptCooldown;
+                viendSecondaryCorrupt.baseMaxStock = secondaryCorruptStock;
+                viendSecondaryCorrupt.rechargeStock = secondaryCorruptRechargeStock;
+            };
             #endregion
 
             #region special
@@ -155,8 +218,11 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             viendPrimaryDamagePool = result.InstantiateClone("ViendDamagePoolProjectile", true);
 
-            ProjectileDotZone pdz = viendPrimaryDamagePool.GetComponent<ProjectileDotZone>();
-            if (pdz)
+            if (viendPrimaryDamagePool.TryGetComponent(out ProjectileDamage pd))
+            {
+                pd.damageType = new DamageTypeCombo(DamageType.SlowOnHit, DamageTypeExtended.Generic, DamageSource.Primary);
+            }
+            if (viendPrimaryDamagePool.TryGetComponent(out ProjectileDotZone pdz))
             {
                 pdz.lifetime = 3;
             }
@@ -168,7 +234,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             {
                 GameObject.Destroy(particles);
             }
-
 
             Content.AddProjectilePrefab(viendPrimaryDamagePool);
         }

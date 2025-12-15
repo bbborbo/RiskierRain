@@ -152,22 +152,26 @@ namespace SurvivorTweaks.SurvivorTweaks
             #endregion
 
             #region special
-            SkillDef viendSpecialHeal = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/CrushCorruption.asset").WaitForCompletion();
-            if (viendSpecialHeal)
-            {
-                viendSpecialHeal.baseMaxStock = 2;
-                viendSpecialHeal.rechargeStock = 1;
-                viendSpecialHeal.baseRechargeInterval = 45;
-            }
             On.EntityStates.VoidSurvivor.Weapon.ChargeCrushBase.OnEnter += ChargeCrushBase_OnEnter;
 
-            SkillDef viendSpecialHurt = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/CrushHealth.asset").WaitForCompletion();
-            if (viendSpecialHurt)
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushCorruption_asset).Completed += (ctx) => 
             {
-                viendSpecialHurt.baseMaxStock = 2;
+                SkillDef viendSpecialHeal = ctx.Result;
+
+                viendSpecialHeal.baseMaxStock = 2;
+                viendSpecialHeal.rechargeStock = 0;
+                viendSpecialHeal.baseRechargeInterval = 0;
+            };
+
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushHealth_asset).Completed += (ctx) =>
+            {
+                SkillDef viendSpecialHurt = ctx.Result;
+
+                viendSpecialHurt.baseMaxStock = 1;
                 viendSpecialHurt.rechargeStock = 1;
+                viendSpecialHurt.stockToConsume = 0;
                 viendSpecialHurt.baseRechargeInterval = 15;
-            }
+            };
             #endregion
         }
 

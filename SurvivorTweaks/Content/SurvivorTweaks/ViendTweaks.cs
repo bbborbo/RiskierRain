@@ -79,9 +79,10 @@ namespace SurvivorTweaks.SurvivorTweaks
                 }
                 if (viendDelayKnockback.TryGetComponent(out ProjectileImpactExplosion explode))
                 {
+                    explode.blastRadius = secondaryCorruptBlastRadius + 4;
                     explode.blastAttackerFiltering = AttackerFiltering.AlwaysHitSelf;
                     explode.explosionEffect = null;
-                    explode.bonusBlastForce = Vector3.up * 200;
+                    explode.bonusBlastForce = Vector3.up * 100;
                     explode.canRejectForce = false;
                     explode.lifetime = 0.01f;
                     explode.explodeOnLifeTimeExpiration = true;
@@ -93,6 +94,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
                     if (viendUncorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
                     {
+                        pie.blastRadius = secondaryUncorruptBlastRadius + 4;
                         pie.childrenCount = 1;
                         pie.childrenDamageCoefficient = 0;
                         pie.childrenInheritDamageType = true;
@@ -100,12 +102,13 @@ namespace SurvivorTweaks.SurvivorTweaks
                         pie.fireChildren = true;
                     }
                 };
-                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab).Completed += (ctx) =>
+                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorCorruptDiskProjectile_prefab).Completed += (ctx) =>
                 {
                     GameObject viendCorruptBomb = ctx.Result;
 
                     if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
                     {
+                        pie.blastRadius = secondaryCorruptBlastRadius + 4;
                         pie.childrenCount = 1;
                         pie.childrenDamageCoefficient = 0;
                         pie.childrenInheritDamageType = true;

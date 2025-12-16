@@ -21,7 +21,7 @@ namespace SurvivorTweaks.States.VoidFiend
 		public GameObject projectilePrefab => ViendTweaks.viendPrimaryDamagePool;
 
 		public static float damageCoefficientLight = 3.8f;
-		public static float damageCoefficientHeavy = 5.4f;
+		public static float damageCoefficientHeavy = 3.8f;
 		public static float poolDamageCoefficientPerSecond = 2.5f;
 		public float maxDistance = 1000; //1000
 		public float force = 1000; //1000
@@ -98,7 +98,7 @@ namespace SurvivorTweaks.States.VoidFiend
 					fireProjectileInfo.projectilePrefab = this.projectilePrefab;
 					fireProjectileInfo.position = beamEnd + Vector3.up * 1;
 					fireProjectileInfo.owner = base.gameObject;
-					fireProjectileInfo.damage = this.damageStat * this.poolDamageCoefficientPerSecond * 0.5f;
+					fireProjectileInfo.damage = this.damageStat * poolDamageCoefficientPerSecond * 0.5f;
 					fireProjectileInfo.crit = Util.CheckRoll(this.critStat, base.characterBody.master);
 					ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 				}

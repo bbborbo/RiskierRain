@@ -254,8 +254,8 @@ namespace SurvivorTweaks.SurvivorTweaks
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION",
                 $"Fire a <style=cIsUtility>slowing</style> long-range beam for " +
                 $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)} damage</style>. " +
-                $"Every third shot leaves a lingering pool for <style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientHeavy)} damage</style> " +
-                $"plus <style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.poolDamageCoefficientPerSecond * primaryPoolDuration)} damage over time</style>.");
+                $"Every third shot leaves a lingering pool for " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.poolDamageCoefficientPerSecond * primaryPoolDuration)} damage over time</style>.");
             //On.EntityStates.VoidSurvivor.Weapon.FireHandBeam.OnEnter += Idk;
 
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptHandBeam.OnEnter += FireCorruptHandBeam_OnEnter;

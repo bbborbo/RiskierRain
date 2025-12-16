@@ -14,6 +14,7 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.Projectile;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using SurvivorTweaks.Components;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -70,23 +71,60 @@ namespace SurvivorTweaks.SurvivorTweaks
             DoViendPrimary();
 
             #region secondary
+            DoViendSecondary();
+            #endregion
+
+            #region utility
+            On.EntityStates.VoidSurvivor.VoidBlinkBase.OnEnter += VoidBlinkBase_OnEnter;
+            LanguageAPI.Add("VOIDSURVIVOR_UTILITY_DESCRIPTION",
+                $"<style=cIsUtility>Disappear</style> into the Void, <style=cIsUtility>cleansing all debuffs</style> " +
+                $"while moving in an <style=cIsUtility>upward arc</style>. " +
+                $"Gain <style=cIsVoid>{corruptionPerCleanse}% Corruption</style> per debuff cleansed.");
+            #endregion
+
+            #region special
+            On.EntityStates.VoidSurvivor.Weapon.ChargeCrushBase.OnEnter += ChargeCrushBase_OnEnter;
+
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushCorruption_asset).Completed += (ctx) =>
+            {
+                SkillDef viendSpecialHeal = ctx.Result;
+
+                viendSpecialHeal.baseMaxStock = 2;
+                viendSpecialHeal.rechargeStock = 0;
+                viendSpecialHeal.baseRechargeInterval = 0;
+            };
+
+            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushHealth_asset).Completed += (ctx) =>
+            {
+                SkillDef viendSpecialHurt = ctx.Result;
+
+                viendSpecialHurt.baseMaxStock = 1;
+                viendSpecialHurt.rechargeStock = 1;
+                viendSpecialHurt.stockToConsume = 0;
+                viendSpecialHurt.baseRechargeInterval = 15;
+            };
+            #endregion
+        }
+
+        private static void DoViendSecondary()
+        {
             Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
             {
                 viendDelayKnockback = ctx.Result.InstantiateClone("ViendDelayKnockback", true);
                 Content.AddNetworkedObjectPrefab(viendDelayKnockback);
-                if (viendDelayKnockback.TryGetComponent(out ProjectileDamage pd))
-                {
-                    pd.force = 100;
-                }
+                ProjectileSetForceOnStart pd = viendDelayKnockback.AddComponent<ProjectileSetForceOnStart>();
+                pd.force = 1000;
+
                 if (viendDelayKnockback.TryGetComponent(out ProjectileImpactExplosion explode))
                 {
-                    explode.blastRadius = secondaryCorruptBlastRadius + 4;
+                    explode.blastRadius = secondaryCorruptBlastRadius;
                     explode.blastAttackerFiltering = AttackerFiltering.AlwaysHitSelf;
                     explode.explosionEffect = null;
-                    explode.bonusBlastForce = Vector3.up * 100;
+                    explode.bonusBlastForce = Vector3.up * 500;
                     explode.canRejectForce = false;
                     explode.lifetime = 0.01f;
                     explode.explodeOnLifeTimeExpiration = true;
+                    explode.blastProcCoefficient = 0;
                 }
 
                 Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
@@ -95,26 +133,30 @@ namespace SurvivorTweaks.SurvivorTweaks
 
                     if (viendUncorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
                     {
-                        pie.blastRadius = secondaryUncorruptBlastRadius + 4;
+                        pie.blastRadius = secondaryUncorruptBlastRadius;
                         pie.childrenCount = 1;
                         pie.childrenDamageCoefficient = 0;
-                        pie.childrenInheritDamageType = true;
+                        pie.childrenInheritDamageType = false;
                         pie.childrenProjectilePrefab = viendDelayKnockback;
                         pie.fireChildren = true;
                     }
                 };
-                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab).Completed += (ctx) =>
+                Addressables.LoadAssetAsync<GameObject>(
+                    //"RoR2/DLC1/VoidSurvivor/VoidSurvivorMegaBlasterBigProjectileCorrupted.prefab"
+                    RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab
+                ).Completed += (ctx) =>
                 {
                     GameObject viendCorruptBomb = ctx.Result;
 
-                    if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
+                    if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie2))
                     {
-                        pie.blastRadius = secondaryCorruptBlastRadius + 4;
-                        pie.childrenCount = 1;
-                        pie.childrenDamageCoefficient = 0;
-                        pie.childrenInheritDamageType = true;
-                        pie.childrenProjectilePrefab = viendDelayKnockback;
-                        pie.fireChildren = true;
+                        Debug.LogError("VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab");
+                        pie2.blastRadius = secondaryCorruptBlastRadius;
+                        pie2.childrenCount = 1;
+                        pie2.childrenDamageCoefficient = 0;
+                        pie2.childrenInheritDamageType = false;
+                        pie2.childrenProjectilePrefab = viendDelayKnockback;
+                        pie2.fireChildren = true;
                     }
                 };
             };
@@ -145,38 +187,6 @@ namespace SurvivorTweaks.SurvivorTweaks
                 viendSecondaryCorrupt.baseMaxStock = secondaryCorruptStock;
                 viendSecondaryCorrupt.rechargeStock = secondaryCorruptRechargeStock;
             };
-            #endregion
-
-            #region utility
-            On.EntityStates.VoidSurvivor.VoidBlinkBase.OnEnter += VoidBlinkBase_OnEnter;
-            LanguageAPI.Add("VOIDSURVIVOR_UTILITY_DESCRIPTION",
-                $"<style=cIsUtility>Disappear</style> into the Void, <style=cIsUtility>cleansing all debuffs</style> " +
-                $"while moving in an <style=cIsUtility>upward arc</style>. " +
-                $"Gain <style=cIsVoid>{corruptionPerCleanse}% Corruption</style> per debuff cleansed.");
-            #endregion
-
-            #region special
-            On.EntityStates.VoidSurvivor.Weapon.ChargeCrushBase.OnEnter += ChargeCrushBase_OnEnter;
-
-            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushCorruption_asset).Completed += (ctx) => 
-            {
-                SkillDef viendSpecialHeal = ctx.Result;
-
-                viendSpecialHeal.baseMaxStock = 2;
-                viendSpecialHeal.rechargeStock = 0;
-                viendSpecialHeal.baseRechargeInterval = 0;
-            };
-
-            Addressables.LoadAssetAsync<SkillDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.CrushHealth_asset).Completed += (ctx) =>
-            {
-                SkillDef viendSpecialHurt = ctx.Result;
-
-                viendSpecialHurt.baseMaxStock = 1;
-                viendSpecialHurt.rechargeStock = 1;
-                viendSpecialHurt.stockToConsume = 0;
-                viendSpecialHurt.baseRechargeInterval = 15;
-            };
-            #endregion
         }
 
         private void VoidBlinkBase_OnEnter(On.EntityStates.VoidSurvivor.VoidBlinkBase.orig_OnEnter orig, EntityStates.VoidSurvivor.VoidBlinkBase self)

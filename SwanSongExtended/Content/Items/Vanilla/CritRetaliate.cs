@@ -55,7 +55,31 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetStatCoefficients += WatchCritChance;
-            GetHitBehavior += WatchGetHit;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += DoCritRetaliateBuff;
+            //GetHitBehavior += WatchGetHit;
+        }
+
+        private void DoCritRetaliateBuff(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        {
+            if (damageInfo.damage > 0 && !damageInfo.rejected && victim.TryGetComponent(out CharacterBody victimBody))
+            {
+                Inventory inv = victimBody.inventory;
+                if (inv)
+                {
+                    int itemCount = GetCount(victimBody);
+                    if (itemCount > 0)
+                    {
+                        victimBody.ClearTimedBuffs(watchCritBuff);
+                        float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
+                        for (int i = 0; i < buffTotal; i++)
+                        {
+                            victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)buffTotal);
+                        }
+                        //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
+                    }
+                }
+            }
+            orig(self, damageInfo, victim);
         }
 
         private void WatchGetHit(CharacterBody body, DamageInfo damageInfo, CharacterBody victimBody)

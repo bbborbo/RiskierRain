@@ -16,6 +16,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     class ArtiTweaks : SurvivorTweakBase<ArtiTweaks>
     {
         public static float flamethrowerDamage = 28; //20 vanilla, 34 pre-nerf glory
+        public static float flamethrowerRange = 26; //21
         public override string survivorName => "Artificer";
 
         public override string bodyName => "MageBody";
@@ -106,9 +107,9 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"Each hit has a <style=cIsDamage>50% chance</style> to <style=cIsDamage>Ignite</style>.");
             On.EntityStates.Mage.Weapon.Flamethrower.OnEnter += (orig, self) =>
             {
+                self.maxDistance = flamethrowerRange;
                 self.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
                 orig(self);
-                self.totalDamageCoefficient = flamethrowerDamage; // 20, 34 for pre-nerf
             };
             if (false)
             {

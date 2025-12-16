@@ -42,8 +42,8 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float primaryCorruptDps = 20; //20
         public static float primaryCorruptTickRate = 8; //8
 
-        public static float secondaryUncorruptCooldown = 6f; //4f
-        public static float secondaryCorruptCooldown = 6f; //4f
+        public static float secondaryUncorruptCooldown = 7f; //4f
+        public static float secondaryCorruptCooldown = 7f; //4f
         public static int secondaryCorruptStock = 1; //1
         public static int secondaryCorruptRechargeStock = 1; //1
         public static float secondaryUncorruptBlastRadius = 6f;//5f

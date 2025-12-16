@@ -204,7 +204,17 @@ namespace RiskierRain
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
         }
 
+        /// <summary>
+        /// For compensating rewards to the amount expected at stage start
+        /// </summary>
+        /// <returns></returns>
         static float GetCompensatedDifficultyFraction()
+        {
+            float entryDiffCoeff = GetCompensatedStageEntryDifficulty();
+            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
+        }
+
+        static float GetCompensatedStageEntryDifficulty()
         {
             float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
             float startingDifficulty = GetDifficultyCoefficient(Run.instance, 0, 0, out _);//GetAmbientLevelBoost();
@@ -212,11 +222,11 @@ namespace RiskierRain
             {
                 entryDiffCoeff = 0;
             }
-            else if(compensationForStartingLevel > 0)
+            else if (compensationForStartingLevel > 0)
             {
                 entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingDifficulty, compensationForStartingLevel);
             }
-            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
+            return entryDiffCoeff;
         }
 
         private static void FixGoldRewards(ILContext il)

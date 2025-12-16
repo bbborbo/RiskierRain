@@ -630,8 +630,9 @@ namespace RiskierRain
         {
             if (Run.instance.stageClearCount == 0)
             {
-                self.monsterCredit *= teleBossCreditMultiplier * GetCompensatedDifficultyFraction();
+                self.monsterCredit *= 0.5f;// GetCompensatedStageEntryDifficulty() / Stage.instance.entryDifficultyCoefficient;
             }
+            self.monsterCredit *= teleBossCreditMultiplier;
             orig(self);
         }
 

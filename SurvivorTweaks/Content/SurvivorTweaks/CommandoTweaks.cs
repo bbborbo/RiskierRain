@@ -22,10 +22,11 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float primaryDurationLeft = 0.16f; //0.167f
         public static float primaryDurationRight = 0.24f; //0.167f
 
-        public static GameObject phaseRoundPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/FMJ");
+        public static GameObject phaseRoundPrefab;
         public static float phaseRoundDamageCoeff = 5f; //3
         public static float phaseRoundCooldown = 4f; //3
         public static float phaseRoundDuration = 0.7f; //0.5f
+        public static float phaseRoundScale = 2f; //1f
 
         public static float phaseBlastDamageCoeff = 3f; //2f
         public static float phaseBlastCooldown = 5; //3f
@@ -170,7 +171,11 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void ChangeSecondaries(SkillFamily secondary)
         {
             //phase round
-            phaseRoundPrefab.transform.localScale *= 2;
+            Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Commando.FMJRamping_prefab).Completed += (ctx) =>
+            {
+                phaseRoundPrefab = ctx.Result;
+                phaseRoundPrefab.transform.localScale *= phaseRoundScale;
+            };
             On.EntityStates.GenericProjectileBaseState.OnEnter += PhaseRoundBuff;
             secondary.variants[0].skillDef.baseRechargeInterval = phaseRoundCooldown;
             secondary.variants[0].skillDef.fullRestockOnAssign = false;

@@ -173,7 +173,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void RetoolBuff(On.EntityStates.Toolbot.ToolbotStanceSwap.orig_OnEnter orig, EntityStates.Toolbot.ToolbotStanceSwap self)
         {
-            self.baseDuration = 0.75f;
+            self.baseDuration = retoolDuration;
             self.characterBody.AddTimedBuffAuthority(ToolbotDualWieldBase.bonusBuff.buffIndex, self.baseDuration / self.attackSpeedStat);
 
             orig(self);

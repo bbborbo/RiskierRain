@@ -18,7 +18,10 @@ namespace SurvivorTweaks.SurvivorTweaks
         float syringeDamageCoefficient = 0.8f; // 0.8f
         float syringeHealFraction = 0.3f; // 0.6f
 
-        float barrageDamageCoeff = 6f;
+        public static float mortarDamageCoeff = 6f;//4.5f
+        public static float mortarCooldown = 0.75f;//0.5f
+        public static float drillCooldown = 4f;//6f
+        public static int drillMaxStock = 1; //1
 
         float brambleHealFraction = 0.07f; // 0.1f
 
@@ -42,7 +45,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             ChangeVanillaSecondaries(secondary);
             LanguageAPI.Add("TREEBOT_SECONDARY_DESCRIPTION", 
                 $"<style=cIsHealth>15% HP</style>. " +
-                $"Launch a mortar into the sky for <style=cIsDamage>{Tools.ConvertDecimal(barrageDamageCoeff)} damage</style>.");
+                $"Launch a mortar into the sky for <style=cIsDamage>{Tools.ConvertDecimal(mortarDamageCoeff)} damage</style>.");
 
             //utility
             On.EntityStates.Treebot.Weapon.FirePlantSonicBoom.OnEnter += NerfBrambleVolley;
@@ -68,15 +71,18 @@ namespace SurvivorTweaks.SurvivorTweaks
             FireSyringe.damageCoefficient = syringeDamageCoefficient;
             orig(self);
         }
-
         private void ChangeVanillaSecondaries(SkillFamily family)
         {
-            family.variants[0].skillDef.baseRechargeInterval = 4f;
-            family.variants[1].skillDef.baseRechargeInterval = 0.75f;
+            SkillDef drill = family.variants[0].skillDef;
+            drill.baseRechargeInterval = 4f;
+            drill.baseMaxStock = drillMaxStock;
+
+            SkillDef mortar = family.variants[1].skillDef;
+            mortar.baseRechargeInterval = mortarCooldown;
 
             On.EntityStates.Treebot.Weapon.FireMortar2.OnEnter += (orig, self) =>
             {
-                FireMortar2.damageCoefficient = barrageDamageCoeff;
+                FireMortar2.damageCoefficient = mortarDamageCoeff;
                 orig(self);
             };
         }

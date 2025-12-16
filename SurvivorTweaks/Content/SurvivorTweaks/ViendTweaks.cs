@@ -28,9 +28,9 @@ namespace SurvivorTweaks.SurvivorTweaks
         static float minimumCorruptionPerVoidItem = 2; //2
         static float corruptionForFullDamage = 50; //50
         static float corruptionForFullHeal = -50; //-100
-        static float corruptionFractionPerSecondWhileCorrupted = -0.05f; //aka 20s; -0.06666667f aka 15s
-        static float corruptionPerSecondInCombat = 2f; //aka 50s; 3 aka 33.3s
-        static float corruptionPerSecondOutOfCombat = 2f; //3
+        static float corruptionFractionPerSecondWhileCorrupted = -0.06666667f; //aka 15s; -0.06666667f aka 15s
+        static float corruptionPerSecondInCombat = 2.22222222f; //aka 45s; 3 aka 33.3s
+        static float corruptionPerSecondOutOfCombat = 2.22222222f; //3
         static float corruptionPerCrit = 0; //2
         static float maxCorruption = 100; //100
 

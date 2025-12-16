@@ -220,8 +220,6 @@ namespace SwanSongExtended.Items
 
         private static UniquePickup GetWishPickup(ref PickupIndex pickupIndex, bool isFirst)
         {
-            if (pickupIndex != PickupIndex.none)
-                return new UniquePickup(pickupIndex);
             List<PickupIndex> list = Run.instance.availableTier2DropList;
             bool shouldTryUpgrade = isFirst && serverWishboneCount > Run.instance.participatingPlayerCount;
             if (shouldTryUpgrade)

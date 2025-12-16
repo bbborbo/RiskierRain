@@ -48,7 +48,7 @@ namespace SurvivorTweaks
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SurvivorTweaks";
-        public const string version = "3.0.0";
+        public const string version = "3.1.0";
 
         public const string DEVELOPER_PREFIX = "FRUIT";
 

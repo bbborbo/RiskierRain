@@ -313,7 +313,9 @@ namespace SurvivorTweaks.SurvivorTweaks
         private float ViendNoHealing(On.RoR2.HealthComponent.orig_Heal orig, HealthComponent self, float amount, ProcChainMask procChainMask, bool nonRegen)
         {
             if (self.body.HasBuff(DLC1Content.Buffs.VoidSurvivorCorruptMode))
+            {
                 amount = 0;
+            }
             return orig(self, amount, procChainMask, nonRegen);
         }
 

@@ -319,16 +319,22 @@ namespace RiskierRain
         void NerfTemplar()
         {
             CharacterBody templarBody = this.templarPrefab.GetComponent<CharacterBody>();
+            templarBody.baseAttackSpeed = 2;
             templarBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
             templarBody.baseDamage = 9;//16
             templarBody.levelDamage = templarBody.baseDamage * 0.2f;//16
+
+            EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = 0.1f;
         }
         void NerfChimeraWisp()
         {
             CharacterBody wispBody = this.chimeraWispPrefab.GetComponent<CharacterBody>();
+            wispBody.baseAttackSpeed = 2;
             wispBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
             wispBody.baseDamage = 5f;//15
             wispBody.levelDamage = wispBody.baseDamage * 0.2f;
+
+            EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f;
         }
         #endregion
     }

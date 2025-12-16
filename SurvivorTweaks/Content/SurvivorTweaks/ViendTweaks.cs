@@ -42,12 +42,12 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float primaryCorruptDps = 20; //20
         public static float primaryCorruptTickRate = 8; //8
 
-        public static float secondaryUncorruptCooldown = 5f; //4f
-        public static float secondaryCorruptCooldown = 7f; //4f
-        public static int secondaryCorruptStock = 2; //1
-        public static int secondaryCorruptRechargeStock = 2; //1
-        public static float secondaryUncorruptBlastRadius = 10f;//5f
-        public static float secondaryCorruptBlastRadius = 10f;//10f
+        public static float secondaryUncorruptCooldown = 6f; //4f
+        public static float secondaryCorruptCooldown = 6f; //4f
+        public static int secondaryCorruptStock = 1; //1
+        public static int secondaryCorruptRechargeStock = 1; //1
+        public static float secondaryUncorruptBlastRadius = 6f;//5f
+        public static float secondaryCorruptBlastRadius = 12f;//10f
 
         public override string survivorName => "Void Fiend";
         public override string bodyName => "VoidSurvivorBody";

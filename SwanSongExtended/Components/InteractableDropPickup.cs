@@ -15,6 +15,7 @@ namespace SwanSongExtended.Components
         private Xoroshiro128Plus rng;
         public Transform dropletOrigin;
         public bool canActivate = true;
+        public bool canBeReplaced = true;
         void Start()
         {
             if(dropletOrigin == null)
@@ -31,7 +32,10 @@ namespace SwanSongExtended.Components
             UniquePickup pickup = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
             dropTable.GenerateWeightedSelection();
-            pickup = dropTable.GeneratePickup(rng);
+            if (canBeReplaced)
+                pickup = dropTable.GeneratePickup(rng);
+            else
+                pickup = dropTable.GeneratePickupPreReplacement(rng);
             PickupDropletController.CreatePickupDroplet(pickup, 
                 dropletOrigin.position + (dropletOrigin.forward * 3f) + (Vector3.up * 3f), 
                 dropletOrigin.forward * 3f + Vector3.up * 5f, 

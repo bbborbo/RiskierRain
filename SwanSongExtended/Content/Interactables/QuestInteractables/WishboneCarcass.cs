@@ -72,6 +72,7 @@ namespace SwanSongExtended.Interactables
             InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
             idi.destroyOnUse = true;
+            idi.canBeReplaced = false;
             return idi.OnInteractionBegin;
         }
         private ExplicitPickupDropTable GenerateWeightedSelection()

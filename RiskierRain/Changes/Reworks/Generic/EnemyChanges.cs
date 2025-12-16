@@ -314,27 +314,45 @@ namespace RiskierRain
         #region templar and chwisp
 
         GameObject templarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/ClayBruiserBody");
+        public static float templarBaseDamage = 9;//16
+        public static float templarBaseAttackSpeed = 2;//1
+        public static float templarFireInterval = 0.05f;//0.05f
+        public static float templarSpinUpDuration = 1.5f;//1
+        public static float templarSpinDownDuration = 2;//2
+
         GameObject chimeraWispPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/LunarWispBody");
+        public static float chimeraWispBaseDamage = 5;//15
+        public static float chimeraWispBaseAttackSpeed = 2;//1
+        public static float chimeraWispFireInterval = 0.1f;//0.1f
+        public static float chimeraWispFireDuration = 4f;//4f
+        public static float chimeraWispChargeDuration = 3.33f;//3.33f
 
         void NerfTemplar()
         {
             CharacterBody templarBody = this.templarPrefab.GetComponent<CharacterBody>();
-            templarBody.baseAttackSpeed = 2;
+            templarBody.baseAttackSpeed = templarBaseAttackSpeed;
             templarBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
-            templarBody.baseDamage = 9;//16
-            templarBody.levelDamage = templarBody.baseDamage * 0.2f;//16
+            templarBody.baseDamage = templarBaseDamage;
+            templarBody.levelDamage = templarBody.baseDamage * 0.2f;
 
-            EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = 0.1f;
+            EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = templarFireInterval * templarBaseAttackSpeed;
+            EntityStates.ClayBruiser.Weapon.MinigunSpinUp.baseDuration = templarSpinUpDuration * templarBaseAttackSpeed;
+            EntityStates.ClayBruiser.Weapon.MinigunSpinDown.baseDuration = templarSpinDownDuration * templarBaseAttackSpeed;
         }
         void NerfChimeraWisp()
         {
             CharacterBody wispBody = this.chimeraWispPrefab.GetComponent<CharacterBody>();
-            wispBody.baseAttackSpeed = 2;
+            wispBody.baseAttackSpeed = chimeraWispBaseAttackSpeed;
             wispBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
-            wispBody.baseDamage = 5f;//15
+            wispBody.baseDamage = chimeraWispBaseDamage;
             wispBody.levelDamage = wispBody.baseDamage * 0.2f;
 
-            EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f;
+            EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f * chimeraWispBaseAttackSpeed;
+            EntityStates.LunarWisp.FireLunarGuns.baseDuration = 4 * chimeraWispBaseAttackSpeed;
+            EntityStates.LunarWisp.ChargeLunarGuns.baseDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
+            EntityStates.LunarWisp.ChargeLunarGuns.spinUpDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
+            EntityStates.LunarWisp.SeekingBomb.spinUpDuration = 2 * chimeraWispBaseAttackSpeed;
+            EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
         }
         #endregion
     }

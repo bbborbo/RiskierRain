@@ -587,10 +587,10 @@ namespace RiskierRain
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 0.75f;//1
+        public static float fastDirectorEliteBias = 1f;//1
         public static float fastDirectorCreditMultiplier = 0.75f;//0.75f
         public static float slowDirectorEliteBias = 1f;//1
-        public static float slowDirectorCreditMultiplier = 1.5f;//0.75f
+        public static float slowDirectorCreditMultiplier = 1f;//0.75f
 
         public static float teleLesserEliteBias = 1f;//1
         public static float teleLesserCreditMultiplier = 0.8f;//1f

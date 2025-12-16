@@ -114,7 +114,7 @@ namespace SwanSongExtended.Items
             }
         }
 
-        public static int upgradeChance = 20;
+        public static int upgradeChance = 30;
         static int serverWishboneCount = 0;
         private void StealWishboneOnTeleCharge(TeleporterInteraction obj)
         {

@@ -23,6 +23,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static GameObject viendPrimaryDamagePool;
         public static GameObject viendDelayKnockback;
         static float corruptModeArmor = 100; //100
+        public static float baseMaxHealth = 130f;//110
 
         static float corruptionPerCleanse = 3; //0
         static float minimumCorruptionPerVoidItem = 2; //2
@@ -58,8 +59,9 @@ namespace SurvivorTweaks.SurvivorTweaks
             //GetBodyObject();
             bodyObject = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab).WaitForCompletion();
             GetSkillsFromBodyObject(bodyObject);
-            //CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            //body.
+            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+            body.baseMaxHealth = baseMaxHealth;
+            body.levelMaxHealth = baseMaxHealth * 0.3f;
             On.RoR2.HealthComponent.Heal += ViendNoHealing;
             GetStatCoefficients += ViendStatCoefficients;
 

@@ -198,6 +198,9 @@ namespace SurvivorTweaks.SurvivorTweaks
                     int debuffCount = 0;
                     foreach (BuffIndex buffType in BuffCatalog.debuffBuffIndices)
                     {
+                        BuffDef buffDef = BuffCatalog.GetBuffDef(buffType);
+                        if (buffDef.isCooldown || buffDef.isHidden)
+                            continue;
                         debuffCount += self.characterBody.GetBuffCount(buffType);
                     }
                     DotController dotController = DotController.FindDotController(self.characterBody.gameObject);

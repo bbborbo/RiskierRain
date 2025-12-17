@@ -169,9 +169,14 @@ namespace RiskierRain
         {
 			ILCursor c = new ILCursor(il);
 
-			c.GotoNext(MoveType.Before,
+			bool b = c.TryGotoNext(MoveType.Before,
 				x => x.MatchStfld<RoR2.DamageInfo>("force")
 				);
+			if (!b)
+			{
+				DebugBreakpoint(nameof(BuffDevilOrb));
+				return;
+			}
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<Vector3, DevilOrb, Vector3>>((forceIn, orb) =>
 			{

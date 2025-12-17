@@ -168,13 +168,17 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             bool b = c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<Run>("get_ambientLevel"));
-            if (b)
+            if (!b)
             {
-                c.EmitDelegate<Func<float, float>>((levelIn) =>
-                {
-                    return levelIn + (GetAmbientLevelBoost() * 0.5f);
-                });
+                DebugBreakpoint(nameof(CorrectDifficultyBar));
+                return;
             }
+            c.EmitDelegate<Func<float, float>>((levelIn) =>
+            {
+                if (Run.instance.selectedDifficulty == DifficultyIndex.Easy)
+                    return levelIn;
+                return levelIn + 3f;
+            });
         }
 
         private void DirectorCreditGainChanges(ILContext il)

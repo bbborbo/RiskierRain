@@ -61,7 +61,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.2.10";
+        public const string version = "1.2.19";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -127,6 +127,14 @@ namespace RiskierRain
             new ContentPacks().Initialize();
         }
 
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
+        }
+
         private void Gah(On.RoR2.CharacterBody.orig_RemoveBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
         {
             if (!NetworkServer.active)
@@ -156,11 +164,13 @@ namespace RiskierRain
                 bool ilFound = c.TryGotoNext(MoveType.After,
                     x => x.MatchLdfld<RoR2.Skills.SkillDef>(nameof(RoR2.Skills.SkillDef.attackSpeedBuffsRestockSpeed))
                     );
-                if (ilFound)
+                if (!ilFound)
                 {
-                    c.Emit(Mono.Cecil.Cil.OpCodes.Pop);
-                    c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+                    DebugBreakpoint(nameof(FuckAspdScalingOnCooldowns));
+                    return;
                 }
+                c.Emit(Mono.Cecil.Cil.OpCodes.Pop);
+                c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
             }
 
             ///summary
@@ -880,6 +890,8 @@ namespace RiskierRain
                 "Set this to true to enable config options. Please keep in mind that it was not within my design intentions to play this way. " +
                 "This is primarily meant for modpack users with tons of mods installed. " +
                 "If you have any issues or feedback on my mod balance, please feel free to send in feedback with the contact info in the README or Thunderstore description.");
+
+            Debug.Log("Config initialized!");
         }
 
         void InitializeCoreModules()

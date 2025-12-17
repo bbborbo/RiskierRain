@@ -20,8 +20,8 @@ namespace RiskierRain
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
         public static float drizzleDifficultyBoost = 0;
-        public static float rainstormDifficultyBoost = 2;
-        public static float monsoonDifficultyBoost = 4;
+        public static float rainstormDifficultyBoost = 0;
+        public static float monsoonDifficultyBoost = 3;
         public static float eclipseDifficultyBoost = 6;
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace RiskierRain
             int stageClearCount = self.stageClearCount;
 
             float difficultyCoefficient = GetDifficultyCoefficient(self, runTimerMinutes, stageClearCount, out float playerBaseFactor);
-            float difficultyFactor = GetAmbientLevelBoost() / 2;
+            float difficultyFactor = GetScalingValueForDifficulty(self.selectedDifficulty) - 1;//GetAmbientLevelBoost() / 2;
 
             //difficulty coefficient used for interactable costs and etc
             self.difficultyCoefficient = difficultyCoefficient;
@@ -282,12 +282,17 @@ namespace RiskierRain
                 self.OnAmbientLevelUp();
             }
         }
+        public static float GetScalingValueForDifficulty(DifficultyIndex difficulty)
+        {
+            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficulty);
+            float scalingValue = difficultyDef.scalingValue;
+            if (difficulty >= eclipseLevelVeryHard)
+                scalingValue += 1;
+            return scalingValue;
+        }
         public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)
         {
-            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty);
-            float scalingValue = difficultyDef.scalingValue;
-            if (run.selectedDifficulty >= eclipseLevelVeryHard)
-                scalingValue += 1;
+            float scalingValue = GetScalingValueForDifficulty(run.selectedDifficulty);
             float baseScalingFactor = 0.0506f * baseScalingMultiplier;
 
             float timeFactor = GetTimeDifficultyFactor(timeInMinutes, scalingValue);

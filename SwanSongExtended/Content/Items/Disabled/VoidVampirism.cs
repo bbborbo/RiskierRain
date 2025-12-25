@@ -12,6 +12,7 @@ namespace SwanSongExtended.Items
 {
     class VoidVampirism : ItemBase<VoidVampirism>
     {
+        public override bool isEnabled => false;
         int vampireBleedChance = 10;
 
         int maxHealing = 2;

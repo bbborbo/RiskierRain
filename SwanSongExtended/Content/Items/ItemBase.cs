@@ -8,6 +8,7 @@ using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;
 using RoR2.EntitlementManagement;
 using SwanSongExtended.Modules;
+using HG;
 
 namespace SwanSongExtended.Items
 {
@@ -46,6 +47,7 @@ namespace SwanSongExtended.Items
         public virtual bool CanRemove { get; } = false;
         public virtual bool IsHidden { get; } = false;
         public virtual ExpansionDef RequiredExpansion { get; } = null;
+        public virtual bool CanBeTemporary { get; } = true;
 
         public override void Init()
         {
@@ -130,7 +132,7 @@ namespace SwanSongExtended.Items
         }
 
         public static ItemDef CreateNewItem(string langTokenName, GameObject modelPrefab, Sprite iconSprite, ItemTier tier, 
-            ItemTag[] itemTags = null, ExpansionDef requiredExpansion = null, bool isHidden = false)
+            ItemTag[] itemTags = null, ExpansionDef requiredExpansion = null, bool isHidden = false, bool canBeTemporary = true)
         {
             ItemDef itemDef = CreateNewUntieredItem(langTokenName, iconSprite, tier, itemTags, isHidden);
             itemDef.pickupModelPrefab = modelPrefab;
@@ -139,7 +141,7 @@ namespace SwanSongExtended.Items
         }
 
         public static ItemDef CreateNewUntieredItem(string langTokenName, Sprite iconSprite, ItemTier tier = ItemTier.NoTier, 
-            ItemTag[] itemTags = null, bool isHidden = false)
+            ItemTag[] itemTags = null, bool isHidden = false, bool canBeTemporary = true)
         {
             ItemDef itemDef = ScriptableObject.CreateInstance<ItemDef>();
 
@@ -156,6 +158,11 @@ namespace SwanSongExtended.Items
             if(itemTags != null && itemTags.Length > 0)
             {
                 itemDef.tags = itemTags;
+                if (canBeTemporary)
+                {
+                    int i = itemDef.tags.Length;
+                    ArrayUtils.ArrayAppend(ref itemDef.tags, ref i, ItemTag.CanBeTemporary);
+                }
             }
 
             Content.AddItemDef(itemDef);

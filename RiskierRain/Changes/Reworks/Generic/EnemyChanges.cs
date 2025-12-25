@@ -135,28 +135,34 @@ namespace RiskierRain
         int gupCreditCost = 200;//150
 
         GameObject gupPrefab;
-        float gupBaseHealth = 800f; // 1000
-        float gupBaseArmor = 25f; // 0
+        float gupBaseHealth = 1000f; // 1000
+        float gupBaseArmor = 0f; // 0
         float gupBaseDamage = 12f; // 12
         float gupBaseSpeed = 14f; //12
         float gupBaseRegen = 0f; //0.6f
 
         GameObject geepPrefab;
-        float geepBaseHealth = 400f; // 500
-        float geepBaseArmor = 25f; // 0
+        float geepBaseHealth = 500f; // 500
+        float geepBaseArmor = 0f; // 0
         float geepBaseDamage = 8f; // 6
         float geepBaseSpeed = 10f; //8
         float geepBaseRegen = 0f; //0.6f
 
         GameObject gipPrefab;
-        float gipBaseHealth = 200f; // 250
-        float gipBaseArmor = 25f; // 0
+        float gipBaseHealth = 250f; // 250
+        float gipBaseArmor = 0f; // 0
         float gipBaseDamage = 5f; // 3
         float gipBaseSpeed = 6f; //5
         float gipBaseRegen = 0f; //0.6f
 
         void GupChanges()
         {
+            On.EntityStates.Gup.BaseSplitDeath.OnEnter += (orig, self) =>
+            {
+                self.moneyMultiplier = 0;
+                orig(self);
+            };
+
             gupSpawnCard = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/Gup/cscGupBody.asset").WaitForCompletion();
             gupSpawnCard.directorCreditCost = gupCreditCost;
 

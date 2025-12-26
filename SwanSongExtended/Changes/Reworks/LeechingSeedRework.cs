@@ -26,10 +26,10 @@ namespace SwanSongExtended
                 seedItemDef.pickupIconSprite = sprite;
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += FuckLeechingSeed;
-            GetHitBehavior += NewSeedBehavior;
-            LanguageAPI.Add("ITEM_SEED_PICKUP", "Dealing damage heals you.");
-            LanguageAPI.Add("ITEM_SEED_DESC", $"Dealing damage increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
-                $"for <style=cIsUtility>{seedRegenDurationBase}s</style> <style=cStack>(+{seedRegenDurationStack}s per stack)</style>.");
+            //GetHitBehavior += NewSeedBehavior;
+            //LanguageAPI.Add("ITEM_SEED_PICKUP", "Dealing damage heals you.");
+            //LanguageAPI.Add("ITEM_SEED_DESC", $"Dealing damage increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
+            //    $"for <style=cIsUtility>{seedRegenDurationBase}s</style> <style=cStack>(+{seedRegenDurationStack}s per stack)</style>.");
         }
 
         private void NewSeedBehavior(CharacterBody body, DamageInfo damageInfo, CharacterBody victimBody)
@@ -54,15 +54,27 @@ namespace SwanSongExtended
         {
             ILCursor c = new ILCursor(il);
 
-            int seedLoc = 14;
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Seed"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
-                x => x.MatchStloc(out seedLoc)
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdcI4((int)ProcType.HealOnHit),
+                x => x.MatchCallOrCallvirt("RoR2.ProcChainMask", nameof(RoR2.ProcChainMask.HasProc))
                 );
-            c.Index--;
-            c.Emit(OpCodes.Pop);
-            c.Emit(OpCodes.Ldc_I4, 0);
+            if (!b)
+                return;
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<bool, DamageInfo, bool>>((cantProc, damageInfo) =>
+            {
+                return cantProc || !(damageInfo.damageType.IsDamageSourceSkillBased || damageInfo.damageType.damageSource == DamageSource.Equipment);
+            });
+
+            //int seedLoc = 14;
+            //c.GotoNext(MoveType.After,
+            //    x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Seed"),
+            //    x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
+            //    x => x.MatchStloc(out seedLoc)
+            //    );
+            //c.Index--;
+            //c.Emit(OpCodes.Pop);
+            //c.Emit(OpCodes.Ldc_I4, 0);
         }
     }
 }

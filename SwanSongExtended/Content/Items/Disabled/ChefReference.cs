@@ -15,6 +15,7 @@ namespace SwanSongExtended.Items
 {
     class ChefReference : ItemBase<ChefReference>
     {
+        public override bool isEnabled => false;
         public override string ConfigName => "Items : Chef Stache";
         GameObject meatChunk;
         int fruitChanceBase = 1;

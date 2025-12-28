@@ -26,7 +26,7 @@ namespace SwanSongExtended.Storms
         {
             //SceneDef currentScene = SceneCatalog.GetSceneDefForCurrentScene();
             StormType st = StormType.None;
-            if (currentScene.sceneType == SceneType.Stage && !currentScene.isFinalStage)
+            if (IsStormStage(currentScene))
             {
                 switch (currentScene.baseSceneName)
                 {
@@ -37,6 +37,13 @@ namespace SwanSongExtended.Storms
             }
 
             return st;
+        }
+        static bool IsStormStage(SceneDef currentScene)
+        {
+            if (currentScene.sceneType != SceneType.Stage) return false;
+            if (currentScene.isFinalStage) return false;
+            if (currentScene.sceneAddress == SceneCatalog.GetSceneDefFromSceneName("conduitcanyon").sceneAddress) return false;
+            return true;
         }
         public bool hasBegunStorm
         {

@@ -675,19 +675,13 @@ namespace RiskierRain
                 BarnacleChanges();
             }
 
-            //xi construct
-            if (GetConfigBool(true, "Enemy: Xi Construct"))
-            {
-                XiAIFix();
-            }
-
-            //xi construct
+            //templar
             if (GetConfigBool(true, "Enemy: Templar"))
             {
                 NerfTemplar();
             }
 
-            //xi construct
+            //chimera wisp
             if (GetConfigBool(true, "Enemy: Chimera Wisp"))
             {
                 NerfChimeraWisp();

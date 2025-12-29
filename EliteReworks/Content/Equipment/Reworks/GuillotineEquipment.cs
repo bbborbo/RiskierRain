@@ -224,13 +224,16 @@ namespace EliteReworks.Equipment
                     if (damageReport.victimIsElite)
                     {
                         CharacterBody attackerBody = damageReport.attackerBody;
-                        if (attackerBody != null && attackerBody.executeEliteHealthFraction > 0)
+                        if (attackerBody == null)
+                            return dropChance;
+
+                        if (attackerBody.executeEliteHealthFraction > 0)
                         {
                             dropChance = aspectDropChance;
                         }
 
                         CharacterMaster attackerMaster = damageReport.attackerMaster;
-                        if(attackerMaster != null)
+                        if(attackerMaster != null && attackerBody.equipmentSlot)
                         {
                             if (damageReport.damageInfo.procChainMask.HasProc(ProcType.SureProc) 
                                 || Util.CheckRoll0To1(equipmentActivationChance, attackerMaster.luck))

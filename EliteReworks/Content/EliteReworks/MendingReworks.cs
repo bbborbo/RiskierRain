@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace EliteReworks.EliteReworks
+namespace FruityElites.EliteReworks
 {
     class MendingReworks : EliteReworkBase<MendingReworks>
     {

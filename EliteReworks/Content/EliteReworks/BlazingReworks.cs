@@ -1,10 +1,10 @@
-﻿using EliteReworks.Modules;
+﻿using FruityElites.Modules;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EliteReworks.EliteReworks
+namespace FruityElites.EliteReworks
 {
     class BlazingReworks : EliteReworkBase<BlazingReworks>
     {

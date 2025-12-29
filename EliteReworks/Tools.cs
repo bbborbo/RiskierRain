@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using RoR2;
 
-namespace EliteReworks
+namespace FruityElites
 {
     public static class Tools
     {

@@ -1,11 +1,11 @@
 ﻿using BepInEx.Configuration;
 using BepInEx.Logging;
-using EliteReworks.Modules;
+using FruityElites.Modules;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace EliteReworks
+namespace FruityElites
 {
     public abstract class SharedBase
     {

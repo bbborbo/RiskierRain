@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace EliteReworks.Modules.BaseStates
+namespace FruityElites.Modules.BaseStates
 {
     public abstract class BaseMeleeAttack : BaseSkillState, SteppedSkillDef.IStepSetter
     {

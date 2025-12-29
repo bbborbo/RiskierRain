@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace EliteReworks.Modules {
+namespace FruityElites.Modules {
     internal static class Language
     {
         public static class Styling

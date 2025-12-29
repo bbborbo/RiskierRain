@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// used for things like adding lightning elite bombs to beetle guard's sunder projectile
 /// </summary>
-namespace EliteReworks.Components
+namespace FruityElites.Components
 {
     [RequireComponent(typeof(ProjectileController))]
     class OnHitAllInterval : MonoBehaviour

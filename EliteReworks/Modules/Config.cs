@@ -7,7 +7,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using UnityEngine;
 
-namespace EliteReworks.Modules
+namespace FruityElites.Modules
 {
     //thanks to hifu/pseudopulse for config attribute
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

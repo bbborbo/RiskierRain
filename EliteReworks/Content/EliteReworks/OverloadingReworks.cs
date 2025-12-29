@@ -1,4 +1,4 @@
-﻿using EliteReworks.Modules;
+﻿using FruityElites.Modules;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-namespace EliteReworks.EliteReworks
+namespace FruityElites.EliteReworks
 {
     class OverloadingReworks : EliteReworkBase<OverloadingReworks>
     {

@@ -43,7 +43,7 @@ namespace RiskierRain
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(SwanSongExtended.SwanSongPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SurvivorTweaks.SurvivorTweaksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(EliteReworks.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(FruityElites.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
 

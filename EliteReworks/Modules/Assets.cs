@@ -16,11 +16,11 @@ using System.Linq;
 using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;
 using static R2API.DamageAPI;
-using static EliteReworks.Modules.Language.Styling;
+using static FruityElites.Modules.Language.Styling;
 using static MoreStats.OnHit;
 using static R2API.RecalculateStatsAPI;
 
-namespace EliteReworks.Modules
+namespace FruityElites.Modules
 {
     public static class CommonAssets
     {

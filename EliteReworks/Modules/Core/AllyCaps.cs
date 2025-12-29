@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace EliteReworks.Modules
+namespace FruityElites.Modules
 {
     //ill be real i basically stole this from chaotic skills 
     public class AllyCaps

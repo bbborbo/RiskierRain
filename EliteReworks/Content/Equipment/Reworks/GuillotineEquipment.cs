@@ -14,11 +14,11 @@ using static MoreStats.StatHooks;
 using System.Linq;
 using System.Collections;
 using UnityEngine.AddressableAssets;
-using EliteReworks.Modules;
-using static EliteReworks.Modules.Language.Styling;
+using FruityElites.Modules;
+using static FruityElites.Modules.Language.Styling;
 using RoR2.ContentManagement;
 
-namespace EliteReworks.Equipment
+namespace FruityElites.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {

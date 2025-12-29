@@ -1579,7 +1579,7 @@ namespace SwanSongExtended.Modules
         {
             ContentPacks.buffDefs.Add(buffDef);
         }
-        internal static BuffDef CreateAndAddBuff(string buffName, Sprite buffIcon, Color buffColor, bool canStack, bool isDebuff)
+        internal static BuffDef CreateAndAddBuff(string buffName, Sprite buffIcon, Color buffColor, bool canStack, bool isDebuff, BuffDef.StackingDisplayMethod stackingDisplayMethod = BuffDef.StackingDisplayMethod.Default)
         {
             BuffDef buffDef = ScriptableObject.CreateInstance<BuffDef>();
             buffDef.name = buffName;
@@ -1588,6 +1588,7 @@ namespace SwanSongExtended.Modules
             buffDef.isDebuff = isDebuff;
             buffDef.eliteDef = null;
             buffDef.iconSprite = buffIcon;
+            buffDef.stackingDisplayMethod = stackingDisplayMethod;
 
             AddBuffDef(buffDef);
 

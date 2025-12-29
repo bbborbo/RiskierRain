@@ -76,7 +76,8 @@ namespace SwanSongExtended.Items
                 "bdSuperSolenoidCharge",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/ElementalRings/texBuffElementalRingsReadyIcon.tif").WaitForCompletion(),
                 new Color(0.5f, 0.0f, 0.4f),
-                true, false
+                true, false,
+                BuffDef.StackingDisplayMethod.Percentage
                 );
             turbineReadyBuff = Content.CreateAndAddBuff(
                 "bdSuperSolenoidReady",
@@ -133,7 +134,7 @@ namespace SwanSongExtended.Items
                 if (skill.rechargeStock > 1)
                     effectiveCooldown /= skill.rechargeStock;
 
-                int buffsToGrant = (int)Mathf.Floor(effectiveCooldown * (100 / VoidLaserTurbine.secondsOfChargeRequired));
+                int buffsToGrant = Mathf.CeilToInt(Mathf.Floor(effectiveCooldown) * (100 / VoidLaserTurbine.secondsOfChargeRequired));
                 if(buffsToGrant > 0)
                 {
                     for(int i = 0; i < buffsToGrant; i++)

@@ -141,7 +141,6 @@ namespace SwanSongExtended
 
                 int buffCount = attackerBody.GetBuffCount(DLC1Content.Buffs.KillMoveSpeed);
                 int newBuffCount = Mathf.Min(25, buffCount + itemCount);
-                Debug.Log(newBuffCount);
                 return newBuffCount;
             });
         }

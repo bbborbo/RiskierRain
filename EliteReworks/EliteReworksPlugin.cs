@@ -223,13 +223,6 @@ namespace FruityElites
         }
 
         #region modify items and equipments
-        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
-        {
-            ItemDef def = LoadItemDef(itemName);
-            def = RetierItem(def, tier);
-            return def;
-        }
-
         static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
         {
             if (def != null)

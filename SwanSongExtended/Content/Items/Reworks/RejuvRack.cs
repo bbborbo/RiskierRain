@@ -63,8 +63,8 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.IncreaseHealing));
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_RepeatHeal.RepeatHeal_asset);
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_IncreaseHealing.IncreaseHealing_asset);
 
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.IncreaseHealing);
             On.RoR2.Inventory.GetItemCountEffective_ItemIndex += OverrideItemCount;

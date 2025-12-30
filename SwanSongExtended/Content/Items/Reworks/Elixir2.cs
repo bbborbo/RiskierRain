@@ -90,7 +90,7 @@ namespace SwanSongExtended.Items
             DoLangForItem(brokenItemDef, "Empty Flask", "You feel lightweight.", fullDesc);
             #endregion
 
-            SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/HealingPotion/HealingPotion.asset").WaitForCompletion());
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_HealingPotion.HealingPotion_asset);
             brewActiveBuff = Content.CreateAndAddBuff(
                 "bdBerserkerBrewActive",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion(),//replace me

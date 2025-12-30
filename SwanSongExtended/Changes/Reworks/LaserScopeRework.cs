@@ -24,10 +24,13 @@ namespace SwanSongExtended
         {
             //IL.RoR2.CharacterBody.RecalculateStats += RevokeScopeRights;
             ItemDef itemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/CritDamage/CritDamage.asset").WaitForCompletion();
-            RetierItem(itemDef, ItemTier.Tier2);
-            Sprite sprite = retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Laser_Scope.png");
-            if (sprite)
-                itemDef.pickupIconSprite = sprite;
+            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_CritDamage.CritDamage_asset, ItemTier.Tier2, FixIcon);
+            void FixIcon(ItemDef itemDef)
+            {
+                Sprite sprite = retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Laser_Scope.png");
+                if (sprite)
+                    itemDef.pickupIconSprite = sprite;
+            }
 
             GetStatCoefficients += ScopeCritChance;
             On.RoR2.CharacterBody.OnInventoryChanged += AddScopeItemBehavior;

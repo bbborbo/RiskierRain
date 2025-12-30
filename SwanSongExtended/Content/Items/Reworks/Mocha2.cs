@@ -223,7 +223,10 @@ namespace SwanSongExtended.Items
 
         private void Start()
         {
-            if(remainingTime < Mocha2.stageDuration)
+            if (body.HasBuff(Mocha2.mochaBuffActive))
+                return;
+
+            if (remainingTime < Mocha2.stageDuration)
                 remainingTime = Mocha2.stageDuration;
             SetMochaTime(remainingTime);
         }

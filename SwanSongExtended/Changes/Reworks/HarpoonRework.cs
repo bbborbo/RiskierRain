@@ -57,8 +57,14 @@ namespace SwanSongExtended
         {
             ILCursor c = new ILCursor(il);
 
-            //get the item count location, this is used as a starting point
+            int attackerBodyLoc = 16;
             int itemCountLoc = 54;
+            int buffCountLoc = 86;
+            int iteratorLoc = 91;
+            ILLabel indexOne = c.DefineLabel();
+            ILLabel indexTwo = c.DefineLabel();
+
+            //get the item count location, this is used as a starting point
             bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoveSpeedOnKill"),
                 x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
@@ -73,7 +79,7 @@ namespace SwanSongExtended
             //go back and get the index to change the buff count. we wont change anything yet until the hook is for sure completable
             bool b2 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdcI4(5),
-                x => x.MatchStloc(out _)
+                x => x.MatchStloc(out buffCountLoc)
                 );
             if (!b2)
             {
@@ -81,10 +87,9 @@ namespace SwanSongExtended
                 return;
             }
             c.Index++;
-            int indexOne = c.Index;
+            indexOne = c.MarkLabel();
 
             //get the attacker body location
-            int attackerBodyLoc = 16;
             bool b3 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdloc(out attackerBodyLoc),
                 x => x.MatchLdsfld("RoR2.DLC1Content/Buffs", "KillMoveSpeed"),
@@ -96,8 +101,8 @@ namespace SwanSongExtended
                 return;
             }
 
-            //go to buff adding. if this succeeds we start changing stuff right away
-            bool b4 = c.TryGotoPrev(MoveType.Before,
+            //go to buff adding and save the index again
+            bool b4 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
                 );
             if (!b4)
@@ -105,14 +110,28 @@ namespace SwanSongExtended
                 Log.DebugBreakpoint(nameof(ChangeDuration), 4);
                 return;
             }
-            //this makes it so every buff lasts 1 second
-            c.EmitDelegate<Func<float, float>>((baseBuffDuration) =>
+            indexTwo = c.MarkLabel();
+
+            bool b5 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdloc(out iteratorLoc),
+                x => x.MatchLdloc(buffCountLoc)
+                );
+            if(!b5)
             {
-                return 1;
+                Log.DebugBreakpoint(nameof(ChangeDuration), 5);
+                return;
+            }
+
+            //go to where buffs are added and make the buff duration one second per buff
+            c.GotoLabel(indexTwo);
+            c.Emit(OpCodes.Ldloc, iteratorLoc);
+            c.EmitDelegate<Func<float, int, float>>((baseBuffDuration, iterator) =>
+            {
+                return iterator + 1;
             });
 
             //this makes it so the new buff count is always 1 more than the current buff count
-            c.Index = indexOne;
+            c.GotoLabel(indexOne);
             c.Emit(OpCodes.Ldloc, itemCountLoc);
             c.Emit(OpCodes.Ldloc, attackerBodyLoc);
             c.EmitDelegate<Func<int, int, CharacterBody, int>>((vanillaBuffCount, itemCount, attackerBody) =>
@@ -121,7 +140,9 @@ namespace SwanSongExtended
                     return itemCount;
 
                 int buffCount = attackerBody.GetBuffCount(DLC1Content.Buffs.KillMoveSpeed);
-                return Mathf.Min(25, buffCount + itemCount);
+                int newBuffCount = Mathf.Min(25, buffCount + itemCount);
+                Debug.Log(newBuffCount);
+                return newBuffCount;
             });
         }
     }

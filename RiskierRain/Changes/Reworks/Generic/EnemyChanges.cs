@@ -318,9 +318,12 @@ namespace RiskierRain
             templarBody.baseDamage = templarBaseDamage;
             templarBody.levelDamage = templarBody.baseDamage * 0.2f;
 
-            EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = templarFireInterval * templarBaseAttackSpeed;
-            EntityStates.ClayBruiser.Weapon.MinigunSpinUp.baseDuration = templarSpinUpDuration * templarBaseAttackSpeed;
-            EntityStates.ClayBruiser.Weapon.MinigunSpinDown.baseDuration = templarSpinDownDuration * templarBaseAttackSpeed;
+            RoR2Application.onLoadFinished += () =>
+            {
+                EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = templarFireInterval * templarBaseAttackSpeed;
+                EntityStates.ClayBruiser.Weapon.MinigunSpinUp.baseDuration = templarSpinUpDuration * templarBaseAttackSpeed;
+                EntityStates.ClayBruiser.Weapon.MinigunSpinDown.baseDuration = templarSpinDownDuration * templarBaseAttackSpeed;
+            };
         }
         void NerfChimeraWisp()
         {
@@ -330,12 +333,15 @@ namespace RiskierRain
             wispBody.baseDamage = chimeraWispBaseDamage;
             wispBody.levelDamage = wispBody.baseDamage * 0.2f;
 
-            EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f * chimeraWispBaseAttackSpeed;
-            EntityStates.LunarWisp.FireLunarGuns.baseDuration = 4 * chimeraWispBaseAttackSpeed;
-            EntityStates.LunarWisp.ChargeLunarGuns.baseDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
-            EntityStates.LunarWisp.ChargeLunarGuns.spinUpDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
-            EntityStates.LunarWisp.SeekingBomb.spinUpDuration = 2 * chimeraWispBaseAttackSpeed;
-            EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
+            RoR2Application.onLoadFinished += () =>
+            {
+                EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f * chimeraWispBaseAttackSpeed;
+                EntityStates.LunarWisp.FireLunarGuns.baseDuration = 4 * chimeraWispBaseAttackSpeed;
+                EntityStates.LunarWisp.ChargeLunarGuns.baseDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
+                EntityStates.LunarWisp.ChargeLunarGuns.spinUpDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
+                EntityStates.LunarWisp.SeekingBomb.spinUpDuration = 2 * chimeraWispBaseAttackSpeed;
+                EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
+            };
         }
         #endregion
     }

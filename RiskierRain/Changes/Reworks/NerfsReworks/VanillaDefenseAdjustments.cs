@@ -257,7 +257,7 @@ namespace RiskierRain
 
         private void ChangeFaradayDischargeDamageType(ILCursor c)
         {
-            bool b = c.TryGotoPrev(MoveType.Before,
+            bool b = c.TryGotoNext(MoveType.Before,
                 x => x.MatchStfld<BlastAttack>(nameof(BlastAttack.damageType))
                 );
             if (!b)

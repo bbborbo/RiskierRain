@@ -318,11 +318,20 @@ namespace RiskierRain
             templarBody.baseDamage = templarBaseDamage;
             templarBody.levelDamage = templarBody.baseDamage * 0.2f;
 
-            RoR2Application.onLoadFinished += () =>
+            On.EntityStates.ClayBruiser.Weapon.MinigunFire.OnEnter += (orig, self) =>
             {
                 EntityStates.ClayBruiser.Weapon.MinigunFire.baseFireInterval = templarFireInterval * templarBaseAttackSpeed;
+                orig(self);
+            };
+            On.EntityStates.ClayBruiser.Weapon.MinigunSpinUp.OnEnter += (orig, self) =>
+            {
                 EntityStates.ClayBruiser.Weapon.MinigunSpinUp.baseDuration = templarSpinUpDuration * templarBaseAttackSpeed;
+                orig(self);
+            };
+            On.EntityStates.ClayBruiser.Weapon.MinigunSpinDown.OnEnter += (orig, self) =>
+            {
                 EntityStates.ClayBruiser.Weapon.MinigunSpinDown.baseDuration = templarSpinDownDuration * templarBaseAttackSpeed;
+                orig(self);
             };
         }
         void NerfChimeraWisp()
@@ -333,14 +342,23 @@ namespace RiskierRain
             wispBody.baseDamage = chimeraWispBaseDamage;
             wispBody.levelDamage = wispBody.baseDamage * 0.2f;
 
-            RoR2Application.onLoadFinished += () =>
+            On.EntityStates.LunarWisp.FireLunarGuns.OnEnter += (orig, self) =>
             {
                 EntityStates.LunarWisp.FireLunarGuns.baseFireInterval = 0.1f * chimeraWispBaseAttackSpeed;
                 EntityStates.LunarWisp.FireLunarGuns.baseDuration = 4 * chimeraWispBaseAttackSpeed;
+                orig(self);
+            };
+            On.EntityStates.LunarWisp.ChargeLunarGuns.OnEnter += (orig, self) =>
+            {
                 EntityStates.LunarWisp.ChargeLunarGuns.baseDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
                 EntityStates.LunarWisp.ChargeLunarGuns.spinUpDuration = chimeraWispChargeDuration * chimeraWispBaseAttackSpeed;
+                orig(self);
+            };
+            On.EntityStates.LunarWisp.SeekingBomb.OnEnter += (orig, self) =>
+            {
                 EntityStates.LunarWisp.SeekingBomb.spinUpDuration = 2 * chimeraWispBaseAttackSpeed;
                 EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
+                orig(self);
             };
         }
         #endregion

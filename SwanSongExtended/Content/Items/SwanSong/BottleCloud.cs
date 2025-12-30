@@ -123,8 +123,8 @@ namespace SwanSongExtended.Items
 
     public class CloudBottleBehavior : CharacterBody.ItemBehavior
     {
-        public static float cooldownDuration = 10;
-        public static float cooldownReductionPerStack = 0.15f;
+        public static float cooldownDuration = 16;
+        public static float cooldownReductionPerStack = 0.25f;
         float cooldownTimer = 0;
         float bombRadiusSqr;
 

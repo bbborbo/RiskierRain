@@ -200,9 +200,9 @@ namespace RiskierRain
         public static float faradayChargeIncreaseBase = 1.5f; //1.0f
         public static float faradayChargeIncreaseStack = 0.5f; //0.0f
         public static float faradayDamageBase = 8f; //4.0f
-        public static float faradayDamageStack = 8f; //2.5f
-        public static int faradayRequiredCharge = 50; //25
-        public static int faradayMaxDischarge = 50; //100
+        public static float faradayDamageStack = 5f; //2.5f
+        public static int faradayRequiredCharge = 34; //25
+        public static int faradayMaxDischarge = 66; //100
         public static bool faradayPreventDoubleDischarge = true;
         private static float faradayChargeIncreaseStackInverse => faradayChargeIncreaseStack / (1 + faradayChargeIncreaseStack);
         private void FaradayNerf()
@@ -430,8 +430,7 @@ namespace RiskierRain
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<float, JumpDamageStrikeBodyBehavior, float>>((addedDistance, behavior) =>
             {
-                float multiplier = 1 + faradayChargeIncreaseStack * (behavior.stack - 1);
-                multiplier *= faradayChargeIncreaseBase;
+                float multiplier = Mathf.Pow((1 + faradayChargeIncreaseStack * (behavior.stack - 1)) * faradayChargeIncreaseBase, 0.2f);
                 return addedDistance * multiplier;
             });
         }

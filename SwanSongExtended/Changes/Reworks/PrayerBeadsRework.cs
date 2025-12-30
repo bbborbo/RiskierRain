@@ -19,8 +19,8 @@ namespace SwanSongExtended
             RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_ExtraStatsOnLevelUp.ExtraStatsOnLevelUp_asset, RoR2.ItemTier.Tier2, ChangeTags);
             void ChangeTags(ItemDef itemDef)
             {
-                HG.ArrayUtils.ArrayAppend(ref itemDef.tags, ItemTag.PriorityScrap);
-                HG.ArrayUtils.ArrayAppend(ref itemDef.tags, ItemTag.AIBlacklist);
+                itemDef.tags = new ItemTag[] 
+                    { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.Scrap, ItemTag.SacrificeBlacklist, ItemTag.ExtractorUnitBlacklist, ItemTag.CannotDuplicate };
             }
 
             On.RoR2.CharacterMaster.OnBodyStart += InitializeBeadBuff;
@@ -29,10 +29,10 @@ namespace SwanSongExtended
             On.RoR2.ExperienceManager.AwardExperience += BeadExperience;
 
             LanguageAPI.Add("ITEM_EXTRASTATSONLEVELUP_PICKUP", 
-                "Prioritized when used with <style=cIsHealing>Uncommon</style> 3D Printers. Permanently increase ALL stats when removed.");
+                "Prioritized when used with <style=cIsHealing>Uncommon</style> 3D Printers. Permanently increase ALL stats after removal.");
             LanguageAPI.Add("ITEM_EXTRASTATSONLEVELUP_DESC", 
                 $"Prioritized when used with <style=cIsHealing>Uncommon</style> 3D Printers. " +
-                $"On removal, permanently grants a {ConvertDecimal(beadsPermanentStatBonus)} increase to " +
+                $"After removal, permanently grants a {ConvertDecimal(beadsPermanentStatBonus)} increase to " +
                 $"<style=cIsUtility>experience gain</style>, " +
                 $"<style=cIsHealing>health</style>, <style=cIsHealing>shield</style>, " +
                 $"<style=cIsHealing>regeneration</style>, and <style=cIsDamage>damage</style>.");

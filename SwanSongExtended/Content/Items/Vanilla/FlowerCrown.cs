@@ -15,16 +15,16 @@ namespace SwanSongExtended.Items
         public static float shieldPercentBase = 0.12f;
         public static float rechargeRateIncrease = 1.5f;
 
-        float moveSpeedIncreaseBase = 0.15f;
-        float moveSpeedIncreaseStack = 0.15f;
-        int armorIncreaseBase = 25;
-        int armorIncreaseStack = 25;
+        float moveSpeedIncreaseBase = 0.18f;
+        float moveSpeedIncreaseStack = 0.18f;
+        int armorIncreaseBase = 20;
+        int armorIncreaseStack = 30;
 
         public override string ItemName => "Flower Crown";
 
         public override string ItemLangTokenName => "FLOWERCROWN";
 
-        public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, increase armor and movement speed.";
+        public override string ItemPickupDesc => "Increase shield recharge rate. Gain armor while shields are active, or gain movement speed.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
             $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +

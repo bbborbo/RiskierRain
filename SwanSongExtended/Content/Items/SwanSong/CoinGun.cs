@@ -124,6 +124,17 @@ What happened to all of our gold?";
             //On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
             On.RoR2.HealthComponent.TakeDamageProcess += GoldGunDamageBoost;
             GetStatCoefficients += this.GiveBonusDamage;
+            On.RoR2.CharacterMaster.OnBodyStart += GoldenGunBonusMoney;
+        }
+
+        private void GoldenGunBonusMoney(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
+        {
+            orig(self, body);
+            if(GetCount(body) > 0)
+            {
+                uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
+                self.GiveMoney(freeMoney);
+            }
         }
 
         private void GiveBonusDamage(CharacterBody sender, StatHookEventArgs args)
@@ -220,7 +231,7 @@ What happened to all of our gold?";
             UpdateCurrentGold(master.money);
         }
 
-        private void UpdateCurrentGold(uint money)
+        internal void UpdateCurrentGold(uint money)
         {
             currentMoney = money;
             if (CoinGun.includeDeploys)
@@ -283,10 +294,7 @@ What happened to all of our gold?";
         private void Start()
         {
             master = body.master;
-
-            uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
-            body.master.GiveMoney(freeMoney);
-            UpdateCurrentGold(freeMoney);
+            UpdateCurrentGold(master.money);
         }
         void OnDestroy()
         {

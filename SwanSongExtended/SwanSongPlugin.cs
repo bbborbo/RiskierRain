@@ -262,6 +262,10 @@ namespace SwanSongExtended
             {
                 DeworkResonanceDisc();
             }
+            if (GetConfigBool(true, "Reworks : Prayer Beads"))
+            {
+                PrayerBeadsRework();
+            }
             //interactables bc they need to load after items:
             //InitializeInteractables();
             //need to do this after interactablestuff

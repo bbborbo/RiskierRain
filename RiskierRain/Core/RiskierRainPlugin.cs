@@ -207,6 +207,7 @@ namespace RiskierRain
             // mobility
             GoatHoofNerf();
             EnergyDrinkNerf();
+            FaradayNerf();
 
             // defense
             TeddyChanges();

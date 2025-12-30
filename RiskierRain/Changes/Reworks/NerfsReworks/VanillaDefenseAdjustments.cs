@@ -197,7 +197,7 @@ namespace RiskierRain
 
         public static float faradayMaxMoveSpeed = 1.0f; //1.6f
         public static float faradayMaxJumpStrength = 1.5f; //2.0f
-        public static float faradayChargeIncreaseBase = 1.0f; //1.0f
+        public static float faradayChargeIncreaseBase = 1.5f; //1.0f
         public static float faradayChargeIncreaseStack = 0.5f; //0.0f
         public static float faradayDamageBase = 8f; //4.0f
         public static float faradayDamageStack = 8f; //2.5f

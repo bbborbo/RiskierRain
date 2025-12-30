@@ -63,7 +63,7 @@ namespace FruityElites.Equipment
         //"Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
 
         public override string EquipmentFullDescription => $"Instantly kill Elite monsters below {RedText($"{ConvertDecimal(newExecutionThresholdBase)} max health")}. " +
-            $"Gain a {UtilityColor(ConvertDecimal(aspectDropChance) + "chance")} to claim the power of slain Elite monsters.";
+            $"Gain a {UtilityColor(ConvertDecimal(aspectDropChance) + " chance")} to claim the power of slain Elite monsters.";
         //$"Target a monster, allowing them to be " +
         //$"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +
         //$"{StackColor($"(+{stackThreshold} per Elite tier)")}. " +

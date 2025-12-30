@@ -32,8 +32,8 @@ namespace SwanSongExtended.Items
             $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
             $"While shields are active, increase " +
             $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase}</style> " +
-            $"<style=cStack>(+{armorIncreaseStack} per stack)</style>, " +
-            $"and <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
+            $"<style=cStack>(+{armorIncreaseStack} per stack)</style>. " +
+            $"While shields are down, increase <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 
         public override string ItemLore => @"Order: Flower Crown
@@ -90,6 +90,9 @@ Thank you for always sending us gifts. I made some of them into this flower crow
                     if (Fuse.HasShield(hc))
                     {
                         args.armorAdd += armorIncreaseBase + armorIncreaseStack * (itemCount - 1);
+                    }
+                    else
+                    {
                         args.moveSpeedMultAdd += moveSpeedIncreaseBase + moveSpeedIncreaseStack * (itemCount - 1);
                     }
                 }

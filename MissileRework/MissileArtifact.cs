@@ -137,6 +137,17 @@ namespace MissileRework
                 }
                 return false;
             };
+            //goobo
+            On.RoR2.EquipmentSlot.FireGummyClone += (orig, self) => {
+                if (orig(self))
+                {
+                    if (self.characterBody && self.characterBody.master && !self.characterBody.master.IsDeployableLimited(DeployableSlot.GummyClone))
+                        MissileArtifact_FireEquipmentSimple(self, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
+                    return true;
+                }
+                return false;
+            };
+
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.OnEnter += MissileArtifact_ViendCorruptSecondary;

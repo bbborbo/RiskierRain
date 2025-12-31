@@ -1,6 +1,7 @@
 ﻿using MonoMod.Cil;
 using R2API;
 using RoR2;
+using RoR2.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Security;
@@ -28,13 +29,13 @@ namespace MissileRework
 
         private void DisableICBM()
         {
-            icbmItemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/MoreMissile/MoreMissile.asset").WaitForCompletion();
-            if (icbmItemDef != null)
+            AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_MoreMissile.MoreMissile_asset);
+            AssetAsyncReferenceManager<ItemDef>.LoadAsset(ref1).Completed += (ctx) =>
             {
-                icbmItemDef.deprecatedTier = ItemTier.NoTier;
-                icbmItemDef.tier = ItemTier.NoTier;
-                //icbmItemDef.deprecatedTier = ItemTier.NoTier;
-            }
+                ItemDef itemDef = ctx.Result;
+                itemDef.tier = ItemTier.NoTier;
+                itemDef.deprecatedTier = ItemTier.NoTier;
+            };
         }
     }
 }

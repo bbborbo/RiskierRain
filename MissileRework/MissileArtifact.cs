@@ -148,6 +148,13 @@ namespace MissileRework
             On.EntityStates.GrandParentBoss.FireSecondaryProjectile.Fire += MissileArtifact_GrandpaVacuum;
             //child spark
             On.EntityStates.ChildMonster.SparkBallFire.FireBomb += MissileArtifact_ChildSpark;
+            //gup
+            On.EntityStates.Gup.BaseSplitDeath.OnEnter += GupDeathEnter;
+        }
+        private void GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
+        {
+            self.spawnCount = 3;
+            orig(self);
         }
 
         private void MissileArtifact_ChildSpark(On.EntityStates.ChildMonster.SparkBallFire.orig_FireBomb orig, EntityStates.ChildMonster.SparkBallFire self)

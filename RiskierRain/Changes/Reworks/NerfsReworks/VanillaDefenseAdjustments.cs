@@ -460,11 +460,11 @@ namespace RiskierRain
         public static float scytheBaseHeal = 0f; //4
         public static float scytheStackHeal = 5f; //4
 
-        public static float monsterToothFlatHeal = 10;
-        public static float monsterToothPercentHeal = 0.00f;
+        public static float monsterToothFlatHeal = 10; //8
+        public static float monsterToothPercentHeal = 0.00f; //0.02
 
-        public static float medkitFlatHeal = 40;
-        public static float medkitPercentHeal = 0.00f;
+        public static float medkitFlatHeal = 40; //20
+        public static float medkitPercentHeal = 0.00f; //0.05
 
         public static float notMovingRequirement = 0.1f;
         public static float fungusHealInterval = 0.125f;
@@ -499,10 +499,9 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             int countLoc = -1;
-            c.GotoNext(MoveType.AfterLabel,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth")
-                );
-            c.GotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.AfterLabel,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -534,36 +533,57 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             int countLoc = -1;
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit")
-                );
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 1);
+                return;
+            }
 
             //match to flat heal location
-            c.GotoNext(MoveType.Before,
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(20),
                 x => x.MatchStloc(out _)
                 );
-            c.Emit(OpCodes.Ldloc, countLoc);
-            c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
+            if (b2)
             {
-                float newFlatHealAmt = medkitFlatHeal * (itemCount);
+                c.Index++;
+                c.Emit(OpCodes.Ldloc, countLoc);
+                c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
+                {
+                    float newFlatHealAmt = medkitFlatHeal * (itemCount);
 
-                return newFlatHealAmt;
-            });
+                    return newFlatHealAmt;
+                });
+            }
+            else
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 2);
+            }
 
 
             //match to percent heal location
-            c.GotoNext(MoveType.Before,
-                x => x.MatchStloc(out _)
+            bool b3 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth"),
+                x => x.MatchLdcR4(0.05f)
                 );
-            c.EmitDelegate<Func<float, float>>((currentHealAmt) =>
+            if (b3)
             {
-                float newPercentHealAmt = medkitPercentHeal;
+                c.EmitDelegate<Func<float, float>>((currentHealAmt) =>
+                {
+                    float newPercentHealAmt = medkitPercentHeal;
 
-                return newPercentHealAmt;
-            });
+                    return newPercentHealAmt;
+                });
+            }
+            else
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 3);
+            }
         }
 
         private void ScytheNerf(ILContext il)

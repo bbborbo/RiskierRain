@@ -29,6 +29,7 @@ using EntityStates.Mage.Weapon;
 using EntityStates.Loader;
 using EntityStates.MiniMushroom;
 using EntityStates.ChildMonster;
+using RoR2.Orbs;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -129,7 +130,7 @@ namespace MissileRework
                 return false;
             };
             //molotov
-            On.RoR2.EquipmentSlot.FireBlackhole += (orig, self) => {
+            On.RoR2.EquipmentSlot.FireMolotov += (orig, self) => {
                 if (orig(self))
                 {
                     MissileArtifact_FireEquipmentSimple(self, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
@@ -165,6 +166,12 @@ namespace MissileRework
             On.EntityStates.FalseSon.LunarSpikes.FireLunarSpike += MissileArtifact_SonSurvivorSpike;
             //chef cleavers
             On.EntityStates.Chef.Dice.OnEnter += MissileArtifact_ChefCleaver;
+            //acrid spit
+            On.EntityStates.Croco.FireSpit.OnEnter += (orig, self) =>
+            {
+                orig(self);
+                MissileArtifact_FireEquipmentSimple(self.characterBody.equipmentSlot, self.damageStat, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.CrocoSpit_asset);
+            };
 
             //mushrum spore grenade
             On.EntityStates.MiniMushroom.SporeGrenade.FireGrenade += MissileArtifact_MushrumSporeGrenade;

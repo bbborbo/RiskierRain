@@ -115,7 +115,7 @@ namespace MissileRework
             On.RoR2.EquipmentSlot.FireBfg += (orig, self) => {
                 if (orig(self))
                 {
-                    MissileArtifact_FireEquipmentSimple(self, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
+                    MissileArtifact_FireEquipmentSimple(self.characterBody, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
                     return true;
                 }
                 return false;
@@ -124,7 +124,7 @@ namespace MissileRework
             On.RoR2.EquipmentSlot.FireBlackhole += (orig, self) => {
                 if (orig(self))
                 {
-                    MissileArtifact_FireEquipmentSimple(self, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
+                    MissileArtifact_FireEquipmentSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
                     return true;
                 }
                 return false;
@@ -133,7 +133,7 @@ namespace MissileRework
             On.RoR2.EquipmentSlot.FireMolotov += (orig, self) => {
                 if (orig(self))
                 {
-                    MissileArtifact_FireEquipmentSimple(self, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
+                    MissileArtifact_FireEquipmentSimple(self.characterBody, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
                     return true;
                 }
                 return false;
@@ -143,7 +143,7 @@ namespace MissileRework
                 if (orig(self))
                 {
                     if (self.characterBody && self.characterBody.master && !self.characterBody.master.IsDeployableLimited(DeployableSlot.GummyClone))
-                        MissileArtifact_FireEquipmentSimple(self, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
+                        MissileArtifact_FireEquipmentSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
                     return true;
                 }
                 return false;
@@ -170,8 +170,10 @@ namespace MissileRework
             On.EntityStates.Croco.FireSpit.OnEnter += (orig, self) =>
             {
                 orig(self);
-                MissileArtifact_FireEquipmentSimple(self.characterBody.equipmentSlot, self.damageStat, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.CrocoSpit_asset);
+                MissileArtifact_FireEquipmentSimple(self.characterBody, self.damageStat, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.CrocoSpit_asset);
             };
+            //huntress arrow
+            IL.EntityStates.Huntress.HuntressWeapon.FireSeekingArrow.FireOrbArrow += MissileArtifact_FireHuntressSeekingArrow;
 
             //mushrum spore grenade
             On.EntityStates.MiniMushroom.SporeGrenade.FireGrenade += MissileArtifact_MushrumSporeGrenade;
@@ -196,26 +198,135 @@ namespace MissileRework
             //child spark
             On.EntityStates.ChildMonster.SparkBallFire.FireBomb += MissileArtifact_ChildSpark;
             //gup
-            On.EntityStates.Gup.BaseSplitDeath.OnEnter += GupDeathEnter;
+            On.EntityStates.Gup.BaseSplitDeath.OnEnter += MissileArtifact_GupDeathEnter;
+            //mithrix
+            On.EntityStates.BrotherMonster.FistSlam.OnEnter += MissileArtifact_BrotherFistSlam;
+            On.EntityStates.BrotherMonster.WeaponSlam.OnEnter += MissileArtifact_BrotherWeaponSlam;
+            On.EntityStates.BrotherMonster.UltChannelState.OnEnter += MissileArtifact_BrotherUltChannelState;
+            //greater wisp
+            On.EntityStates.GreaterWispMonster.FireCannons.OnEnter += MissileArtifact_GreaterWispFireCannons;
         }
 
-        private void MissileArtifact_FireEquipmentSimple(EquipmentSlot self, float damageCoefficient, string assetGuid)
+        private void MissileArtifact_FireHuntressSeekingArrow(ILContext il)
         {
-            if (self.hasAuthority && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            ILCursor c = new ILCursor(il);
+
+            int orbLoc = 0;
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdloc(out orbLoc),
+                x => x.MatchCallOrCallvirt<RoR2.Orbs.OrbManager>(nameof(RoR2.Orbs.OrbManager.AddOrb))
+                );
+            if (!b)
+            {
+                Debug.LogError("IABM Huntress fail");
+                return;
+            }
+            c.Emit(OpCodes.Ldloc, orbLoc);
+            c.EmitDelegate<Action<Orb>>((orb) =>
+            {
+                OrbManager.instance.AddOrb(orb);
+                OrbManager.instance.AddOrb(orb);
+            });
+        }
+
+        private void MissileArtifact_GreaterWispFireCannons(On.EntityStates.GreaterWispMonster.FireCannons.orig_OnEnter orig, EntityStates.GreaterWispMonster.FireCannons self)
+        {
+            orig(self);
+            if (!RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+                return;
+            Ray aimRay = self.GetAimRay();
+            if (self.isAuthority && self.modelLocator && self.modelLocator.modelTransform)
+            {
+                ChildLocator component = self.modelLocator.modelTransform.GetComponent<ChildLocator>();
+                if (component)
+                {
+                    int childIndex = component.FindChildIndex("MuzzleLeft");
+                    int childIndex2 = component.FindChildIndex("MuzzleRight");
+                    Transform transform = component.FindChild(childIndex);
+                    Transform transform2 = component.FindChild(childIndex2);
+                    if (transform)
+                    {
+                        FireProjectilesFromTransform(transform);
+                    }
+                    if (transform2)
+                    {
+                        FireProjectilesFromTransform(transform2);
+                    }
+                }
+            }
+
+            void FireProjectilesFromTransform(Transform transform)
+            {
+                if (transform == null)
+                    return;
+
+                FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
+                {
+                    projectilePrefab = self.projectilePrefab,
+                    position = transform.position,
+                    rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
+                    owner = self.gameObject,
+                    damage = self.damageStat * self.damageCoefficient,
+                    crit = Util.CheckRoll(self.characterBody.crit, self.characterBody.master)
+                };
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = rhs;// Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
+        }
+
+        private void MissileArtifact_BrotherFistSlam(On.EntityStates.BrotherMonster.FistSlam.orig_OnEnter orig, EntityStates.BrotherMonster.FistSlam self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                EntityStates.BrotherMonster.FistSlam.waveProjectileCount *= 2;
+            }
+        }
+
+        private void MissileArtifact_BrotherUltChannelState(On.EntityStates.BrotherMonster.UltChannelState.orig_OnEnter orig, EntityStates.BrotherMonster.UltChannelState self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                EntityStates.BrotherMonster.UltChannelState.waveProjectileCount += 2;
+            }
+        }
+
+        private void MissileArtifact_BrotherWeaponSlam(On.EntityStates.BrotherMonster.WeaponSlam.orig_OnEnter orig, EntityStates.BrotherMonster.WeaponSlam self)
+        {
+            orig(self);
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                EntityStates.BrotherMonster.WeaponSlam.waveProjectileCount += 2;
+            }
+        }
+
+        private void MissileArtifact_FireEquipmentSimple(CharacterBody body, float damageCoefficient, string assetGuid)
+        {
+            if (body.hasAuthority && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
             {
                 GameObject projectilePrefab = Addressables.LoadAssetAsync<GameObject>(assetGuid).WaitForCompletion();
-                Ray aimRay = self.GetAimRay();
+                Ray aimRay = body.equipmentSlot.GetAimRay();
 
                 FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
                 {
                     projectilePrefab = projectilePrefab,
                     position = aimRay.origin,
                     rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                    owner = self.gameObject,
-                    damage = self.characterBody.damage * damageCoefficient,
-                    crit = Util.CheckRoll(self.characterBody.crit, self.characterBody.master)
+                    owner = body.gameObject,
+                    damage = body.damage * damageCoefficient,
+                    crit = Util.CheckRoll(body.crit, body.master)
                 };
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                //ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
                 Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
                 Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
@@ -230,7 +341,7 @@ namespace MissileRework
             }
         }
 
-        private void GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
+        private void MissileArtifact_GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
         {
             self.spawnCount = 3;
             orig(self);

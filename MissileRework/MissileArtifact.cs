@@ -102,12 +102,23 @@ namespace MissileRework
 
         private void DoMissileArtifactEffects()
         {
+            //construct, pest, varnacle, phase round, scrap launcher
             On.EntityStates.GenericProjectileBaseState.FireProjectile += MissileArtifact_FireProjectile;
+            //hooks of heresy
             On.EntityStates.Mage.Weapon.BaseThrowBombState.Fire += MissileArtifact_ThrowBomb;
 
             //shuriken
             On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += MissileArtifact_Shuriken;
 
+            //preon
+            On.RoR2.EquipmentSlot.FireBfg += (orig, self) => {
+                if (orig(self))
+                {
+                    MissileArtifact_FireEquipmentSimple(self, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
+                    return true;
+                }
+                return false;
+            };
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.OnEnter += MissileArtifact_ViendCorruptSecondary;
@@ -151,6 +162,38 @@ namespace MissileRework
             //gup
             On.EntityStates.Gup.BaseSplitDeath.OnEnter += GupDeathEnter;
         }
+
+        private void MissileArtifact_FireEquipmentSimple(EquipmentSlot self, float damageCoefficient, string assetGuid)
+        {
+            if (self.hasAuthority && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                GameObject projectilePrefab = Addressables.LoadAssetAsync<GameObject>(assetGuid).WaitForCompletion();
+                Ray aimRay = self.GetAimRay();
+
+                FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
+                {
+                    projectilePrefab = projectilePrefab,
+                    position = aimRay.origin,
+                    rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
+                    owner = self.gameObject,
+                    damage = self.characterBody.damage * damageCoefficient,
+                    crit = Util.CheckRoll(self.characterBody.crit, self.characterBody.master)
+                };
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+
+                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
+                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
+            }
+        }
+
         private void GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
         {
             self.spawnCount = 3;

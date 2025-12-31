@@ -119,6 +119,24 @@ namespace MissileRework
                 }
                 return false;
             };
+            //primordial cube
+            On.RoR2.EquipmentSlot.FireBlackhole += (orig, self) => {
+                if (orig(self))
+                {
+                    MissileArtifact_FireEquipmentSimple(self, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
+                    return true;
+                }
+                return false;
+            };
+            //molotov
+            On.RoR2.EquipmentSlot.FireBlackhole += (orig, self) => {
+                if (orig(self))
+                {
+                    MissileArtifact_FireEquipmentSimple(self, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
+                    return true;
+                }
+                return false;
+            };
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.OnEnter += MissileArtifact_ViendCorruptSecondary;

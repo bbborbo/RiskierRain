@@ -101,6 +101,44 @@ namespace MissileRework
             //});
         }
 
+
+        public void FireWarfareProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread)
+        {
+            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
+                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
+
+                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
+
+                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(spread, axis) * aimRay.direction);
+                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-spread, axis) * aimRay.direction);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
+                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
+            }
+        }
+
+        private void MissileArtifact_FireEquipmentSimple(CharacterBody body, float damageCoefficient, string assetGuid)
+        {
+            if (body.hasAuthority && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
+            {
+                GameObject projectilePrefab = Addressables.LoadAssetAsync<GameObject>(assetGuid).WaitForCompletion();
+                Ray aimRay = body.equipmentSlot.GetAimRay();
+
+                FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
+                {
+                    projectilePrefab = projectilePrefab,
+                    position = aimRay.origin,
+                    rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
+                    owner = body.gameObject,
+                    damage = body.damage * damageCoefficient,
+                    crit = Util.CheckRoll(body.crit, body.master)
+                };
+
+                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+            }
+        }
+
         private void DoMissileArtifactEffects()
         {
             //construct, pest, varnacle, phase round, scrap launcher
@@ -310,37 +348,6 @@ namespace MissileRework
             }
         }
 
-        private void MissileArtifact_FireEquipmentSimple(CharacterBody body, float damageCoefficient, string assetGuid)
-        {
-            if (body.hasAuthority && RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
-            {
-                GameObject projectilePrefab = Addressables.LoadAssetAsync<GameObject>(assetGuid).WaitForCompletion();
-                Ray aimRay = body.equipmentSlot.GetAimRay();
-
-                FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                {
-                    projectilePrefab = projectilePrefab,
-                    position = aimRay.origin,
-                    rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                    owner = body.gameObject,
-                    damage = body.damage * damageCoefficient,
-                    crit = Util.CheckRoll(body.crit, body.master)
-                };
-                //ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
-
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
-
-                FireProjectileInfo fireProjectileInfo3 = fireProjectileInfo;
-                fireProjectileInfo3.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-projectileSpread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo3);
-            }
-        }
-
         private void MissileArtifact_GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
         {
             self.spawnCount = 3;
@@ -401,22 +408,6 @@ namespace MissileRework
                     }
                     ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
                 }
-            }
-        }
-
-        public void FireWarfareProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread)
-        {
-            if (RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact))
-            {
-                Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
-
-                FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
-
-                fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(spread, axis) * aimRay.direction);
-                fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-spread, axis) * aimRay.direction);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
             }
         }
 

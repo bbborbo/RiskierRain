@@ -42,8 +42,8 @@ namespace SwanSongExtended
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BetterSoulCost.SoulCostPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(BarrierRework.BarrierReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -146,6 +146,13 @@ namespace SwanSongExtended
             new Modules.ContentPacks().Initialize();
 
             ////refer to guide on how to build and distribute your mod with the proper folders
+        }
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
         }
 
         private void CreateExpansionDef()

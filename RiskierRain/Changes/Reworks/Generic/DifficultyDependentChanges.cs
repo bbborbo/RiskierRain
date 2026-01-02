@@ -159,8 +159,8 @@ namespace RiskierRain
             Run.ambientLevelCap = ambientLevelCap;
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
-            IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
+            IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
         }
 
         private void CorrectDifficultyBar(ILContext il)
@@ -175,7 +175,7 @@ namespace RiskierRain
             }
             c.EmitDelegate<Func<float, float>>((levelIn) =>
             {
-                if (Run.instance.selectedDifficulty == DifficultyIndex.Easy)
+                if (Run.instance.selectedDifficulty != DifficultyIndex.Easy)
                     return levelIn;
                 return levelIn + 3f;
             });

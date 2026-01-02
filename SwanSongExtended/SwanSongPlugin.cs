@@ -58,7 +58,7 @@ namespace SwanSongExtended
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
 
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DotAPI))]
+    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DotAPI), nameof(DifficultyAPI))]
     [BepInPlugin(guid, modName, version)]
     public partial class SwanSongPlugin : BaseUnityPlugin
     {
@@ -123,6 +123,7 @@ namespace SwanSongExtended
             Log.Init(Logger);
 
             CreateExpansionDef();
+            CreateDifficultyDef();
             RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();

@@ -80,7 +80,7 @@ namespace SwanSongExtended.Storms
 
             float a = drizzleStormDelayMinutes;
             float b = drizzleStormWarningMinutes;
-            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard)
+            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard || un.instance.selectedDifficulty == SwanSongPlugin.difficultyIndexExtinction)
             {
                 a = monsoonStormDelayMinutes;
                 b = monsoonStormWarningMinutes;

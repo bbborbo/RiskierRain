@@ -69,24 +69,32 @@ namespace RiskierRain
         {
             orig(self);
             float particleScale = 1f;
-            switch (Run.instance.selectedDifficulty)
+            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
+            if(selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
             {
-                default:
-                    particleScale = eclipseTeleParticleRadius;
-                    break;
-                case RoR2.DifficultyIndex.Hard:
-                    particleScale = hardTeleParticleRadius;
-                    break;
-                case RoR2.DifficultyIndex.Normal:
-                    particleScale = normalTeleParticleRadius;
-                    break;
-                case RoR2.DifficultyIndex.Easy:
-                    particleScale = easyTeleParticleRadius;
-                    break;
-                case RoR2.DifficultyIndex.Count:
-                    break;
-                case RoR2.DifficultyIndex.Invalid:
-                    break;
+                particleScale = 0;
+            }
+            else
+            {
+                switch (Run.instance.selectedDifficulty)
+                {
+                    default:
+                        particleScale = eclipseTeleParticleRadius;
+                        break;
+                    case RoR2.DifficultyIndex.Hard:
+                        particleScale = hardTeleParticleRadius;
+                        break;
+                    case RoR2.DifficultyIndex.Normal:
+                        particleScale = normalTeleParticleRadius;
+                        break;
+                    case RoR2.DifficultyIndex.Easy:
+                        particleScale = easyTeleParticleRadius;
+                        break;
+                    case RoR2.DifficultyIndex.Count:
+                        break;
+                    case RoR2.DifficultyIndex.Invalid:
+                        break;
+                }
             }
 
 
@@ -112,6 +120,9 @@ namespace RiskierRain
                 return difficultyBoost;
 
             DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
+            if (selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
+                return eclipseDifficultyBoost;
+
             switch (selectedDifficulty)
             {
                 default:

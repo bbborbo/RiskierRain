@@ -25,7 +25,7 @@ namespace SwanSongExtended
         public static string extinctionDescExtra =
             $"<style=cStack>\n>Difficulty Scaling: <style=cArtifact>+100%</style>" +
             $"\n>Tier 2 Elites appear starting on <style=cArtifact>Stage 4</style>" +
-            $"\nTeleporter Visuals: <style=cArtifact>OFF</style>" +
+            $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
             $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>";
         public static string extinctionDesc =
             extinctionDescBase + extinctionDescExtra;
@@ -42,7 +42,7 @@ namespace SwanSongExtended
                 countsAsHardMode: true
                 );
 
-            DifficultyAPI.AddDifficulty(difficultyDefExtinction);
+            difficultyIndexExtinction = DifficultyAPI.AddDifficulty(difficultyDefExtinction);
 
             LanguageAPI.Add(difficultyToken + "_NAME", extinctionName);
             LanguageAPI.Add(difficultyToken + "_DESC", extinctionDesc);
@@ -53,8 +53,12 @@ namespace SwanSongExtended
         void ExtinctionCustomHooks()
         {
             if (is2R4RLoaded)
+            {
+                Log.Error("Extinction no custom hooks");
                 return;
+            }
 
+            Log.Error("Extinction custom hooks");
             LanguageAPI.Add(difficultyToken + "_DESC", extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra);
 
             foreach (CombatDirector.EliteTierDef etd in EliteAPI.VanillaEliteTiers)//CombatDirector.eliteTiers)

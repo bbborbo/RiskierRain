@@ -81,7 +81,7 @@ namespace SwanSongExtended.Interactables
             cd.onSpawnedServer.AddPersistentListener(OnGalleryDirectorSpawnServer);
             cd.combatSquad = cs;
             ConstructCombatShrineBehavior ccsb = interaction.gameObject.AddComponent<ConstructCombatShrineBehavior>();
-            ccsb.baseMonsterCredit = 200; // quote orange, "//this might be way too much well see :3"
+            ccsb.baseMonsterCredit = 40; // quote orange, "//this might be way too much well see :3"
             ccsb.maxPurchaseCount = 1;
             ccsb.monsterCreditCoefficientPerPurchase = 2;
 

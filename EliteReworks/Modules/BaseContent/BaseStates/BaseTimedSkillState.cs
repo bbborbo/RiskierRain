@@ -1,7 +1,7 @@
 ﻿using EntityStates;
 using System;
 
-namespace EliteReworks.Modules.BaseStates
+namespace FruityElites.Modules.BaseStates
 {
     //see example skills below
     public class BaseTimedSkillState : BaseSkillState

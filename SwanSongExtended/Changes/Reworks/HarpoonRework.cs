@@ -17,158 +17,132 @@ namespace SwanSongExtended
 {
     public partial class SwanSongPlugin
     {
-        public static float harpoonBarrierBase = 6;
-        public static float harpoonBarrierStack = 6;
-        public static float harpoonTargetTime = 15;
-        public static float harpoonDecayReduction = 0.2f;
-
-        public static Material harpoonTargetMaterial;
-
         public void HuntersHarpoonRework()
         {
-            harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
-
-            IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHarpoonRights;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddHarpoonBehavior;
-            GetHitBehavior += HarpoonOnHit;
-            GetMoreStatCoefficients += HarpoonDecay;
-            LanguageAPI.Add("ITEM_MOVESPEEDONKILL_PICKUP", "Target a nearby enemy, gaining barrier on hit.");
-            LanguageAPI.Add("ITEM_MOVESPEEDONKILL_DESC", $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>." +
-                $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
-                $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
-                $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.");
+            IL.RoR2.CharacterBody.RecalculateStats += ChangeMoveSpeed;
+            IL.RoR2.GlobalEventManager.OnCharacterDeath += ChangeDuration;
+            LanguageAPI.Add("ITEM_MOVESPEEDONKILL_DESC", 
+                "Killing an enemy increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>125%</style> " +
+                "for <style=cIsUtility>1</style> <style=cStack>(+1 per stack)</style> seconds. " +
+                "Consecutive kills increase buff duration to up to 25 seconds.");
         }
 
-        private void HarpoonDecay(CharacterBody sender, MoreStatHookEventArgs args)
+        public static void ChangeMoveSpeed(ILContext il)
         {
-            if(sender.inventory && sender.inventory)
+            ILCursor c = new(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdsfld("RoR2.DLC1Content/Buffs", "KillMoveSpeed"),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetBuffCount))
+                );
+            if(!b)
             {
-                int count = sender.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-                if (count > 0)
-                    args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
+                Log.DebugBreakpoint(nameof(ChangeMoveSpeed));
+                return;
             }
+
+            c.Next.Operand = 1.25f;
+            c.Index += 4;
+            c.EmitDelegate<Func<int, int>>((buffCount) =>
+             {
+                 if (buffCount > 0)
+                    return 1;
+                 return 0;
+             });
         }
 
-        public static Material CreateMatRecolor(Color32 blueEquivalent)
-        {
-            var mat = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/Huntress/matHuntressFlashExpanded.mat").WaitForCompletion());
-
-            mat.SetColor("_TintColor", blueEquivalent);
-            mat.SetInt("_Cull", 1);
-
-            return mat;
-        }
-
-        private void HarpoonOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
-        {
-            Inventory inv = attackerBody.inventory;
-            HealthComponent hc = attackerBody.healthComponent;
-            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(CommonAssets.harpoonDebuff))
-            {
-                int harpoonCount = inv.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-                if(harpoonCount > 0)
-                {
-                    float barrierGrant = harpoonBarrierBase + harpoonBarrierStack * (harpoonCount - 1);
-                    hc.AddBarrierAuthority(barrierGrant * damageInfo.procCoefficient);
-                }
-            }
-        }
-
-        private void AddHarpoonBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            int maskCount = self.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-            self.AddItemBehavior<HuntersHarpoonBehavior>(maskCount);
-        }
-
-        private void RevokeHarpoonRights(ILContext il)
+        private void ChangeDuration(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            int attackerBodyLoc = 16;
+            int itemCountLoc = 54;
+            int buffCountLoc = 86;
+            int iteratorLoc = 91;
+            ILLabel indexOne = c.DefineLabel();
+            ILLabel indexTwo = c.DefineLabel();
+
+            //get the item count location, this is used as a starting point
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoveSpeedOnKill"),
-                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
+                x => x.MatchStloc(out itemCountLoc)
                 );
-            c.Emit(OpCodes.Pop);
-            c.Emit(OpCodes.Ldc_I4, 0);
-        }
-    }
-    public class HuntersHarpoonBehavior : RoR2.CharacterBody.ItemBehavior
-    {
-        public static float baseHauntRadius = 35;
-        public static float hauntRetryTime = 1;
-        float hauntStopwatch = 0;
-        void Start()
-        {
-            hauntStopwatch = SwanSongPlugin.harpoonTargetTime;
-        }
-        private void FixedUpdate()
-        {
-            hauntStopwatch += Time.fixedDeltaTime;
-            if (hauntStopwatch >= SwanSongPlugin.harpoonTargetTime)
+            if (!b1)
             {
-                if (NetworkServer.active)
-                {
-                    SphereSearch sphereSearch = new SphereSearch
-                    {
-                        mask = LayerIndex.entityPrecise.mask,
-                        origin = body.transform.position,
-                        queryTriggerInteraction = QueryTriggerInteraction.Collide,
-                        radius = baseHauntRadius
-                    };
-
-                    TeamMask teamMask = TeamMask.AllExcept(body.teamComponent.teamIndex);
-                    List<HurtBox> hurtBoxesList = new List<HurtBox>();
-
-                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
-
-                    int hurtBoxCount = hurtBoxesList.Count;
-                    while (hurtBoxCount > 0)
-                    {
-                        int i = UnityEngine.Random.Range(0, hurtBoxCount - 1);
-                        HealthComponent healthComponent = hurtBoxesList[i].healthComponent;
-                        CharacterBody enemyBody = healthComponent.body;
-
-                        if (!enemyBody)
-                        {
-                            hurtBoxesList.Remove(hurtBoxesList[i]);
-                            hurtBoxCount--;
-                            continue;
-                        }
-
-                        DebuffEnemy(enemyBody);
-                        hauntStopwatch -= SwanSongPlugin.harpoonTargetTime;
-                        return;
-                    }
-                    hauntStopwatch -= hauntRetryTime;
-                }
-            }
-        }
-
-        private void DebuffEnemy(CharacterBody enemyBody)
-        {
-            for (int n = 0; n < stack; n++)
-            {
-                enemyBody.AddTimedBuffAuthority(CommonAssets.harpoonDebuff.buffIndex, SwanSongPlugin.harpoonTargetTime);
+                Log.DebugBreakpoint(nameof(ChangeDuration), 1);
+                return;
             }
 
-            //thanks hifu <3
-            Transform modelTransform = enemyBody.modelLocator?.modelTransform;
-            if(modelTransform != null)
+            //go back and get the index to change the buff count. we wont change anything yet until the hook is for sure completable
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcI4(5),
+                x => x.MatchStloc(out buffCountLoc)
+                );
+            if (!b2)
             {
-                TemporaryOverlayInstance temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
-                temporaryOverlay.duration = SwanSongPlugin.harpoonTargetTime;
-                temporaryOverlay.animateShaderAlpha = true;
-                temporaryOverlay.alphaCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);// AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
-                temporaryOverlay.destroyComponentOnEnd = true;
-                temporaryOverlay.originalMaterial = SwanSongPlugin.harpoonTargetMaterial;
-                temporaryOverlay.AddToCharacterModel(modelTransform.GetComponent<CharacterModel>());
+                Log.DebugBreakpoint(nameof(ChangeDuration), 2);
+                return;
             }
-        }
+            c.Index++;
+            indexOne = c.MarkLabel();
 
-        private void OnDisable()
-        {
-            hauntStopwatch = 0;
+            //get the attacker body location
+            bool b3 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdloc(out attackerBodyLoc),
+                x => x.MatchLdsfld("RoR2.DLC1Content/Buffs", "KillMoveSpeed"),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.ClearTimedBuffs))
+                );
+            if (!b3)
+            {
+                Log.DebugBreakpoint(nameof(ChangeDuration), 3);
+                return;
+            }
+
+            //go to buff adding and save the index again
+            bool b4 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
+                );
+            if (!b4)
+            {
+                Log.DebugBreakpoint(nameof(ChangeDuration), 4);
+                return;
+            }
+            indexTwo = c.MarkLabel();
+
+            bool b5 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdloc(out iteratorLoc),
+                x => x.MatchLdloc(buffCountLoc)
+                );
+            if(!b5)
+            {
+                Log.DebugBreakpoint(nameof(ChangeDuration), 5);
+                return;
+            }
+
+            //go to where buffs are added and make the buff duration one second per buff
+            c.GotoLabel(indexTwo);
+            c.Emit(OpCodes.Ldloc, iteratorLoc);
+            c.EmitDelegate<Func<float, int, float>>((baseBuffDuration, iterator) =>
+            {
+                return iterator + 1;
+            });
+
+            //this makes it so the new buff count is always 1 more than the current buff count
+            c.GotoLabel(indexOne);
+            c.Emit(OpCodes.Ldloc, itemCountLoc);
+            c.Emit(OpCodes.Ldloc, attackerBodyLoc);
+            c.EmitDelegate<Func<int, int, CharacterBody, int>>((vanillaBuffCount, itemCount, attackerBody) =>
+            {
+                if (itemCount > 25)
+                    return itemCount;
+
+                int buffCount = attackerBody.GetBuffCount(DLC1Content.Buffs.KillMoveSpeed);
+                int newBuffCount = Mathf.Min(25, buffCount + itemCount);
+                return newBuffCount;
+            });
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security;
 using System.Security.Permissions;
 
-namespace EliteReworks
+namespace FruityElites
 {
     internal static class Log
     {

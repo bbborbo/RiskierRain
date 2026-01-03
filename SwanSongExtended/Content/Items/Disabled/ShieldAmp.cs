@@ -14,6 +14,7 @@ namespace SwanSongExtended.Items
 {
     class ShieldAmp : ItemBase<ShieldAmp>
     {
+        public override bool isEnabled => false;
         public static float shieldFlatBase = 40f;
         public static float shieldDrainFractionBase = 0.4f;
         public static float shieldDrainFractionStack = -0.08f;

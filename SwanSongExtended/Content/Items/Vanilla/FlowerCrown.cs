@@ -15,16 +15,16 @@ namespace SwanSongExtended.Items
         public static float shieldPercentBase = 0.12f;
         public static float rechargeRateIncrease = 1.5f;
 
-        float moveSpeedIncreaseBase = 0.15f;
-        float moveSpeedIncreaseStack = 0.15f;
-        int armorIncreaseBase = 25;
-        int armorIncreaseStack = 25;
+        float moveSpeedIncreaseBase = 0.18f;
+        float moveSpeedIncreaseStack = 0.18f;
+        int armorIncreaseBase = 20;
+        int armorIncreaseStack = 30;
 
         public override string ItemName => "Flower Crown";
 
         public override string ItemLangTokenName => "FLOWERCROWN";
 
-        public override string ItemPickupDesc => "Increase shield recharge rate. While shields are active, increase armor and movement speed.";
+        public override string ItemPickupDesc => "Increase shield recharge rate. Gain armor while shields are active, or gain movement speed.";
 
         public override string ItemFullDescription => $"Gain a <style=cIsHealing>shield</style> equal to " +
             $"<style=cIsHealing>{Tools.ConvertDecimal(shieldPercentBase)}</style> of your maximum health. " +
@@ -32,8 +32,8 @@ namespace SwanSongExtended.Items
             $"by <style=cIsUtility>{rechargeRateIncrease}s</style>. " +
             $"While shields are active, increase " +
             $"<style=cIsHealing>armor</style> by <style=cIsHealing>{armorIncreaseBase}</style> " +
-            $"<style=cStack>(+{armorIncreaseStack} per stack)</style>, " +
-            $"and <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
+            $"<style=cStack>(+{armorIncreaseStack} per stack)</style>. " +
+            $"While shields are down, increase <style=cIsUtility>movement speed</style> by <style=cIsHealing>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. ";
 
         public override string ItemLore => @"Order: Flower Crown
@@ -90,6 +90,9 @@ Thank you for always sending us gifts. I made some of them into this flower crow
                     if (Fuse.HasShield(hc))
                     {
                         args.armorAdd += armorIncreaseBase + armorIncreaseStack * (itemCount - 1);
+                    }
+                    else
+                    {
                         args.moveSpeedMultAdd += moveSpeedIncreaseBase + moveSpeedIncreaseStack * (itemCount - 1);
                     }
                 }

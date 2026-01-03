@@ -17,6 +17,7 @@ namespace SwanSongExtended.Items
 {
     class WeirdlyShapedOpal : ItemBase<WeirdlyShapedOpal>
 	{
+		public override bool isEnabled => false;
 		#region
 		public override string ConfigName => "Reworks : Opal";
 		[AutoConfig("Armor Increase Unconditional", 10)]
@@ -78,7 +79,7 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
-			SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/DLC1/OutOfCombatArmor/OutOfCombatArmor.asset").WaitForCompletion());
+			SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_OutOfCombatArmor.OutOfCombatArmor_asset);
 			CreateAssets();
 		}
 

@@ -16,6 +16,7 @@ namespace SwanSongExtended.Items
 {
     class LightningAttractor : ItemBase<LightningAttractor>
     {
+        public override bool isEnabled => false;
         public static BuffDef forkReadyBuff;
         public static BuffDef forkRechargeBuff;
         public static BuffDef forkRepeatHitBuff;

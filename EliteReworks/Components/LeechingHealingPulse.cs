@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace EliteReworks.Components
+namespace FruityElites.Components
 {
     class LeechingHealingPulseComponent : MonoBehaviour
     {

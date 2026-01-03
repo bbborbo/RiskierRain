@@ -177,7 +177,7 @@ namespace MissileRework
         {
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(ProcSolverPlugin.guid))
             {
-                return 1;
+                return damageInfo.procCoefficient;
             }
             return _GetProcRate(damageInfo);
         }

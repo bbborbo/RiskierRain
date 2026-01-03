@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using static EliteReworks.Modules.EliteModule;
+using static FruityElites.Modules.EliteModule;
 
-namespace EliteReworks.Elites
+namespace FruityElites.Elites
 {
     public abstract class T1EliteEquipmentBase<T> : T1EliteEquipmentBase where T : T1EliteEquipmentBase<T>
     {

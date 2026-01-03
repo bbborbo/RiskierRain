@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using static EliteReworks.Modules.EliteModule;
+using static FruityElites.Modules.EliteModule;
 using static RoR2.CombatDirector;
 using RoR2.ExpansionManagement;
-using EliteReworks.Modules;
-using EliteReworks.Equipment;
+using FruityElites.Modules;
+using FruityElites.Equipment;
 
-namespace EliteReworks.Elites
+namespace FruityElites.Elites
 {
     public abstract class EliteEquipmentBase<T> : EliteEquipmentBase where T : EliteEquipmentBase<T>
     {

@@ -1,4 +1,4 @@
-﻿using EliteReworks;
+﻿using FruityElites;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using R2API;
 
-namespace EliteReworks.Modules
+namespace FruityElites.Modules
 {
     public static class EliteModule
     {

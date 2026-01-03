@@ -10,6 +10,14 @@ namespace SwanSongExtended
         public static bool enableDebugging;
         internal static ManualLogSource _logSource;
 
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{SwanSongPlugin.modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Log.Error(s);
+        }
+
         internal static void Init(ManualLogSource logSource)
         {
             enableDebugging = Modules.ConfigManager.DualBindToConfig<bool>(

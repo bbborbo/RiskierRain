@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
         public static BuffDef birdBuff;
         public static BuffDef birdDebuff;
         public float regenDurationBase = 1.5f;
-        public float regenDurationStack = 0.5f;
+        public float regenDurationStack = 0.75f;
         public int cooldownTime = 7;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;

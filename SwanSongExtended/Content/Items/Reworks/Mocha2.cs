@@ -104,7 +104,7 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
-            SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.AttackSpeedAndMoveSpeed));
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_AttackSpeedAndMoveSpeed.AttackSpeedAndMoveSpeed_asset);
             On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
             On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
@@ -223,7 +223,10 @@ namespace SwanSongExtended.Items
 
         private void Start()
         {
-            if(remainingTime < Mocha2.stageDuration)
+            if (body.HasBuff(Mocha2.mochaBuffActive))
+                return;
+
+            if (remainingTime < Mocha2.stageDuration)
                 remainingTime = Mocha2.stageDuration;
             SetMochaTime(remainingTime);
         }

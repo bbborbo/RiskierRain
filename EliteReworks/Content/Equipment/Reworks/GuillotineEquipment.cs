@@ -14,11 +14,11 @@ using static MoreStats.StatHooks;
 using System.Linq;
 using System.Collections;
 using UnityEngine.AddressableAssets;
-using EliteReworks.Modules;
-using static EliteReworks.Modules.Language.Styling;
+using FruityElites.Modules;
+using static FruityElites.Modules.Language.Styling;
 using RoR2.ContentManagement;
 
-namespace EliteReworks.Equipment
+namespace FruityElites.Equipment
 {
     class GuillotineEquipment : EquipmentBase<GuillotineEquipment>
     {
@@ -63,7 +63,7 @@ namespace EliteReworks.Equipment
         //"Target a low health monster to instantly kill them, empowering yourself. Stronger against Elites.";
 
         public override string EquipmentFullDescription => $"Instantly kill Elite monsters below {RedText($"{ConvertDecimal(newExecutionThresholdBase)} max health")}. " +
-            $"Gain a {UtilityColor(ConvertDecimal(aspectDropChance) + "chance")} to claim the power of slain Elite monsters.";
+            $"Gain a {UtilityColor(ConvertDecimal(aspectDropChance) + " chance")} to claim the power of slain Elite monsters.";
         //$"Target a monster, allowing them to be " +
         //$"{RedText("instantly killed")} at or below {RedText($"{baseThreshold} max health")} " +
         //$"{StackColor($"(+{stackThreshold} per Elite tier)")}. " +
@@ -224,13 +224,16 @@ namespace EliteReworks.Equipment
                     if (damageReport.victimIsElite)
                     {
                         CharacterBody attackerBody = damageReport.attackerBody;
-                        if (attackerBody != null && attackerBody.executeEliteHealthFraction > 0)
+                        if (attackerBody == null)
+                            return dropChance;
+
+                        if (attackerBody.executeEliteHealthFraction > 0)
                         {
                             dropChance = aspectDropChance;
                         }
 
                         CharacterMaster attackerMaster = damageReport.attackerMaster;
-                        if(attackerMaster != null)
+                        if(attackerMaster != null && attackerBody.equipmentSlot)
                         {
                             if (damageReport.damageInfo.procChainMask.HasProc(ProcType.SureProc) 
                                 || Util.CheckRoll0To1(equipmentActivationChance, attackerMaster.luck))

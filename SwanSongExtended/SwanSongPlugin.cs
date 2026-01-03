@@ -21,6 +21,8 @@ using SwanSongExtended.Interactables;
 using SwanSongExtended.Elites;
 using SwanSongExtended.Artifacts;
 using SwanSongExtended.Scavengers;
+using UnityEngine.AddressableAssets;
+using RoR2.ContentManagement;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -40,8 +42,8 @@ namespace SwanSongExtended
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BetterSoulCost.SoulCostPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(BarrierRework.BarrierReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -144,6 +146,13 @@ namespace SwanSongExtended
             new Modules.ContentPacks().Initialize();
 
             ////refer to guide on how to build and distribute your mod with the proper folders
+        }
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
         }
 
         private void CreateExpansionDef()
@@ -260,6 +269,10 @@ namespace SwanSongExtended
             {
                 DeworkResonanceDisc();
             }
+            if (GetConfigBool(true, "Reworks : Prayer Beads"))
+            {
+                PrayerBeadsRework();
+            }
             //interactables bc they need to load after items:
             //InitializeInteractables();
             //need to do this after interactablestuff
@@ -332,23 +345,35 @@ namespace SwanSongExtended
             //    "(The following changes will be enabled if set to true) " + desc).Value;
         }
         #region modify items and equips
-        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
+        public static void RetierItemAsync(string itemGuid, ItemTier tier = ItemTier.NoTier, Action<ItemDef> callback = null)
         {
-            ItemDef def = LoadItemDef(itemName);
-            def = RetierItem(def, tier);
-            return def;
+            AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(itemGuid);
+            AssetAsyncReferenceManager<ItemDef>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                ItemDef itemDef = ctx.Result;
+                itemDef.tier = tier;
+                itemDef.deprecatedTier = tier;
+
+                if (callback != null)
+                    callback.Invoke(itemDef);
+            };
+        }
+        public static void RemoveEquipmentAsync(string equipmentGuid, Action<EquipmentDef> callback = null)
+        {
+            AssetReferenceT<EquipmentDef> ref1 = new AssetReferenceT<EquipmentDef>(equipmentGuid);
+            AssetAsyncReferenceManager<EquipmentDef>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                EquipmentDef equipDef = ctx.Result;
+                equipDef.canDrop = false;
+                equipDef.canBeRandomlyTriggered = false;
+                equipDef.enigmaCompatible = false;
+                equipDef.dropOnDeathChance = 0;
+
+                if (callback != null)
+                    callback.Invoke(equipDef);
+            };
         }
 
-        static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
-        {
-            if (def != null)
-            {
-                //def._itemTierDef = ItemTierCatalog.GetItemTierDef(tier);
-                def.tier = tier;
-                def.deprecatedTier = tier;
-            }
-            return def;
-        }
         internal static void BlacklistSingleItem(ItemDef itemDef, ItemTag itemTag = ItemTag.AIBlacklist)
         {
             if (itemDef != null)
@@ -369,22 +394,6 @@ namespace SwanSongExtended
             BlacklistSingleItem(itemDef, itemTag);
         }
 
-        public static void RemoveEquipment(string equipName)
-        {
-            EquipmentDef equipDef = LoadEquipDef(equipName);
-            equipDef.canDrop = false;
-            equipDef.canBeRandomlyTriggered = false;
-            equipDef.enigmaCompatible = false;
-            equipDef.dropOnDeathChance = 0;
-        }
-        public static void ChangeEquipmentEnigma(string equipName, bool canEnigma)
-        {
-            EquipmentDef equipDef = LoadEquipDef(equipName);
-            if (equipDef != null)
-            {
-                equipDef.enigmaCompatible = canEnigma;
-            }
-        }
         public static void ChangeBuffStacking(string buffName, bool canStack)
         {
             BuffDef buffDef = LoadBuffDef(buffName);

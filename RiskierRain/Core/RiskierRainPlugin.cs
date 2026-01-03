@@ -20,6 +20,8 @@ using RainrotSharedUtils;
 using MonoMod.RuntimeDetour;
 using UnityEngine.Networking;
 using MonoMod.Cil;
+using RoR2BepInExPack.GameAssetPathsBetter;
+using RoR2.ContentManagement;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -43,7 +45,7 @@ namespace RiskierRain
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(SwanSongExtended.SwanSongPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SurvivorTweaks.SurvivorTweaksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(EliteReworks.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(FruityElites.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
 
@@ -105,25 +107,33 @@ namespace RiskierRain
 
             On.RoR2.CharacterBody.RemoveBuff_BuffIndex += Gah;
             #region rework pending / priority removal
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.StunChanceOnHit)); //stun grenade
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.GoldOnHurt)); //penny roll/roll of pennies
+            RiskierRainPlugin.RetierItemAsync(RoR2_Base_StunChanceOnHit.StunChanceOnHit_asset);//stun grenade
+            RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
            //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.BonusGoldPackOnKill)); //ghors
+            RiskierRainPlugin.RetierItemAsync(RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset); //ghors
+            RiskierRainPlugin.RetierItemAsync(RoR2_Base_DeathMark.DeathMark_asset); //guess faggot
+            RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
 
-            RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Talisman)); //soulbound
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoreMissile)); //pocket icbm
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PermanentDebuffOnHit)); //symbiotic scorpion
-            RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.DroneWeapons)); //spare drone parts
-            RiskierRainPlugin.RetierItem(nameof(DLC2Content.Items.BarrageOnBoss)); //war bonds
+            RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset); //scorpion
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_DroneWeapons.DroneWeapons_asset); //sdp
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BarrageOnBoss.BarrageOnBoss_asset); //war bonds
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BoostAllStats.BoostAllStats_asset); //growth nectar
+
+
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfSpeedDoubleHealth.HalfSpeedDoubleHealth_asset); //
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfAttackSpeedHalfCooldowns.HalfAttackSpeedHalfCooldowns_asset); //
+
             //RiskierRainPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AutoCastEquipment/AutoCastEquipment.asset").WaitForCompletion());
             #endregion
 
             //RoR2Application.onLoad += InitializeEverything;
 
-            
+
             new ContentPacks().Initialize();
         }
 
@@ -197,6 +207,7 @@ namespace RiskierRain
             // mobility
             GoatHoofNerf();
             EnergyDrinkNerf();
+            FaradayNerf();
 
             // defense
             TeddyChanges();
@@ -264,7 +275,7 @@ namespace RiskierRain
             // ENEMIES: 
 
             // misc
-            RiskierRainPlugin.RemoveEquipment(nameof(RoR2Content.Equipment.Gateway));
+            RiskierRainPlugin.RemoveEquipmentAsync(RoR2_Base_Gateway.Gateway_asset);
 
             // shattering justics
             if (GetConfigBool(true, "Shattering Justice"))
@@ -717,7 +728,6 @@ namespace RiskierRain
             // EQUIPMENT: 
             // ENEMIES: 
 
-            RiskierRainPlugin.RemoveEquipment(nameof(RoR2Content.Equipment.Gateway));
             #endregion
 
             ///summary 
@@ -741,32 +751,35 @@ namespace RiskierRain
         public delegate bool orig_getHasOneShotProtection(CharacterBody self);
 
         #region modify items and equips
-        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
+        public static void RetierItemAsync(string itemGuid, ItemTier tier = ItemTier.NoTier, Action<ItemDef> callback = null)
         {
-            ItemDef def = LoadItemDef(itemName);
-            def = RetierItem(def, tier);
-            return def;
-        }
-
-        static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
-        {
-            if (def != null)
+            AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(itemGuid);
+            AssetAsyncReferenceManager<ItemDef>.LoadAsset(ref1).Completed += (ctx) =>
             {
-                //def._itemTierDef = ItemTierCatalog.GetItemTierDef(tier);
-                def.tier = tier;
-                def.deprecatedTier = tier;
-            }
-            return def;
+                ItemDef itemDef = ctx.Result;
+                itemDef.tier = tier;
+                itemDef.deprecatedTier = tier;
+
+                if (callback != null)
+                    callback.Invoke(itemDef);
+            };
+        }
+        public static void RemoveEquipmentAsync(string equipmentGuid, Action<EquipmentDef> callback = null)
+        {
+            AssetReferenceT<EquipmentDef> ref1 = new AssetReferenceT<EquipmentDef>(equipmentGuid);
+            AssetAsyncReferenceManager<EquipmentDef>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                EquipmentDef equipDef = ctx.Result;
+                equipDef.canDrop = false;
+                equipDef.canBeRandomlyTriggered = false;
+                equipDef.enigmaCompatible = false;
+                equipDef.dropOnDeathChance = 0;
+
+                if (callback != null)
+                    callback.Invoke(equipDef);
+            };
         }
 
-        public static void RemoveEquipment(string equipName)
-        {
-            EquipmentDef equipDef = LoadEquipDef(equipName);
-            equipDef.canDrop = false;
-            equipDef.canBeRandomlyTriggered = false;
-            equipDef.enigmaCompatible = false;
-            equipDef.dropOnDeathChance = 0;
-        }
         public static void ChangeEquipmentEnigma(string equipName, bool canEnigma)
         {
             EquipmentDef equipDef = LoadEquipDef(equipName);
@@ -783,6 +796,7 @@ namespace RiskierRain
                 buffDef.canStack = canStack;
             }
         }
+
         static ItemDef LoadItemDef(string name)
         {
             ItemDef itemDef = LegacyResourcesAPI.Load<ItemDef>("ItemDefs/" + name);

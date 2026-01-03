@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using static MoreStats.OnHit;
 
-namespace EliteReworks.Modules
+namespace FruityElites.Modules
 {
     public static class Hooks
     {

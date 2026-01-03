@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using EliteReworks.Modules;
+using FruityElites.Modules;
 using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace EliteReworks.Equipment
+namespace FruityElites.Equipment
 {
     public abstract class EquipmentBase<T> : EquipmentBase where T : EquipmentBase<T>
     {

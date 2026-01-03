@@ -17,7 +17,8 @@ namespace SwanSongExtended.Items
         public static int cashBackValue = 25;
         private static string fullDescPartial = $"When purchasing from {UtilityColor("multishop")} terminals, " +
             $"the other terminals {UtilityColor("stay open")}, refunding {UtilityColor($"${cashBackValue}")}.";
-        public override string ItemName => "Discount Card (2-Punch)";
+        public string itemName = "Loyalty Card";
+        public override string ItemName => itemName;
 
         public override string ItemLangTokenName => "DISCOUNTCARDNEW";
 
@@ -43,10 +44,10 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             usedItemDef = CreateNewUntieredItem("DISCOUNTCARDUSED", assetBundle.LoadAsset<Sprite>("Assets/Icons/discountcardused.png"), itemTags: ItemTags);
-            DoLangForItem(usedItemDef, "Discount Card (Used)", "Gain cash back on shop purchases. One use remaining.",
+            DoLangForItem(usedItemDef, itemName + " (Used)", "Gain cash back on shop purchases. One use remaining.",
                 fullDescPartial + " One use remaining.");
             spentItemDef = CreateNewUntieredItem("DISCOUNTCARDSPENT", assetBundle.LoadAsset<Sprite>("Assets/Icons/discountcardspent.png"), itemTags: ItemTags);
-            DoLangForItem(spentItemDef, "Discount Card (Spent)", "It's just a piece of paper with a bunch of holes.",
+            DoLangForItem(spentItemDef, itemName + " (Spent)", "It's just a piece of paper with a bunch of holes.",
                 "It's just a piece of paper with a bunch of holes.");
             base.Init();
         }

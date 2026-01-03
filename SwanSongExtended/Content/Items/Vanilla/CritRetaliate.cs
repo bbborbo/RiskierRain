@@ -17,13 +17,13 @@ namespace SwanSongExtended.Items
         public static BuffDef watchCritBuff;
         #region config
         public override string ConfigName => "Items : Destroyer Emblem";
-        [AutoConfig("Critical Strike Chance Bonus", 40)]
-        public static float critChanceBonus = 40;
+        [AutoConfig("Critical Strike Chance Bonus", 100)]
+        public static float critChanceBonus = 100;
         public static float critChancePerBuff => critChanceBonus / buffTotal;
-        [AutoConfig("Total Buffs", 8)]
-        public static int buffTotal = 8;
-        [AutoConfig("Base Duration Of Buffs", 8f)]
-        public static float buffDurationBase = 8f;
+        [AutoConfig("Total Buffs", 10)]
+        public static int buffTotal = 10;
+        [AutoConfig("Base Duration Of Buffs", 6f)]
+        public static float buffDurationBase = 6f;
         [AutoConfig("Stack Duration Of Buffs", 4f)]
         public static float buffDurationStack = 4f;
         #endregion
@@ -50,6 +50,16 @@ namespace SwanSongExtended.Items
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;
+        }
+        public override void Init()
+        {
+            watchCritBuff = Content.CreateAndAddBuff("bdWatchCritChance",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
+                Color.yellow,
+                true, false,
+                BuffDef.StackingDisplayMethod.Default);
+
+            base.Init();
         }
 
         public override void Hooks()
@@ -111,15 +121,6 @@ namespace SwanSongExtended.Items
 
             if (GetCount(sender) > 0)
                 args.critAdd += 2;
-        }
-        public override void Init()
-        {
-            watchCritBuff = Content.CreateAndAddBuff("bdWatchCritChance",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
-                Color.yellow,
-                true, false);
-
-            base.Init();
         }
     }
 }

@@ -61,6 +61,7 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_GoldOnHurt.GoldOnHurt_asset);
             CreateChocolate();
             base.Init();
         }

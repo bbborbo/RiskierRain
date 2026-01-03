@@ -526,13 +526,14 @@ namespace RiskierRain
         public static int fuelCellStock = 2;
         void ReworkFuelCell()
         {
-            ItemDef itemDef = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_EquipmentMagazine.EquipmentMagazine_asset).WaitForCompletion();
-            ItemDef itemDef2 = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_DLC1_EquipmentMagazineVoid.EquipmentMagazineVoid_asset).WaitForCompletion();
-            RetierItem(itemDef, ItemTier.Tier3);
-            RetierItem(itemDef2, ItemTier.VoidTier3);
-            Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Fuel_Cell.png");
-            if (sprite)
-                itemDef.pickupIconSprite = sprite;
+            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_EquipmentMagazine.EquipmentMagazine_asset, ItemTier.Tier3, FixFuelCellIcon);
+            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_EquipmentMagazineVoid.EquipmentMagazineVoid_asset, ItemTier.VoidTier3);
+            void FixFuelCellIcon(ItemDef itemDef)
+            {
+                Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Fuel_Cell.png");
+                if (sprite)
+                    itemDef.pickupIconSprite = sprite;
+            }
 
             IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
             IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
@@ -543,6 +544,7 @@ namespace RiskierRain
                 $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
                 $"<style=cIsUtility>{fuelCellEquipCdr}</style> <style=cStack>(+{fuelCellEquipCdr} per stack)</style>.");
         }
+
 
         private void FuelCellStock(ILContext il)
         {
@@ -605,7 +607,7 @@ namespace RiskierRain
         public static float stickyDamageCoeffStack = 0.4f;
         void ReworkStickyBomb()
         {
-            RetierItem(nameof(RoR2Content.Items.StickyBomb), ItemTier.Tier2);
+            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_StickyBomb.StickyBomb_asset, ItemTier.Tier2);
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += StickyBombRework;
             LanguageAPI.Add("ITEM_STICKYBOMB_DESC",

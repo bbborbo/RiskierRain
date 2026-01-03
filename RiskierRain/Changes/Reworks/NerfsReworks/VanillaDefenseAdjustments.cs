@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
+using RoR2.Items;
 
 namespace RiskierRain
 {
@@ -192,17 +193,278 @@ namespace RiskierRain
             });
             c.Remove();
         }
+
+
+        public static float faradayMaxMoveSpeed = 1.0f; //1.6f
+        public static float faradayMaxJumpStrength = 1.5f; //2.0f
+        public static float faradayChargeIncreaseBase = 1.5f; //1.0f
+        public static float faradayChargeIncreaseStack = 0.5f; //0.0f
+        public static float faradayDamageBase = 8f; //4.0f
+        public static float faradayDamageStack = 5f; //2.5f
+        public static int faradayRequiredCharge = 34; //25
+        public static int faradayMaxDischarge = 66; //100
+        public static bool faradayPreventDoubleDischarge = true;
+        private static float faradayChargeIncreaseStackInverse => faradayChargeIncreaseStack / (1 + faradayChargeIncreaseStack);
+        private void FaradayNerf()
+        {
+            LanguageAPI.Add("ITEM_JUMPDAMAGESTRIKE_PICKUP", 
+                $"Moving around builds up movement speed and jump height. " +
+                $"At {faradayRequiredCharge}% charge or higher, jump to discharge into an electric blast.");
+            LanguageAPI.Add("ITEM_JUMPDAMAGESTRIKE_DESC", 
+                $"Moving around builds up <style=cIsUtility>charge</style> <style=cStack>(+{faradayChargeIncreaseStackInverse * 100}% faster per stack)</style>, " +
+                $"granting up to <style=cIsUtility>+{faradayMaxMoveSpeed * 100}% movement speed</style> " +
+                $"and <style=cIsUtility>+{faradayMaxJumpStrength * 100}% jump strength</style> at 100%. " +
+                $"At {faradayRequiredCharge}% charge or higher, jumping triggers an <style=cIsDamage>explosive discharge</style> " +
+                $"for <style=cIsDamage>{faradayDamageBase * 100}% <style=cStack>(+{faradayDamageStack * 100}% per stack)</style> damage</style> " +
+                $"in a 5m to 32.3m <style=cStack>(+7.5m per stack)</style> area.");
+
+            JumpDamageStrikeBodyBehavior.MoveSpeedVelocityPerCharge = faradayMaxMoveSpeed / 100;
+            JumpDamageStrikeBodyBehavior.JumpVelocityPerCharge = faradayMaxJumpStrength / 100;
+            IL.RoR2.Items.JumpDamageStrikeBodyBehavior.UpdateCharge += FaradayUpdateCharge;
+            IL.RoR2.Items.JumpDamageStrikeBodyBehavior.GetRadius += FaradayGetRadius;
+            IL.RoR2.Items.JumpDamageStrikeBodyBehavior.DischargeEffects += FaradayDischargeEffects;
+            IL.RoR2.JumpDamageStrikeSparks.FixedUpdate += FaradaySparks;
+        }
+
+        private void FaradaySparks(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC3Content/Buffs", "JumpDamageStrikeCharge"),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetBuffCount)),
+                x => x.MatchLdcI4(out _)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(FaradaySparks));
+                return;
+            }
+            c.Index--;
+            c.Next.Operand = faradayRequiredCharge;
+        }
+
+        private void FaradayDischargeEffects(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            IncreaseFaradayChargeRequirement_DischargeEffects(c);
+            c.Index = 0;
+            ReduceFaradayMaxDischarge(c);
+            c.Index = 0;
+            IncreaseFaradayDischargeDamage(c);
+            c.Index = 0;
+            ChangeFaradayDischargeDamageType(c);
+        }
+
+        private void ChangeFaradayDischargeDamageType(ILCursor c)
+        {
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<BlastAttack>(nameof(BlastAttack.damageType))
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(ChangeFaradayDischargeDamageType));
+                return;
+            }
+            c.EmitDelegate<Func<DamageTypeCombo, DamageTypeCombo>>((doesntMatter) =>
+            {
+                return new DamageTypeCombo(DamageType.Stun1s, DamageTypeExtended.Generic, DamageSource.Special);
+            });
+        }
+
+        private void IncreaseFaradayDischargeDamage(ILCursor c)
+        {
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_damage")
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(IncreaseFaradayDischargeDamage), 1);
+                return;
+            }
+
+            bool b2 = c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<BaseItemBodyBehavior>(nameof(BaseItemBodyBehavior.stack))
+                );
+            if (!b2)
+            {
+                DebugBreakpoint(nameof(IncreaseFaradayDischargeDamage), 2);
+                return;
+            }
+            c.Next.Operand = faradayDamageBase;
+            c.Index++;
+            c.Next.Operand = faradayDamageStack;
+        }
+
+        private void ReduceFaradayMaxDischarge(ILCursor c)
+        {
+            int buffCountLoc = 0;
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC3Content/Buffs", "JumpDamageStrikeCharge"),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetBuffCount)),
+                x => x.MatchStloc(out buffCountLoc)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(ReduceFaradayMaxDischarge), 1);
+                return;
+            }
+
+            bool b2 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC3Content/Buffs", "JumpDamageStrikeCharge"),
+                x => x.MatchCallOrCallvirt<BuffDef>("get_buffIndex"),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
+                );
+            if (!b2)
+            {
+                DebugBreakpoint(nameof(ReduceFaradayMaxDischarge), 2);
+                return;
+            }
+            c.Index--;
+            c.Emit(OpCodes.Ldloc, buffCountLoc);
+            c.EmitDelegate<Func<int, int, int>>((doesntMatter, buffCount) => 
+            {
+                int newBuffCount = buffCount - faradayMaxDischarge;
+                if (newBuffCount < 0)
+                    return 0;
+                if (newBuffCount == faradayRequiredCharge && faradayPreventDoubleDischarge)
+                    return faradayRequiredCharge - 1;
+                return newBuffCount;
+            });
+        }
+
+        private void IncreaseFaradayChargeRequirement_DischargeEffects(ILCursor c)
+        {
+            int buffCountLoc = 0;
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC3Content/Buffs", "JumpDamageStrikeCharge"),
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetBuffCount)),
+                x => x.MatchStloc(out buffCountLoc)
+                )
+                &&
+                c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdloc(buffCountLoc),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchBge(out _)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(IncreaseFaradayChargeRequirement_DischargeEffects));
+                return;
+            }
+            c.Index++;
+            c.Next.Operand = faradayRequiredCharge;
+        }
+
+        private void FaradayGetRadius(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            IncreaseFaradayChargeRequirement_GetRadius(c);
+            c.Index = 0;
+        }
+
+        private void FaradayUpdateCharge(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            FixFaradayDeltaTime(c);
+            c.Index = 0;
+            BuffFaradayChargeRate(c);
+            c.Index = 0;
+            IncreaseFaradayChargeRequirement_UpdateCharge(c);
+        }
+
+        private void IncreaseFaradayChargeRequirement_UpdateCharge(ILCursor c)
+        {
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(1),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchClt()
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(IncreaseFaradayChargeRequirement_UpdateCharge));
+                return;
+            }
+            c.Index++;
+            c.Next.Operand = faradayRequiredCharge;
+        }
+        private void IncreaseFaradayChargeRequirement_GetRadius(ILCursor c)
+        {
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(1),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchBge(out _)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(IncreaseFaradayChargeRequirement_GetRadius));
+                return;
+            }
+            c.Index++;
+            c.Next.Operand = faradayRequiredCharge;
+        }
+
+        private void BuffFaradayChargeRate(ILCursor c)
+        {
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<JumpDamageStrikeBodyBehavior>(nameof(JumpDamageStrikeBodyBehavior.isCharging))
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(BuffFaradayChargeRate), 1);
+                return;
+            }
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<JumpDamageStrikeBodyBehavior>(nameof(JumpDamageStrikeBodyBehavior.distanceTraveled))
+                );
+            if (!b2)
+            {
+                DebugBreakpoint(nameof(BuffFaradayChargeRate), 2);
+                return;
+            }
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<float, JumpDamageStrikeBodyBehavior, float>>((addedDistance, behavior) =>
+            {
+                float multiplier = Mathf.Pow((1 + faradayChargeIncreaseStack * (behavior.stack - 1)) * faradayChargeIncreaseBase, 0.2f);
+                return addedDistance * multiplier;
+            });
+        }
+
+        private static void FixFaradayDeltaTime(ILCursor c)
+        {
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<Time>("get_deltaTime")
+                );
+
+            if (b)
+            {
+                c.Remove();
+                c.EmitDelegate<Func<float>>(() =>
+                {
+                    return Time.fixedDeltaTime;
+                });
+            }
+            else
+            {
+                DebugBreakpoint(nameof(FixFaradayDeltaTime));
+            }
+        }
         #endregion
 
         #region healing
         public static float scytheBaseHeal = 0f; //4
         public static float scytheStackHeal = 5f; //4
 
-        public static float monsterToothFlatHeal = 10;
-        public static float monsterToothPercentHeal = 0.00f;
+        public static float monsterToothFlatHeal = 10; //8
+        public static float monsterToothPercentHeal = 0.00f; //0.02
 
-        public static float medkitFlatHeal = 40;
-        public static float medkitPercentHeal = 0.00f;
+        public static float medkitFlatHeal = 40; //20
+        public static float medkitPercentHeal = 0.00f; //0.05
 
         public static float notMovingRequirement = 0.1f;
         public static float fungusHealInterval = 0.125f;
@@ -237,10 +499,9 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             int countLoc = -1;
-            c.GotoNext(MoveType.AfterLabel,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth")
-                );
-            c.GotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.AfterLabel,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Tooth"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
 
@@ -272,36 +533,57 @@ namespace RiskierRain
             ILCursor c = new ILCursor(il);
 
             int countLoc = -1;
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit")
-                );
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Medkit"),
+                x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective)),
                 x => x.MatchStloc(out countLoc)
                 );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 1);
+                return;
+            }
 
             //match to flat heal location
-            c.GotoNext(MoveType.Before,
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(20),
                 x => x.MatchStloc(out _)
                 );
-            c.Emit(OpCodes.Ldloc, countLoc);
-            c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
+            if (b2)
             {
-                float newFlatHealAmt = medkitFlatHeal * (itemCount);
+                c.Index++;
+                c.Emit(OpCodes.Ldloc, countLoc);
+                c.EmitDelegate<Func<float, int, float>>((currentHealAmt, itemCount) =>
+                {
+                    float newFlatHealAmt = medkitFlatHeal * (itemCount);
 
-                return newFlatHealAmt;
-            });
+                    return newFlatHealAmt;
+                });
+            }
+            else
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 2);
+            }
 
 
             //match to percent heal location
-            c.GotoNext(MoveType.Before,
-                x => x.MatchStloc(out _)
+            bool b3 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth"),
+                x => x.MatchLdcR4(0.05f)
                 );
-            c.EmitDelegate<Func<float, float>>((currentHealAmt) =>
+            if (b3)
             {
-                float newPercentHealAmt = medkitPercentHeal;
+                c.EmitDelegate<Func<float, float>>((currentHealAmt) =>
+                {
+                    float newPercentHealAmt = medkitPercentHeal;
 
-                return newPercentHealAmt;
-            });
+                    return newPercentHealAmt;
+                });
+            }
+            else
+            {
+                DebugBreakpoint(nameof(MedkitHealChange), 3);
+            }
         }
 
         private void ScytheNerf(ILContext il)

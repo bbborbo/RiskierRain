@@ -71,7 +71,7 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
-            SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.RegeneratingScrap));
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_RegeneratingScrap.RegeneratingScrap_asset);// nameof(DLC1Content.Items.RegeneratingScrap));
             base.Init();
         }
 

@@ -93,7 +93,7 @@ namespace SwanSongExtended.Equipment
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.EquipDef, RoR2Content.Items.ShockNearby);
             On.RoR2.GlobalEventManager.OnCharacterDeath += GrantShieldOnKill;
             GetStatCoefficients += AddBonusShield;
-            SwanSongPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/ShockNearby/ShockNearby.asset").WaitForCompletion());
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ShockNearby.ShockNearby_asset);
         }
 
         private void AddBonusShield(CharacterBody sender, StatHookEventArgs args)

@@ -1,9 +1,9 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using EliteReworks.Components;
-using EliteReworks.EliteReworks;
-using EliteReworks.Equipment;
-using EliteReworks.Modules;
+using FruityElites.Components;
+using FruityElites.EliteReworks;
+using FruityElites.Equipment;
+using FruityElites.Modules;
 using HG;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -23,7 +23,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
-namespace EliteReworks
+namespace FruityElites
 {
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
@@ -223,13 +223,6 @@ namespace EliteReworks
         }
 
         #region modify items and equipments
-        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
-        {
-            ItemDef def = LoadItemDef(itemName);
-            def = RetierItem(def, tier);
-            return def;
-        }
-
         static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
         {
             if (def != null)

@@ -16,6 +16,7 @@ namespace SwanSongExtended.Items
 {
     class Watch2 : ItemBase<Watch2>
     {
+        public override bool isEnabled => false;
         #region config
         public override string ConfigName => "Reworks : Delicate Watch";
         [AutoConfig("Free Attack Speed Bonus", 0.075f)]
@@ -115,7 +116,7 @@ namespace SwanSongExtended.Items
         }
         public override void Init()
         {
-            SwanSongPlugin.RetierItem(nameof(DLC1Content.Items.FragileDamageBonus));
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_FragileDamageBonus.FragileDamageBonus_asset);
             watchAspdBuff = Content.CreateAndAddBuff("bdWatchAspd",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
                 Color.yellow,

@@ -1,7 +1,7 @@
 ﻿using RoR2;
 using RoR2.Achievements;
 
-namespace EliteReworks.Modules.Achievements
+namespace FruityElites.Modules.Achievements
 {
     public abstract class BaseMasteryAchievement : BaseAchievement
     {

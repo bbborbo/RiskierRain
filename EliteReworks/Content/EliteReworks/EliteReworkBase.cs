@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace EliteReworks.EliteReworks
+namespace FruityElites.EliteReworks
 {
     public abstract class EliteReworkBase<T> : EliteReworkBase where T : EliteReworkBase<T>
     {

@@ -70,7 +70,7 @@ namespace SwanSongExtended.Items
         {
             Log.Warning("Corpsebloom rework not fully implemented");
             base.Init();
-            SwanSongPlugin.RetierItem(nameof(RoR2Content.Items.RepeatHeal));
+            SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_RepeatHeal.RepeatHeal_asset);
 
             lunarRotBuff = Content.CreateAndAddBuff(
                 "bdLunarFlowerRotBuff",

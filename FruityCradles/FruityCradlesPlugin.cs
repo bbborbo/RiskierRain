@@ -112,6 +112,9 @@ namespace FruityCradles
                 ItemDef.Pair[] voidPairs = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem];
                 foreach (ItemDef.Pair pair in voidPairs)
                 {
+                    //skip this entry if the item being corrupted is notier
+                    if (pair.itemDef1.tier == ItemTier.NoTier)
+                        continue;
                     PickupIndex voidPair = PickupCatalog.FindPickupIndex(pair.itemDef2.itemIndex);
                     //skip this item pair if the void item of the pair is not the chosen item
                     if (voidPair != initialDrop.pickupIndex)

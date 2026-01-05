@@ -27,7 +27,7 @@ namespace FruityCradles
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityCradles";
-        public const string version = "1.0.5";
+        public const string version = "1.0.7";
         #endregion
 
         #region config

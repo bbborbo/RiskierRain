@@ -17,43 +17,12 @@ namespace RiskierRain
 {
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
-        public static int Tier2EliteMinimumStageDefault = 5;
-        public static int Tier2EliteMinimumStageDrizzle = 10;
-        public static int Tier2EliteMinimumStageRainstorm = 5;
-        public static int Tier2EliteMinimumStageMonsoon = 3;
-        public static int Tier2EliteMinimumStageEclipse = 3;
+        public static int Tier2EliteMinimumStageDefault = 6;
+        public static int Tier2EliteMinimumStageDrizzle = 11;
+        public static int Tier2EliteMinimumStageRainstorm = 6;
+        public static int Tier2EliteMinimumStageMonsoon = 4;
+        public static int Tier2EliteMinimumStageEclipse = 4;
 
-        static string Tier2EliteName = "Tier 2";
-
-        void ChangeEliteStats()
-        {
-            if(Tier2EliteMinimumStageDrizzle != Tier2EliteMinimumStageDefault 
-                || Tier2EliteMinimumStageMonsoon != Tier2EliteMinimumStageDefault
-                || Tier2EliteMinimumStageEclipse != Tier2EliteMinimumStageDefault)
-            {
-                drizzleDesc += $"\n>{Tier2EliteName} Elites appear starting on <style=cIsHealing>Stage {Tier2EliteMinimumStageDrizzle + 1}</style>";
-                rainstormDesc += $"\n>{Tier2EliteName} Elites appear starting on Stage {Tier2EliteMinimumStageRainstorm + 1}";
-                monsoonDesc += $"\n>{Tier2EliteName} Elites appear starting on <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon + 1}</style>";
-            }
-
-            RoR2Application.onLoad += ChangeEliteTierStats;
-        }
-
-        private void ChangeEliteTierStats()
-        {
-            foreach (CombatDirector.EliteTierDef etd in EliteAPI.VanillaEliteTiers)//CombatDirector.eliteTiers)
-            {
-                //Debug.Log(etd.eliteTypes[0].name);
-                if (etd.eliteTypes[0] == RoR2Content.Elites.Poison || etd.eliteTypes[0] == RoR2Content.Elites.Haunted)
-                {
-                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                    (Run.instance.stageClearCount >= Tier2EliteMinimumStageDrizzle && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
-                    || (Run.instance.stageClearCount >= Tier2EliteMinimumStageRainstorm && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)
-                    || (Run.instance.stageClearCount >= Tier2EliteMinimumStageMonsoon && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Hard)
-                    || (Run.instance.stageClearCount >= Tier2EliteMinimumStageEclipse && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty > DifficultyIndex.Hard);
-                }
-            }
-        }
-
+        static string Tier2EliteName = "Rare";
     }
 }

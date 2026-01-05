@@ -23,6 +23,7 @@ using MonoMod.RuntimeDetour;
 using System.Reflection;
 using Stage = RoR2.Stage;
 using RainrotSharedUtils.Shelters;
+using RainrotSharedUtils.Difficulties;
 
 namespace RiskierRain
 {
@@ -199,57 +200,10 @@ namespace RiskierRain
         #region Economy
         private void EnemyRewards()
         {
-            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
-            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
-        }
-
-        /// <summary>
-        /// For compensating rewards to the amount expected at stage start
-        /// </summary>
-        /// <returns></returns>
-        static float GetCompensatedDifficultyFraction()
-        {
-            float entryDiffCoeff = GetCompensatedStageEntryDifficulty();
-            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
-        }
-
-        static float GetCompensatedStageEntryDifficulty()
-        {
-            float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
-            float startingDifficulty = GetDifficultyCoefficient(Run.instance, 0, 0, out _);//GetAmbientLevelBoost();
-            if (entryDiffCoeff < startingDifficulty && compensationForStartingLevel > 0)
-            {
-                entryDiffCoeff = 0;
-            }
-            else if (compensationForStartingLevel > 0)
-            {
-                entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingDifficulty, compensationForStartingLevel);
-            }
-            return entryDiffCoeff;
-        }
-
-        private static void FixGoldRewards(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<uint, uint>>((money) =>
-            {
-                float compensated = GetCompensatedDifficultyFraction();
-                return (uint)Mathf.CeilToInt(money * compensated * goldRewardMultiplierGlobal);
-            });
-            c.Emit(OpCodes.Starg, 1);
-        }
-        private static void FixExpRewards(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<uint, uint>>((exp) =>
-            {
-                float compensated = GetCompensatedDifficultyFraction();
-                return (uint)Mathf.CeilToInt(exp * compensated * expRewardMultiplierGlobal);
-            });
-            c.Emit(OpCodes.Starg, 1);
+            DifficultyUtilsModule.BoostedRewardCompensationCoefficient = compensationForStartingLevel;
+            DifficultyUtilsModule.GoldRewardMultiplierGlobal = goldRewardMultiplierGlobal;
+            DifficultyUtilsModule.ExpRewardMultiplierGlobal = expRewardMultiplierGlobal;
         }
 
         private int ChangeScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int_float orig, RoR2.Run self, int baseCost, float difficultyCoefficient)

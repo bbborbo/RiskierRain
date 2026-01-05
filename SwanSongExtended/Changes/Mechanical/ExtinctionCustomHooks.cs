@@ -3,6 +3,7 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using R2API;
 using RainrotSharedUtils.Difficulties;
+using RainrotSharedUtils.MoreProjectiles;
 using RoR2;
 using SwanSongExtended.Storms;
 using System;
@@ -31,10 +32,15 @@ namespace SwanSongExtended
         public static string extinctionDescExtra =
             $"\n>Rare Elites: <style=cArtifact>Stage 4</style>" +
             $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
-            $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>";
+            $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>" +
+            $"\n>Enemies gain <style=cArtifact>tripled projectiles</style></style>";
         public static string extinctionDesc =
             extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra;
 
+        public static bool EnableMoreProjectilesForExtinctionEnemies(CharacterBody sender)
+        {
+            return sender.teamComponent.teamIndex != TeamIndex.Player && Run.instance.selectedDifficulty == difficultyIndexExtinction;
+        }
         private void CreateDifficultyDef()
         {
             difficultyDefExtinction = new DifficultyDef(
@@ -65,6 +71,7 @@ namespace SwanSongExtended
             LanguageAPI.Add(difficultyToken + "_DESC", extinctionDesc);
 
             RoR2Application.onLoadFinished += ExtinctionCustomHooks;
+            MoreProjectilesModule.MoreProjectilesProvider += EnableMoreProjectilesForExtinctionEnemies;
         }
 
         void ExtinctionCustomHooks()

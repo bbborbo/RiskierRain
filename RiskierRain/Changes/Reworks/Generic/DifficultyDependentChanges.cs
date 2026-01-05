@@ -83,7 +83,6 @@ namespace RiskierRain
             Run.ambientLevelCap = ambientLevelCap;
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
-            IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
 
             drizzleDesc += $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +

@@ -2,7 +2,9 @@
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using R2API;
+using RainrotSharedUtils.Difficulties;
 using RoR2;
+using SwanSongExtended.Storms;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -22,12 +24,12 @@ namespace SwanSongExtended
         public static string extinctionName = "Extinction";
         public static string extinctionDescBase =
             $"The air is heavy with grief. This inhospitable wasteland will not spare you. Only for the determined and truly masochistic. " +
-            $"<style=cStack>\n\n>Player Health Regeneration: <style=cArtifact>-40%</style></style> ";
+            $"<style=cStack>\n\n>Player Health Regeneration: <style=cArtifact>-40%</style></style> " +
+            $"<style=cStack>\n>Difficulty Scaling: <style=cArtifact>+100%</style>";
         public static string extinctionDescStartingDifficulty =
             $"<style=cStack>\n>Starting Difficulty: <style=cArtifact>Very Hard</style></style>";
         public static string extinctionDescExtra =
-            $"<style=cStack>\n>Difficulty Scaling: <style=cArtifact>+100%</style>" +
-            $"\n>Tier 2 Elites appear starting on <style=cArtifact>Stage 4</style>" +
+            $"\n>Rare Elites: <style=cArtifact>Stage 4</style>" +
             $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
             $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>";
         public static string extinctionDesc =
@@ -46,6 +48,18 @@ namespace SwanSongExtended
                 );
 
             difficultyIndexExtinction = DifficultyAPI.AddDifficulty(difficultyDefExtinction);
+
+            MoreDifficultyStats extinctionStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDefExtinction);
+            extinctionStats.ambientLevelCap = 999;
+            extinctionStats.delayFirstStorm_ForSwanSong = false;
+            extinctionStats.desiredStormTime_ForSwanSong = StormsCore.monsoonStormDelayMinutes;
+            extinctionStats.desiredStormWarningTime_ForSwanSong = StormsCore.monsoonStormWarningMinutes;
+            extinctionStats.startingDifficultyCoefficientBoost = difficultyDefExtinction.scalingValue - 1;
+            extinctionStats.startingDifficultyDisplay = (float)MoreDifficultyStats.StartingDifficulty.VeryHard;
+            extinctionStats.startingLevelBoost = eclipseDifficultyBoost;
+            extinctionStats.stormIntensifyStrength_ForSwanSong = StormsCore.stormStrengthIncreaseBase + StormsCore.stormStrengthIncreasePerDifficulty * 4;
+            extinctionStats.teleporterParticleRangeMultiplier = 0;
+            extinctionStats.tier2EliteStage = 4;
 
             LanguageAPI.Add(difficultyToken + "_NAME", extinctionName);
             LanguageAPI.Add(difficultyToken + "_DESC", extinctionDesc);

@@ -33,7 +33,7 @@ namespace SwanSongExtended
             $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
             $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>";
         public static string extinctionDesc =
-            extinctionDescBase + extinctionDescExtra;
+            extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra;
 
         private void CreateDifficultyDef()
         {
@@ -76,101 +76,8 @@ namespace SwanSongExtended
             }
 
             Log.Error("Extinction custom hooks");
-            LanguageAPI.Add(difficultyToken + "_DESC", extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra);
 
-            foreach (CombatDirector.EliteTierDef etd in EliteAPI.VanillaEliteTiers)//CombatDirector.eliteTiers)
-            {
-                //Debug.Log(etd.eliteTypes[0].name);
-                if (etd.eliteTypes[0] == RoR2Content.Elites.Poison || etd.eliteTypes[0] == RoR2Content.Elites.Haunted)
-                {
-                    etd.isAvailable = (SpawnCard.EliteRules rules) => Run.instance.stageClearCount >= 5
-                    || (Run.instance.stageClearCount >= 3 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == difficultyIndexExtinction);
-                }
-            }
-
-            On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
             GetStatCoefficients += this.MonsoonPlusStatBuffs2;
-            On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
-            IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
-
-
-            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
-            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
-            //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
-        }
-
-        /// <summary>
-        /// For compensating rewards to the amount expected at stage start
-        /// </summary>
-        /// <returns></returns>
-        static float GetCompensatedDifficultyFraction()
-        {
-            float entryDiffCoeff = GetCompensatedStageEntryDifficulty();
-            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
-        }
-
-        static float GetCompensatedStageEntryDifficulty()
-        {
-            float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
-            float startingDifficulty = GetDifficultyCoefficient(Run.instance, 0, 0, out _);//GetAmbientLevelBoost();
-            entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingDifficulty, 1.0f);
-            return entryDiffCoeff;
-        }
-
-        private static void FixGoldRewards(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<uint, uint>>((money) =>
-            {
-                float compensated = GetCompensatedDifficultyFraction();
-                return (uint)Mathf.CeilToInt(money * compensated);
-            });
-            c.Emit(OpCodes.Starg, 1);
-        }
-        private static void FixExpRewards(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<uint, uint>>((exp) =>
-            {
-                float compensated = GetCompensatedDifficultyFraction();
-                return (uint)Mathf.CeilToInt(exp * compensated);
-            });
-            c.Emit(OpCodes.Starg, 1);
-        }
-
-        private void CorrectDifficultyBar(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            bool b = c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<Run>("get_ambientLevel"));
-            if (!b)
-            {
-                DebugBreakpoint(nameof(CorrectDifficultyBar));
-                return;
-            }
-            c.EmitDelegate<Func<float, float>>((levelIn) =>
-            {
-                if (Run.instance.selectedDifficulty != difficultyIndexExtinction)
-                    return levelIn;
-                return levelIn + 3f;
-            });
-        }
-        private void TeleporterParticleScale(On.RoR2.TeleporterInteraction.BaseTeleporterState.orig_OnEnter orig, RoR2.TeleporterInteraction.BaseTeleporterState self)
-        {
-            orig(self);
-
-            if (Run.instance.selectedDifficulty != difficultyIndexExtinction)
-                return;
-
-            TeleporterInteraction component = self.GetComponent<TeleporterInteraction>();
-            bool flag5 = component && component.modelChildLocator;
-            if (flag5)
-            {
-                Transform transform = component.transform.Find("TeleporterBaseMesh/BuiltInEffects/PassiveParticle, Sphere");
-                transform.gameObject.SetActive(false);
-            }
         }
         private void MonsoonPlusStatBuffs2(CharacterBody sender, StatHookEventArgs args)
         {
@@ -198,71 +105,6 @@ namespace SwanSongExtended
                         args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 2f;
                     }
                 }
-            }
-        }
-
-        private void DifficultyCoefficientChanges(On.RoR2.Run.orig_RecalculateDifficultyCoefficentInternal orig, Run self)
-        {
-            if (self.selectedDifficulty != difficultyIndexExtinction)
-            {
-                orig(self);
-                return;
-            }
-            float runTimerMinutes = self.GetRunStopwatch() * 0.016666668f;
-            int stageClearCount = self.stageClearCount;
-
-            float difficultyCoefficient = GetDifficultyCoefficient(self, runTimerMinutes, stageClearCount, out float playerBaseFactor);
-            float difficultyFactor = GetScalingValueForDifficulty(self.selectedDifficulty) - 1;//GetAmbientLevelBoost() / 2;
-
-            //difficulty coefficient used for interactable costs and etc
-            self.difficultyCoefficient = difficultyCoefficient;
-            //difficulty coefficient used for enemy spawns
-            self.compensatedDifficultyCoefficient = difficultyCoefficient + difficultyFactor;
-            self.oneOverCompensatedDifficultyCoefficientSquared = 1 / (self.compensatedDifficultyCoefficient * self.compensatedDifficultyCoefficient);
-            self.ambientLevel = Mathf.Min(1f + eclipseDifficultyBoost + (3f * (difficultyCoefficient - playerBaseFactor)), (float)Run.ambientLevelCap);
-
-            int ambientLevelFloorLast = self.ambientLevelFloor;
-            self.ambientLevelFloor = Mathf.FloorToInt(self.ambientLevel);
-            if (ambientLevelFloorLast != self.ambientLevelFloor && ambientLevelFloorLast != 0 && self.ambientLevelFloor > ambientLevelFloorLast)
-            {
-                self.OnAmbientLevelUp();
-            }
-        }
-        public static float GetScalingValueForDifficulty(DifficultyIndex difficulty)
-        {
-            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficulty);
-            float scalingValue = difficultyDef.scalingValue;
-            return scalingValue;
-        }
-        public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)
-        {
-            float scalingValue = GetScalingValueForDifficulty(run.selectedDifficulty);
-            float baseScalingFactor = 0.0506f * 1;
-
-            float timeFactor = GetTimeDifficultyFactor(timeInMinutes, scalingValue);
-            float stageFactor = GetStageDifficultyFactor(stageClearCount);
-
-            playerBaseFactor = 1 + 0.3f * (run.participatingPlayerCount - 1);
-            float playerScaleFactor = Mathf.Pow(run.participatingPlayerCount, 0.3f);
-            float scalingFactor = baseScalingFactor * scalingValue * playerScaleFactor;
-
-            return (playerBaseFactor + scalingFactor * timeInMinutes) * timeFactor * stageFactor;
-
-            float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
-            {
-                float timeFactor = Mathf.Pow(1 + (0 * scalingValue), timeInMinutes);
-                return timeFactor;
-            }
-            float GetStageDifficultyFactor(int stageClearCount)
-            {
-                float stageFactor = Mathf.Pow(1.15f, (float)stageClearCount);
-
-                int totalLoops = Mathf.FloorToInt((float)stageClearCount / 5);
-                if (stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)
-                    totalLoops -= 1;
-                float loopFactor = Mathf.Pow(1, totalLoops);
-
-                return stageFactor * loopFactor;
             }
         }
     }

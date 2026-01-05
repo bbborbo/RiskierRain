@@ -48,6 +48,7 @@ namespace RiskierRain
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
         public static float difficultySpawnRateFactor = 0.4f;//0.4f, additive
+        public static int ambientLevelCapDrizzle = 99;//99
         public static int ambientLevelCap = 999;//99
 
         public static float easyTeleParticleRadius = 1f;

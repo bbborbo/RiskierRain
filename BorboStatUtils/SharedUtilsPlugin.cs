@@ -65,6 +65,15 @@ namespace RainrotSharedUtils
                 $"by <style=cIsDamage>{Assets.sparkBoosterAspdBonus * 100}%</style> for {Assets.nebulaBoosterBuffDuration} seconds. " +
                 $"Can stack up to {Assets.maxNebulaBoosterStackCount} times.</style>");
         }
+
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
+        }
+
         //public void FixedUpdate()
         //{
         //    FrostUtilsModule.FixedUpdate();

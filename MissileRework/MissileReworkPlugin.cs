@@ -15,6 +15,7 @@ using BepInEx.Bootstrap;
 using MoreStats;
 using System.Runtime.CompilerServices;
 using ProcSolver;
+using RainrotSharedUtils.MoreProjectiles;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]

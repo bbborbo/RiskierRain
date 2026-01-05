@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoreStats\MoreStats.csproj" />
+    <ProjectReference Include="..\BorboStatUtils\RainrotSharedUtils.csproj" />
   </ItemGroup>
 
   <ItemGroup>

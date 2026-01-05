@@ -15,6 +15,7 @@ using BepInEx.Bootstrap;
 using MoreStats;
 using System.Runtime.CompilerServices;
 using ProcSolver;
+using RainrotSharedUtils.MoreProjectiles;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -45,6 +46,7 @@ namespace MissileRework
         #region config
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> ShouldReworkIcbm { get; set; }
+        public static ConfigEntry<bool> ShouldAddArtifact { get; set; }
         public static ConfigEntry<bool> ShouldReworkAtg { get; set; }
         public static ConfigEntry<bool> ShouldReworkShrimp { get; set; }
         public static ConfigEntry<bool> ShouldReworkDml { get; set; }
@@ -94,8 +96,10 @@ namespace MissileRework
 
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
 
-            ShouldReworkIcbm = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Pocket ICBM (incl. Artifact of Warfare)", true,
-                "Set to TRUE to rework Pocket ICBM and turn its vanilla effect into an artifact.");
+            ShouldAddArtifact = CustomConfigFile.Bind<bool>(modName + ": Content", "Artifact of Warfare", true,
+                "Set to TRUE to turn Pocket ICBM into an artifact.");
+            ShouldReworkIcbm = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Pocket ICBM", true,
+                "Set to TRUE to disable Pocket ICBM. Recommended with Artifact of Warfare enabled!");
             ShouldReworkAtg = CustomConfigFile.Bind<bool>(modName + ": Reworks", "AtG Missile Mk.3", true,
                 "Set to TRUE to rework AtG Missile Mk.1.");
             ShouldReworkShrimp = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Plasma Shrimp", true,
@@ -105,9 +109,12 @@ namespace MissileRework
             ShouldReworkEnemyMissileTargeting = CustomConfigFile.Bind<bool>(modName + ": Reworks", "Missile Tracking", true,
                 "Set to TRUE to rework missile tracking on enemies.");
 
-            if (ShouldReworkIcbm.Value == true)
+            if(ShouldAddArtifact.Value == true)
             {
                 CreateArtifact();
+            }
+            if (ShouldReworkIcbm.Value == true)
+            {
                 ReworkIcbm();
             }
             if (ShouldReworkAtg.Value == true)

@@ -29,6 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NegativeRegenFix", "Negativ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissileRework", "MissileRework\MissileRework.csproj", "{6D27C489-F96C-4E87-8515-62339EB61136}"
 	ProjectSection(ProjectDependencies) = postProject
+		{41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5} = {41A5BE5C-1379-4FED-B4DE-5920F0B4D9D5}
 		{D6CC29E6-E18F-4644-B5E8-8A6A50C5452A} = {D6CC29E6-E18F-4644-B5E8-8A6A50C5452A}
 	EndProjectSection
 EndProject

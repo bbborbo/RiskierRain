@@ -426,7 +426,8 @@ namespace RiskierRain
 
         #region shuriken
         GameObject shurikenProjectilePrefab;
-        public float shurikenBaseDamage = 0.8f; //3f + 1f/s
+        public float shurikenBaseDamage = 0.8f; //3f
+        public float shurikenStackDamage = 0.0f; //1f
         public float shurikenProcCoefficient = 2f;
         public void ReworkShuriken()
         {
@@ -446,7 +447,8 @@ namespace RiskierRain
                 }
             }
 
-            On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyShurikenAttack;
+            //On.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyShurikenAttack;
+            IL.RoR2.PrimarySkillShurikenBehavior.FireShuriken += ModifyFireShuriken;
 
             LanguageAPI.Add("ITEM_PRIMARYSKILLSHURIKEN_PICKUP",
                 "Activating your Primary skill also throws a shuriken that bleeds enemies. Recharges over time.");
@@ -459,6 +461,26 @@ namespace RiskierRain
                 $"You can hold up to <style=cIsUtility>3</style> " +
                 $"<style=cStack>(+1 per stack)</style> " +
                 $"<style=cIsDamage>shurikens</style> which all reload over <style=cIsUtility>10</style> seconds.");
+        }
+
+        private void ModifyFireShuriken(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_damage"),
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(ModifyFireShuriken));
+                return;
+            }
+            c.Index++;
+            c.Next.Operand = shurikenBaseDamage - shurikenStackDamage;
+            c.Index++;
+            c.Next.Operand = shurikenStackDamage;
         }
 
         private void ModifyShurikenAttack(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)

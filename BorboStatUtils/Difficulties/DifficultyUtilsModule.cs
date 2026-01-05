@@ -195,8 +195,10 @@ namespace RainrotSharedUtils.Difficulties
         {
             orig(self, networkRuleBookComponent);
             cachedDifficultyStats = GetMoreDifficultyStats(DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty));
-            if(cachedDifficultyStats.ambientLevelCap != -1)
+            if (cachedDifficultyStats.ambientLevelCap != -1)
                 Run.ambientLevelCap = cachedDifficultyStats.ambientLevelCap;
+            else
+                Run.ambientLevelCap = 99;
         }
         private static void TeleporterParticleScale(On.RoR2.TeleporterInteraction.BaseTeleporterState.orig_OnEnter orig, RoR2.TeleporterInteraction.BaseTeleporterState self)
         {

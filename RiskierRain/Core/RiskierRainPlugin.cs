@@ -22,6 +22,7 @@ using UnityEngine.Networking;
 using MonoMod.Cil;
 using RoR2BepInExPack.GameAssetPathsBetter;
 using RoR2.ContentManagement;
+using RainrotSharedUtils.Difficulties;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -542,6 +543,7 @@ namespace RiskierRain
             //ambient level
             if (GetConfigBool(true, "Difficulty: Difficulty Scaling Changes"))
             {
+                DifficultyUtilsModule.EnableAll();
                 ChangeDifficultyCoefficientCalculation();
                 FreezeTimeScalingOnFinalLevels();
                 //VoidFieldsStageType(); //related to ambient difficulty boost
@@ -550,18 +552,6 @@ namespace RiskierRain
             if (GetConfigBool(true, "Difficulty: Void Fields Time Cost"))
             {
                 //VoidFieldsTimeCost();
-            }
-
-            //elite stats
-            if (GetConfigBool(true, "Elite: Elite Stats and Ocurrences"))
-            {
-                ChangeEliteStats();
-            }
-
-            //teleporter particle
-            if (GetConfigBool(true, "Difficulty: Teleporter Particle Radius"))
-            {
-                DifficultyDependentTeleParticles();
             }
 
             //monsoon stat boost

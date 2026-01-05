@@ -14,6 +14,7 @@ using R2API;
 using System.Collections.ObjectModel;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using RainrotSharedUtils.Difficulties;
 
 namespace RiskierRain
 {
@@ -48,6 +49,7 @@ namespace RiskierRain
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
         public static float difficultySpawnRateFactor = 0.4f;//0.4f, additive
+        public static int ambientLevelCapDrizzle = 99;//99
         public static int ambientLevelCap = 999;//99
 
         public static float easyTeleParticleRadius = 1f;
@@ -56,97 +58,10 @@ namespace RiskierRain
         public static float eclipseTeleParticleRadius = 0.4f;
         public static float defaultTeleParticleRadius = 0.9f;
 
-        #region tele particle scale
-        private void DifficultyDependentTeleParticles()
-        {
-            drizzleDesc += $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
-            rainstormDesc += $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
-            monsoonDesc += $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
-
-            On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
-        }
-        private void TeleporterParticleScale(On.RoR2.TeleporterInteraction.BaseTeleporterState.orig_OnEnter orig, RoR2.TeleporterInteraction.BaseTeleporterState self)
-        {
-            orig(self);
-            float particleScale = 1f;
-            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
-            if(selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
-            {
-                particleScale = 0;
-            }
-            else
-            {
-                switch (Run.instance.selectedDifficulty)
-                {
-                    default:
-                        particleScale = eclipseTeleParticleRadius;
-                        break;
-                    case RoR2.DifficultyIndex.Hard:
-                        particleScale = hardTeleParticleRadius;
-                        break;
-                    case RoR2.DifficultyIndex.Normal:
-                        particleScale = normalTeleParticleRadius;
-                        break;
-                    case RoR2.DifficultyIndex.Easy:
-                        particleScale = easyTeleParticleRadius;
-                        break;
-                    case RoR2.DifficultyIndex.Count:
-                        break;
-                    case RoR2.DifficultyIndex.Invalid:
-                        break;
-                }
-            }
-
-
-            TeleporterInteraction component = self.GetComponent<TeleporterInteraction>();
-            bool flag5 = component && component.modelChildLocator;
-            if (flag5)
-            {
-                Transform transform = component.transform.Find("TeleporterBaseMesh/BuiltInEffects/PassiveParticle, Sphere");
-                if (transform)
-                {
-                    //Debug.Log(transform.localScale);
-                    transform.localScale = Vector3.one * defaultTeleParticleRadius * particleScale;
-                }
-            }
-        }
-        #endregion
-
         #region ambient level
         internal static float GetAmbientLevelBoost()
         {
-            float difficultyBoost = 0f;
-            if (!useAmbientLevel)
-                return difficultyBoost;
-
-            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
-            if (selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
-                return eclipseDifficultyBoost;
-
-            switch (selectedDifficulty)
-            {
-                default:
-                    if (selectedDifficulty >= eclipseLevelVeryHard)
-                        difficultyBoost = eclipseDifficultyBoost;
-                    else
-                        difficultyBoost = monsoonDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Hard:
-                    difficultyBoost = monsoonDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Normal:
-                    difficultyBoost = rainstormDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Easy:
-                    difficultyBoost = drizzleDifficultyBoost;
-                    break;
-                case RoR2.DifficultyIndex.Count:
-                    break;
-                case RoR2.DifficultyIndex.Invalid:
-                    break;
-            }
-
-            return difficultyBoost;
+            return DifficultyUtilsModule.GetAmbientLevelBoost();
         }
         void FreezeTimeScalingOnFinalLevels()
         {
@@ -163,33 +78,84 @@ namespace RiskierRain
             return !SceneCatalog.mostRecentSceneDef.isFinalStage;
         }
 
-        public static bool useAmbientLevel = false;
         void ChangeDifficultyCoefficientCalculation()
         {
-            useAmbientLevel = true;
             Run.ambientLevelCap = ambientLevelCap;
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
+
+            drizzleDesc += $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +
+                $"\n>{Tier2EliteName} Elites: <style=cIsHealing>Stage {Tier2EliteMinimumStageDrizzle}</style>" +
+                $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
+
+            rainstormDesc += $"\n>{Tier2EliteName} Elites: Stage {Tier2EliteMinimumStageRainstorm}" +
+                $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
+
+            monsoonDesc += $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
+                $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
+
+            RoR2Application.onLoad += AddDifficultyStats;
         }
 
-        private void CorrectDifficultyBar(ILContext il)
+        private void AddDifficultyStats()
         {
-            ILCursor c = new ILCursor(il);
+            for (int i = (int)DifficultyIndex.Easy; i < (int)DifficultyIndex.Count; i++)
+            {
+                DifficultyIndex difficultyIndex = (DifficultyIndex)i;
+                DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficultyIndex);
+                MoreDifficultyStats.StartingDifficulty startingDifficulty = 0;
+                float levelBoost = 0;
+                float difficultyBoost = difficultyDef.scalingValue - 1;
+                int levelCap = ambientLevelCap;
+                int tier2Stage = 5;
+                float teleParticleRangeMultiplier = 1;
 
-            bool b = c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<Run>("get_ambientLevel"));
-            if (!b)
-            {
-                DebugBreakpoint(nameof(CorrectDifficultyBar));
-                return;
+                switch (difficultyIndex)
+                {
+                    case DifficultyIndex.Easy:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Easy;
+                        levelBoost = drizzleDifficultyBoost;
+                        tier2Stage = Tier2EliteMinimumStageDrizzle;
+                        teleParticleRangeMultiplier = easyTeleParticleRadius;
+                        levelCap = ambientLevelCapDrizzle;
+                        break;
+                    case DifficultyIndex.Normal:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Medium;
+                        levelBoost = rainstormDifficultyBoost;
+                        tier2Stage = Tier2EliteMinimumStageRainstorm;
+                        teleParticleRangeMultiplier = normalTeleParticleRadius;
+                        break;
+                    case DifficultyIndex.Hard:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Hard;
+                        levelBoost = monsoonDifficultyBoost;
+                        tier2Stage = Tier2EliteMinimumStageMonsoon;
+                        teleParticleRangeMultiplier = hardTeleParticleRadius;
+                        break;
+                    //assumes eclipse
+                    default:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Hard;
+                        levelBoost = monsoonDifficultyBoost;
+                        tier2Stage = Tier2EliteMinimumStageMonsoon;
+                        teleParticleRangeMultiplier = hardTeleParticleRadius;
+                        if (difficultyIndex >= eclipseLevelVeryHard)
+                        {
+                            levelBoost = eclipseDifficultyBoost;
+                            difficultyBoost += 1;
+                            startingDifficulty = MoreDifficultyStats.StartingDifficulty.VeryHard;
+                        }
+                        break;
+                }
+
+                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+                difficultyStats.startingDifficultyDisplay = (float)startingDifficulty;
+                difficultyStats.startingLevelBoost = levelBoost;
+                difficultyStats.startingDifficultyCoefficientBoost = difficultyBoost;
+                difficultyStats.ambientLevelCap = levelCap;
+                difficultyStats.tier2EliteStage = tier2Stage;
+                difficultyStats.teleporterParticleRangeMultiplier = teleParticleRangeMultiplier;
             }
-            c.EmitDelegate<Func<float, float>>((levelIn) =>
-            {
-                if (Run.instance.selectedDifficulty != DifficultyIndex.Easy)
-                    return levelIn;
-                return levelIn + 3f;
-            });
         }
 
         private void DirectorCreditGainChanges(ILContext il)

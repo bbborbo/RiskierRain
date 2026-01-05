@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using RainrotSharedUtils.Difficulties;
+using RoR2;
 using SwanSongExtended.Interactables;
 using System;
 using System.Collections.Generic;
@@ -75,28 +76,22 @@ namespace SwanSongExtended.Storms
             if (stormType == StormType.None)
                 return;
 
+            if (!DifficultyUtilsModule.ValidateCachedDifficultyStats())
+                return;
+
+            float stormTime = DifficultyUtilsModule.cachedDifficultyStats.desiredStormTime_ForSwanSong;
+            float warningTime = DifficultyUtilsModule.cachedDifficultyStats.desiredStormWarningTime_ForSwanSong;
+            if (stormTime == -1)
+                return;
+
             GameObject stormControllerObject = Instantiate(StormsCore.StormsControllerPrefab);
             stormControllerInstance = stormControllerObject.GetComponent<StormController>();
 
-            float a = drizzleStormDelayMinutes;
-            float b = drizzleStormWarningMinutes;
-            bool isUltraHard = Run.instance.selectedDifficulty == SwanSongPlugin.difficultyIndexExtinction;
-            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard || isUltraHard)
-            {
-                a = monsoonStormDelayMinutes;
-                b = monsoonStormWarningMinutes;
-            }
-            else if (Run.instance.selectedDifficulty == DifficultyIndex.Normal)
-            {
-                a = rainstormStormDelayMinutes;
-                b = rainstormStormWarningMinutes;
-            }
+            if (Run.instance.stageClearCount == 0 && DifficultyUtilsModule.cachedDifficultyStats.delayFirstStorm_ForSwanSong)
+                stormTime += 1.5f;
+            stormTime += Run.instance.stageRng.RangeFloat(0, 1);
 
-            if (Run.instance.stageClearCount == 0 && !isUltraHard)
-                a += 1.5f;
-            a += Run.instance.stageRng.RangeFloat(0, 1);
-
-            stormControllerInstance.BeginStormApproach(a, b);
+            stormControllerInstance.BeginStormApproach(stormTime, warningTime);
 
             if (NetworkServer.active)
             {

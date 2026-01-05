@@ -12,6 +12,7 @@ using UnityEngine.Networking;
 using static SwanSongExtended.Storms.StormRunBehavior;
 using static SwanSongExtended.Storms.StormsCore;
 using static R2API.DamageAPI;
+using RainrotSharedUtils.Difficulties;
 
 namespace SwanSongExtended.Storms
 {
@@ -140,6 +141,13 @@ namespace SwanSongExtended.Storms
             {
                 //stormController.combatDirector.enabled = true;
             }
+            public float GetStormIntensityIncrement()
+            {
+                if (!DifficultyUtilsModule.ValidateCachedDifficultyStats())
+                    return 0;
+
+                return DifficultyUtilsModule.cachedDifficultyStats.stormIntensifyStrength_ForSwanSong;
+            }
         }
         internal class StormActive : BaseStormState
         {
@@ -185,7 +193,7 @@ namespace SwanSongExtended.Storms
                 if(stormStrengthIncreaseCountdown <= 0 && Run.instance)
                 {
                     stormStrengthIncreaseCountdown += StormsCore.stormStrengthIncreaseTimerSeconds;
-                    stormStrength += stormStrengthIncreaseBase + DifficultyCatalog.GetDifficultyDef(Run.instance.selectedDifficulty).scalingValue * stormStrengthIncreasePerDifficulty;
+                    stormStrength += GetStormIntensityIncrement();
                     Chat.AddMessage("<style=cIsUtility>The storm intensifies...</style>");
                 }
                 if (!NetworkServer.active)
@@ -532,7 +540,10 @@ namespace SwanSongExtended.Storms
                 {
                     if (stormType > StormType.None)
                     {
-                        outer.SetNextState(new StormWarning());
+                        if (stormController.stormWarningTime > 0)
+                            outer.SetNextState(new StormWarning());
+                        else
+                            outer.SetNextState(new StormActive());
                     }
                 }
             }

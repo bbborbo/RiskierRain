@@ -32,7 +32,7 @@ namespace SwanSongExtended
         public static string extinctionDescExtra =
             $"\n>Rare Elites: <style=cArtifact>Stage 4</style>" +
             $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
-            $"\n>Enemies gain <style=cArtifact>unique scaling</style></style>" +
+            $"\n>Enemies gain <style=cArtifact>unique scaling</style>" +
             $"\n>Enemies gain <style=cArtifact>tripled projectiles</style></style>";
         public static string extinctionDesc =
             extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra;

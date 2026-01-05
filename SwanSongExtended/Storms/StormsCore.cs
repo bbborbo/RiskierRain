@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using R2API;
+using RainrotSharedUtils.Difficulties;
 using RainrotSharedUtils.Shelters;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -58,9 +59,11 @@ namespace SwanSongExtended.Storms
         public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
         public static ModdedDamageType stormDamageType;
 
+
         public static void Init()
         {
             ShelterUtilsModule.UseGlobalShelters = true;
+            RoR2Application.onLoad += AddDifficultyStats;
             stormDamageType = ReserveDamageType();
             CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
@@ -106,6 +109,54 @@ namespace SwanSongExtended.Storms
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
         }
 
+        private static void AddDifficultyStats()
+        {
+            for (int i = (int)DifficultyIndex.Easy; i < (int)DifficultyIndex.Count; i++)
+            {
+                DifficultyIndex difficultyIndex = (DifficultyIndex)i;
+                DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficultyIndex);
+                MoreDifficultyStats.StartingDifficulty startingDifficulty = 0;
+                float desiredStormTime = -1;
+                float desiredStormWarningTime = -1;
+                float stormIntensifyStrength = -1;
+                bool delayFirstStorm = true;
+
+                switch (difficultyIndex)
+                {
+                    case DifficultyIndex.Easy:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Easy;
+                        desiredStormTime = drizzleStormDelayMinutes;
+                        desiredStormWarningTime = drizzleStormWarningMinutes;
+                        stormIntensifyStrength = stormStrengthIncreaseBase + stormStrengthIncreasePerDifficulty * 1;
+                        break;
+                    case DifficultyIndex.Normal:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Medium;
+                        desiredStormTime = rainstormStormDelayMinutes;
+                        desiredStormWarningTime = rainstormStormWarningMinutes;
+                        stormIntensifyStrength = stormStrengthIncreaseBase + stormStrengthIncreasePerDifficulty * 2;
+                        break;
+                    case DifficultyIndex.Hard:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Hard;
+                        desiredStormTime = monsoonStormDelayMinutes;
+                        desiredStormWarningTime = monsoonStormWarningMinutes;
+                        stormIntensifyStrength = stormStrengthIncreaseBase + stormStrengthIncreasePerDifficulty * 3;
+                        break;
+                    //assumes eclipse
+                    default:
+                        startingDifficulty = MoreDifficultyStats.StartingDifficulty.Hard;
+                        desiredStormTime = monsoonStormDelayMinutes;
+                        desiredStormWarningTime = monsoonStormWarningMinutes;
+                        stormIntensifyStrength = stormStrengthIncreaseBase + stormStrengthIncreasePerDifficulty * 3;
+                        break;
+                }
+
+                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+                difficultyStats.desiredStormTime_ForSwanSong = desiredStormTime;
+                difficultyStats.desiredStormWarningTime_ForSwanSong = desiredStormWarningTime;
+                difficultyStats.delayFirstStorm_ForSwanSong = delayFirstStorm;
+                difficultyStats.stormIntensifyStrength_ForSwanSong = stormIntensifyStrength;
+            }
+        }
 
         private static void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
         {

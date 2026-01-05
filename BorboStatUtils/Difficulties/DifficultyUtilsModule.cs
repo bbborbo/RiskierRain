@@ -33,6 +33,10 @@ namespace RainrotSharedUtils.Difficulties
         public int tier1AndHalfEliteStage = 3;
         public float teleporterParticleRangeMultiplier = 1;
 
+        public float desiredStormTime_ForSwanSong = -1;
+        public float desiredStormWarningTime_ForSwanSong = -1;
+        public bool delayFirstStorm_ForSwanSong = true;
+        public float stormIntensifyStrength_ForSwanSong = -1f;
     }
     public static class DifficultyUtilsModule
     {

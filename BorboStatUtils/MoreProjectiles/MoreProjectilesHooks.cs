@@ -155,8 +155,11 @@ namespace RainrotSharedUtils.MoreProjectiles
                 return;
             }
             c.Emit(OpCodes.Ldloc, orbLoc);
-            c.EmitDelegate<Action<Orb>>((orb) =>
+            c.Emit(OpCodes.Ldarg, 0);
+            c.EmitDelegate<Action<Orb, EntityState>>((orb, state) =>
             {
+                if (!MoreProjectilesModule.IsMoreProjectilesActiveForBody(state.characterBody))
+                    return;
                 OrbManager.instance.AddOrb(orb);
                 OrbManager.instance.AddOrb(orb);
             });

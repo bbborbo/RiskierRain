@@ -85,14 +85,20 @@ namespace RiskierRain
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
             IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
 
-            drizzleDesc += $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +
+            drizzleDesc +=
+                $"\n>Starting Difficulty: <style=cIsHealing>Easy</style>" + 
+                $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +
                 $"\n>{Tier2EliteName} Elites: <style=cIsHealing>Stage {Tier2EliteMinimumStageDrizzle}</style>" +
                 $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
 
-            rainstormDesc += $"\n>{Tier2EliteName} Elites: Stage {Tier2EliteMinimumStageRainstorm}" +
+            rainstormDesc +=
+                $"\n>Starting Difficulty: Medium" + 
+                $"\n>{Tier2EliteName} Elites: Stage {Tier2EliteMinimumStageRainstorm}" +
                 $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
 
-            monsoonDesc += $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
+            monsoonDesc +=
+                $"\n>Starting Difficulty: <style=cIsHealth>Hard</style>" + 
+                $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
                 $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
 
             RoR2Application.onLoad += AddDifficultyStats;

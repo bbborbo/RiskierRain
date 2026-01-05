@@ -80,7 +80,8 @@ namespace SwanSongExtended.Storms
 
             float a = drizzleStormDelayMinutes;
             float b = drizzleStormWarningMinutes;
-            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard || un.instance.selectedDifficulty == SwanSongPlugin.difficultyIndexExtinction)
+            bool isUltraHard = Run.instance.selectedDifficulty == SwanSongPlugin.difficultyIndexExtinction;
+            if (Run.instance.selectedDifficulty >= DifficultyIndex.Hard || isUltraHard)
             {
                 a = monsoonStormDelayMinutes;
                 b = monsoonStormWarningMinutes;
@@ -91,7 +92,7 @@ namespace SwanSongExtended.Storms
                 b = rainstormStormWarningMinutes;
             }
 
-            if (Run.instance.stageClearCount == 0)
+            if (Run.instance.stageClearCount == 0 && !isUltraHard)
                 a += 1.5f;
             a += Run.instance.stageRng.RangeFloat(0, 1);
 

@@ -1,8 +1,11 @@
-﻿using MonoMod.Cil;
+﻿using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
@@ -75,6 +78,52 @@ namespace SwanSongExtended
             GetStatCoefficients += this.MonsoonPlusStatBuffs2;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
+
+
+            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
+            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
+            //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
+        }
+
+        /// <summary>
+        /// For compensating rewards to the amount expected at stage start
+        /// </summary>
+        /// <returns></returns>
+        static float GetCompensatedDifficultyFraction()
+        {
+            float entryDiffCoeff = GetCompensatedStageEntryDifficulty();
+            return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
+        }
+
+        static float GetCompensatedStageEntryDifficulty()
+        {
+            float entryDiffCoeff = Stage.instance.entryDifficultyCoefficient;
+            float startingDifficulty = GetDifficultyCoefficient(Run.instance, 0, 0, out _);//GetAmbientLevelBoost();
+            entryDiffCoeff = Mathf.Lerp(entryDiffCoeff, entryDiffCoeff - startingDifficulty, 1.0f);
+            return entryDiffCoeff;
+        }
+
+        private static void FixGoldRewards(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<uint, uint>>((money) =>
+            {
+                float compensated = GetCompensatedDifficultyFraction();
+                return (uint)Mathf.CeilToInt(money * compensated);
+            });
+            c.Emit(OpCodes.Starg, 1);
+        }
+        private static void FixExpRewards(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            c.Emit(OpCodes.Ldarg_1);
+            c.EmitDelegate<Func<uint, uint>>((exp) =>
+            {
+                float compensated = GetCompensatedDifficultyFraction();
+                return (uint)Mathf.CeilToInt(exp * compensated);
+            });
+            c.Emit(OpCodes.Starg, 1);
         }
 
         private void CorrectDifficultyBar(ILContext il)

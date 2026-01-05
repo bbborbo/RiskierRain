@@ -18,6 +18,11 @@ namespace MissileRework
 {
     public partial class MissileReworkPlugin
     {
+        private bool IsVanillaIcbmHeld(CharacterBody sender)
+        {
+            return sender.inventory && sender.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile) > 0;
+        }
+
         internal void ReworkIcbm()
         {
             DisableICBM();

@@ -39,7 +39,7 @@ namespace SwanSongExtended.Storms
 
             return st;
         }
-        static bool IsStormStage(SceneDef currentScene)
+        public static bool IsStormStage(SceneDef currentScene)
         {
             if (currentScene.sceneType != SceneType.Stage) return false;
             if (currentScene.isFinalStage) return false;

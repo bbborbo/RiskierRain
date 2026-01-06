@@ -25,6 +25,7 @@ using RoR2.Orbs;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
 using System.Linq;
+using EntityStates.Bell.BellWeapon;
 
 namespace RainrotSharedUtils.MoreProjectiles
 {
@@ -253,6 +254,68 @@ namespace RainrotSharedUtils.MoreProjectiles
                     MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
                 }
             });
+        }
+
+        public static void MissileArtifact_ChargeTrioBomb(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            //ILLabel bellCountLoc = c.DefineLabel();
+            //ILLabel bellTransformLoc = c.DefineLabel();
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdcI4(3)
+                );
+            if (!b1)
+            {
+                SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_ChargeTrioBomb), 1);
+                return;
+            }
+            //c.MarkLabel(bellCountLoc);
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, ChargeTrioBomb, int>>((bellCount, self) =>
+            {
+                if (!MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+                    return bellCount;
+                return bellCount + 2;
+            });
+        }
+
+        public static Transform MissileArtifact_FindTrioBombTransform(On.EntityStates.Bell.BellWeapon.ChargeTrioBomb.orig_FindTargetChildTransformFromBombIndex orig, EntityStates.Bell.BellWeapon.ChargeTrioBomb self)
+        {
+            Transform t = orig(self);
+            if (t == null && self.currentBombIndex >= 3)
+            {
+                t = GenerateTransform(self.transform, self.currentBombIndex);
+                //if(t != null)
+                //    self.childLocator.AddChild("ProjectilePosition" + self.currentBombIndex, t);
+            }
+            return t;
+            Transform GenerateTransform(Transform parent, int index)
+            {
+                var baseRadius = 3.8f;
+                float startingPos = 0f;
+                int firstRingSize = 7;
+                float radius = baseRadius;
+
+                    float currentStepSize = 2 * Mathf.PI / firstRingSize;
+                    int step = Mathf.FloorToInt(index / 2);
+                    int clockwise = (index % 2 == 0) ? 1 : -1;
+                    float currentPos = startingPos + (currentStepSize * step) * clockwise;
+
+                        float x = Mathf.Sin(currentPos) * radius;
+                        float y = Mathf.Cos(currentPos) * radius;
+                        float z = 0f;
+                        Vector3 vector = new Vector3(x, y, z);
+                        GameObject newGameObject = new GameObject();
+                        newGameObject.name = "ProjectilePosition" + self.currentBombIndex;
+                        newGameObject.transform.parent = parent;
+                        newGameObject.transform.localPosition = vector;
+                        newGameObject.transform.localScale = Vector3.one;
+                        newGameObject.transform.rotation = Quaternion.identity;
+                        Transform newTransform = newGameObject.transform;
+                        return newTransform;
+            }
         }
 
         #region simples

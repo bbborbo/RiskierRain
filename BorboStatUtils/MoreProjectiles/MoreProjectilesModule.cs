@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using MonoMod.Cil;
+using RoR2;
 using RoR2.Projectile;
 using System;
 using System.Collections.Generic;
@@ -163,9 +164,11 @@ namespace RainrotSharedUtils.MoreProjectiles
             On.EntityStates.BrotherMonster.UltChannelState.OnEnter += MissileArtifact_BrotherUltChannelState;
             //greater wisp
             On.EntityStates.GreaterWispMonster.FireCannons.OnEnter += MissileArtifact_GreaterWispFireCannons;
+            //brass contraption
+            IL.EntityStates.Bell.BellWeapon.ChargeTrioBomb.FixedUpdate += MissileArtifact_ChargeTrioBomb;
+            On.EntityStates.Bell.BellWeapon.ChargeTrioBomb.FindTargetChildTransformFromBombIndex += MissileArtifact_FindTrioBombTransform;
             #endregion
         }
-
 
         public static void FireWarfareProjectilesSimple(CharacterBody body, float damageCoefficient, string assetGuid)
         {

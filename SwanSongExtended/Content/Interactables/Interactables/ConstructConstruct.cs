@@ -77,11 +77,18 @@ namespace SwanSongExtended.Interactables
             cd.maximumNumberToSpawnBeforeSkipping = 6;
             cd.teamIndex = TeamIndex.Monster;
             cd.fallBackToStageMonsterCards = false;
+            cd.shouldSpawnOneWave = true;
+            cd.skipSpawnIfTooCheap = false;
+            cd.increaseSpawnDistanceOnFailure = true;
+            cd.goldRewardCoefficient = 1.0f;
+            cd.maxSpawnDistance = float.PositiveInfinity;
             cd.onSpawnedServer = new OnSpawnedServer();
             cd.onSpawnedServer.AddPersistentListener(OnGalleryDirectorSpawnServer);
             cd.combatSquad = cs;
+            cd.enabled = false;
+
             ConstructCombatShrineBehavior ccsb = interaction.gameObject.AddComponent<ConstructCombatShrineBehavior>();
-            ccsb.baseMonsterCredit = 40; // quote orange, "//this might be way too much well see :3"
+            ccsb.baseMonsterCredit = 60; // quote orange, "//this might be way too much well see :3"
             ccsb.maxPurchaseCount = 1;
             ccsb.monsterCreditCoefficientPerPurchase = 2;
 

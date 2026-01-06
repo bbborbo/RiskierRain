@@ -142,9 +142,10 @@ namespace SwanSongExtended.Interactables
             CombatDirector cd = interaction.gameObject.AddComponent<CombatDirector>();
             cd.expRewardCoefficient = 1f;
             cd.goldRewardCoefficient = 1f;
-            cd.eliteBias = 1;
+            cd.eliteBias = 0;
             cd.maximumNumberToSpawnBeforeSkipping = 6;
             cd.teamIndex = TeamIndex.Lunar;
+            cd.shouldSpawnOneWave = true;
             cd.fallBackToStageMonsterCards = true;
             cd.onSpawnedServer = new OnSpawnedServer();
             cd.combatSquad = cs;

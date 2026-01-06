@@ -13,6 +13,9 @@ using EntityStates.NullifierMonster;
 using RoR2.Skills;
 using EntityStates.BeetleQueenMonster;
 using RiskierRain.Components;
+using SwanSongExtended.Modules;
+using RoR2.ContentManagement;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace RiskierRain
 {
@@ -163,7 +166,7 @@ namespace RiskierRain
                 orig(self);
             };
 
-            gupSpawnCard = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/Gup/cscGupBody.asset").WaitForCompletion();
+            gupSpawnCard = CoreModules.SpawnCards.Gup;
             gupSpawnCard.directorCreditCost = gupCreditCost;
 
             gupPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GupBody.prefab").WaitForCompletion();
@@ -360,6 +363,45 @@ namespace RiskierRain
                 EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
                 orig(self);
             };
+        }
+        #endregion
+
+        #region alloyed collective
+        public static int solusScorcherCreditCost = 20; //18
+        public static float solusScorcherBaseHealth = 120; //175
+        public static float solusScorcherBaseMovespeed = 9; //15
+        void ChangeSolusScorcher()
+        {
+            SpawnCards.LoadSpawnCardAsync(RoR2_DLC3_Tanker.cscTanker_asset, ScorcherCredits);
+            void ScorcherCredits(CharacterSpawnCard spawnCard)
+            {
+                spawnCard.directorCreditCost = solusScorcherCreditCost;
+            }
+            Tools.LoadCharacterBodyAsync(RoR2_DLC3_Tanker.TankerBody_prefab, ScorcherStats);
+            void ScorcherStats(CharacterBody body)
+            {
+                body.baseMoveSpeed = solusScorcherBaseMovespeed;
+                body.baseMaxHealth = solusScorcherBaseHealth;
+                body.levelMaxHealth = solusScorcherBaseHealth * 0.3f;
+            }
+        }
+        public static int solusProspectorCreditCost = 14; //11
+        public static float solusProspectorBaseHealth = 140; //160
+        public static float solusProspectorBaseMovespeed = 11.5f; //11.5
+        void ChangeSolusProspector()
+        {
+            SpawnCards.LoadSpawnCardAsync(RoR2_DLC3_WorkerUnit.cscWorkerUnit_asset, ProspectorCredits);
+            void ProspectorCredits(CharacterSpawnCard spawnCard)
+            {
+                spawnCard.directorCreditCost = solusProspectorCreditCost;
+            }
+            Tools.LoadCharacterBodyAsync(RoR2_DLC3_WorkerUnit.WorkerUnitBody_prefab, ProspectorStats);
+            void ProspectorStats(CharacterBody body)
+            {
+                body.baseMoveSpeed = solusProspectorBaseMovespeed;
+                body.baseMaxHealth = solusProspectorBaseHealth;
+                body.levelMaxHealth = solusProspectorBaseHealth * 0.3f;
+            }
         }
         #endregion
     }

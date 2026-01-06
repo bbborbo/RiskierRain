@@ -695,8 +695,20 @@ namespace RiskierRain
                 GupChanges();
             }
 
+            //solus scorcher
+            if (GetConfigBool(true, "Enemy: Solus "))
+            {
+                ChangeSolusScorcher();
+            }
+
+            //solus prospector
+            if (GetConfigBool(true, "Enemy: Solus "))
+            {
+                ChangeSolusProspector();
+            }
+
             //halcyonite shrine
-            if(GetConfigBool(true, "Economy: Halcyonite Shrine"))
+            if (GetConfigBool(true, "Economy: Halcyonite Shrine"))
             {
                 ChangeHalcyoniteShrineGoldRequirements();
             }

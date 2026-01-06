@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2;
+using UnityEngine.AddressableAssets;
+using RoR2.ContentManagement;
 
 namespace RiskierRain
 {
@@ -172,5 +174,19 @@ namespace RiskierRain
 
 
         #endregion
+
+        public static void LoadCharacterBodyAsync(string guid, Action<CharacterBody> callback)
+        {
+            AssetReferenceT<GameObject> ref1 = new AssetReferenceT<GameObject>(guid);
+            AssetAsyncReferenceManager<GameObject>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                GameObject result = ctx.Result;
+                if (result == null)
+                    return;
+
+                if(result.TryGetComponent(out CharacterBody body))
+                    callback.Invoke(body);
+            };
+        }
     }
 }

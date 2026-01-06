@@ -64,7 +64,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.2.19";
+        public const string version = "1.3.2";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -695,8 +695,20 @@ namespace RiskierRain
                 GupChanges();
             }
 
+            //solus scorcher
+            if (GetConfigBool(true, "Enemy: Solus Scorcher"))
+            {
+                ChangeSolusScorcher();
+            }
+
+            //solus prospector
+            if (GetConfigBool(true, "Enemy: Solus Prospector"))
+            {
+                ChangeSolusProspector();
+            }
+
             //halcyonite shrine
-            if(GetConfigBool(true, "Economy: Halcyonite Shrine"))
+            if (GetConfigBool(true, "Economy: Halcyonite Shrine"))
             {
                 ChangeHalcyoniteShrineGoldRequirements();
             }

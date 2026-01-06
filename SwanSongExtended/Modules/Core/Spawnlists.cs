@@ -6,6 +6,8 @@ using R2API;
 using static R2API.DirectorAPI;
 using RoR2;
 using UnityEngine.AddressableAssets;
+using RoR2.ContentManagement;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace SwanSongExtended.Modules
 {
@@ -26,6 +28,16 @@ namespace SwanSongExtended.Modules
     public static class SpawnCards
     {
         public static bool initialized = false;
+        public static void LoadSpawnCardAsync(string guid, Action<CharacterSpawnCard> callback)
+        {
+            AssetReferenceT<CharacterSpawnCard> ref1 = new AssetReferenceT<CharacterSpawnCard>(guid);
+            AssetAsyncReferenceManager<CharacterSpawnCard>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                CharacterSpawnCard itemDef = ctx.Result;
+                if (callback != null)
+                    callback.Invoke(itemDef);
+            };
+        }
 
         public static CharacterSpawnCard AlphaConstruct;
 
@@ -76,7 +88,7 @@ namespace SwanSongExtended.Modules
             if (initialized) return;
             initialized = true;
 
-            AlphaConstruct = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/MajorAndMinorConstruct/cscMinorConstruct.asset").WaitForCompletion();
+            AlphaConstruct = Addressables.LoadAssetAsync<CharacterSpawnCard>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_MajorAndMinorConstruct.cscMinorConstruct_asset).WaitForCompletion();
 
             Beetle = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/cscbeetle");
             Lemurian = LegacyResourcesAPI.Load<CharacterSpawnCard>("spawncards/characterspawncards/csclemurian");

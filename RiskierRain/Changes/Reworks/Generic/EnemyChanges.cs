@@ -13,6 +13,9 @@ using EntityStates.NullifierMonster;
 using RoR2.Skills;
 using EntityStates.BeetleQueenMonster;
 using RiskierRain.Components;
+using SwanSongExtended.Modules;
+using RoR2.ContentManagement;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace RiskierRain
 {
@@ -24,15 +27,11 @@ namespace RiskierRain
         GameObject vagrantPrefab;
         void VagrantChanges()
         {
-            vagrantPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Vagrant/VagrantBody.prefab").WaitForCompletion();
-            if (vagrantPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_Base_Vagrant.VagrantBody_prefab, BodyStats);
+            void BodyStats(CharacterBody body)
             {
-                CharacterBody vagrantBody = vagrantPrefab.GetComponent<CharacterBody>();
-                if (vagrantBody) 
-                {
-                    vagrantBody.baseMaxHealth = vagrantBaseHealth;
-                    vagrantBody.levelMaxHealth = vagrantBaseHealth * 0.3f;
-                }
+                body.baseMaxHealth = vagrantBaseHealth;
+                body.levelMaxHealth = vagrantBaseHealth * 0.3f;
             }
         }
 
@@ -72,18 +71,14 @@ namespace RiskierRain
         float pestSpitVelocity = 70; // 100
         void PestChanges()
         {
-            pestPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/FlyingVermin/FlyingVerminBody.prefab").WaitForCompletion();
-            if (pestPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_DLC1_FlyingVermin.FlyingVerminBody_prefab, BodyStats);
+            void BodyStats(CharacterBody body)
             {
-                CharacterBody pestBody = pestPrefab.GetComponent<CharacterBody>();
-                if (pestBody) 
-                {
-                    pestBody.baseMaxHealth = pestBaseHealth;
-                    pestBody.levelMaxHealth = pestBaseHealth * 0.3f;
-                    pestBody.baseDamage = pestBaseDamage;
-                    pestBody.levelDamage = pestBaseDamage * 0.2f;
-                    pestBody.baseMoveSpeed = pestBaseSpeed;
-                }
+                body.baseMaxHealth = pestBaseHealth;
+                body.levelMaxHealth = pestBaseHealth * 0.3f;
+                body.baseDamage = pestBaseDamage;
+                body.levelDamage = pestBaseDamage * 0.2f;
+                body.baseMoveSpeed = pestBaseSpeed;
             }
 
             pestSpit = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/FlyingVermin/VerminSpitProjectile.prefab").WaitForCompletion();
@@ -163,58 +158,46 @@ namespace RiskierRain
                 orig(self);
             };
 
-            gupSpawnCard = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/Gup/cscGupBody.asset").WaitForCompletion();
+            gupSpawnCard = CoreModules.SpawnCards.Gup;
             gupSpawnCard.directorCreditCost = gupCreditCost;
 
-            gupPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GupBody.prefab").WaitForCompletion();
-            if (gupPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_DLC1_Gup.GupBody_prefab, GupStats);
+            void GupStats(CharacterBody body)
             {
-                CharacterBody body = gupPrefab.GetComponent<CharacterBody>();
-                if (body)
-                {
-                    body.baseMaxHealth = gupBaseHealth;
-                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
-                    body.baseArmor = gupBaseArmor;
-                    body.baseDamage = gupBaseDamage;
-                    body.levelDamage = body.baseDamage * 0.2f;
-                    body.baseMoveSpeed = gupBaseSpeed;
-                    body.baseRegen = gupBaseRegen;
-                    body.levelRegen = body.baseRegen * 0.2f;
-                }
+                body.baseMaxHealth = gupBaseHealth;
+                body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                body.baseArmor = gupBaseArmor;
+                body.baseDamage = gupBaseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
+                body.baseMoveSpeed = gupBaseSpeed;
+                body.baseRegen = gupBaseRegen;
+                body.levelRegen = body.baseRegen * 0.2f;
             }
 
-            geepPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GeepBody.prefab").WaitForCompletion();
-            if (geepPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_DLC1_Gup.GeepBody_prefab, GeepStats);
+            void GeepStats(CharacterBody body)
             {
-                CharacterBody body = geepPrefab.GetComponent<CharacterBody>();
-                if (body)
-                {
-                    body.baseMaxHealth = geepBaseHealth;
-                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
-                    body.baseArmor = geepBaseArmor;
-                    body.baseDamage = geepBaseDamage;
-                    body.levelDamage = body.baseDamage * 0.2f;
-                    body.baseMoveSpeed = geepBaseSpeed;
-                    body.baseRegen = geepBaseRegen;
-                    body.levelRegen = body.baseRegen * 0.2f;
-                }
+                body.baseMaxHealth = geepBaseHealth;
+                body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                body.baseArmor = geepBaseArmor;
+                body.baseDamage = geepBaseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
+                body.baseMoveSpeed = geepBaseSpeed;
+                body.baseRegen = geepBaseRegen;
+                body.levelRegen = body.baseRegen * 0.2f;
             }
 
-            gipPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Gup/GipBody.prefab").WaitForCompletion();
-            if (gipPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_DLC1_Gup.GipBody_prefab, GipStats);
+            void GipStats(CharacterBody body)
             {
-                CharacterBody body = gipPrefab.GetComponent<CharacterBody>();
-                if (body)
-                {
-                    body.baseMaxHealth = gipBaseHealth;
-                    body.levelMaxHealth = body.baseMaxHealth * 0.3f;
-                    body.baseArmor = gipBaseArmor;
-                    body.baseDamage = gipBaseDamage;
-                    body.levelDamage = body.baseDamage * 0.2f;
-                    body.baseMoveSpeed = gipBaseSpeed;
-                    body.baseRegen = gipBaseRegen;
-                    body.levelRegen = body.baseRegen * 0.2f;
-                }
+                body.baseMaxHealth = gipBaseHealth;
+                body.levelMaxHealth = body.baseMaxHealth * 0.3f;
+                body.baseArmor = gipBaseArmor;
+                body.baseDamage = gipBaseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
+                body.baseMoveSpeed = gipBaseSpeed;
+                body.baseRegen = gipBaseRegen;
+                body.levelRegen = body.baseRegen * 0.2f;
             }
         }
         #endregion
@@ -236,18 +219,14 @@ namespace RiskierRain
         #region void barnacle
         GameObject barnaclePrefab;
 
-        float fuckRegen = 0;
+        float fuckBarnacleRegen = 0;
         void BarnacleChanges()
         {
-            barnaclePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidBarnacle/VoidBarnacleBody.prefab").WaitForCompletion();
-            if (barnaclePrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_DLC1_VoidBarnacle.VoidBarnacleBody_png, BodyStats);
+            void BodyStats(CharacterBody body)
             {
-                CharacterBody barnacleBody = barnaclePrefab.GetComponent<CharacterBody>();
-                if (barnacleBody)
-                {
-                    barnacleBody.baseRegen = fuckRegen;
-                    barnacleBody.levelRegen = fuckRegen;
-                }
+                body.baseRegen = fuckBarnacleRegen;
+                body.levelRegen = fuckBarnacleRegen * 0.2f;
             }
         }
         #endregion
@@ -257,15 +236,11 @@ namespace RiskierRain
 
         void LesserWispCHanges()
         {
-            lesserWispPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Wisp/WispBody.prefab ").WaitForCompletion();
-            if (lesserWispPrefab)
+            Tools.LoadCharacterBodyAsync(RoR2_Base_Wisp.WispBody_prefab, BodyStats);
+            void BodyStats(CharacterBody lesserWispBody)
             {
-                CharacterBody lesserWispBody = lesserWispPrefab.GetComponent<CharacterBody>();
-                if (lesserWispBody)
-                {
-                    lesserWispBody.baseDamage = wispBaseDamage;
-                    lesserWispBody.levelDamage = wispBaseDamage * 0.2f;
-                }
+                lesserWispBody.baseDamage = wispBaseDamage;
+                lesserWispBody.levelDamage = wispBaseDamage * 0.2f;
             }
         }
         #endregion
@@ -312,11 +287,14 @@ namespace RiskierRain
 
         void NerfTemplar()
         {
-            CharacterBody templarBody = this.templarPrefab.GetComponent<CharacterBody>();
-            templarBody.baseAttackSpeed = templarBaseAttackSpeed;
-            templarBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
-            templarBody.baseDamage = templarBaseDamage;
-            templarBody.levelDamage = templarBody.baseDamage * 0.2f;
+            Tools.LoadCharacterBodyAsync(RoR2_Base_ClayBruiser.ClayBruiserBody_prefab, BodyStats);
+            void BodyStats(CharacterBody body)
+            {
+                body.baseAttackSpeed = templarBaseAttackSpeed;
+                body.baseAttackSpeed *= 1 + kitSlowAspdReduction;
+                body.baseDamage = templarBaseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
+            }
 
             On.EntityStates.ClayBruiser.Weapon.MinigunFire.OnEnter += (orig, self) =>
             {
@@ -336,11 +314,14 @@ namespace RiskierRain
         }
         void NerfChimeraWisp()
         {
-            CharacterBody wispBody = this.chimeraWispPrefab.GetComponent<CharacterBody>();
-            wispBody.baseAttackSpeed = chimeraWispBaseAttackSpeed;
-            wispBody.baseAttackSpeed *= 1 + kitSlowAspdReduction;
-            wispBody.baseDamage = chimeraWispBaseDamage;
-            wispBody.levelDamage = wispBody.baseDamage * 0.2f;
+            Tools.LoadCharacterBodyAsync(RoR2_Base_LunarWisp.LunarWispBody_prefab, BodyStats);
+            void BodyStats(CharacterBody body)
+            {
+                body.baseAttackSpeed = chimeraWispBaseAttackSpeed;
+                body.baseAttackSpeed *= 1 + kitSlowAspdReduction;
+                body.baseDamage = chimeraWispBaseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
+            }
 
             On.EntityStates.LunarWisp.FireLunarGuns.OnEnter += (orig, self) =>
             {
@@ -360,6 +341,45 @@ namespace RiskierRain
                 EntityStates.LunarWisp.SeekingBomb.baseDuration = 3 * chimeraWispBaseAttackSpeed;
                 orig(self);
             };
+        }
+        #endregion
+
+        #region alloyed collective
+        public static int solusScorcherCreditCost = 20; //18
+        public static float solusScorcherBaseHealth = 120; //175
+        public static float solusScorcherBaseMovespeed = 9; //15
+        void ChangeSolusScorcher()
+        {
+            SpawnCards.LoadSpawnCardAsync(RoR2_DLC3_Tanker.cscTanker_asset, ScorcherCredits);
+            void ScorcherCredits(CharacterSpawnCard spawnCard)
+            {
+                spawnCard.directorCreditCost = solusScorcherCreditCost;
+            }
+            Tools.LoadCharacterBodyAsync(RoR2_DLC3_Tanker.TankerBody_prefab, ScorcherStats);
+            void ScorcherStats(CharacterBody body)
+            {
+                body.baseMoveSpeed = solusScorcherBaseMovespeed;
+                body.baseMaxHealth = solusScorcherBaseHealth;
+                body.levelMaxHealth = solusScorcherBaseHealth * 0.3f;
+            }
+        }
+        public static int solusProspectorCreditCost = 14; //11
+        public static float solusProspectorBaseHealth = 140; //160
+        public static float solusProspectorBaseMovespeed = 11.5f; //11.5
+        void ChangeSolusProspector()
+        {
+            SpawnCards.LoadSpawnCardAsync(RoR2_DLC3_WorkerUnit.cscWorkerUnit_asset, ProspectorCredits);
+            void ProspectorCredits(CharacterSpawnCard spawnCard)
+            {
+                spawnCard.directorCreditCost = solusProspectorCreditCost;
+            }
+            Tools.LoadCharacterBodyAsync(RoR2_DLC3_WorkerUnit.WorkerUnitBody_prefab, ProspectorStats);
+            void ProspectorStats(CharacterBody body)
+            {
+                body.baseMoveSpeed = solusProspectorBaseMovespeed;
+                body.baseMaxHealth = solusProspectorBaseHealth;
+                body.levelMaxHealth = solusProspectorBaseHealth * 0.3f;
+            }
         }
         #endregion
     }

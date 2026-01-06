@@ -710,6 +710,9 @@ namespace RiskierRain
         private void WeakenBossPostTpCharge(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, RoR2.TeleporterInteraction.ChargingState baseState)
         {
             orig(baseState);
+
+            if (!SwanSongExtended.Storms.StormRunBehavior.IsStormStage(Stage.instance.sceneDef)) 
+                return;
             TeleporterInteraction.ChargingState self = baseState as TeleporterInteraction.ChargingState;
             if(self.teleporterInteraction.holdoutZoneController.charge >= 1f)
             {

@@ -148,6 +148,8 @@ namespace SwanSongExtended.Interactables
             cd.fallBackToStageMonsterCards = true;
             cd.onSpawnedServer = new OnSpawnedServer();
             cd.combatSquad = cs;
+            cd.enabled = false;
+
             LunarCombatShrineBehavior lscb = interaction.gameObject.AddComponent<LunarCombatShrineBehavior>();
             lscb.baseMonsterCredit = 40;
             lscb.maxPurchaseCount = 1;
@@ -200,6 +202,7 @@ namespace SwanSongExtended.Interactables
                     {
                         inv.GiveItem(CombatShrineLunar.itemToGive);
                         inv.GiveItem(GalleryItemDrop.instance.ItemsDef);
+                        inv.SetEquipmentIndex(RoR2Content.Equipment.AffixLunar.equipmentIndex);
                     }
                 }
             }

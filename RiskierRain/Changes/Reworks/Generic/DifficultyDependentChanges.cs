@@ -271,9 +271,13 @@ namespace RiskierRain
         public static float GetScalingValueForDifficulty(DifficultyIndex difficulty)
         {
             DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficulty);
-            float scalingValue = difficultyDef.scalingValue;
-            if (difficulty >= eclipseLevelVeryHard)
-                scalingValue += 1;
+            float scalingValue = 0;
+
+            if (DifficultyUtilsModule.ValidateCachedDifficultyStats())
+            {
+                scalingValue = DifficultyUtilsModule.cachedDifficultyStats.startingDifficultyCoefficientBoost;
+            }
+
             return scalingValue;
         }
         public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)

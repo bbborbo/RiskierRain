@@ -116,6 +116,7 @@ namespace SwanSongExtended.Storms
             private protected StormController stormController { get; private set; }
             public override void OnEnter()
             {
+                Debug.Log(stormState.ToString());
                 base.OnEnter();
                 this.stormController = base.GetComponent<StormController>();
             }
@@ -171,11 +172,11 @@ namespace SwanSongExtended.Storms
                     return;
                 }
                 WishboneCarcassComponent.ClearAllCarcasses();
+                stormStrengthIncreaseCountdown = stormStrengthIncreaseTimerSeconds;
                 if (!NetworkServer.active)
                     return;
                 this.meteorsToDetonate = new List<MeteorStormController.Meteor>();
                 this.meteorWaves = new List<MeteorStormController.MeteorWave>();
-                stormStrengthIncreaseCountdown = stormStrengthIncreaseTimerSeconds;
                 //On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
 
                 EnableDirector();

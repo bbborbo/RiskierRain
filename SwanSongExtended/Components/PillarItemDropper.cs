@@ -55,7 +55,7 @@ namespace SwanSongExtended.Components
         public void OnHoldoutCharged(HoldoutZoneController holdoutZone)
         {
             if(Storms.StormRunBehavior.IsStormStage(Stage.instance.sceneDef))
-                RainrotSharedUtils.Shelters.ShelterUtilsModule.MakeMockShelter(holdoutZone.radiusIndicator.gameObject, holdoutZone.currentRadius, 15f);
+                RainrotSharedUtils.Shelters.ShelterUtilsModule.MakeMockShelter(holdoutZone.radiusIndicator.gameObject, holdoutZone.currentRadius, 10f);
             DropPillarItemFromHoldout(holdoutZone);
         }
         public void DropPillarItemFromHoldout(HoldoutZoneController holdoutZone)

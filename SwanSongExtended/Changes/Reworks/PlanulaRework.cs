@@ -49,6 +49,8 @@ namespace SwanSongExtended
         private void OnTeleporterEventPreStart(On.RoR2.TeleporterInteraction.IdleToChargingState.orig_OnEnter orig, RoR2.TeleporterInteraction.IdleToChargingState self)
         {
             orig(self);
+            if (!NetworkServer.active)
+                return;
             int sunulaCount = Util.GetItemCountForTeam(TeamIndex.Player, RoR2Content.Items.ParentEgg.itemIndex, false, false);
             if (sunulaCount > 0)
             {
@@ -73,6 +75,8 @@ namespace SwanSongExtended
         private void OnTeleporterEventStart(On.RoR2.TeleporterInteraction.ChargingState.orig_OnEnter orig, RoR2.TeleporterInteraction.ChargingState self)
         {
             orig(self);
+            if (!NetworkServer.active)
+                return;
             PlanulaSunController sunController = self.gameObject.GetComponent<PlanulaSunController>();
             if (sunController != null)
             {
@@ -84,6 +88,8 @@ namespace SwanSongExtended
         private void OnTeleporterEventUpdate(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, RoR2.TeleporterInteraction.ChargingState self)
         {
             orig(self);
+            if (!NetworkServer.active)
+                return;
         }
     }
 

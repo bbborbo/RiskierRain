@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
 {
     class RandomBarrierTarget : ItemBase<RandomBarrierTarget>
     {
-        public override bool isEnabled => false; 
+        public override bool isEnabled => true; 
 
         public static float harpoonBarrierBase = 6;
         public static float harpoonBarrierStack = 6;

@@ -16,7 +16,7 @@ namespace SwanSongExtended.Items
 {
     class LunarBrand : ItemBase<LunarBrand>
     {
-        public override bool isEnabled => false; 
+        public override bool isEnabled => true; 
         public static BuffDef CauterizeBuff;
         public static int duration = 5;
         public static int durationStack = 5;

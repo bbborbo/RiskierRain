@@ -131,6 +131,8 @@ namespace BarrierRework
 
         private void FreezeDecay()
         {
+            if (!NetworkServer.active)
+                return;
             decayFrozen = true;
             body.AddBuff(BarrierReworkPlugin.aegisDecayBuff);
             //body.barrierDecayRate = 0;
@@ -138,6 +140,8 @@ namespace BarrierRework
 
         private void UnfreezeDecay()
         {
+            if (!NetworkServer.active)
+                return;
             decayFrozen = false;
             body.RemoveBuff(BarrierReworkPlugin.aegisDecayBuff);
             //body.barrierDecayRate = body.maxBarrier / 30f;

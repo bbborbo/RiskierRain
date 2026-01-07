@@ -21,7 +21,8 @@ namespace RainrotSharedUtils.Difficulties
             Easy = 0,
             Medium = 3,
             Hard = 6,
-            VeryHard = 9
+            VeryHard = 9,
+            Insane = 12
         }
         /// <summary>
         /// Use MoreDifficultyStats.StartingDifficulty enum for shorthand

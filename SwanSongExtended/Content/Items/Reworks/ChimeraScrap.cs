@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
+using System.Linq;
 
 namespace SwanSongExtended.Items
 {
@@ -55,6 +56,7 @@ namespace SwanSongExtended.Items
 
         public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/Regenerating_Scrap.png");
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
+        public override bool CanBeTemporary => false;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -125,29 +127,37 @@ namespace SwanSongExtended.Items
                     {
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
-                        activatorInventory.RemoveItem(ChimeraScrap.instance.ItemsDef.itemIndex, 1);
-                        activatorInventory.GiveItem(DLC1Content.Items.RegeneratingScrapConsumed, 1);
+                        activatorInventory.RemoveItemPermanent(ChimeraScrap.instance.ItemsDef.itemIndex, 1);
+                        activatorInventory.GiveItemPermanent(DLC1Content.Items.RegeneratingScrapConsumed, 1);
                         CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
                             ChimeraScrap.instance.ItemsDef.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex,
                             CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
 
                         int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
+
                         if (cost > printerCredit)
                         {
+                            activatorInventory.RemoveItemPermanent(ChimeraScrap.instance.ItemsDef.itemIndex, regenScrapCount - 1);
                             int remainder = cost - printerCredit;
+                            context.cost = remainder;
                             orig(self, context, result);
+                            activatorInventory.GiveItemPermanent(ChimeraScrap.instance.ItemsDef.itemIndex, regenScrapCount - 1);
                         }
                         else if (printerCredit > cost)
                         {
                             SuperScrapPaymentController sspc = purchasedObject.AddComponent<SuperScrapPaymentController>();
+
                             sspc.paymentCreditsRemaining = printerCredit - cost;
                         }
+                        
 
-                        int n = Mathf.Min(cost, printerCredit);
-                        for (int i = 0; i < n; i++)
-                        {
-                            payCostResults.itemsTaken.Add(ChimeraScrap.instance.ItemsDef.itemIndex);
-                        }
+                        Inventory.ItemAndStackValues stack = new Inventory.ItemAndStackValues();
+                        stack.itemIndex = ChimeraScrap.instance.ItemsDef.itemIndex;
+                        stack.stackValues = new Inventory.ItemStackValues();
+                        stack.stackValues.permanentStacks = printerCredit;
+                        stack.stackValues.totalStacks = printerCredit;
+
+                        payCostResults._itemStacksTaken.Add(stack);
 
                         return;
                     }

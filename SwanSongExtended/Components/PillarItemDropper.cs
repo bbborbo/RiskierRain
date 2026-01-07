@@ -41,15 +41,22 @@ namespace SwanSongExtended.Components
         {
             if (TryGetComponent(out HoldoutZoneController holdout) && shouldDropItem)
             {
-                holdout.onCharged.AddListener(new UnityAction<HoldoutZoneController>(this.DropPillarItemFromHoldout));
+                holdout.onCharged.AddListener(new UnityAction<HoldoutZoneController>(this.OnHoldoutCharged));
             }
         }
         void OnDisable()
         {
             if (TryGetComponent(out HoldoutZoneController holdout))
             {
-                holdout.onCharged.RemoveListener(new UnityAction<HoldoutZoneController>(this.DropPillarItemFromHoldout));
+                holdout.onCharged.RemoveListener(new UnityAction<HoldoutZoneController>(this.OnHoldoutCharged));
             }
+        }
+
+        public void OnHoldoutCharged(HoldoutZoneController holdoutZone)
+        {
+            if(Storms.StormRunBehavior.IsStormStage(Stage.instance.sceneDef))
+                RainrotSharedUtils.Shelters.ShelterUtilsModule.MakeMockShelter(holdoutZone.radiusIndicator.gameObject, holdoutZone.currentRadius, 15f);
+            DropPillarItemFromHoldout(holdoutZone);
         }
         public void DropPillarItemFromHoldout(HoldoutZoneController holdoutZone)
         {

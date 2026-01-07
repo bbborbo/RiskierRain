@@ -130,7 +130,7 @@ namespace RainrotSharedUtils.Shelters
             orig(self);
         }
 
-        private static void MakeMockShelter(GameObject indicator, float startRadius, float endRadius, float stupidBullshit = 1)
+        public static void MakeMockShelter(GameObject indicator, float startRadius, float endRadius, float stupidBullshit = 1)
         {
             if (!UseGlobalShelters)
                 return;

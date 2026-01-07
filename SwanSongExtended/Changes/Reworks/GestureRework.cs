@@ -125,7 +125,7 @@ namespace SwanSongExtended
 
             orig(self);
 
-            if (undercast)
+            if (NetworkServer.active && undercast)
             {
                 self.characterBody.AddBuff(Modules.CommonAssets.gestureQueueEquipBreak);
                 if (self.subcooldownTimer <= 0)
@@ -159,6 +159,8 @@ namespace SwanSongExtended
 
         public static void TryGestureEquipmentBreak(EquipmentSlot self)
         {
+            if (!NetworkServer.active)
+                return;
             if (self.characterBody.HasBuff(Modules.CommonAssets.gestureQueueEquipBreak))
             {
                 if (Util.CheckRoll(gestureEquipBreakChance))

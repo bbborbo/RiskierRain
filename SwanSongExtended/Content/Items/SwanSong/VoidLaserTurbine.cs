@@ -149,7 +149,7 @@ namespace SwanSongExtended.Items
         {
             if (primarySkill)
             {
-                if (body.HasBuff(VoidLaserTurbine.turbineReadyBuff))
+                if (body.HasBuff(VoidLaserTurbine.turbineReadyBuff) && NetworkServer.active)
                     body.RemoveBuff(VoidLaserTurbine.turbineReadyBuff);
 
                 primarySkill.onSkillChanged -= this.TryOverrideSkill;
@@ -170,10 +170,13 @@ namespace SwanSongExtended.Items
             int chargeCount = body.GetBuffCount(VoidLaserTurbine.turbineChargeBuff);
             if(chargeCount >= 100)
             {
-                while (chargeCount > 0)
+                if (NetworkServer.active)
                 {
-                    body.RemoveBuff(VoidLaserTurbine.turbineChargeBuff);
-                    chargeCount--;
+                    while (chargeCount > 0)
+                    {
+                        body.RemoveBuff(VoidLaserTurbine.turbineChargeBuff);
+                        chargeCount--;
+                    }
                 }
                 ReadyTurbineSkill();
             }
@@ -181,7 +184,8 @@ namespace SwanSongExtended.Items
 
         private void UnreadyTurbineSkill()
         {
-            body.RemoveBuff(VoidLaserTurbine.turbineReadyBuff);
+            if (NetworkServer.active)
+                body.RemoveBuff(VoidLaserTurbine.turbineReadyBuff);
 
             if (primarySkill)
             {

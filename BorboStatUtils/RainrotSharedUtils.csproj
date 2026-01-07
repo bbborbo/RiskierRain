@@ -32,6 +32,9 @@
     <Reference Include="Inferno">
       <HintPath>libs\Inferno.dll</HintPath>
     </Reference>
+    <Reference Include="SnowtimeStagesAsmdef">
+      <HintPath>libs\SnowtimeStagesAsmdef.dll</HintPath>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>libs\0Harmony.dll</HintPath>
     </Reference>

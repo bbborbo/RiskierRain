@@ -112,6 +112,8 @@ namespace SwanSongExtended.Items
 
         private void ShakeScugs(int a, int b, CharacterBody body, HealthComponent healthComponent)
         {
+            if (!NetworkServer.active)
+                return;
             for (int i = 0; i < b && body.GetBuffCount(storedScugBuff) > 0; i++)//a=itemcount -1; b=%hp lost
             {
                 ShakeScug(a, healthComponent);

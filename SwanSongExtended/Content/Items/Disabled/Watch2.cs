@@ -150,6 +150,8 @@ namespace SwanSongExtended.Items
 
         private void OnDisable()
         {
+            if (!NetworkServer.active)
+                return;
             this.body.RemoveBuff(Watch2.watchAspdBuff);
         }
     }

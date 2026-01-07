@@ -26,6 +26,7 @@ namespace RainrotSharedUtils.Compat
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(Inferno.Main.PluginGUID, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(Snowtime.SnowtimeStage.GUID, BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
@@ -40,13 +41,44 @@ namespace RainrotSharedUtils.Compat
         #endregion
         public static bool ModLoaded(string modGuid) { return modGuid != "" && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
         public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
+        public static bool snowtimeLoaded => ModLoaded(Snowtime.SnowtimeStage.GUID);
 
         void Awake()
         {
             if (infernoLoaded)
                 DoInfernoCompat();
+            try
+            {
+                if (snowtimeLoaded)
+                    DoSnowtimeCompat();
+            }
+            catch
+            {
+                Debug.LogError("SnowtimeStages Legendary difficulty compat failed... im guessing it got moved to standalone");
+            }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void DoSnowtimeCompat()
+        {
+            DifficultyDef difficultyDef = Snowtime.SnowtimeStage.SnowtimeLegendaryDiffDef;
+
+            MoreDifficultyStats legendaryStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+            legendaryStats.startingLevelBoost = 9;
+            legendaryStats.startingDifficultyCoefficientBoost = 0;
+            legendaryStats.startingDifficultyDisplay = (float)MoreDifficultyStats.StartingDifficulty.Insane;
+            legendaryStats.ambientLevelCap = int.MaxValue;
+            legendaryStats.tier2EliteStage = 3;
+            legendaryStats.tier1AndHalfEliteStage = 1;
+            legendaryStats.delayFirstStorm_ForSwanSong = false;
+            legendaryStats.desiredStormTime_ForSwanSong = 3f;
+            legendaryStats.desiredStormWarningTime_ForSwanSong = 0.5f;
+            legendaryStats.stormIntensifyStrength_ForSwanSong = 0.7f;
+
+            DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
+        }
+
+        #region inferno
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void DoInfernoCompat()
         {
@@ -83,6 +115,6 @@ namespace RainrotSharedUtils.Compat
             //  typeof(SharedUtilsCompatPlugin).GetMethod(nameof(InfernoAmbientCap), (BindingFlags)(-1))
             //);
         }
-
+        #endregion
     }
 }

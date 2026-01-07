@@ -107,6 +107,8 @@ namespace SwanSongExtended.Items
         }
         private void BirdBand_GetHitBehavior(CharacterBody body, DamageInfo damageInfo, CharacterBody victim)
         {
+            if (!NetworkServer.active)
+                return;
             int bandCount = GetCount(body);
             float damageCoefficient = damageInfo.damage / body.damage;
             if(bandCount > 0 && damageCoefficient >= 4 && body.HasBuff(birdBuff))// && !damageInfo.procChainMask.HasProc(ProcType.Rings))
@@ -126,6 +128,8 @@ namespace SwanSongExtended.Items
     {
         private void FixedUpdate()
         {
+            if (!NetworkServer.active)
+                return;
             bool isBuffed = this.body.HasBuff(BirdBand.birdBuff);
             bool isDebuffed = this.body.HasBuff(BirdBand.birdDebuff);
             bool isNeither = !isBuffed && !isDebuffed;

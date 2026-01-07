@@ -345,8 +345,8 @@ namespace RiskierRain
         #endregion
 
         #region alloyed collective
-        public static int solusScorcherCreditCost = 20; //18
-        public static float solusScorcherBaseHealth = 120; //175
+        public static int solusScorcherCreditCost = 18; //18
+        public static float solusScorcherBaseHealth = 111; //175
         public static float solusScorcherBaseMovespeed = 9; //15
         void ChangeSolusScorcher()
         {
@@ -363,8 +363,8 @@ namespace RiskierRain
                 body.levelMaxHealth = solusScorcherBaseHealth * 0.3f;
             }
         }
-        public static int solusProspectorCreditCost = 14; //11
-        public static float solusProspectorBaseHealth = 140; //160
+        public static int solusProspectorCreditCost = 11; //11
+        public static float solusProspectorBaseHealth = 110; //160
         public static float solusProspectorBaseMovespeed = 11.5f; //11.5
         void ChangeSolusProspector()
         {

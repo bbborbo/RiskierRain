@@ -166,6 +166,8 @@ namespace SwanSongExtended.Items
 
         private void FixedUpdate()
         {
+            if (!NetworkServer.active)
+                return;
             float missingHealthFraction = 1 - ((healthComponent.health + healthComponent.shield) / healthComponent.fullCombinedHealth);
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (maxBuffCount));
             while (newBuffCount > buffCount && buffCount < maxBuffCount)

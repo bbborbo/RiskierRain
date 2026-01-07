@@ -134,7 +134,7 @@ namespace SwanSongExtended.Items
 
         private void OnDisable()
         {
-            while(body.HasBuff(Aglet.agletSpeed))
+            while(body.HasBuff(Aglet.agletSpeed) && NetworkServer.active)
                 this.body.RemoveBuff(Aglet.agletSpeed);
         }
     }

@@ -129,20 +129,24 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
         private void ExtendRampage(DamageReport damageReport)
         {
+            if (!NetworkServer.active)
+                return;
             CharacterBody attackerBody = damageReport.attackerBody;
             if(attackerBody == this.body)
             {
                 if(this.body.HasBuff(dangerCrit) && !isLowHealth)
                 {
                     this.body.RemoveOldestTimedBuff(dangerCrit);
-                    this.body.AddTimedBuffAuthority(dangerCrit, NewLopper.rampageExtendTime);
+                    this.body.AddTimedBuff(dangerCrit, NewLopper.rampageExtendTime);
                 }
             }
         }
 
         void FixedUpdate()
         {
-            if(stack > 0)
+            if (!NetworkServer.active)
+                return;
+            if (stack > 0)
             {
                 float combinedHealthFraction = this.body.healthComponent.combinedHealthFraction;
                 //int buffCount = this.body.GetBuffCount(dangerCrit);
@@ -169,6 +173,8 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
         void OnDestroy()
         {
             GlobalEventManager.onCharacterDeathGlobal -= ExtendRampage;
+            if (!NetworkServer.active)
+                return;
 
             if (isLowHealth)
                 this.body.RemoveBuff(dangerCrit);

@@ -160,6 +160,8 @@ namespace SwanSongExtended.Items
 
 		public void SetBuffCount(int nearbyEnemies)
 		{
+			if (!NetworkServer.active)
+				return;
 			int buffCount = this.body.GetBuffCount(WeirdlyShapedOpal.opalStatBuff);
 
 			if (buffCount != nearbyEnemies)

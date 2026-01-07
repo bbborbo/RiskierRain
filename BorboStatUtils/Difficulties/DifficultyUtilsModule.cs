@@ -2,6 +2,7 @@
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using RoR2;
+using RoR2.ContentManagement;
 using RoR2BepInExPack.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RainrotSharedUtils.Difficulties
 {
@@ -19,7 +21,8 @@ namespace RainrotSharedUtils.Difficulties
             Easy = 0,
             Medium = 3,
             Hard = 6,
-            VeryHard = 9
+            VeryHard = 9,
+            Insane = 12
         }
         /// <summary>
         /// Use MoreDifficultyStats.StartingDifficulty enum for shorthand
@@ -27,6 +30,7 @@ namespace RainrotSharedUtils.Difficulties
         public float startingDifficultyDisplay = 0;
         public float startingLevelBoost = 0;
         public float startingDifficultyCoefficientBoost = 0;
+        public bool compensateBossCredits = true;
         public int ambientLevelCap = -1;
 
         public int tier2EliteStage = 6;
@@ -41,6 +45,7 @@ namespace RainrotSharedUtils.Difficulties
     public static class DifficultyUtilsModule
     {
         private static bool _hooksEnabled = false;
+        private static bool _tpContrasted = false;
         public static bool CompensateRewardsForDifficultyScaling = false;
         public static bool CompensateRewardsForDifficultyBoost = false;
         public static float BoostedRewardCompensationCoefficient = 0f;
@@ -61,10 +66,25 @@ namespace RainrotSharedUtils.Difficulties
                 _useDifficultyStats = value;
             }
         }
+        private static bool _boostTeleporterContrast;
+        public static bool BoostTeleporterContrast
+        {
+            get
+            {
+                return _boostTeleporterContrast;
+            }
+            set
+            {
+                if (value == true)
+                    DoBoostedTpContrast();
+                _boostTeleporterContrast = value;
+            }
+        }
 
         public static void EnableAll()
         {
             UseDifficultyStats = true;
+            BoostTeleporterContrast = true;
             CompensateRewardsForDifficultyScaling = true;
             CompensateRewardsForDifficultyBoost = true;
         }
@@ -137,6 +157,37 @@ namespace RainrotSharedUtils.Difficulties
             return cachedDifficultyStats.startingLevelBoost;
         }
 
+
+        private static void DoBoostedTpContrast()
+        {
+            if (_tpContrasted)
+                return;
+            _tpContrasted = true;
+
+
+            AssetReferenceT<Material> ref1 = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Teleporters.matTeleporterFresnelOverlay_mat);
+            AssetAsyncReferenceManager<Material>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                Material mat = ctx.Result;
+
+                mat.SetFloat("_SoftFactor", 2f);
+                mat.SetFloat("_BrightnessBoost", 10.34f);
+                mat.SetFloat("_AlphaBoost", 4.01f);
+                mat.SetFloat("_AlphaBias", 0.05f);
+                mat.SetFloat("_FresnelPower", 4.23f);
+                //i have no idea which ones right so im just trying everything
+                mat.SetFloat("_OffsetAmount", 0.18f);
+                mat.SetFloat("_OffsetAmt", 0.18f);
+                mat.SetFloat("_VertexOffsetAmt", 0.18f);
+            };
+            //AssetReferenceT<Material> ref2 = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Teleporters.);
+            //AssetAsyncReferenceManager<Material>.LoadAsset(ref2).Completed += (ctx) =>
+            //{
+            //    Material mat = ctx.Result;
+            //
+            //
+            //};
+        }
         private static void SetHooks()
         {
             if (_hooksEnabled)
@@ -147,9 +198,31 @@ namespace RainrotSharedUtils.Difficulties
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AddDifficultyStats;
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
+            IL.RoR2.TeleporterInteraction.ChargingState.OnEnter += CompensateBossCredits;
 
             ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
             ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
+        }
+
+        private static void CompensateBossCredits(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<Run>(nameof(Run.compensatedDifficultyCoefficient))
+                );
+            if (!b)
+            {
+                SharedUtilsPlugin.DebugBreakpoint(nameof(CompensateBossCredits));
+                return;
+            }
+            c.EmitDelegate<Func<float, float>>((difficultyCoefficient) =>
+            {
+                if (!ValidateCachedDifficultyStats() || !cachedDifficultyStats.compensateBossCredits)
+                    return difficultyCoefficient;
+
+                return difficultyCoefficient - cachedDifficultyStats.startingDifficultyCoefficientBoost;
+            });
         }
 
         [SystemInitializer(typeof(CombatDirector))]

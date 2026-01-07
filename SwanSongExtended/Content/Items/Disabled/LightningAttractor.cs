@@ -254,6 +254,8 @@ With your agreement to purchase and use this product, CuCo is released of liabil
 
         private void OnDisable()
         {
+            if (!NetworkServer.active)
+                return;
             this.body.RemoveBuff(LightningAttractor.forkReadyBuff);
             this.body.ClearTimedBuffs(LightningAttractor.forkRechargeBuff);
         }

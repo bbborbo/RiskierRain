@@ -81,6 +81,8 @@ namespace SwanSongExtended.Items
 
         public static void FireBoomerang(CharacterBody body, int count)
         {
+            if (!NetworkServer.active)
+                return;
             if (body == null || body.GetBuffCount(boomerangBuff) <= 0)
                 return;
             body.RemoveBuff(boomerangBuff);

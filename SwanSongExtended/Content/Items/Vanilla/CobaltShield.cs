@@ -161,7 +161,8 @@ namespace SwanSongExtended.Items
 
         private void OnDisable()
         {
-            this.body.RemoveBuff(CobaltShield.cobaltDefense);
+            if (NetworkServer.active)
+                this.body.RemoveBuff(CobaltShield.cobaltDefense);
         }
     }
 }

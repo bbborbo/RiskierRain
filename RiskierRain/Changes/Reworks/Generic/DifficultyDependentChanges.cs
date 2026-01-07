@@ -331,7 +331,7 @@ namespace RiskierRain
             float ambientLevelBoost = GetAmbientLevelBoost();
             if (sender.teamComponent.teamIndex != TeamIndex.Player)
             {
-                if (selectedDifficulty >= DifficultyIndex.Hard)
+                if (selectedDifficulty >= DifficultyIndex.Hard || selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
 

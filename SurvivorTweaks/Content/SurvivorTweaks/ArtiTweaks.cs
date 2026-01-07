@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
+using UnityEngine.Networking;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -40,7 +41,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             On.EntityStates.Mage.JetpackOn.OnEnter += (orig, self) =>
             {
                 JetpackOn.hoverVelocity = -2f;
-                if (self.isAuthority)
+                if (NetworkServer.active)
                 {
                     self.characterBody.AddBuff(Modules.CommonAssets.jetpackSpeedBoost);
                 }
@@ -48,7 +49,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             };
             On.EntityStates.Mage.JetpackOn.OnExit += (orig, self) =>
             {
-                if (self.isAuthority)
+                if (NetworkServer.active)
                 {
                     self.characterBody.RemoveBuff(CommonAssets.jetpackSpeedBoost);
                 }

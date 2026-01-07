@@ -106,7 +106,7 @@ namespace RiskierRain
             InitializeConfig();
             InitializeEverything();
 
-            On.RoR2.CharacterBody.RemoveBuff_BuffIndex += Gah;
+            On.RoR2.CharacterBody.RemoveBuff_BuffDef += Gah;
             #region rework pending / priority removal
             RiskierRainPlugin.RetierItemAsync(RoR2_Base_StunChanceOnHit.StunChanceOnHit_asset);//stun grenade
             RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
@@ -147,11 +147,11 @@ namespace RiskierRain
             Debug.LogError(s);
         }
 
-        private void Gah(On.RoR2.CharacterBody.orig_RemoveBuff_BuffIndex orig, CharacterBody self, BuffIndex buffType)
+        private void Gah(On.RoR2.CharacterBody.orig_RemoveBuff_BuffDef orig, CharacterBody self, BuffDef buffType)
         {
             if (!NetworkServer.active)
             {
-                Debug.Log(BuffCatalog.GetBuffDef(buffType).name);
+                Debug.Log(buffType.name);
             }
             orig(self, buffType);
         }

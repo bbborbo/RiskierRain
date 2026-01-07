@@ -252,12 +252,12 @@ namespace RiskierRain
             int stageClearCount = self.stageClearCount;
 
             float difficultyCoefficient = GetDifficultyCoefficient(self, runTimerMinutes, stageClearCount, out float playerBaseFactor);
-            float difficultyFactor = GetScalingValueForDifficulty(self.selectedDifficulty) - 1;//GetAmbientLevelBoost() / 2;
+            float difficultyBoost = GetCoefficientBoostForDifficulty(self.selectedDifficulty);//GetAmbientLevelBoost() / 2;
 
             //difficulty coefficient used for interactable costs and etc
             self.difficultyCoefficient = difficultyCoefficient;
             //difficulty coefficient used for enemy spawns
-            self.compensatedDifficultyCoefficient = difficultyCoefficient + difficultyFactor;
+            self.compensatedDifficultyCoefficient = difficultyCoefficient + difficultyBoost;
             self.oneOverCompensatedDifficultyCoefficientSquared = 1 / (self.compensatedDifficultyCoefficient * self.compensatedDifficultyCoefficient);
             self.ambientLevel = Mathf.Min(1f + GetAmbientLevelBoost() + (3f * (difficultyCoefficient - playerBaseFactor)), (float)Run.ambientLevelCap);
 
@@ -268,7 +268,7 @@ namespace RiskierRain
                 self.OnAmbientLevelUp();
             }
         }
-        public static float GetScalingValueForDifficulty(DifficultyIndex difficulty)
+        public static float GetCoefficientBoostForDifficulty(DifficultyIndex difficulty)
         {
             DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficulty);
             float scalingValue = 0;
@@ -279,6 +279,11 @@ namespace RiskierRain
             }
 
             return scalingValue;
+        }
+        public static float GetScalingValueForDifficulty(DifficultyIndex difficulty)
+        {
+            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(difficulty);
+            return difficultyDef.scalingValue;
         }
         public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)
         {

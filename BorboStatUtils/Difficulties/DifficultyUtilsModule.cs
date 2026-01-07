@@ -174,7 +174,10 @@ namespace RainrotSharedUtils.Difficulties
                 mat.SetFloat("_AlphaBoost", 4.01f);
                 mat.SetFloat("_AlphaBias", 0.05f);
                 mat.SetFloat("_FresnelPower", 4.23f);
-                mat.SetFloat("_VertexOffsetAmount", 0.18f);
+                //i have no idea which ones right so im just trying everything
+                mat.SetFloat("_OffsetAmount", 0.18f);
+                mat.SetFloat("_OffsetAmt", 0.18f);
+                mat.SetFloat("_VertexOffsetAmt", 0.18f);
             };
             //AssetReferenceT<Material> ref2 = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Teleporters.);
             //AssetAsyncReferenceManager<Material>.LoadAsset(ref2).Completed += (ctx) =>

@@ -29,6 +29,7 @@ namespace RainrotSharedUtils.Difficulties
         public float startingDifficultyDisplay = 0;
         public float startingLevelBoost = 0;
         public float startingDifficultyCoefficientBoost = 0;
+        public bool compensateBossCredits = true;
         public int ambientLevelCap = -1;
 
         public int tier2EliteStage = 6;
@@ -193,9 +194,31 @@ namespace RainrotSharedUtils.Difficulties
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AddDifficultyStats;
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
+            IL.RoR2.TeleporterInteraction.ChargingState.OnEnter += CompensateBossCredits;
 
             ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
             ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
+        }
+
+        private static void CompensateBossCredits(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<Run>(nameof(Run.compensatedDifficultyCoefficient))
+                );
+            if (!b)
+            {
+                SharedUtilsPlugin.DebugBreakpoint(nameof(CompensateBossCredits));
+                return;
+            }
+            c.EmitDelegate<Func<float, float>>((difficultyCoefficient) =>
+            {
+                if (!ValidateCachedDifficultyStats() || !cachedDifficultyStats.compensateBossCredits)
+                    return difficultyCoefficient;
+
+                return difficultyCoefficient - cachedDifficultyStats.startingDifficultyCoefficientBoost;
+            });
         }
 
         [SystemInitializer(typeof(CombatDirector))]

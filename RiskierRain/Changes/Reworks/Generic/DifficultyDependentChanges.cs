@@ -628,10 +628,6 @@ namespace RiskierRain
 
         private void FixBossDirectorCredits(On.RoR2.CombatDirector.orig_SetNextSpawnAsBoss orig, CombatDirector self)
         {
-            if (Run.instance.stageClearCount == 0)
-            {
-                self.monsterCredit *= 0.5f;// GetCompensatedStageEntryDifficulty() / Stage.instance.entryDifficultyCoefficient;
-            }
             self.monsterCredit *= teleBossCreditMultiplier;
             orig(self);
         }

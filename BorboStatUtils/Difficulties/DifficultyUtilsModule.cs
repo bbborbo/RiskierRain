@@ -2,6 +2,7 @@
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using RoR2;
+using RoR2.ContentManagement;
 using RoR2BepInExPack.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RainrotSharedUtils.Difficulties
 {
@@ -41,6 +43,7 @@ namespace RainrotSharedUtils.Difficulties
     public static class DifficultyUtilsModule
     {
         private static bool _hooksEnabled = false;
+        private static bool _tpContrasted = false;
         public static bool CompensateRewardsForDifficultyScaling = false;
         public static bool CompensateRewardsForDifficultyBoost = false;
         public static float BoostedRewardCompensationCoefficient = 0f;
@@ -61,10 +64,25 @@ namespace RainrotSharedUtils.Difficulties
                 _useDifficultyStats = value;
             }
         }
+        private static bool _boostTeleporterContrast;
+        public static bool BoostTeleporterContrast
+        {
+            get
+            {
+                return _boostTeleporterContrast;
+            }
+            set
+            {
+                if (value == true)
+                    DoBoostedTpContrast();
+                _boostTeleporterContrast = value;
+            }
+        }
 
         public static void EnableAll()
         {
             UseDifficultyStats = true;
+            BoostTeleporterContrast = true;
             CompensateRewardsForDifficultyScaling = true;
             CompensateRewardsForDifficultyBoost = true;
         }
@@ -137,6 +155,34 @@ namespace RainrotSharedUtils.Difficulties
             return cachedDifficultyStats.startingLevelBoost;
         }
 
+
+        private static void DoBoostedTpContrast()
+        {
+            if (_tpContrasted)
+                return;
+            _tpContrasted = true;
+
+
+            AssetReferenceT<Material> ref1 = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Teleporters.matTeleporterFresnelOverlay_mat);
+            AssetAsyncReferenceManager<Material>.LoadAsset(ref1).Completed += (ctx) =>
+            {
+                Material mat = ctx.Result;
+
+                mat.SetFloat("_SoftFactor", 2f);
+                mat.SetFloat("_BrightnessBoost", 10.34f);
+                mat.SetFloat("_AlphaBoost", 4.01f);
+                mat.SetFloat("_AlphaBias", 0.05f);
+                mat.SetFloat("_FresnelPower", 4.23f);
+                mat.SetFloat("_VertexOffsetAmount", 0.18f);
+            };
+            //AssetReferenceT<Material> ref2 = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Teleporters.);
+            //AssetAsyncReferenceManager<Material>.LoadAsset(ref2).Completed += (ctx) =>
+            //{
+            //    Material mat = ctx.Result;
+            //
+            //
+            //};
+        }
         private static void SetHooks()
         {
             if (_hooksEnabled)

@@ -76,6 +76,8 @@ namespace SwanSongExtended.Artifacts
                 CombatDirector combatDirector = prefab.GetComponent<CombatDirector>();
                 combatDirector.monsterCredit = pillarMonsterCredit;
                 combatDirector.goldRewardCoefficient = pillarGoldRewardCoefficient;
+                combatDirector.shouldSpawnOneWave = true;
+                combatDirector.enabled = false;
                 Addressables.LoadAssetAsync<DirectorCardCategorySelection>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_moon.dccsMoonMonsters_asset).Completed += 
                     (ctx) => combatDirector.monsterCards = ctx.Result;
                 //combatDirector.monsterCards

@@ -49,7 +49,7 @@ namespace SwanSongExtended.Items
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
-            throw new NotImplementedException();
+            return new ItemDisplayRuleDict();
         }
 
         public override void Hooks()

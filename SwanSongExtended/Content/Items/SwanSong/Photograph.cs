@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended.Items
@@ -15,8 +16,8 @@ namespace SwanSongExtended.Items
         public static BuffDef photographCritBuff;
         public static float photographCritFreeBase = 0f;
         public static float photographCritFreeStack = 0f;
-        public static float photographCritBase = 15f;
-        public static float photographCritStack = 15f;
+        public static float photographCritBase = 20f;
+        public static float photographCritStack = 10f;
         public override string ItemName => "Photograph";
 
         public override string ItemLangTokenName => "PHOTOGRAPH";
@@ -44,8 +45,8 @@ namespace SwanSongExtended.Items
         {
             photographCritBuff = Content.CreateAndAddBuff(
                 "bdPhotographCrit",
-                null,
-                Color.red,
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
+                Color.magenta,
                 true,
                 false,
                 BuffDef.StackingDisplayMethod.Percentage
@@ -71,7 +72,7 @@ namespace SwanSongExtended.Items
             if(buffCount > 0)
             {
                 args.critAdd += buffCount;
-                args.critDamageMultAdd += buffCount;
+                args.critDamageMultAdd += buffCount * 0.01f;
             }
         }
 
@@ -96,7 +97,7 @@ namespace SwanSongExtended.Items
                 return;
 
             float critBonus = photographCritBase + (photographCritFreeStack * (itemCount - 1));
-            for(int i = 0; i < critBonus * 100; i++)
+            for(int i = 0; i < critBonus; i++)
             {
                 context.activatorBody.AddBuff(photographCritBuff);
             }

@@ -176,6 +176,8 @@ namespace SwanSongExtended.Items
 
         private void OnDisable()
         {
+            if (!NetworkServer.active)
+                return;
             int buffCount = body.GetBuffCount(DesignAnomaly.beetleArmor);
             if(buffCount > 0)
             {

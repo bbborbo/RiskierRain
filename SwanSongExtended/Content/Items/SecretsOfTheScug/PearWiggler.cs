@@ -138,12 +138,13 @@ namespace SwanSongExtended.Items
 
         private void WigglePears(int a, int b, CharacterBody body, HealthComponent healthComponent)
         {
+            if (!NetworkServer.active)
+                return;
             for (int i = 0; i < b && body.GetBuffCount(pearBuff) > 0; i++)//a=itemcount -1; b=%hp lost
             {
                 WigglePear(a, healthComponent);
                 body.RemoveBuff(pearBuff);
             }
-           
         }
 
 

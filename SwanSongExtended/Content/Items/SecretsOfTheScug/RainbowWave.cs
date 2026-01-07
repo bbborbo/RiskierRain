@@ -82,6 +82,8 @@ namespace SwanSongExtended.Items
 
         public static void FireRainbowWave(CharacterBody body, int count)
         {
+            if (!NetworkServer.active)
+                return;
             if (body == null || body.GetBuffCount(rainbowBuff) <= 0)
                 return;
             body.RemoveBuff(rainbowBuff);

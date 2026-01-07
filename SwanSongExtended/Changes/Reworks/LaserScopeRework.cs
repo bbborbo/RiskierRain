@@ -110,7 +110,8 @@ namespace SwanSongExtended
 
         private void OnDisable()
         {
-            this.body.RemoveBuff(CommonAssets.combatTelescopeCritChance);
+            if(NetworkServer.active)
+                this.body.RemoveBuff(CommonAssets.combatTelescopeCritChance);
         }
     }
 }

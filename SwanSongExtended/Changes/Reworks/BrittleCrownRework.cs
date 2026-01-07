@@ -139,12 +139,12 @@ namespace SwanSongExtended
             //    activator.AddBuff(DLC2Content.Buffs.SoulCost);
             //}
             BetterSoulCost.SoulCostPlugin.AddSoulCostToBody(activator, soulCost);
-            activator.AddBuff(DLC2Content.Buffs.FreeUnlocks);
 
             Util.PlaySound("sfx_lunarmoney_start", activator.gameObject);
 
             if (NetworkServer.active)
             {
+                activator.AddBuff(DLC2Content.Buffs.FreeUnlocks);
                 activator.RemoveBuff(brittleCrownBuff);
             }
         }

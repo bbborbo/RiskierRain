@@ -186,7 +186,7 @@ namespace SwanSongExtended
 
 		void OnDisable()
         {
-			if(body != null)
+			if(body != null && NetworkServer.active)
 			{
 				while (body.HasBuff(razorBuff))
 				{
@@ -204,7 +204,7 @@ namespace SwanSongExtended
             {
 				float rechargeInterval = rechargeTime / totalRazors;
 				reloadTimer += Time.fixedDeltaTime;
-				while(this.reloadTimer > rechargeInterval && buffCount < totalRazors)
+				while(this.reloadTimer > rechargeInterval && buffCount < totalRazors && NetworkServer.active)
                 {
 					buffCount++;
 					body.AddBuff(razorBuff);

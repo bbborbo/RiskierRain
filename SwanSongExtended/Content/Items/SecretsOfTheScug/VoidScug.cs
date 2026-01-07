@@ -105,6 +105,8 @@ namespace SwanSongExtended.Items
                 origin = body.transform.position,
                 scale = radiusBase
             }, true);
+            if (!NetworkServer.active)
+                return;
             RainrotSharedUtils.Frost.FrostUtilsModule.ApplyChillSphere(body.corePosition, radiusBase, body.teamComponent.teamIndex, durationBase + durationStack * (itemCount - 1));
             BlastAttack scugNova = new BlastAttack()
             {

@@ -240,6 +240,8 @@ namespace SwanSongExtended.Items
         private void SetMochaTime(int targetCount)
         {
             int startingBuffCount = 0;
+            if (!NetworkServer.active)
+                return;
 
             if (body.HasBuff(Mocha2.mochaBuffInactive))
                 body.RemoveBuff(Mocha2.mochaBuffInactive);

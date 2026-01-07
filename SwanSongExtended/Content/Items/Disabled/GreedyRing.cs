@@ -81,7 +81,7 @@ Of course, you can always buy the premium version for unlimited discounts~
         {
             orig(context);
             CharacterMaster activatorMaster = context.activatorMaster;
-            if (activatorMaster && activatorMaster.hasBody && context.cost != 0)
+            if (activatorMaster && activatorMaster.hasBody && context.cost != 0 && NetworkServer.active)
             {
                 CharacterBody body = activatorMaster.GetBody();
                 int stack = GetCount(body);
@@ -135,7 +135,9 @@ Of course, you can always buy the premium version for unlimited discounts~
         {
             body.master.GiveMoney((uint)Run.instance.GetDifficultyScaledCost(GreedyRing.bonusMoney));
 
-            for(int i = 0; i < GreedyRing.discountedChests; i++)
+            if (!NetworkServer.active)
+                return;
+            for (int i = 0; i < GreedyRing.discountedChests; i++)
             {
                 body.AddBuff(GreedyRing.greedyRingBuff);
             }
@@ -143,7 +145,7 @@ Of course, you can always buy the premium version for unlimited discounts~
         void OnDestroy()
         {
             int buffCount = body.GetBuffCount(GreedyRing.greedyRingBuff);
-            while (buffCount > 0)
+            while (buffCount > 0 && NetworkServer.active)
             {
                 body.RemoveBuff(GreedyRing.greedyRingBuff);
                 buffCount--;

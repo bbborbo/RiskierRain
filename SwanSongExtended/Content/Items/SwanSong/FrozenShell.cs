@@ -103,6 +103,8 @@ namespace SwanSongExtended.Items
         }
         private void FixedUpdate()
         {
+            if (!NetworkServer.active)
+                return;
             float combinedHealthFraction = healthComponent.combinedHealthFraction;
             /*if (hasBuff)
             {
@@ -133,8 +135,10 @@ namespace SwanSongExtended.Items
         }
         void OnDestroy()
         {
+            if (!NetworkServer.active)
+                return;
             //if(hasBuff)
-                //this.body.RemoveBuff(iceBarrierBuffIndex);
+            //this.body.RemoveBuff(iceBarrierBuffIndex);
             while (buffCount > 0)//this might crash the game lol
             {
                 this.body.RemoveBuff(iceBarrierBuffIndex);

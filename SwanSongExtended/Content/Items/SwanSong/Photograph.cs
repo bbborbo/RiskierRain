@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -18,13 +19,19 @@ namespace SwanSongExtended.Items
         public static float photographCritFreeStack = 0f;
         public static float photographCritBase = 20f;
         public static float photographCritStack = 10f;
+        public static int photographMaxPrintsBase = 5;
+        public static int photographMaxPrintsStack = 1;
         public override string ItemName => "Photograph";
 
         public override string ItemLangTokenName => "PHOTOGRAPH";
 
-        public override string ItemPickupDesc => "Printing items increases critical strike chance and damage. Resets each stage.";
+        public override string ItemPickupDesc => "Printing items increases critical strike chance and damage. Resets at the start of each stage.";
 
-        public override string ItemFullDescription => ItemPickupDesc;
+        public override string ItemFullDescription => $"Spending items at any printer increases " +
+            $"{DamageColor("critical strike chance")} and {DamageColor("critical strike damage")} " +
+            $"by {DamageColor($"+{photographCritBase}%")} {StackText($"+{photographCritStack}%")}, " +
+            $"up to {UtilityColor($"{photographMaxPrintsBase} times")} {StackText($"+{photographCritStack}")}. " +
+            $"Resets at the start of each stage.";
 
         public override string ItemLore => $"Did you get your photos printed?\n\n\"Bogos binted?\"\n\nHuh?\n\n\"Download GreenAlienHead\"";
 
@@ -97,6 +104,12 @@ namespace SwanSongExtended.Items
                 return;
 
             float critBonus = photographCritBase + (photographCritFreeStack * (itemCount - 1));
+            int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
+            int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
+            int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
+            if (buffCount >= maxBuff)
+                return;
+
             for(int i = 0; i < critBonus; i++)
             {
                 context.activatorBody.AddBuff(photographCritBuff);

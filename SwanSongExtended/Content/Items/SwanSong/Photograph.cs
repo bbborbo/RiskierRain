@@ -17,9 +17,9 @@ namespace SwanSongExtended.Items
         public static BuffDef photographCritBuff;
         public static float photographCritFreeBase = 0f;
         public static float photographCritFreeStack = 0f;
-        public static float photographCritBase = 20f;
+        public static float photographCritBase = 15f;
         public static float photographCritStack = 10f;
-        public static int photographMaxPrintsBase = 5;
+        public static int photographMaxPrintsBase = 2;
         public static int photographMaxPrintsStack = 1;
         public override string ItemName => "Photograph";
 
@@ -30,7 +30,7 @@ namespace SwanSongExtended.Items
         public override string ItemFullDescription => $"Spending items at any printer increases " +
             $"{DamageColor("critical strike chance")} and {DamageColor("critical strike damage")} " +
             $"by {DamageColor($"+{photographCritBase}%")} {StackText($"+{photographCritStack}%")}, " +
-            $"up to {UtilityColor($"{photographMaxPrintsBase} times")} {StackText($"+{photographCritStack}")}. " +
+            $"up to {UtilityColor($"{photographMaxPrintsBase} times")} {StackText($"+{photographMaxPrintsStack}")}. " +
             $"Resets at the start of each stage.";
 
         public override string ItemLore => $"Did you get your photos printed?\n\n\"Bogos binted?\"\n\nHuh?\n\n\"Download GreenAlienHead\"";
@@ -76,7 +76,7 @@ namespace SwanSongExtended.Items
                 args.critDamageMultAdd += photographCritFreeBase + (photographCritFreeStack * (itemCount - 1));
             }
             int buffCount = sender.GetBuffCount(photographCritBuff);
-            if(buffCount > 0)
+            if (buffCount > 0)
             {
                 args.critAdd += buffCount;
                 args.critDamageMultAdd += buffCount * 0.01f;
@@ -110,7 +110,7 @@ namespace SwanSongExtended.Items
             if (buffCount >= maxBuff)
                 return;
 
-            for(int i = 0; i < critBonus; i++)
+            for (int i = 0; i < critBonus; i++)
             {
                 context.activatorBody.AddBuff(photographCritBuff);
             }

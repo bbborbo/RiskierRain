@@ -72,6 +72,15 @@ namespace RiskierRain.CoreModules
 
         public static CharacterSpawnCard OverloadingWorm;
 
+        //ALLOYED COLLECTIVE
+        public static CharacterSpawnCard solusInvalidator;
+        public static CharacterSpawnCard solusScorcher;
+        public static CharacterSpawnCard solusTransporter;
+        public static CharacterSpawnCard solusExtractor;
+        public static CharacterSpawnCard solusProspector;
+        public static CharacterSpawnCard solusDistributor;
+        public static CharacterSpawnCard solusAmalgamator;
+
         public static void Init()
         {
             if (initialized) return;
@@ -123,6 +132,14 @@ namespace RiskierRain.CoreModules
             Larva = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/AcidLarva/cscAcidLarva.asset").WaitForCompletion();
 
             XiConstruct = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC1/MajorAndMinorConstruct/cscMegaConstruct.asset").WaitForCompletion();
+
+            solusDistributor = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/MinePod/cscMinePod.asset").WaitForCompletion();
+            solusExtractor = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/ExtractorUnit/cscExtractorUnit.asset ").WaitForCompletion();
+            solusInvalidator = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/DefectiveUnit/cscDefectiveUnit.asset").WaitForCompletion();
+            solusProspector = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/WorkerUnit/cscWorkerUnit.asset").WaitForCompletion();
+            solusScorcher = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/Tanker/cscTanker.asset").WaitForCompletion();
+            solusTransporter = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/IronHauler/cscIronHauler.asset").WaitForCompletion();
+            solusAmalgamator = Addressables.LoadAssetAsync<CharacterSpawnCard>("RoR2/DLC3/SolusAmalgamator/cscSolusAmalgamator.asset").WaitForCompletion();
 
             DirectorCards.Init();
         }
@@ -182,6 +199,14 @@ namespace RiskierRain.CoreModules
         public static DirectorCard LunarGolemSkyMeadow;
         public static DirectorCard LunarGolemSkyMeadowBasic;
 
+        public static DirectorCard SolusInvalidator;
+        public static DirectorCard SolusScorcher;
+        public static DirectorCard SolusTransporter;
+        public static DirectorCard SolusExtractor;
+        public static DirectorCard SolusProspector;
+        public static DirectorCard SolusDistributor;
+        public static DirectorCard SolusAmalgamator;
+
         public static bool logCardInfo = false;
         public static void Init()
         {
@@ -233,6 +258,15 @@ namespace RiskierRain.CoreModules
             OverloadingWorm = BuildDirectorCard(SpawnCards.OverloadingWorm);
 
             XiConstruct = BuildDirectorCard(SpawnCards.XiConstruct, 1, 2, DirectorCore.MonsterSpawnDistance.Standard);
+
+            //AC astuff whaaaa
+            SolusInvalidator = BuildDirectorCard(SpawnCards.solusInvalidator);
+            SolusScorcher = BuildDirectorCard(SpawnCards.solusScorcher);
+            SolusTransporter = BuildDirectorCard(SpawnCards.solusTransporter);
+            SolusExtractor = BuildDirectorCard(SpawnCards.solusExtractor);
+            SolusProspector = BuildDirectorCard(SpawnCards.solusProspector);
+            SolusDistributor = BuildDirectorCard(SpawnCards.solusDistributor);
+            SolusAmalgamator = BuildDirectorCard(SpawnCards.solusAmalgamator);
         }
 
         public static DirectorCard BuildDirectorCard(CharacterSpawnCard spawnCard)

@@ -20,7 +20,8 @@ namespace RiskierRain
 #pragma warning disable CS0618 // It tells me its obsolete but its just easier to do it this way
 
             Helpers.AddNewMonsterToStage(DirectorCards.RoboBall, MonsterCategory.Champions, DirectorAPI.Stage.DistantRoost); //roost needed a loop boss and i couldnt think of anything better
-            
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusTransporter, MonsterCategory.Minibosses, DirectorAPI.Stage.DistantRoost);
+
             //included an example of using it the right way though
             var monsterCardHolder = new DirectorCardHolder
             {
@@ -31,6 +32,7 @@ namespace RiskierRain
 
             //plains
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusInvalidator, DirectorAPI.Stage.TitanicPlains);
 
 
             //siphoned
@@ -43,17 +45,30 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest);
             Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SiphonedForest); //what was i cooking
 
+            //verdant
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusScorcher, DirectorAPI.Stage.VerdantFalls);
+            //viscous
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusScorcher, MonsterCategory.BasicMonsters, DirectorAPI.Stage.ViscousFalls);
+
+            //shabodes
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusProspector, DirectorAPI.Stage.ShatteredAbodes);
+            //impact
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusProspector, MonsterCategory.BasicMonsters, DirectorAPI.Stage.DisturbedImpact);
 
             //wetland
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.WetlandAspect);
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusTransporter, DirectorAPI.Stage.WetlandAspect);
 
             Helpers.AddNewMonsterToStage(DirectorCards.AlphaConstruct, MonsterCategory.BasicMonsters, DirectorAPI.Stage.WetlandAspect);
             Helpers.AddNewMonsterToStage(DirectorCards.ElderLemurian, MonsterCategory.Minibosses, DirectorAPI.Stage.WetlandAspect);
             Helpers.AddNewMonsterToStage(DirectorCards.ImpOverlord, MonsterCategory.Champions, DirectorAPI.Stage.WetlandAspect);
 
             //aqwuaduct
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusInvalidator, DirectorAPI.Stage.AbandonedAqueduct);
+
             Helpers.AddNewMonsterToStage(DirectorCards.ElderLemurian, MonsterCategory.Minibosses, DirectorAPI.Stage.AbandonedAqueduct);
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.AbandonedAqueduct);
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusScorcher, MonsterCategory.BasicMonsters, DirectorAPI.Stage.AbandonedAqueduct);
 
             //sanctuary
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.AphelianSanctuary);
@@ -62,6 +77,13 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.Parent, MonsterCategory.Minibosses, DirectorAPI.Stage.AphelianSanctuary);
             Helpers.AddNewMonsterToStage(DirectorCards.Grovetender, MonsterCategory.Champions, DirectorAPI.Stage.AphelianSanctuary);
 
+            //precipice
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusScorcher, DirectorAPI.Stage.PretendersPrecipice);
+
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusProspector, MonsterCategory.BasicMonsters, DirectorAPI.Stage.PretendersPrecipice);
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusExtractor, MonsterCategory.BasicMonsters, DirectorAPI.Stage.PretendersPrecipice);
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusTransporter, MonsterCategory.Minibosses, DirectorAPI.Stage.PretendersPrecipice);
+
             //scorchewd acres
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.ScorchedAcres);
 
@@ -69,6 +91,7 @@ namespace RiskierRain
 
             //rallypoint delta
             Helpers.AddNewMonsterToStage(DirectorCards.RoboBall, MonsterCategory.Champions, DirectorAPI.Stage.RallypointDelta);
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusInvalidator, MonsterCategory.Minibosses, DirectorAPI.Stage.RallypointDelta);
 
             //sulfur pools
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SulfurPools);
@@ -79,14 +102,17 @@ namespace RiskierRain
 
             //treeborn
             Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.TreebornColony);
+            //dieback
             Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.GoldenDieback);
 
             //abyssal
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
 
-            //sirewns call
+            //sirens call
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SirensCall);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Gup, DirectorAPI.Stage.SirensCall);
+
+            Helpers.AddNewMonsterToStage(DirectorCards.SolusProspector, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SirensCall);
 
             //grove
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SunderedGrove);
@@ -96,6 +122,12 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.AlphaConstruct, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SunderedGrove);
             Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SunderedGrove);
             Helpers.AddNewMonsterToStage(DirectorCards.Grovetender, MonsterCategory.Champions, DirectorAPI.Stage.SunderedGrove);
+
+            //conduit canyon
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ClayTemplar, DirectorAPI.Stage.ConduitCanyon);
+
+            Helpers.AddNewMonsterToStage(DirectorCards.Imp, MonsterCategory.BasicMonsters, DirectorAPI.Stage.ConduitCanyon);
+            Helpers.AddNewMonsterToStage(DirectorCards.Bronzong, MonsterCategory.BasicMonsters, DirectorAPI.Stage.ConduitCanyon);
 
             //Sky meadow
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.LesserWisp, DirectorAPI.Stage.SkyMeadow);

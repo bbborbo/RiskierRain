@@ -334,11 +334,14 @@ namespace RiskierRain
                 if (selectedDifficulty >= DifficultyIndex.Hard)
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
+                    float clamped = Mathf.Clamp01(compensatedLevel / 200f);
 
-                    if(sender.baseNameToken != "JELLYFISH_BODY_NAME")
-                    {
-                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 4f;
-                    }
+                    float attackSpeedFactor = 
+                        (sender.baseNameToken == "CLAYBRUISER_BODY_NAME" 
+                            || sender.baseNameToken == "LUNARWISP_BODY_NAME"
+                            || sender.baseNameToken == "JELLYFISH_BODY_NAME") 
+                        ? 2f : 4f;
+                    args.attackSpeedMultAdd += clamped * attackSpeedFactor;
 
                     if (sender.isChampion)
                     {
@@ -346,7 +349,7 @@ namespace RiskierRain
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 2f;
+                        args.moveSpeedMultAdd += clamped * 2f;
                     }
                 }
             }

@@ -273,14 +273,14 @@ namespace RiskierRain
 
         GameObject templarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/ClayBruiserBody");
         public static float templarBaseDamage = 9;//16
-        public static float templarBaseAttackSpeed = 2;//1
+        public static float templarBaseAttackSpeed = 1;//1
         public static float templarFireInterval = 0.05f;//0.05f
         public static float templarSpinUpDuration = 1.5f;//1
         public static float templarSpinDownDuration = 2;//2
 
         GameObject chimeraWispPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/LunarWispBody");
         public static float chimeraWispBaseDamage = 5;//15
-        public static float chimeraWispBaseAttackSpeed = 2;//1
+        public static float chimeraWispBaseAttackSpeed = 1;//1
         public static float chimeraWispFireInterval = 0.1f;//0.1f
         public static float chimeraWispFireDuration = 4f;//4f
         public static float chimeraWispChargeDuration = 3.33f;//3.33f

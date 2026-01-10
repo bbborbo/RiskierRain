@@ -39,9 +39,10 @@ namespace RainrotSharedUtils.Compat
         public const string modName = "RainrotSharedCompats";
         public const string version = "1.0.0";
         #endregion
-        public static bool ModLoaded(string modGuid) { return modGuid != "" && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
+        public static bool ModLoaded(string modGuid) { return !modGuid.IsNullOrWhiteSpace() && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
         public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
         public static bool snowtimeLoaded => ModLoaded(Snowtime.SnowtimeStage.GUID);
+        public static bool riskierLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
 
         void Awake()
         {
@@ -74,8 +75,6 @@ namespace RainrotSharedUtils.Compat
             legendaryStats.desiredStormTime_ForSwanSong = 3f;
             legendaryStats.desiredStormWarningTime_ForSwanSong = 0.5f;
             legendaryStats.stormIntensifyStrength_ForSwanSong = 0.7f;
-
-            DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
         }
 
         #region inferno
@@ -95,7 +94,6 @@ namespace RainrotSharedUtils.Compat
             infernoStats.desiredStormWarningTime_ForSwanSong = 1f;
             infernoStats.stormIntensifyStrength_ForSwanSong = 0.6f;
 
-            DifficultyUtilsModule.UseDifficultyStats = true;
             DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
 
             //Run.onRunSetRuleBookGlobal -= Inferno.Main.;
@@ -104,7 +102,8 @@ namespace RainrotSharedUtils.Compat
 
         private static void RemoveInfernoHooks(Run obj)
         {
-            On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
+            if(riskierLoaded)
+                On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
         }
 
         public delegate bool orig_ChangeAmbientCap(Inferno.Main main, Run run, RuleBook ruleBook);

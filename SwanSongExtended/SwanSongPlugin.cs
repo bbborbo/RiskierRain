@@ -142,6 +142,7 @@ namespace SwanSongExtended
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
             Modules.Materials.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
+            Modules.Config.Save();
             // this has to be last
             new Modules.ContentPacks().Initialize();
 

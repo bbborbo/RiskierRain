@@ -16,6 +16,7 @@ namespace SwanSongExtended.Equipment
 {
     class TeslaEquipment : EquipmentBase<TeslaEquipment>
     {
+        public override bool isEnabled => false;
         public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
         #region config
         public override string ConfigName => "Reworks : Unstable Tesla Coil";

@@ -34,9 +34,18 @@ namespace FruityElites.Modules
 
         public static void Init()
         {
-            MyConfig = new ConfigFile(Paths.ConfigPath + $"\\{EliteReworksPlugin.guid}.cfg", true); //FortunesPlugin.instance.Config;
-            BackupConfig = new ConfigFile(Paths.ConfigPath + $"\\{EliteReworksPlugin.guid}.Backup.cfg", true);
+            MyConfig = new ConfigFile(Paths.ConfigPath + $"\\{EliteReworksPlugin.modName}.cfg", true); //FortunesPlugin.instance.Config;
+            MyConfig.SaveOnConfigSet = false;
+            BackupConfig = new ConfigFile(Paths.ConfigPath + $"\\{EliteReworksPlugin.modName}.Backup.cfg", true);
+            BackupConfig.SaveOnConfigSet = false;
             BackupConfig.Bind(": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :");
+        }
+        public static void Save()
+        {
+            MyConfig.SaveOnConfigSet = true;
+            MyConfig.Save();
+            BackupConfig.SaveOnConfigSet = true;
+            BackupConfig.Save();
         }
 
         /// <summary>

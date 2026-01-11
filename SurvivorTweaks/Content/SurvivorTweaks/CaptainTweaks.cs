@@ -17,6 +17,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using SurvivorTweaks.Modules;
+using static SurvivorTweaks.SurvivorTweaksPlugin;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -33,7 +34,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float shotgunPelletDamageCoeff = 1f; //1.2
         public static float shotgunPelletProcCoeff = 0.5f; //0.75
 
-        public static GameObject tazerPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/CaptainTazer");
+        //public static GameObject tazerPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/CaptainTazer");
         public static float tazerAoeRadius = 2; //2
         public static float tazerDamage = 2f; //1
         public static float tazerDamageBonus = 3f; 
@@ -41,29 +42,29 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public static int tazerTotalTargets = 3; //1
 
-        public static GameObject diabloPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
+        //public static GameObject diabloPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
         float diabloMaxDuration = 40; //40
 
 
         public static bool refreshSupplyDrops = true;
         public static GameObject beaconExplosion = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
 
-        public static GameObject healZone = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainHealingWard");
+        //public static GameObject healZone = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainHealingWard");
         public static float healRadius = 12; //9
 
-        public static GameObject shockBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Shocking");
+        //public static GameObject shockBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Shocking");
         public static float shockRadius = 12;
         public static float shockDamageCoefficient = 3f; //0
         public static float shockTimeInSeconds = 6f; //3
         public static float shockProcCoefficient = 1.0f;
         public static float shockForce = 500f; //0
 
-        public static GameObject hackBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Hacking");
+        //public static GameObject hackBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, Hacking");
         public static float hackRadius = 9;
         public static float hackBaseDuration = 15; //15
 
-        public static GameObject supplyBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, EquipmentRestock");
-        public static GameObject supplyRadiusIndicator = healZone;
+        //public static GameObject supplyBeacon = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/captainsupplydrops/CaptainSupplyDrop, EquipmentRestock");
+        public static GameObject supplyRadiusIndicator;
         public static float supplyRadius = 9;
 
         public override string survivorName => "Captain";
@@ -80,12 +81,18 @@ namespace SurvivorTweaks.SurvivorTweaks
             GetSkillsFromBodyObject(bodyObject);
 
             //passive
-            ItemDef microbot = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/CaptainDefenseMatrix/CaptainDefenseMatrix.asset").WaitForCompletion();
-            SurvivorTweaksPlugin.RetierItem(microbot, ItemTier.Tier2);
-            Sprite sprite = assetBundle.LoadAsset<Sprite>("Assets/Icons/Defensive_Microbots.png");
-            if(sprite)
-                microbot.pickupIconSprite = sprite;
-            //microbot.tags |= ItemTag.
+            LoadAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CaptainDefenseMatrix.CaptainDefenseMatrix_asset, RetierMicrobot);
+            void RetierMicrobot(ItemDef itemDef)
+            {
+                itemDef.tier = ItemTier.Tier2;
+                itemDef.deprecatedTier = ItemTier.Tier2;
+                if(assetBundle && assetBundle.Contains("Assets/Icons/Defensive_Microbots.png"))
+                {
+                    Sprite sprite = assetBundle.LoadAsset<Sprite>("Assets/Icons/Defensive_Microbots.png");
+                    if (sprite)
+                        itemDef.pickupIconSprite = sprite;
+                }
+            }
             //On.RoR2.CaptainDefenseMatrixController.TryGrantItem += MicrobotGuh;
             //On.RoR2.CaptainDefenseMatrixController.OnServerMasterSummonGlobal += MicrobotGah;
 
@@ -104,7 +111,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             //utility
             On.EntityStates.AimThrowableBase.ModifyProjectile += ModifyDiabloDuration;
-            On.RoR2.Projectile.ProjectileManager.InitializeProjectile += ModifyDiabloFriendlyFire;
+            //On.RoR2.Projectile.ProjectileManager.InitializeProjectile += ModifyDiabloFriendlyFire;
 
             GameObject diabloProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Captain/CaptainAirstrikeAltProjectile.prefab").WaitForCompletion();
             if (diabloProjectile)
@@ -121,10 +128,44 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             //special
             #region heal
-            HealingWard healWard = healZone.GetComponent<HealingWard>();
-            if(healWard != null)
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainHealingWard_prefab, TweakHealZone);
+            void TweakHealZone(GameObject healZonePrefab)
             {
-                healWard.radius = healRadius;
+                HealingWard healWard = healZonePrefab.GetComponent<HealingWard>();
+                if (healWard != null)
+                {
+                    healWard.radius = healRadius;
+                }
+
+                LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainSupplyDrop__Hacking_prefab, GetHackBeaconIndicator);
+                void GetHackBeaconIndicator(GameObject hackBeaconPrefab)
+                {
+                    Transform[] hackChildren = hackBeaconPrefab.GetComponentsInChildren<Transform>();
+                    if(hackChildren.Length > 0)
+                    {
+                        foreach (Transform t in hackChildren)
+                        {
+                            GameObject o = t.gameObject;
+                            if (o.name == "Indicator")
+                            {
+                                supplyRadiusIndicator = o.InstantiateClone("CaptainSupplyCdrRangeIndicator", false);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (supplyRadiusIndicator == null && healWard != null)
+                    {
+                        supplyRadiusIndicator = healWard.gameObject.InstantiateClone("CaptainSupplyCdrRangeIndicator", false);
+                        HealingWard w = supplyRadiusIndicator.GetComponent<HealingWard>();
+                        GameObject.Destroy(w);
+                    }
+
+                    if(supplyRadiusIndicator == null)
+                    {
+                        Debug.LogError("Captain Restock beacon couldn't get indicator!");
+                    }
+                }
             }
             #endregion
             #region shock
@@ -136,28 +177,18 @@ namespace SurvivorTweaks.SurvivorTweaks
             On.EntityStates.CaptainSupplyDrop.HackingInProgressState.OnEnter += HackProgressChanges;
             #endregion
             #region supply
-            Transform[] hackChildren = hackBeacon.GetComponentsInChildren<Transform>();
-            foreach(Transform t in hackChildren)
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainSupplyDrop__EquipmentRestock_prefab, TweakSupplyBeacon);
+            void TweakSupplyBeacon(GameObject supplyBeaconPrefab)
             {
-                GameObject o = t.gameObject;
-                if(o.name == "Indicator")
-                {
-                    supplyRadiusIndicator = o.InstantiateClone("CaptainSupplyCdrRangeIndicator", false);
-                    break;
-                }
-            }
-            if(supplyRadiusIndicator != null)
-            {
-                supplyRadiusIndicator = healWard.gameObject.InstantiateClone("CaptainSupplyCdrRangeIndicator", false);
-                HealingWard w = supplyRadiusIndicator.GetComponent<HealingWard>();
-                GameObject.Destroy(w);
-            }
+                //supplyRadiusIndicator.transform.parent = supplyBeaconPrefab.transform;
+                //supplyRadiusIndicator.transform.localPosition = Vector3.zero;
 
-            BuffWard supplyWard = supplyBeacon.AddComponent<BuffWard>();
-            supplyWard.buffDef = CommonAssets.captainCdrBuff;
-            supplyWard.interval = 0.25f;
-            supplyWard.buffDuration = 0.5f;
-            supplyWard.radius = supplyRadius;
+                BuffWard supplyWard = supplyBeaconPrefab.AddComponent<BuffWard>();
+                supplyWard.buffDef = CommonAssets.captainCdrBuff;
+                supplyWard.interval = 0.25f;
+                supplyWard.buffDuration = 0.5f;
+                supplyWard.radius = supplyRadius;
+            }
             On.EntityStates.CaptainSupplyDrop.BaseCaptainSupplyDropState.OnEnter += SupplyDropOnEnter;
             #endregion
 
@@ -214,13 +245,17 @@ namespace SurvivorTweaks.SurvivorTweaks
             //diablo
             utility.variants[1].skillDef.baseRechargeInterval = diabloMaxDuration + 20;
 
-            ObjectScaleCurve[] diabloIndicators = diabloPrefab.GetComponentsInChildren<ObjectScaleCurve>();
-            foreach (ObjectScaleCurve osc in diabloIndicators)
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainAirstrikeAltGhost_prefab, FixDiabloIndicator);
+            void FixDiabloIndicator(GameObject prefab)
             {
-                //Debug.Log(osc.name);
-                if (osc.name == "IndicatorRing")
+                ObjectScaleCurve[] diabloIndicators = prefab.GetComponentsInChildren<ObjectScaleCurve>();
+                foreach (ObjectScaleCurve osc in diabloIndicators)
                 {
-                    osc.timeMax = diabloMaxDuration;
+                    //Debug.Log(osc.name);
+                    if (osc.name == "IndicatorRing")
+                    {
+                        osc.timeMax = diabloMaxDuration;
+                    }
                 }
             }
         }
@@ -244,7 +279,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             {
                 fireProjectileInfo.damageTypeOverride = DamageType.BypassOneShotProtection;
                 fireProjectileInfo.useFuseOverride = true;
-                fireProjectileInfo.fuseOverride = 10;
+                fireProjectileInfo.fuseOverride = diabloMaxDuration;
             }
         }
 
@@ -261,8 +296,8 @@ namespace SurvivorTweaks.SurvivorTweaks
                     CaptainSupplyDropController supplyController = currentBody.GetComponent<CaptainSupplyDropController>();
                     if(supplyController != null)
                     {
-                        supplyController.supplyDrop1Skill.stock = 1;
-                        supplyController.supplyDrop2Skill.stock = 1;
+                        supplyController.supplyDrop1Skill.stock = Mathf.Max(supplyController.supplyDrop1Skill.maxStock, 1);
+                        supplyController.supplyDrop2Skill.stock = Mathf.Max(supplyController.supplyDrop2Skill.maxStock, 1);
                     }
                 }
             }
@@ -372,33 +407,36 @@ namespace SurvivorTweaks.SurvivorTweaks
             tazer.baseRechargeInterval = tazerCooldown;
 
             #region taser
-            GameObject tazerPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Captain.CaptainTazer_prefab).WaitForCompletion();
-            if(tazerPrefab.TryGetComponent<ProjectileStickOnImpact>(out ProjectileStickOnImpact sticky))
-            {
-                UnityEngine.Object.Destroy(sticky);
-            }
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainTazer_prefab, TweakTazer);
+            void TweakTazer(GameObject tazerPrefab)
+            { 
+                if (tazerPrefab.TryGetComponent<ProjectileStickOnImpact>(out ProjectileStickOnImpact sticky))
+                {
+                    UnityEngine.Object.Destroy(sticky);
+                }
 
-            ProjectileLightningOnImpact beam = tazerPrefab.AddComponent<ProjectileLightningOnImpact>();
-            beam.attackFireCount = 1;
-            beam.attackInterval = 99;
-            beam.attackRange = 21;
-            beam.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;
-            beam.inheritDamageType = true;
-            beam.damageCoefficient = 1;
-            beam.procCoefficient = 1;
-            beam.bounces = tazerTotalTargets - 1;
-            beam.enabled = true;
+                ProjectileLightningOnImpact beam = tazerPrefab.AddComponent<ProjectileLightningOnImpact>();
+                beam.attackFireCount = 1;
+                beam.attackInterval = 99;
+                beam.attackRange = 21;
+                beam.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;
+                beam.inheritDamageType = true;
+                beam.damageCoefficient = 1;
+                beam.procCoefficient = 1;
+                beam.bounces = tazerTotalTargets - 1;
+                beam.enabled = true;
 
-            if (tazerPrefab.TryGetComponent<ProjectileImpactExplosion>(out ProjectileImpactExplosion pie))
-            {
-                pie.blastRadius = 3;// tazerAoeRadius;
-                pie.blastDamageCoefficient = 0.25f;
-                pie.blastProcCoefficient = 0;
-                pie.timerAfterImpact = true;
-                pie.lifetimeAfterImpact = 1f;
-                pie.impactOnWorld = true;
-                pie.destroyOnWorld = true;
-                //UnityEngine.Object.Destroy(pie);
+                if (tazerPrefab.TryGetComponent<ProjectileImpactExplosion>(out ProjectileImpactExplosion pie))
+                {
+                    pie.blastRadius = 3;// tazerAoeRadius;
+                    pie.blastDamageCoefficient = 0.25f;
+                    pie.blastProcCoefficient = 0;
+                    pie.timerAfterImpact = true;
+                    pie.lifetimeAfterImpact = 1f;
+                    pie.impactOnWorld = true;
+                    pie.destroyOnWorld = true;
+                    //UnityEngine.Object.Destroy(pie);
+                }
             }
 
             On.RoR2.Projectile.ProjectileStickOnImpact.TrySticking += StickDamageBonus;

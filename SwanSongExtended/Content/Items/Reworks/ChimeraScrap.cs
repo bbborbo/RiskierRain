@@ -135,11 +135,14 @@ namespace SwanSongExtended.Items
                     {
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
-                        activatorInventory.RemoveItemPermanent(ChimeraScrap.instance.ItemsDef.itemIndex, 1);
-                        activatorInventory.GiveItemPermanent(DLC1Content.Items.RegeneratingScrapConsumed, 1);
-                        CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
-                            ChimeraScrap.instance.ItemsDef.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex,
-                            CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
+                        Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+                        new Inventory.ItemTransformation
+                        {
+                            originalItemIndex = ItemsDef.itemIndex,
+                            newItemIndex = usedItemDef.itemIndex,
+                            maxToTransform = 1,
+                            transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Suppressed
+                        }.TryTransform(activatorInventory, out tryTransformResult);
 
                         int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
 

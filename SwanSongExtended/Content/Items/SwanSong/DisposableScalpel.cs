@@ -95,11 +95,14 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
         }
         public static void ConsumeScalpel(CharacterBody attackerBody)
         {
-            attackerBody.inventory.RemoveItem(DisposableScalpel.instance.ItemsDef);
-            attackerBody.inventory.GiveItem(brokenItemDef);
-            CharacterMasterNotificationQueue.PushItemTransformNotification(attackerBody.master,
-                DisposableScalpel.instance.ItemsDef.itemIndex, brokenItemDef.itemIndex,
-                CharacterMasterNotificationQueue.TransformationType.Default);
+            Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+            new Inventory.ItemTransformation
+            {
+                originalItemIndex = instance.ItemsDef.itemIndex,
+                newItemIndex = brokenItemDef.itemIndex,
+                maxToTransform = 1,
+                transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Default
+            }.TryTransform(attackerBody.inventory, out tryTransformResult);
         }
     }
 }

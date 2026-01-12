@@ -17,6 +17,7 @@ namespace SwanSongExtended.Items
     class ChimeraScrap : ItemBase<ChimeraScrap>
     {
         public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
+        public static ItemDef usedItemDef;
         #region config
 
         public override string ConfigName => "Reworks : Regenerating Scrap";
@@ -74,6 +75,13 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_RegeneratingScrap.RegeneratingScrap_asset);// nameof(DLC1Content.Items.RegeneratingScrap));
+
+            SwanSongPlugin.LoadAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_RegeneratingScrap.RegeneratingScrapConsumed_asset, (icon) =>
+            {
+                usedItemDef = CreateNewUntieredItem("SUPERSCRAPUSED", icon, itemTags: ItemTags);
+                DoLangForItem(usedItemDef, ItemName + " (Consumed)", "It has no purpose anymore.",
+                    "It has no purpose anymore.");
+            });
             base.Init();
         }
 

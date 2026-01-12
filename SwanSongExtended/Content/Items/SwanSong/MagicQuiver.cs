@@ -7,15 +7,17 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
-    class MagicQuiver : ItemBase
+    class MagicQuiver : ItemBase<MagicQuiver>
     {
-        float refundChargeChanceBase = 10;
-        float refundChargeChanceStack = 10;
-        float refundChanceCourtesy = 5;
-        float endChanceMultiplier = 0.5f;
+        public static float refundChargeChanceBase = 10;
+        public static float refundChargeChanceStack = 10;
+        public static float refundChanceCourtesy = 5;
+        public static float endChanceMultiplier = 0.5f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Magic Quiver";
@@ -46,26 +48,13 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnSkillActivated += OnSkillActivated;
-            On.RoR2.SkillLocator.ApplyAmmoPack += ClearUtilityBeltDebuffOnBandolier;
         }
 
-        private void ClearUtilityBeltDebuffOnBandolier(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)
+        public static void MagicQuiverRefund(CharacterBody self, GenericSkill skill, float multiplier = 1)
         {
-            orig(self);
-            if (self.utility)
-            {
-                CharacterBody body = self.utility.characterBody;
-            }
-        }
-
-        private void OnSkillActivated(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)
-        {
-            orig(self, skill);
-
             if (self.inventory != null && skill.CanApplyAmmoPack())
             {
-                int quiverCount = self.inventory.GetItemCountEffective(this.ItemsDef);
+                int quiverCount = self.inventory.GetItemCountEffective(MagicQuiver.instance.ItemsDef);
                 if (quiverCount > 0)
                 {
                     float totalRefundChance = refundChargeChanceBase + (refundChargeChanceStack * (quiverCount - 1)) + refundChanceCourtesy;
@@ -76,6 +65,32 @@ namespace SwanSongExtended.Items
                         skill.AddOneStock();
                     }
                 }
+            }
+        }
+    }
+
+    public class MagicQuiverBehavior : BaseItemBodyBehavior
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => MagicQuiver.instance.ItemsDef;
+
+        void Start()
+        {
+            body.onSkillActivatedServer += OnSkillActivated;
+        }
+        void OnDestroy()
+        {
+            body.onSkillActivatedServer -= OnSkillActivated;
+        }
+        private void OnSkillActivated(GenericSkill skill)
+        {
+            if (skill.baseRechargeInterval > 0 && skill.rechargeStock > 0)
+            {
+                float effectiveCooldown = skill.baseRechargeInterval;
+                if (skill.rechargeStock > 1)
+                    effectiveCooldown /= skill.rechargeStock;
+
+                MagicQuiver.MagicQuiverRefund(body, skill);
             }
         }
     }

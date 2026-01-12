@@ -13,6 +13,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -55,21 +57,9 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    VoidTurbineBehavior ringBehavior = self.AddItemBehavior<VoidTurbineBehavior>(GetCount(self));
-                }
-            }
-        }
         public override void Init()
         {
             turbineChargeBuff = Content.CreateAndAddBuff(
@@ -106,8 +96,10 @@ namespace SwanSongExtended.Items
             orig();
         }
     }
-    public class VoidTurbineBehavior : CharacterBody.ItemBehavior
+    public class VoidTurbineBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => VoidLaserTurbine.instance.ItemsDef;
         GenericSkill primarySkill;
         GenericSkill overriddenSkill;
         SkillDef primaryOverride => VoidLaserTurbineSkill.instance.SkillDef;

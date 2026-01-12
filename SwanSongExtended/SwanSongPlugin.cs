@@ -23,6 +23,7 @@ using SwanSongExtended.Artifacts;
 using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -143,6 +144,7 @@ namespace SwanSongExtended
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
             Modules.Materials.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
+            Modules.Config.Save();
             // this has to be last
             new Modules.ContentPacks().Initialize();
 
@@ -346,6 +348,36 @@ namespace SwanSongExtended
             //    "(The following changes will be enabled if set to true) " + desc).Value;
         }
         #region modify items and equips
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
+        {
+            void onCompleted(AsyncOperationHandle<T> handle)
+            {
+                if (!(handle.Result is T) || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
+                    return;
+                }
+
+                callback(handle.Result);
+            }
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if (callback == null)
+            {
+                return ref1;
+            }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
+        }
         public static void RetierItemAsync(string itemGuid, ItemTier tier = ItemTier.NoTier, Action<ItemDef> callback = null)
         {
             AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(itemGuid);

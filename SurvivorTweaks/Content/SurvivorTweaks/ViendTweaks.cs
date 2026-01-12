@@ -57,11 +57,17 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             //GetBodyObject();
-            bodyObject = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab).WaitForCompletion();
-            GetSkillsFromBodyObject(bodyObject);
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseMaxHealth = baseMaxHealth;
-            body.levelMaxHealth = baseMaxHealth * 0.3f;
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMaxHealth = baseMaxHealth;
+                body.levelMaxHealth = baseMaxHealth * 0.3f;
+
+                DoViendPrimary();
+            });
+
             On.RoR2.HealthComponent.Heal += ViendNoHealing;
             GetStatCoefficients += ViendStatCoefficients;
 
@@ -70,7 +76,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             //On.RoR2.Skills.VoidSurvivorSkillDef.HasRequiredCorruption += VoidSurvivorSkillDef_HasRequiredCorruption;
             #endregion
 
-            DoViendPrimary();
 
             #region secondary
             DoViendSecondary();

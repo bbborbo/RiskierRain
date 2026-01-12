@@ -17,6 +17,7 @@ namespace SwanSongExtended.Items
     class ChimeraScrap : ItemBase<ChimeraScrap>
     {
         public override AssetBundle assetBundle => SwanSongPlugin.retierAssetBundle;
+        public static ItemDef usedItemDef;
         #region config
 
         public override string ConfigName => "Reworks : Regenerating Scrap";
@@ -74,6 +75,13 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_RegeneratingScrap.RegeneratingScrap_asset);// nameof(DLC1Content.Items.RegeneratingScrap));
+
+            SwanSongPlugin.LoadAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_RegeneratingScrap.RegeneratingScrapConsumed_asset, (icon) =>
+            {
+                usedItemDef = CreateNewUntieredItem("SUPERSCRAPUSED", icon, itemTags: ItemTags);
+                DoLangForItem(usedItemDef, ItemName + " (Consumed)", "It has no purpose anymore.",
+                    "It has no purpose anymore.");
+            });
             base.Init();
         }
 
@@ -127,11 +135,14 @@ namespace SwanSongExtended.Items
                     {
                         CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
 
-                        activatorInventory.RemoveItemPermanent(ChimeraScrap.instance.ItemsDef.itemIndex, 1);
-                        activatorInventory.GiveItemPermanent(DLC1Content.Items.RegeneratingScrapConsumed, 1);
-                        CharacterMasterNotificationQueue.SendTransformNotification(activatorBody.master,
-                            ChimeraScrap.instance.ItemsDef.itemIndex, DLC1Content.Items.RegeneratingScrapConsumed.itemIndex,
-                            CharacterMasterNotificationQueue.TransformationType.RegeneratingScrapRegen);
+                        Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+                        new Inventory.ItemTransformation
+                        {
+                            originalItemIndex = ItemsDef.itemIndex,
+                            newItemIndex = usedItemDef.itemIndex,
+                            maxToTransform = 1,
+                            transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Suppressed
+                        }.TryTransform(activatorInventory, out tryTransformResult);
 
                         int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
 

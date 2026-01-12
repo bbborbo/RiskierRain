@@ -16,6 +16,9 @@ using RoR2.Skills;
 using System.Security.Permissions;
 using System.Security;
 using SurvivorTweaks.SurvivorTweaks;
+using UnityEngine.AddressableAssets;
+using RoR2.ContentManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -48,7 +51,7 @@ namespace SurvivorTweaks
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SurvivorTweaks";
-        public const string version = "3.1.0";
+        public const string version = "3.1.5";
 
         public const string DEVELOPER_PREFIX = "FRUIT";
 
@@ -100,6 +103,8 @@ namespace SurvivorTweaks
             Modules.AllyCaps.Init();
 
             InitializeContent();
+
+            Modules.Config.Save();
 
             // this has to be last
             new Modules.ContentPacks().Initialize();
@@ -217,64 +222,36 @@ namespace SurvivorTweaks
             skillDef.keywordTokens = oldDef.keywordTokens;
             return skillDef;
         }
-        #region modify items and equips
-        static public ItemDef RetierItem(string itemName, ItemTier tier = ItemTier.NoTier)
-        {
-            ItemDef def = LoadItemDef(itemName);
-            def = RetierItem(def, tier);
-            return def;
-        }
 
-        static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
         {
-            if (def != null)
+            void onCompleted(AsyncOperationHandle<T> handle)
             {
-                //def._itemTierDef = ItemTierCatalog.GetItemTierDef(tier);
-                def.tier = tier;
-                def.deprecatedTier = tier;
-            }
-            return def;
-        }
+                if (handle.Result is not T || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
+                    return;
+                }
 
-        public static void RemoveEquipment(string equipName)
-        {
-            EquipmentDef equipDef = LoadEquipDef(equipName);
-            equipDef.canDrop = false;
-            equipDef.canBeRandomlyTriggered = false;
-            equipDef.enigmaCompatible = false;
-            equipDef.dropOnDeathChance = 0;
-        }
-        public static void ChangeEquipmentEnigma(string equipName, bool canEnigma)
-        {
-            EquipmentDef equipDef = LoadEquipDef(equipName);
-            if (equipDef != null)
-            {
-                equipDef.enigmaCompatible = canEnigma;
+                callback(handle.Result);
             }
-        }
-        public static void ChangeBuffStacking(string buffName, bool canStack)
-        {
-            BuffDef buffDef = LoadBuffDef(buffName);
-            if (buffDef != null)
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if(callback == null)
             {
-                buffDef.canStack = canStack;
+                return ref1;
             }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
         }
-        static ItemDef LoadItemDef(string name)
-        {
-            ItemDef itemDef = LegacyResourcesAPI.Load<ItemDef>("ItemDefs/" + name);
-            return itemDef;
-        }
-        static EquipmentDef LoadEquipDef(string name)
-        {
-            EquipmentDef equipDef = LegacyResourcesAPI.Load<EquipmentDef>("EquipmentDefs/" + name);
-            return equipDef;
-        }
-        static BuffDef LoadBuffDef(string name)
-        {
-            BuffDef buffDef = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/" + name);
-            return buffDef;
-        }
-        #endregion
     }
 }

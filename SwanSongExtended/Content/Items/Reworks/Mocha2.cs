@@ -13,7 +13,9 @@ using RoR2.ExpansionManagement;
 using System.Collections;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
-using On.RoR2.Items;
+using RoR2.Items;
+
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -105,27 +107,24 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_AttackSpeedAndMoveSpeed.AttackSpeedAndMoveSpeed_asset);
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
-            On.RoR2.CharacterBody.RecalculateStats += MochaCDR;
             On.RoR2.Items.MultiShopCardUtils.OnPurchase += MochaExtend;
-            On.RoR2.TeleporterInteraction.OnInteractionBegin += MochaExtendTP;
+            TeleporterInteraction.onTeleporterBeginChargingGlobal += MochaExtendTP;
             GetStatCoefficients += MochaSpeed;
-            BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
             RoR2Application.onLoad += YoinkMochaAssets;
         }
 
-        private void MochaExtendTP(On.RoR2.TeleporterInteraction.orig_OnInteractionBegin orig, TeleporterInteraction self, Interactor activator)
+        private void MochaExtendTP(TeleporterInteraction obj)
         {
-            orig(self, activator);
-
-            ExtendMochaBuff(activator.GetComponent<CharacterBody>());
+            if(NetworkServer.active)
+                ExtendMochaBuff(obj.chargeActivatorServer.GetComponent<CharacterBody>());
         }
 
-        private void MochaExtend(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
+        private void MochaExtend(On.RoR2.Items.MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
         {
             orig(context, moneyCost);
-            ExtendMochaBuff(context.activatorBody);
+            if (NetworkServer.active)
+                ExtendMochaBuff(context.activatorBody);
         }
 
         private static void ExtendMochaBuff(CharacterBody body)
@@ -151,6 +150,7 @@ namespace SwanSongExtended.Items
                 instance.ItemsDef.pickupIconSprite = mochaSprite;
                 GameObject mochaModel = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/DisplayCoffee.prefab").WaitForCompletion();
                 instance.ItemsDef.pickupModelPrefab = mochaModel;
+                CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.AttackSpeedAndMoveSpeed);
             }
         }
 
@@ -163,60 +163,30 @@ namespace SwanSongExtended.Items
             orig(self, buffDef);
         }
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                int itemCount = GetCount(self);
-                    
-                BorboMochaBehavior mochaBehavior = self.GetComponent<BorboMochaBehavior>(); 
-                if (mochaBehavior && mochaBehavior.stack < itemCount)
-                {
-                    mochaBehavior.UpdateTime(pickupDuration);
-                }
-                self.AddItemBehavior<BorboMochaBehavior>(itemCount);
-            }
-        }
-
         private void MochaSpeed(CharacterBody sender, StatHookEventArgs args)
         {
             //Debug.Log("dsfjhgbds");
             int mochaCount = GetCount(sender);
+            if (mochaCount <= 0)
+                return;
             float spdBuff = spdBoostFree;
-            if (mochaCount > 0 && sender.HasBuff(mochaBuffActive))
+            float cdrBoost = Mathf.Pow(1 - cdrBoostFree, mochaCount);
+            if (sender.HasBuff(mochaBuffActive))
             {
                 spdBuff += spdBoostBuff;
+                cdrBoost *= Mathf.Pow(1 - cdrBoostBuff, mochaCount);
             }
             args.moveSpeedMultAdd += spdBuff * mochaCount;
             args.attackSpeedMultAdd += spdBuff * mochaCount;
-        }
 
-        private void MochaCDR(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            int mochaCount = GetCount(self);
-            if (mochaCount > 0)
-            {
-                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
-                float cdrBoost = Mathf.Pow(1 - cdrBoostFree, mochaCount);
-                if (self.HasBuff(mochaBuffActive))
-                    cdrBoost *= Mathf.Pow(1 - cdrBoostBuff, mochaCount);
-
-                SkillLocator skillLocator = self.skillLocator;
-                if (skillLocator != null)
-                {
-                    Tools.ApplyCooldownScale(skillLocator.primary, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.secondary, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.utility, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.special, cdrBoost);
-                }
-            }
+            args.allSkills.cooldownMultiplier *= cdrBoost;
         }
     }
 
-    public class BorboMochaBehavior : CharacterBody.ItemBehavior
+    public class BorboMochaBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Mocha2.instance.ItemsDef;
         bool addingBuffs = false;
         public int remainingTime = 0;
         float durationPerBuff = 1; //in seconds

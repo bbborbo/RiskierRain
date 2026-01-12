@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <None Include="Content\Interactables\Interactables\CurseStatue.cs" />
     <None Include="Content\Interactables\Interactables\FakeShrine.cs" />
     <None Include="Content\Interactables\QuestInteractables\EnergyCrystalAltar.cs" />
@@ -45,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <Compile Remove="Content\Interactables\Interactables\CurseStatue.cs" />
     <Compile Remove="Content\Interactables\Interactables\FakeShrine.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\EnergyCrystalAltar.cs" />

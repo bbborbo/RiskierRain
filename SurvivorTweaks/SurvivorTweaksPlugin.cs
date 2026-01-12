@@ -18,6 +18,7 @@ using System.Security;
 using SurvivorTweaks.SurvivorTweaks;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -222,18 +223,35 @@ namespace SurvivorTweaks
             return skillDef;
         }
 
-        public static void LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
         {
-            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
-            AssetAsyncReferenceManager<T>.LoadAsset(ref1).Completed += (ctx) =>
+            void onCompleted(AsyncOperationHandle<T> handle)
             {
-                if (ctx.Result is not T)
+                if (handle.Result is not T || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
                     return;
-                T obj = ctx.Result;
+                }
 
-                if (callback != null)
-                    callback.Invoke(obj);
-            };
+                callback(handle.Result);
+            }
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if(callback == null)
+            {
+                return ref1;
+            }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace SwanSongExtended.Items
 {
     class GalleryItemDrop : ItemBase<GalleryItemDrop>
     {
-        public override bool lockEnabled => true;
+        public override bool forcePrerequisites => true;
         public override string ConfigName => "";
         public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
         public override string ItemName => "Gallery Item Drop";

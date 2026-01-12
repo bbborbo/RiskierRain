@@ -85,6 +85,8 @@ namespace SwanSongExtended
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;
 
+        internal static event Action onSwanSongLoaded;
+
         #region asset paths
         public const string iconsPath = "";
         #endregion
@@ -144,7 +146,10 @@ namespace SwanSongExtended
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
             Modules.Materials.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
+            onSwanSongLoaded.Invoke();
+
             Modules.Config.Save();
+
             // this has to be last
             new Modules.ContentPacks().Initialize();
 
@@ -302,13 +307,16 @@ namespace SwanSongExtended
             if (objTypesOfBaseType.Count() <= 0)
                 return;
 
+            IEnumerable<SharedBase> objsOfBaseType = 
+                objTypesOfBaseType
+                    .Select((objType) => (T)System.Activator.CreateInstance(objType))
+                    .OrderBy((sharedBase) => sharedBase.loadOrder);
+
             Log.Debug(Log.Combine(baseType.Name) + "Initializing");
 
-            foreach (var objType in objTypesOfBaseType)
+            foreach (SharedBase obj in objsOfBaseType)
             {
-                string s = Log.Combine(baseType.Name, objType.Name);
-                Log.Debug(s);
-                T obj = (T)System.Activator.CreateInstance(objType);
+                string s = Log.Combine(baseType.Name, obj.ConfigName);
                 if (ValidateBaseType(obj as SharedBase))
                 {
                     Log.Debug(s + "Validated");
@@ -324,9 +332,10 @@ namespace SwanSongExtended
         bool ValidateBaseType(SharedBase obj)
         {
             bool enabled = obj.isEnabled;
-            if (obj.lockEnabled)
-                return enabled;
-            return obj.Bind(enabled, "Should This Content Be Enabled");
+            if (obj.forcePrerequisites)
+                return enabled && obj.GetPrerequisites();
+
+            return obj.Bind(enabled, "Should This Content Be Enabled") && obj.GetPrerequisites();
         }
         void InitializeBaseType(SharedBase obj)
         {
@@ -334,7 +343,7 @@ namespace SwanSongExtended
         }
         #endregion
 
-        private bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")
+        public static bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")
         {
             return ConfigManager.DualBindToConfig<bool>(packetTitle, Modules.Config.MyConfig, "Should This Content Be Enabled", defaultValue, desc);
             //if (desc != "")

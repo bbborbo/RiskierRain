@@ -14,7 +14,11 @@ namespace SwanSongExtended.Equipment
 {
     class QuickStartEquipment : EquipmentBase<QuickStartEquipment>
     {
-        public override bool lockEnabled => true;
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Artifacts.QuickStartArtifact.GetQuickStartConfig();
+        }
         public override string EquipmentName => "Stillborn Prayer";
 
         public override string EquipmentLangTokenName => "QUICKSTARTEQUIPMENT";

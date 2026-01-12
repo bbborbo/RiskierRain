@@ -49,6 +49,10 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_GhostOnKill.GhostOnKill_asset);
         }
         public override void Hooks()

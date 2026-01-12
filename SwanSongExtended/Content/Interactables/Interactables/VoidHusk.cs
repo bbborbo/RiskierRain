@@ -15,6 +15,16 @@ namespace SwanSongExtended.Interactables
 {
     class VoidHusk : InteractableBase<VoidHusk>
     {
+        public static bool GetIchorConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Ichor Suite", "Enables the Ichor Husk and all three Void Ichor items");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return VoidHusk.GetIchorConfig();
+        }
         #region abstract
         public override string InteractableName => "Fractured Husk";
 

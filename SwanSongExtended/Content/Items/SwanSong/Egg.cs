@@ -11,12 +11,22 @@ using static R2API.RecalculateStatsAPI;
 using HarmonyLib;
 using On.RoR2.Items;
 using RoR2.ExpansionManagement;
+using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items
 {
     class Egg : ItemBase<Egg>
     {
-        public override bool lockEnabled => true;
+        public static bool GetEggConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Egg Suite", "Enables Egg");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Egg.GetEggConfig();
+        }
         public static int eggHealth = 5;
         public static float eggOnKillChance = 4;
         public static float eggOnInteractChance = 4;
@@ -54,6 +64,10 @@ namespace SwanSongExtended.Items
         {
             base.Init();
             Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             //to add: -chocolate egg
             //compat: -donut (mystics) -probably a bunch of ss2 stuff
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Infusion.Infusion_asset);

@@ -14,6 +14,11 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorYellow : ItemBase<VoidIchorYellow>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Interactables.VoidHusk.GetIchorConfig();
+        }
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         float regenBase = 0.8f;
         float regenStack = 0.8f;
@@ -44,13 +49,17 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Syringe.Syringe_asset);
-            AddVoidItemRelationship(VoidIchorViolet.instance.ItemsDef);
             AddVoidItemRelationship(ItemsDef, VoidIchorRed.instance.ItemsDef);
         }
         public override void Hooks()
         {
             RecalculateStatsAPI.GetStatCoefficients += IchorRegenBoost;
+            SwanSongPlugin.onSwanSongLoaded += () => AddVoidItemRelationship(VoidIchorViolet.instance.ItemsDef);
         }
 
         private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)

@@ -15,6 +15,11 @@ namespace SwanSongExtended.Skills
 {
     class VoidLaserTurbineSkill : SkillBase<VoidLaserTurbineSkill>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Items.VoidLaserTurbine.GetSolenoidConfig();
+        }
         public static GameObject tracerLaser;
         public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
 

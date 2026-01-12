@@ -20,6 +20,16 @@ namespace SwanSongExtended.Items
 {
     class VoidLaserTurbine : ItemBase<VoidLaserTurbine>
     {
+        public static bool GetSolenoidConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Items : Super Solenoid Engine");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return VoidLaserTurbine.GetSolenoidConfig();
+        }
         public static BuffDef turbineChargeBuff;
         public static BuffDef turbineReadyBuff;
         public static float secondsOfChargeRequired = 90;
@@ -75,6 +85,10 @@ namespace SwanSongExtended.Items
                 false, false
                 );
             base.Init();
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Behemoth.Behemoth_asset);
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LaserTurbine.LaserTurbine_asset);
         }

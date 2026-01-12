@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
 {
     class Wishbone : ItemBase<Wishbone>
     {
-        public override bool lockEnabled => true;
+        public override bool forcePrerequisites => true;
         static ItemDef brokenItemDef;
         public override string ItemName => "Wishbone";
 

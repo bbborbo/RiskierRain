@@ -14,6 +14,11 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorRed : ItemBase<VoidIchorRed>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Interactables.VoidHusk.GetIchorConfig();
+        }
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int critBase = 5;
         int critStack = 5;
@@ -46,12 +51,17 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
-            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
         }
 
         public override void Hooks()
         {
             RecalculateStatsAPI.GetStatCoefficients += RedIchorStats;
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
+            AddVoidItemRelationship(VoidIchorYellow.instance.ItemsDef);
         }
 
         private void RedIchorStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)

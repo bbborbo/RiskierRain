@@ -13,6 +13,9 @@
     <None Include="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
     <None Include="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
     <None Include="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
     <None Include="Content\TwistedScavengers\BoboScav.cs" />
     <None Include="Content\TwistedScavengers\CunningScav.cs" />
     <None Include="Content\TwistedScavengers\GreedyScav.cs" />
@@ -57,6 +60,9 @@
     <Compile Remove="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
     <Compile Remove="Content\TwistedScavengers\BoboScav.cs" />
     <Compile Remove="Content\TwistedScavengers\CunningScav.cs" />
     <Compile Remove="Content\TwistedScavengers\GreedyScav.cs" />

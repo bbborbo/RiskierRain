@@ -22,6 +22,11 @@ namespace SwanSongExtended.Items
 {
     class BottleFart : ItemBase<BottleFart>
     {
+        public override int loadOrder => 1;
+        public override bool GetPrerequisites()
+        {
+            return BottleCloud.GetBottleCloudConfig();
+        }
         public override string ConfigName => "Items : Fart In A Jar";
         static GameObject fartZone;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
@@ -70,6 +75,10 @@ namespace SwanSongExtended.Items
                 Color.magenta, false, false);
             CreateProjectile();
             base.Init();
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             AddVoidItemRelationship(BottleCloud.instance.ItemsDef);
         }
         public override void Hooks()

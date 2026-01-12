@@ -20,6 +20,16 @@ namespace SwanSongExtended.Items
 {
     class BottleCloud : ItemBase<BottleCloud>
     {
+        public static bool GetBottleCloudConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Items : Cloud In A Bottle", "Also enables Quarantined Contaminant"); 
+            //instance.Bind(true, "Should This Content Be Enabled", "Also enables Quarantined Contaminant");
+        }
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return BottleCloud.GetBottleCloudConfig();
+        }
         public override string ConfigName => "Items : Cloud In A Bottle";
         public static float verticalBonusOnCloudJump = 0.15f;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");

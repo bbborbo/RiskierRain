@@ -20,6 +20,11 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorViolet : ItemBase<VoidIchorViolet>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Interactables.VoidHusk.GetIchorConfig();
+        }
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public static float cooldown = 1;
         public static int barrierBase = 22;
@@ -58,11 +63,16 @@ namespace SwanSongExtended.Items
             violetBuff.isHidden = true;
             violetBuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             base.Init();
-            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
-            AddVoidItemRelationship(VoidIchorRed.instance.ItemsDef);
         }
         public override void Hooks()
         {
+        }
+
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
+            AddVoidItemRelationship(VoidIchorRed.instance.ItemsDef);
         }
     }
 

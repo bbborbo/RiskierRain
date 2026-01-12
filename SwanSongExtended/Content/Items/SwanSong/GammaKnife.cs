@@ -17,6 +17,10 @@ namespace SwanSongExtended.Items
 {
     class GammaKnife : ItemBase<GammaKnife>
     {
+        public override bool GetPrerequisites()
+        {
+            return DisposableScalpel.GetScalpelConfig();
+        }
         public static ItemDef statBoostItemDef;
         public static bool hideStatBoost = false;
         public static BuffDef gammaKnifeTemporaryBuff;
@@ -70,7 +74,10 @@ namespace SwanSongExtended.Items
                 );
 
             base.Init();
-
+        }
+        public override void AddVoidRelationships()
+        {
+            base.AddVoidRelationships();
             AddVoidItemRelationship(DisposableScalpel.instance.ItemsDef);
         }
 

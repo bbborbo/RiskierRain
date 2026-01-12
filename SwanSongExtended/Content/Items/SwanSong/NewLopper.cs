@@ -11,10 +11,12 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
-    class NewLopper : ItemBase
+    class NewLopper : ItemBase<NewLopper>
     {
         public override string ConfigName => "Items : New Lopper";
         internal static float maxHealthThreshold = 0.3f;
@@ -83,7 +85,6 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             GetStatCoefficients += this.GiveBonusCrit;
         }
 
@@ -104,22 +105,12 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
                 args.critDamageMultAdd += critDmgAdd;
             }
         }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.healthComponent != null)
-                {
-                    self.AddItemBehavior<NewLopperBehavior>(GetCount(self));
-                }
-            }
-        }
     }
 
-    public class NewLopperBehavior : RoR2.CharacterBody.ItemBehavior
+    public class NewLopperItemBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => NewLopper.instance.ItemsDef;
         BuffIndex dangerCrit => NewLopper.dangerCritBuff.buffIndex;
         bool isLowHealth = false;
         void Start()
@@ -129,14 +120,11 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
         private void ExtendRampage(DamageReport damageReport)
         {
-            if (!NetworkServer.active)
-                return;
             CharacterBody attackerBody = damageReport.attackerBody;
             if(attackerBody == this.body)
             {
                 if(this.body.HasBuff(dangerCrit) && !isLowHealth)
                 {
-                    this.body.RemoveOldestTimedBuff(dangerCrit);
                     this.body.AddTimedBuff(dangerCrit, NewLopper.rampageExtendTime);
                 }
             }
@@ -144,8 +132,6 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
 
         void FixedUpdate()
         {
-            if (!NetworkServer.active)
-                return;
             if (stack > 0)
             {
                 float combinedHealthFraction = this.body.healthComponent.combinedHealthFraction;
@@ -173,8 +159,6 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
         void OnDestroy()
         {
             GlobalEventManager.onCharacterDeathGlobal -= ExtendRampage;
-            if (!NetworkServer.active)
-                return;
 
             if (isLowHealth)
                 this.body.RemoveBuff(dangerCrit);

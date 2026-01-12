@@ -10,6 +10,8 @@ using static MoreStats.OnHit;
 using UnityEngine.AddressableAssets;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -18,9 +20,9 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Items : Devs Item";
         public static BuffDef birdBuff;
         public static BuffDef birdDebuff;
-        public float regenDurationBase = 1.5f;
-        public float regenDurationStack = 0.75f;
-        public int cooldownTime = 7;
+        public static float regenDurationBase = 1.5f;
+        public static float regenDurationStack = 0.75f;
+        public static int cooldownTime = 7;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Dev\u2019s Item";
@@ -94,38 +96,35 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            GetHitBehavior += BirdBand_GetHitBehavior;
-        }
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                self.AddItemBehavior<BirdBandBehavior>(GetCount(self));
-            }
-        }
-        private void BirdBand_GetHitBehavior(CharacterBody body, DamageInfo damageInfo, CharacterBody victim)
-        {
-            if (!NetworkServer.active)
-                return;
-            int bandCount = GetCount(body);
-            float damageCoefficient = damageInfo.damage / body.damage;
-            if(bandCount > 0 && damageCoefficient >= 4 && body.HasBuff(birdBuff))// && !damageInfo.procChainMask.HasProc(ProcType.Rings))
-            {
-                body.RemoveBuff(birdBuff);
-                for(int i = 0; i < cooldownTime; i++)
-                {
-                    body.AddTimedBuffAuthority(birdDebuff.buffIndex, i + 1);
-                }
-                //ProcChainMask procChainMask = damageInfo.procChainMask;
-                //procChainMask.AddProc(ProcType.Rings);
-                body.AddTimedBuffAuthority(RoR2Content.Buffs.CrocoRegen.buffIndex, regenDurationBase + (regenDurationStack * (bandCount - 1)));
-            }
         }
     }
-    public class BirdBandBehavior : CharacterBody.ItemBehavior
+    public class BirdBandItemBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => BirdBand.instance.ItemsDef;
+
+        public void OnDamageDealtServer(DamageReport damageReport)
+        {
+            if (damageReport.attackerBody == null)
+                return;
+
+            if (stack <= 0 || body.HasBuff(BirdBand.birdBuff))
+                return;
+
+            float damageCoefficient = damageReport.damageInfo.damage / body.damage;
+            if (damageCoefficient < 4)// && !damageInfo.procChainMask.HasProc(ProcType.Rings))
+                return;
+
+            body.RemoveBuff(BirdBand.birdBuff);
+            for (int i = 0; i < BirdBand.cooldownTime; i++)
+            {
+                body.AddTimedBuffAuthority(BirdBand.birdDebuff.buffIndex, i + 1);
+            }
+            //ProcChainMask procChainMask = damageInfo.procChainMask;
+            //procChainMask.AddProc(ProcType.Rings);
+            body.AddTimedBuffAuthority(RoR2Content.Buffs.CrocoRegen.buffIndex, BirdBand.regenDurationBase + (BirdBand.regenDurationStack * (stack - 1)));
+        }
+
         private void FixedUpdate()
         {
             if (!NetworkServer.active)

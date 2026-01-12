@@ -7,17 +7,18 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class StarVeil : ItemBase<StarVeil>
     {
-        static float iframeDurationBase = 0.33f;
-        static float iframeDurationStack = 0.33f;
-
-        static float stormDamageCoefficient = 3f;
-        static int stormWavesBase = 3;
-        static int stormWavesStack = 2;
+        public static float iframeDurationBase = 0.33f;
+        public static float iframeDurationStack = 0.33f;
+        public static float stormDamageCoefficient = 3f;
+        public static int stormWavesBase = 3;
+        public static int stormWavesStack = 2;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Star Veil";
@@ -74,40 +75,51 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += StarVeilTakeDamage;
+        }
+    }
+
+    public class StarVeilBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => StarVeil.instance.ItemsDef;
+
+        void Start()
+        {
+            body?.healthComponent?.AddOnTakeDamageServerReceiver(this);
+        }
+        void OnDestroy()
+        {
+            body?.healthComponent?.RemoveOnTakeDamageServerReceiver(this);
         }
 
-        private void StarVeilTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+        public void OnTakeDamageServer(DamageReport damageReport)
         {
-            orig(self, damageInfo);
-            if (!damageInfo.rejected && self.body)
+            if (damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.Silent))
+                return;
+            if (body.HasBuff(RoR2Content.Buffs.Immune) || body.HasBuff(RoR2Content.Buffs.HiddenInvincibility))
+                return;
+
+            float iframes = StarVeil.GetStackValue(StarVeil.iframeDurationBase, StarVeil.iframeDurationStack, stack);
+            body.AddTimedBuffAuthority(RoR2Content.Buffs.Immune.buffIndex, iframes);
+            bool selfDamage = false;// damageInfo.attacker == self.gameObject;
+
+            if (damageReport.damageInfo.procCoefficient > 0 || selfDamage)
             {
-                int itemCount = GetCount(self.body);
-                if (itemCount > 0 && !self.body.HasBuff(RoR2Content.Buffs.Immune) && !damageInfo.damageType.damageType.HasFlag(DamageType.Silent))
-                {
-                    float iframes = GetStackValue(iframeDurationBase, iframeDurationStack, itemCount);
-                    self.body.AddTimedBuffAuthority(RoR2Content.Buffs.Immune.buffIndex, iframes);
-                    bool selfDamage = false;// damageInfo.attacker == self.gameObject;
+                MeteorStormController stormController =
+                    UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/NetworkedObjects/MeteorStorm"),
+                    body.corePosition, Quaternion.identity).GetComponent<MeteorStormController>();
 
-                    if (damageInfo.procCoefficient > 0 || selfDamage)
-                    {
-                        MeteorStormController stormController =
-                            UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>("Prefabs/NetworkedObjects/MeteorStorm"),
-                            self.body.corePosition, Quaternion.identity).GetComponent<MeteorStormController>();
+                stormController.owner = body.gameObject;
+                stormController.ownerDamage = body.damage;
+                stormController.isCrit = Util.CheckRoll(body.crit, body.master);
+                stormController.waveCount = (int)StarVeil.GetStackValue(StarVeil.stormWavesBase, StarVeil.stormWavesStack, stack);
+                stormController.impactDelay = 1;// Mathf.Min(iframes, 2);
+                stormController.blastRadius = 6f;
+                stormController.waveMinInterval = 0.2f;
+                stormController.waveMaxInterval = 0.4f;
+                stormController.blastDamageCoefficient = StarVeil.stormDamageCoefficient;
 
-                        stormController.owner = self.gameObject;
-                        stormController.ownerDamage = self.body.damage;
-                        stormController.isCrit = Util.CheckRoll(self.body.crit, self.body.master);
-                        stormController.waveCount = (int)GetStackValue(stormWavesBase, stormWavesStack, itemCount);
-                        stormController.impactDelay = 1;// Mathf.Min(iframes, 2);
-                        stormController.blastRadius = 6f;
-                        stormController.waveMinInterval = 0.2f;
-                        stormController.waveMaxInterval = 0.4f;
-                        stormController.blastDamageCoefficient = stormDamageCoefficient;
-
-                        NetworkServer.Spawn(stormController.gameObject);
-                    }
-                }
+                NetworkServer.Spawn(stormController.gameObject);
             }
         }
     }

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using On.RoR2.Items;
 using HarmonyLib;
 using EntityStates.Bandit2;
 using UnityEngine.AddressableAssets;
@@ -16,6 +15,8 @@ using JumpRework;
 using static MoreStats.StatHooks;
 using static MoreStats.OnJump;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -74,7 +75,6 @@ namespace SwanSongExtended.Items
         {
             GetMoreStatCoefficients += FartJumpCount;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
 
         private void FartJumpCount(CharacterBody sender, MoreStatHookEventArgs args)
@@ -82,18 +82,6 @@ namespace SwanSongExtended.Items
             if (GetCount(sender) > 0)
             {
                 args.jumpCountAdd += 1;
-            }
-        }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    FartBottleBehavior ringBehavior = self.AddItemBehavior<FartBottleBehavior>(GetCount(self));
-                }
             }
         }
 
@@ -148,8 +136,10 @@ namespace SwanSongExtended.Items
         }
     }
 
-    public class FartBottleBehavior : CharacterBody.ItemBehavior
+    public class FartBottleBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => BottleFart.instance.ItemsDef;
         public static float cooldownDuration = 5;
         public static float cooldownReductionPerStack = 0.2f;
         float cooldownTimer = 0;

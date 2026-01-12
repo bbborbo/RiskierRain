@@ -12,11 +12,15 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class CoinGun : ItemBase<CoinGun>
     {
+
+        static Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion();
         public static int baseGoldChunk = 25;
         public static bool includeDeploys = true;
 
@@ -120,106 +124,73 @@ What happened to all of our gold?";
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            //On.RoR2.CharacterMaster.GiveMoney += GoldGunMoneyBoost;
-            On.RoR2.HealthComponent.TakeDamageProcess += GoldGunDamageBoost;
             GetStatCoefficients += this.GiveBonusDamage;
-            On.RoR2.CharacterMaster.OnBodyStart += GoldenGunBonusMoney;
+            CharacterBody.onBodyStartGlobal += GoldenGunBonusMoney;
         }
 
-        private void GoldenGunBonusMoney(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
+        private void GoldenGunBonusMoney(CharacterBody body)
         {
-            orig(self, body);
-            if(GetCount(body) > 0)
+            if (GetCount(body) > 0 && body.master)
             {
                 uint freeMoney = (uint)Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
-                self.GiveMoney(freeMoney);
+                body.master.GiveMoney(freeMoney);
             }
         }
 
         private void GiveBonusDamage(CharacterBody sender, StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
-            if(itemCount > 0)
-            {
-                CoinGunBehavior coinGun = sender.GetComponent<CoinGunBehavior>();
-                if (coinGun)
-                {
-                    int damageBoostCount = coinGun.damageBoostCount;
+            if (itemCount <= 0)
+                return;
 
-                    //float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * damageBoostCount * itemCount) - 1;
-                    if (damageBoostCount > 0)
-                    {
-                        float damageMult = bonusDamageMin + bonusDamagePerChunk * (damageBoostCount - 1);
+            CoinGunBehavior coinGun = sender.GetComponent<CoinGunBehavior>();
+            if (!coinGun)
+                return;
+         
+            int damageBoostCount = coinGun.damageBoostCount;
+            if (damageBoostCount <= 0)
+                return;
 
-                        args.damageMultAdd += damageMult * itemCount;
-                    }
-                }
-            }
+            float damageMult = bonusDamageMin + bonusDamagePerChunk * (damageBoostCount - 1);
+            args.damageMultAdd += damageMult * itemCount;
         }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                CoinGunBehavior GgBehavior = self.AddItemBehavior<CoinGunBehavior>(GetCount(self));
-            }
-        }
-
-        private void GoldGunMoneyBoost(On.RoR2.CharacterMaster.orig_GiveMoney orig, CharacterMaster self, uint amount)
-        {
-            int itemCount = GetCount(self);
-            if (itemCount > 0)
-            {
-                amount = (uint)(amount * (1 + bonusGold));
-            }
-
-            orig(self, amount);
-        }
-
-        private void GoldGunDamageBoost(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
-        {
-            if (damageInfo.attacker != null)
-            {
-                CharacterBody body = damageInfo.attacker.GetComponent<CharacterBody>();
-                if(body != null)
-                {
-                    var itemcount = GetCount(body);
-                    if (itemcount > 0)
-                    {
-                        CoinGunBehavior coinGun = body.GetComponent<CoinGunBehavior>();
-                        int damageBoostCount = coinGun.damageBoostCount;//body.GetBuffCount(CoinGun.goldDamageBuff);
-                        CharacterMaster master = body.master;
-                        /*var money = master.money;
-                        if (includeDeploys)
-                        {
-                            var deployable = master.GetComponent<Deployable>();
-                            if (deployable) money += deployable.ownerMaster.money;
-                        }
-
-                        float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * ((damageBoostCount + 1) * itemcount));
-
-                        damageInfo.damage *= damageMult;*/
-                        if(Util.CheckRoll((damageBoostCount / maxPlatinum) * 100, master))
-                        {
-                            EffectManager.SimpleImpactEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/CoinImpact"), damageInfo.position, Vector3.up, true);
-                        }
-                    }
-                }
-            }
-
-            orig(self, damageInfo);
-        }
-
-        static Sprite defaultSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion();
     }
-    public class CoinGunBehavior : CharacterBody.ItemBehavior
+    public class CoinGunBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = true)]
+        private static ItemDef GetItemDef() => CoinGun.instance.ItemsDef;
         public CharacterMaster master;
         public uint currentMoney = 0;
         int fixedBaseChestCost => Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
         public int damageBoostCount = 0;
+
+        public void OnDamageDealtServer(DamageReport damageReport)
+        {
+            Inventory inv = damageReport.attackerBody?.inventory;
+            if (inv == null)
+                return;
+
+            int itemcount = inv.GetItemCountEffective(GetItemDef());
+            if (itemcount <= 0)
+                return;
+            /*var money = master.money;
+            if (includeDeploys)
+            {
+                var deployable = master.GetComponent<Deployable>();
+                if (deployable) money += deployable.ownerMaster.money;
+            }
+
+            float damageMult = Mathf.Sqrt(1 + bonusDamagePerChunk * ((damageBoostCount + 1) * itemcount));
+
+            damageInfo.damage *= damageMult;*/
+            CharacterMaster master = body.master;
+            if (Util.CheckRoll((damageBoostCount / CoinGun.maxPlatinum) * 100, master))
+            {
+                EffectManager.SimpleImpactEffect(
+                    HealthComponent.AssetReferences.gainCoinsImpactEffectPrefab, 
+                    damageReport.damageInfo.position, Vector3.up, true);
+            }
+        }
 
         private void FixedUpdate()
         {

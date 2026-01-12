@@ -10,6 +10,8 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -31,7 +33,7 @@ namespace SwanSongExtended.Items
             $"<style=cIsHealing>{freeArmor}</style> <style=cStack>(+{freeArmor} per stack)</style>. " +
             $"For every missing <style=cIsHealth>{Mathf.RoundToInt(100 / (float)maxBuffCount)}% of max health</style>, " +
             $"gain <style=cIsHealing>{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)}</style> " +
-            $"<style=cStack>(+{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)} per stack)</style> additional armor.";//outdated fix later
+            $"<style=cStack>(+{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)} per stack)</style> additional armor.";
 
         public override string ItemLore => "";
 
@@ -60,7 +62,6 @@ namespace SwanSongExtended.Items
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             GetStatCoefficients += this.GiveBonusArmor;
         }
 
@@ -75,21 +76,11 @@ namespace SwanSongExtended.Items
                 args.armorAdd += itemCount * (freeArmor + buffArmor * buffCount);
             }
         }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.healthComponent != null)
-                {
-                    self.AddItemBehavior<FrozenShellBehavior>(GetCount(self));
-                }
-            }
-        }
     }
-    public class FrozenShellBehavior : CharacterBody.ItemBehavior
+    public class FrozenShellBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => FrozenShell.instance.ItemsDef;
         HealthComponent healthComponent;
         BuffIndex iceBarrierBuffIndex = FrozenShell.frozenShellArmorBuff.buffIndex;
         //bool hasBuff = false;
@@ -103,8 +94,6 @@ namespace SwanSongExtended.Items
         }
         private void FixedUpdate()
         {
-            if (!NetworkServer.active)
-                return;
             float combinedHealthFraction = healthComponent.combinedHealthFraction;
             /*if (hasBuff)
             {
@@ -122,28 +111,11 @@ namespace SwanSongExtended.Items
             //new version
             float missingHealthFraction = (1 - combinedHealthFraction);
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (FrozenShell.maxBuffCount));
-            while (newBuffCount > buffCount && buffCount < FrozenShell.maxBuffCount)
-            {
-                this.body.AddBuff(iceBarrierBuffIndex);
-                buffCount++;                
-            }
-            while (newBuffCount < buffCount && buffCount > 0)
-            {
-                this.body.RemoveBuff(iceBarrierBuffIndex);
-                buffCount--;
-            }
+            body.SetBuffCount(iceBarrierBuffIndex, newBuffCount);
         }
         void OnDestroy()
         {
-            if (!NetworkServer.active)
-                return;
-            //if(hasBuff)
-            //this.body.RemoveBuff(iceBarrierBuffIndex);
-            while (buffCount > 0)//this might crash the game lol
-            {
-                this.body.RemoveBuff(iceBarrierBuffIndex);
-                buffCount--;
-            }
+            body.SetBuffCount(iceBarrierBuffIndex, 0);
         }
     }
 }

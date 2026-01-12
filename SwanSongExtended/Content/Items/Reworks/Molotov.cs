@@ -13,6 +13,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static MoreStats.OnHit;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -109,37 +111,6 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.Molotov);
-            GetHitBehavior += MolotovOnHit;
-        }
-
-        private void MolotovOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victim)
-        {
-            int itemCount = GetCount(attackerBody);
-            if(itemCount > 0 && (damageInfo.damageType.IsDamageSourceSkillBased || damageInfo.damageType.damageSource == DamageSource.Equipment))
-            {
-                if(Util.CheckRoll(procChance * damageInfo.procCoefficient, attackerBody.master))
-                {
-                    float damageCoefficient = baseDamageCoefficient + stackDamageCoefficient * (itemCount - 1);
-
-                    Vector3 forward = attackerBody.inputBank.aimDirection;
-                    forward.y = 0;
-
-                    Vector3 fireDirection = forward + Vector3.up * 0.5f;
-                    ProjectileManager.instance.FireProjectile(new FireProjectileInfo
-                    {
-                        damage = attackerBody.damage * damageCoefficient,
-                        crit = damageInfo.crit,
-                        damageColorIndex = DamageColorIndex.Item,
-                        position = attackerBody.corePosition,
-                        procChainMask = damageInfo.procChainMask,
-                        force = 0,
-                        owner = damageInfo.attacker,
-                        projectilePrefab = molotovProjectile,
-                        rotation = Util.QuaternionSafeLookRotation(fireDirection),
-                        speedOverride = 20 //20
-                    });
-                }
-            }
         }
 
         private void CreateProjectile()
@@ -207,6 +178,44 @@ namespace SwanSongExtended.Items
 
             Content.AddProjectilePrefab(molotovProjectile);
             Content.AddProjectilePrefab(molotovDotZone);
+        }
+    }
+
+    public class MolotovItemBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Molotov.instance.ItemsDef;
+
+        public void OnDamageDealtServer(DamageReport damageReport)
+        {
+            if (damageReport.attackerBody == null)
+                return;
+            DamageInfo damageInfo = damageReport.damageInfo;
+            if (stack > 0 && (damageInfo.damageType.IsDamageSourceSkillBased || damageInfo.damageType.damageSource == DamageSource.Equipment))
+            {
+                if (Util.CheckRoll(Molotov.procChance * damageInfo.procCoefficient, damageReport.attackerBody.master))
+                {
+                    float damageCoefficient = Molotov.baseDamageCoefficient + Molotov.stackDamageCoefficient * (stack - 1);
+
+                    Vector3 forward = damageReport.attackerBody.inputBank.aimDirection;
+                    forward.y = 0;
+
+                    Vector3 fireDirection = forward + Vector3.up * 0.5f;
+                    ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                    {
+                        damage = damageReport.attackerBody.damage * damageCoefficient,
+                        crit = damageInfo.crit,
+                        damageColorIndex = DamageColorIndex.Item,
+                        position = damageReport.attackerBody.corePosition,
+                        procChainMask = damageInfo.procChainMask,
+                        force = 0,
+                        owner = damageInfo.attacker,
+                        projectilePrefab = Molotov.molotovProjectile,
+                        rotation = Util.QuaternionSafeLookRotation(fireDirection),
+                        speedOverride = 20 //20
+                    });
+                }
+            }
         }
     }
 }

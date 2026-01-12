@@ -17,7 +17,10 @@ namespace SwanSongExtended.Items
     class Egg : ItemBase<Egg>
     {
         public override bool lockEnabled => true;
-        public int eggHealth = 5;
+        public static int eggHealth = 5;
+        public static float eggOnKillChance = 4;
+        public static float eggOnInteractChance = 4;
+        private Xoroshiro128Plus rng;
 
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
@@ -55,10 +58,26 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.GlobalEventManager.OnCharacterDeath += EggOnDeath;
+            GlobalEventManager.onCharacterDeathGlobal += EggOnAnyDeath;
             On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
+        }
+
+        private void EggOnAnyDeath(DamageReport damageReport)
+        {
+            if (damageReport.attackerBody == null)
+                return;
+
+            int eggCount = Util.GetItemCountForTeam(damageReport.attackerTeamIndex, this.ItemsDef.itemIndex, true, false);
+            if (eggCount <= 0)
+                return;
+
+            if (Util.CheckRoll(eggOnKillChance, damageReport.attackerMaster?.luck ?? 0)) //1/100
+            {
+                CharacterBody victim = damageReport.victimBody;
+                EggReward(victim.transform);
+            }
         }
 
         private void EggStats(CharacterBody sender, StatHookEventArgs args)
@@ -74,62 +93,68 @@ namespace SwanSongExtended.Items
         {
             orig(self, interactor, interactable, interactableObject);
 
-            GameObject interactorObject = interactor.gameObject;
-            if (interactorObject == null) return;
-            CharacterBody interactorBody = interactorObject.GetComponent<CharacterBody>();
-            if (interactorBody == null) return;           
-            if (interactorBody.inventory.GetItemCountEffective(this.ItemsDef) > 0) //can proc on picking up items, if i decide to fix this look into interactionprocfilter i guess
-            {
-                int i = UnityEngine.Random.RandomRangeInt(0, 99);
-                if (i <= 6) //5/100
-                {
-                    EggReward(interactableObject);
-                };
-            }         
-        }
+            CharacterBody interactorBody = interactor.gameObject?.GetComponent<CharacterBody>();
+            if (interactorBody == null)
+                return;
 
+            int eggCount = Util.GetItemCountForTeam(interactorBody.teamComponent.teamIndex, this.ItemsDef.itemIndex, true, false);
+            if (eggCount <= 0)
+                return;
 
-        private void EggOnDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            orig(self, damageReport);
-            if (damageReport.attackerBody == null) return;
-            if (damageReport.attackerBody.inventory == null) return;
-            if (damageReport.attackerBody.inventory.GetItemCountEffective(this.ItemsDef) > 0)
+            if (Util.CheckRoll(eggOnKillChance, interactorBody.master?.luck ?? 0)) //1/100
             {
-                int i = UnityEngine.Random.RandomRangeInt(0, 99);
-                if (i <= 3) //1/100
-                {
-                    CharacterBody victim = damageReport.victimBody;
-                    EggReward(victim);
-                }
+                EggReward(interactableObject.transform);
             }
         }
 
-        private void EggReward(CharacterBody body)
+        public void EggReward(Transform dropletOrigin)
         {
-            PickupIndex pickupIndex = PickupIndex.none;
-            GenerateWeightedSelection();
-            this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, weightedSelection);
-            dropletOrigin = body.gameObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position, Vector3.zero);
-        }
-        public void EggReward(GameObject interactableObject)
-        {
-            PickupIndex pickupIndex = PickupIndex.none;
-            GenerateWeightedSelection();
-            this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, weightedSelection);
-            dropletOrigin = interactableObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f);
+            UniquePickup pickupIndex = EggWeightedSelection.GeneratePickup(new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong));
+
+            PickupDropletController.CreatePickupDroplet(pickupIndex, 
+                dropletOrigin.position + (dropletOrigin.up * 3f), 
+                dropletOrigin.forward * 3f + dropletOrigin.up * 5f,
+                isDuplicated: false,
+                isRecycled: pickupIndex.pickupIndex == PickupCatalog.FindPickupIndex(Egg.instance.ItemsDef.itemIndex)
+                );
         }
 
-
-        private void GenerateWeightedSelection()
+        private static ExplicitPickupDropTable _EggWeightedSelection;
+        public static ExplicitPickupDropTable EggWeightedSelection
         {
-            weightedSelection = new WeightedSelection<PickupIndex>();
-            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(Egg.instance.ItemsDef.itemIndex), 1f);
-            weightedSelection.AddChoice(PickupCatalog.FindPickupIndex(GoldenEgg.instance.ItemsDef.itemIndex), 0.1f);
+            get
+            {
+                if (_EggWeightedSelection)
+                    _EggWeightedSelection = GenerateWeightedSelection();
+                return _EggWeightedSelection;
+            }
+            set
+            {
+                _EggWeightedSelection = value;
+            }
+        }
+        public static ExplicitPickupDropTable GenerateWeightedSelection()
+        {
+            ExplicitPickupDropTable dropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+
+            List<ExplicitPickupDropTable.PickupDefEntry> pickupDefEntries = new List<ExplicitPickupDropTable.PickupDefEntry>();
+            pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                {
+                    pickupDef = Egg.instance.ItemsDef,
+                    pickupWeight = 1f
+                }
+                );
+            pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                {
+                    pickupDef = GoldenEgg.instance.ItemsDef,
+                    pickupWeight = 0.1f
+                }
+                );
+            dropTable.pickupEntries = pickupDefEntries.ToArray();
+
+            return dropTable;
         }
 
         private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
@@ -166,9 +191,5 @@ namespace SwanSongExtended.Items
                  = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation4);
             orig();
         }
-
-        WeightedSelection<PickupIndex> weightedSelection;
-        private Xoroshiro128Plus rng;
-        public Transform dropletOrigin;
     }
 }

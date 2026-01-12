@@ -61,30 +61,36 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetStatCoefficients += ChickenStats;
-            //On.RoR2.CharacterBody.Start += DoFoodPoisoning;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            CharacterBody.onBodyStartGlobal += DoFoodPoisoning;
         }
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        private void DoFoodPoisoning(CharacterBody body)
         {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    int itemCount = GetCount(self);
+            if (!NetworkServer.active)
+                return;
+            int chickenCount = GetCount(body);
+            if (chickenCount <= 0)
+                return;
 
-                    self.AddItemBehavior<ChickenBehavior>(itemCount);
+            float regenPenaltyChance = GetPoisonChance(body);
+
+            if (!Util.CheckRoll(100 - regenPenaltyChance, body.master))
+            {
+                for (int i = 0; i < chickenCount; i++)
+                {
+                    body.AddTimedBuff(Chicken.foodPoisoning.buffIndex, 120);
                 }
             }
-        }
 
-        private void DoFoodPoisoning(On.RoR2.CharacterBody.orig_Start orig, CharacterBody self)
-        {
-            orig(self);
-            int chickenCount = GetCount(self);
-            if(chickenCount > 0)
+            float GetPoisonChance(CharacterBody body)
             {
+                if (body.bodyIndex == BodyCatalog.FindBodyIndex("FalseSonBody"))
+                    return 100;
+                if (Run.instance.stageClearCount < 1)
+                    return Math.Min(0.01f, Chicken.regenPenaltyChance);
+                if (Run.instance.stageClearCount < 2)
+                    return Chicken.regenPenaltyChance / 2;
+                return Chicken.regenPenaltyChance;
             }
         }
 
@@ -96,35 +102,6 @@ namespace SwanSongExtended.Items
             int poisonCount = sender.GetBuffCount(foodPoisoning);
             if (poisonCount > 0)
                 args.baseRegenAdd -= (baseRegenPenalty + stackRegenPenalty * (poisonCount - 1)) * (1 + 0.2f * sender.level);
-        }
-    }
-    public class ChickenBehavior : CharacterBody.ItemBehavior
-    {
-        private void Start()
-        {
-            if (body)
-            {
-                float regenPenaltyChance = GetPoisonChance();
-
-                if (!Util.CheckRoll(100 - regenPenaltyChance, body.master))
-                {
-                    for (int i = 0; i < this.stack; i++)
-                    {
-                        body.AddBuff(Chicken.foodPoisoning.buffIndex);
-                    }
-                }
-            }
-        }
-
-        private float GetPoisonChance()
-        {
-            if (body.bodyIndex == BodyCatalog.FindBodyIndex("FalseSonBody"))
-                return 100;
-            if (Run.instance.stageClearCount < 1)
-                return Math.Min(0.01f, Chicken.regenPenaltyChance);
-            if (Run.instance.stageClearCount < 2)
-                return Chicken.regenPenaltyChance / 2;
-            return Chicken.regenPenaltyChance;
         }
     }
 }

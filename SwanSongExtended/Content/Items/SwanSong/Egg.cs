@@ -54,6 +54,12 @@ namespace SwanSongExtended.Items
         {
             base.Init();
             Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
+            //to add: -chocolate egg
+            //compat: -donut (mystics) -probably a bunch of ss2 stuff
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Infusion.Infusion_asset);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_FlatHealth.FlatHealth_asset);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_AlienHead.AlienHead_asset);
+            //AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Seed.Seed_asset);
         }
 
         public override void Hooks()
@@ -61,7 +67,6 @@ namespace SwanSongExtended.Items
             GlobalEventManager.onCharacterDeathGlobal += EggOnAnyDeath;
             On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
         private void EggOnAnyDeath(DamageReport damageReport)
@@ -155,41 +160,6 @@ namespace SwanSongExtended.Items
             dropTable.pickupEntries = pickupDefEntries.ToArray();
 
             return dropTable;
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            //to add: -chocolate egg
-            //compat: -donut (mystics) -probably a bunch of ss2 stuff
-            ItemDef.Pair transformation2 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Infusion, //consumes infusion
-                itemDef2 = Egg.instance.ItemsDef
-            };
-            ItemDef.Pair transformation3 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.FlatHealth, //consumes meat
-                itemDef2 = Egg.instance.ItemsDef
-            };
-            ItemDef.Pair transformation4 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.AlienHead, //consumes gah
-                itemDef2 = Egg.instance.ItemsDef
-            };
-            /*ItemDef.Pair transformation5 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Seed, //consumes gah
-                itemDef2 = Egg.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation5);*/
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation2);
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation3);
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem]
-                 = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation4);
-            orig();
         }
     }
 }

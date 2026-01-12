@@ -46,9 +46,13 @@ namespace SwanSongExtended.Items
             return null;
         }
 
+        public override void Init()
+        {
+            base.Init();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_GhostOnKill.GhostOnKill_asset);
+        }
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             GlobalEventManager.onCharacterDeathGlobal += SpawnVoidInfestors;
         }
 
@@ -84,17 +88,6 @@ namespace SwanSongExtended.Items
             directorSpawnRequest.ignoreTeamMemberLimit = true;
             directorSpawnRequest.teamIndexOverride = TeamIndex.Void;
             DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.GhostOnKill, //consumes lepton daisy
-                itemDef2 = VoidHappyMask.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            orig();
         }
     }
 }

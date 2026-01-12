@@ -70,11 +70,11 @@ namespace SwanSongExtended.Items
                 Color.magenta, false, false);
             CreateProjectile();
             base.Init();
+            AddVoidItemRelationship(BottleCloud.instance.ItemsDef);
         }
         public override void Hooks()
         {
             GetMoreStatCoefficients += FartJumpCount;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
         private void FartJumpCount(CharacterBody sender, MoreStatHookEventArgs args)
@@ -83,17 +83,6 @@ namespace SwanSongExtended.Items
             {
                 args.jumpCountAdd += 1;
             }
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = BottleCloud.instance.ItemsDef, //consumes cloud in a bottle
-                itemDef2 = BottleFart.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            orig();
         }
         
         private void CreateProjectile()

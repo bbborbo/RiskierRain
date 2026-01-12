@@ -1505,6 +1505,21 @@ namespace SwanSongExtended.Modules
 
             ContentPacks.survivorDefs.Add(survivorDef);
         }
+        internal static void AddVoidItemRelationship(ItemDef itemToCorrupt, ItemDef itemThatCorrupts)
+        {
+            var provider = ScriptableObject.CreateInstance<ItemRelationshipProvider>();
+            provider.name = $"{itemThatCorrupts.name}{itemToCorrupt.name}Relationship"; 
+            provider.relationshipType = Addressables.LoadAssetAsync<ItemRelationshipType>("RoR2/DLC1/Common/ContagiousItem.asset").WaitForCompletion();
+
+            provider.relationships = new ItemDef.Pair[] {
+                new ItemDef.Pair
+                {
+                    itemDef1 = itemToCorrupt,
+                    itemDef2 = itemThatCorrupts
+                }
+            };
+            ContentPacks.itemRelationships.Add(provider);
+        }
         internal static void AddItemDef(ItemDef itemDef)
         {
             ContentPacks.itemDefs.Add(itemDef);

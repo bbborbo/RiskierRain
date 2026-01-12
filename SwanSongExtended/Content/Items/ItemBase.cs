@@ -168,6 +168,25 @@ namespace SwanSongExtended.Items
             Content.AddItemDef(itemDef);
             return itemDef;
         }
+        public void AddVoidItemRelationship(string itemToCorruptGuid)
+        {
+            AddVoidItemRelationship(itemToCorruptGuid, ItemsDef);
+        }
+        public static void AddVoidItemRelationship(string itemToCorruptGuid, ItemDef itemThatCorrupts)
+        {
+            SwanSongPlugin.LoadAsync<ItemDef>(itemToCorruptGuid, (itemToCorrupt) =>
+            {
+                Content.AddVoidItemRelationship(itemToCorrupt, itemThatCorrupts);
+            });
+        }
+        public void AddVoidItemRelationship(ItemDef itemToCorrupt)
+        {
+            AddVoidItemRelationship(itemToCorrupt, ItemsDef);
+        }
+        public static void AddVoidItemRelationship(ItemDef itemToCorrupt, ItemDef itemThatCorrupts)
+        {
+            Content.AddVoidItemRelationship(itemToCorrupt, itemThatCorrupts);
+        }
         public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc, string lore = "")
         {
             LanguageAPI.Add(itemDef.nameToken, name);

@@ -57,7 +57,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
         public override void Init()
@@ -76,24 +75,8 @@ namespace SwanSongExtended.Items
                 false, false
                 );
             base.Init();
-        }
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation1 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Behemoth, //consumes brilliant behemoth
-                itemDef2 = VoidLaserTurbine.instance.ItemsDef
-            };
-            ItemDef.Pair transformation2 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.LaserTurbine, //consumes resonance disc
-                itemDef2 = VoidLaserTurbine.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] 
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation1);
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] 
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation2);
-            orig();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Behemoth.Behemoth_asset);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LaserTurbine.LaserTurbine_asset);
         }
     }
     public class VoidTurbineBehavior : BaseItemBodyBehavior

@@ -58,28 +58,11 @@ namespace SwanSongExtended.Items
             violetBuff.isHidden = true;
             violetBuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             base.Init();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
+            AddVoidItemRelationship(VoidIchorRed.instance.ItemsDef);
         }
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            //GetHitBehavior += VioletIchorOnHit;
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Medkit, //consumes medkit
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            ItemDef.Pair rockPaperScissors = new ItemDef.Pair()
-            {
-                itemDef1 = VoidIchorRed.instance.ItemsDef, //:3
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(rockPaperScissors);
-            orig();
         }
     }
 

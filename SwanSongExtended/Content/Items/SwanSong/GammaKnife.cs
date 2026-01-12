@@ -63,17 +63,19 @@ namespace SwanSongExtended.Items
             $"<style=cIsDamage>cooldowns</style> by <style=cIsDamage>{Tools.ConvertDecimal(cdrBonus)}</style> per stack.";
             DoLangForItem(statBoostItemDef, "Fake-Soul Butter", "Cut the skin and bend the truth...", fullDesc);
 
-            base.Init();
             gammaKnifeTemporaryBuff = Content.CreateAndAddBuff("bdGammaKnifeBoost",
                 LegacyResourcesAPI.Load<Sprite>("textures/bufficons/texBuffMedkitHealIcon"),
                 Color.green,
                 false, false
                 );
+
+            base.Init();
+
+            AddVoidItemRelationship(DisposableScalpel.instance.ItemsDef);
         }
 
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             GlobalEventManager.onCharacterDeathGlobal += GammaKnifeOnKill;
             GetStatCoefficients += GammaKnifeStatBoosts;
         }
@@ -128,18 +130,6 @@ namespace SwanSongExtended.Items
             {
                 args.critAdd += 100;
             }
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = DisposableScalpel.instance.ItemsDef, //consumes ignition tank
-                itemDef2 = GammaKnife.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = 
-                ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            orig();
         }
     }
 }

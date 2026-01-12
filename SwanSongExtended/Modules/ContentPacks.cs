@@ -28,6 +28,7 @@ namespace SwanSongExtended.Modules {
         public static List<BuffDef> buffDefs = new List<BuffDef>();
         public static List<EffectDef> effectDefs = new List<EffectDef>();
 
+        public static List<ItemRelationshipProvider> itemRelationships = new List<ItemRelationshipProvider>();
         public static List<ItemDef> itemDefs = new List<ItemDef>();
         public static List<EliteDef> eliteDefs = new List<EliteDef>();
         public static List<ArtifactDef> artifactDefs = new List<ArtifactDef>();
@@ -57,6 +58,7 @@ namespace SwanSongExtended.Modules {
             contentPack.survivorDefs.Add(survivorDefs.ToArray());
             contentPack.eliteDefs.Add(eliteDefs.ToArray());
 
+            contentPack.itemRelationshipProviders.Add(itemRelationships.ToArray());
             contentPack.itemDefs.Add(itemDefs.ToArray());
             contentPack.buffDefs.Add(buffDefs.ToArray());
             contentPack.artifactDefs.Add(artifactDefs.ToArray());

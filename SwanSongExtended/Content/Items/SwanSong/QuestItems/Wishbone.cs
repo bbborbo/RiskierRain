@@ -52,9 +52,9 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             TeleporterInteraction.onTeleporterBeginChargingGlobal += StealWishboneOnTeleCharge;
+            CharacterBody.onBodyStartGlobal += DestroyWishboneOnStart;
             IL.RoR2.BossGroup.DropRewards += WishboneRewards;
             On.RoR2.BossGroup.DropRewards += WishboneRewardMessage;
-            On.RoR2.CharacterBody.Start += DestroyWishboneOnStart;
             On.RoR2.HealthComponent.TakeDamageProcess += DestroyWishboneOnDamage;
         }
 
@@ -83,9 +83,8 @@ namespace SwanSongExtended.Items
             }
         }
 
-        private void DestroyWishboneOnStart(On.RoR2.CharacterBody.orig_Start orig, CharacterBody self)
+        private void DestroyWishboneOnStart(CharacterBody self)
         {
-            orig(self);
             if (!NetworkServer.active)
                 return;
             int wishboneCount = GetCount(self);

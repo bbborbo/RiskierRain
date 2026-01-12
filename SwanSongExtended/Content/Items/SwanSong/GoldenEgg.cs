@@ -14,6 +14,7 @@ namespace SwanSongExtended.Items
 {
     class GoldenEgg : ItemBase<GoldenEgg>
     {
+        public static bool goldenEggDropsRecyclable = true;
         public override bool lockEnabled => true;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Golden Egg";
@@ -49,31 +50,34 @@ namespace SwanSongExtended.Items
         public BasicPickupDropTable dropTable;
         public override void Hooks()
         {
-            On.RoR2.Stage.RespawnCharacter += EggHatch;
+            CharacterBody.onBodyStartGlobal += EggHatch;
         }
 
-        private void EggHatch(On.RoR2.Stage.orig_RespawnCharacter orig, Stage self, CharacterMaster characterMaster)
+        private void EggHatch(CharacterBody body)
         {
-            orig(self, characterMaster);
-            if (NetworkServer.active)
+            if (!NetworkServer.active)
+                return;
+         
+            int count = GetCount(body);
+            if (count > 0)
             {
-                int count = GetCount(characterMaster);
-                if (count > 0)
-                {
-                    SpawnItem(characterMaster);
-                    characterMaster.inventory.RemoveItem(GoldenEgg.instance.ItemsDef);
-                }
+                SpawnItem(body.transform);
+                body.inventory.RemoveItem(GoldenEgg.instance.ItemsDef);
             }
         }
 
-        void SpawnItem(CharacterMaster characterMaster)
+        void SpawnItem(Transform dropletOrigin)
         {
             UniquePickup pickupIndex = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
 
             pickupIndex = dropTable.GeneratePickup(rng);
-            Transform dropletOrigin = characterMaster.bodyInstanceObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 10f, false);
+            PickupDropletController.CreatePickupDroplet(pickupIndex, 
+                dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), 
+                dropletOrigin.forward * 10f, 
+                isDuplicated: false,
+                isRecycled: !goldenEggDropsRecyclable
+                );
         }
     }
 }

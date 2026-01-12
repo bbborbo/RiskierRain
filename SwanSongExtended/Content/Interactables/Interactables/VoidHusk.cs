@@ -96,26 +96,6 @@ namespace SwanSongExtended.Interactables
         {
             base.Init();
         }
-
-        private void VoidHuskBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
-        {
-            orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
-            {
-                HuskReward(self.gameObject);
-                GameObject.Destroy(self.gameObject);
-            }
-        }
-        
-        private void HuskReward(GameObject gameObject)
-        {
-            PickupIndex pickupIndex = PickupIndex.none;
-            GenerateWeightedSelection();
-            this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, weightedSelection);
-            dropletOrigin = gameObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f);
-        }
         private ExplicitPickupDropTable GenerateWeightedSelection()
         {
             ExplicitPickupDropTable dropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();

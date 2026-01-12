@@ -49,18 +49,18 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += CreateVoidInfestors;
+            GlobalEventManager.onCharacterDeathGlobal += SpawnVoidInfestors;
         }
 
-        private void CreateVoidInfestors(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        private void SpawnVoidInfestors(DamageReport damageReport)
         {
-            if(damageReport.attackerBody != null && damageReport.attackerMaster != null && damageReport.victimTeamIndex != TeamIndex.Void)
+            if (damageReport.attackerBody != null && damageReport.attackerMaster != null && damageReport.victimTeamIndex != TeamIndex.Void)
             {
                 int maskCount = GetCount(damageReport.attackerBody);//inventory.GetItemCountEffective(RoR2Content.Items.GhostOnKill);
                 if (maskCount > 0 && Util.CheckRoll(procChance, damageReport.attackerMaster))
                 {
                     int infestorCount = baseInfestors + stackInfestors * (maskCount - 1);
-                    for(int i = 0; i < infestorCount; i++)
+                    for (int i = 0; i < infestorCount; i++)
                     {
                         ScriptedCombatEncounter.SpawnInfo spawnInfo = new ScriptedCombatEncounter.SpawnInfo();
                         spawnInfo.explicitSpawnPosition = damageReport.victimBody.transform;
@@ -69,7 +69,6 @@ namespace SwanSongExtended.Items
                     }
                 }
             }
-            orig(self, damageReport);
         }
         private void Spawn(ref ScriptedCombatEncounter.SpawnInfo spawnInfo)
         {

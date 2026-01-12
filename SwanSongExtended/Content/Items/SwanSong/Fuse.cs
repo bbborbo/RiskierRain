@@ -11,6 +11,8 @@ using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using System.Linq;
 using RoR2.Orbs;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -72,7 +74,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += FuseTakeDamage;
             GetStatCoefficients += FuseShieldBonus;
         }
 
@@ -84,94 +85,100 @@ namespace SwanSongExtended.Items
                 args.baseShieldAdd += baseShield * itemCount;
             }
         }
+    }
 
-        private void FuseTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+    public class FuseBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Fuse.instance.ItemsDef;
+        bool hadShield = false;
+        void Start()
         {
-            if (!self)
-            {
-                orig(self, damageInfo);
-                return;
-            }
-
-            bool hadShieldBefore = HasShield(self);
-            CharacterBody body = self.body;
-            int fuseItemCount = GetCount(body);
-
-            orig(self, damageInfo);
-
-            if (hadShieldBefore && !HasShield(self) && self.alive)
-            {
-                if (fuseItemCount > 0 && !body.HasBuff(fuseRecharge))
-                {
-                    float maxShield = self.body.maxShield;
-                    float maxHealth = self.body.maxHealth;
-                    float shieldHealthFraction = maxShield / (maxHealth + maxShield);
-
-                    TeamIndex team = TeamIndex.Player;
-                    if (self.body.teamComponent)
-                        team = self.body.teamComponent.teamIndex;
-                    bool crit = Util.CheckRoll(self.body.crit, self.body.master);
-                    float procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction) / 5;
-                    float currentRadius = radiusBase + radiusStack * (fuseItemCount - 1);
-                    int targetCount = targetCountBase + targetCountStack * (fuseItemCount - 1);
-
-                    BullseyeSearch search = new BullseyeSearch();
-                    search.searchOrigin = self.transform.position;
-                    search.maxDistanceFilter = currentRadius;
-                    search.teamMaskFilter.RemoveTeam(team);
-                    search.sortMode = BullseyeSearch.SortMode.Distance;
-                    search.RefreshCandidates();
-
-                    List<HurtBox> results = search.GetResults().ToList();
-                    for (int i = 0; i < Mathf.Min(targetCount, results.Count()); i++)
-                    {
-                        HurtBox hurtBox = results[i];
-                        if (hurtBox)
-                        {
-                            LightningOrb lightningOrb = new LightningOrb();
-                            lightningOrb.bouncedObjects = new List<HealthComponent>();
-                            lightningOrb.attacker = self.gameObject;
-                            lightningOrb.teamIndex = team;
-                            lightningOrb.damageValue = self.body.damage;
-                            lightningOrb.isCrit = crit;
-                            lightningOrb.origin = self.body.corePosition;
-                            lightningOrb.bouncesRemaining = 0;
-                            lightningOrb.lightningType = LightningOrb.LightningType.Loader;
-                            lightningOrb.procCoefficient = procCoefficient;
-                            lightningOrb.target = hurtBox;
-                            lightningOrb.damageType = new DamageTypeCombo(DamageType.Shock5s, DamageTypeExtended.Generic, DamageSource.NoneSpecified);
-                            OrbManager.instance.AddOrb(lightningOrb);
-                        }
-                    }
-
-                    self.body.AddTimedBuffAuthority(fuseRecharge.buffIndex, fuseRechargeTime);
-                    EffectManager.SpawnEffect(fuseNovaEffectPrefab, new EffectData
-                    {
-                        origin = self.transform.position,
-                        scale = currentRadius
-                    }, true);
-                    //BlastAttack fuseNova = new BlastAttack()
-                    //{
-                    //    baseDamage = self.body.damage,
-                    //    radius = currentRadius,
-                    //    procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction),
-                    //    position = self.transform.position,
-                    //    attacker = self.gameObject,
-                    //    crit = Util.CheckRoll(self.body.crit, self.body.master),
-                    //    falloffModel = BlastAttack.FalloffModel.None,
-                    //    damageType = DamageType.Stun1s,
-                    //    teamIndex = TeamComponent.GetObjectTeam(self.gameObject)
-                    //};
-                    //fuseNova.Fire();
-                }
-            }
+            body?.healthComponent?.AddOnTakeDamageServerReceiver(this);
+            hadShield = HasShield();
+        }
+        void OnDestroy()
+        {
+            body?.healthComponent?.RemoveOnTakeDamageServerReceiver(this);
+        }
+        void FixedUpdate()
+        {
+            hadShield = HasShield();
         }
 
-        public static bool HasShield(HealthComponent hc)
+        bool HasShield()
         {
-            if (hc == null)
-                return false;
-            return hc.shield > 1;
+            return (body.healthComponent?.shield ?? 0) > 0;
+        }
+
+        public void OnTakeDamageServer(DamageReport damageReport)
+        {
+            if (!hadShield || HasShield() || !body.healthComponent.alive)
+                return;
+
+            if (stack > 0 && !body.HasBuff(Fuse.fuseRecharge))
+            {
+                float maxShield = body.maxShield;
+                float maxHealth = body.maxHealth;
+                float shieldHealthFraction = maxShield / (maxHealth + maxShield);
+
+                TeamIndex team = TeamIndex.Player;
+                if (body.teamComponent)
+                    team = body.teamComponent.teamIndex;
+                bool crit = Util.CheckRoll(body.crit, body.master);
+                float procCoefficient = Mathf.Lerp(Fuse.minStunDuration, Fuse.maxStunDuration, shieldHealthFraction) / 5;
+                float currentRadius = Fuse.radiusBase + Fuse.radiusStack * (stack - 1);
+                int targetCount = Fuse.targetCountBase + Fuse.targetCountStack * (stack - 1);
+
+                BullseyeSearch search = new BullseyeSearch();
+                search.searchOrigin = body.transform.position;
+                search.maxDistanceFilter = currentRadius;
+                search.teamMaskFilter.RemoveTeam(team);
+                search.sortMode = BullseyeSearch.SortMode.Distance;
+                search.RefreshCandidates();
+
+                List<HurtBox> results = search.GetResults().ToList();
+                for (int i = 0; i < Mathf.Min(targetCount, results.Count()); i++)
+                {
+                    HurtBox hurtBox = results[i];
+                    if (hurtBox)
+                    {
+                        LightningOrb lightningOrb = new LightningOrb();
+                        lightningOrb.bouncedObjects = new List<HealthComponent>();
+                        lightningOrb.attacker = body.gameObject;
+                        lightningOrb.teamIndex = team;
+                        lightningOrb.damageValue = body.damage;
+                        lightningOrb.isCrit = crit;
+                        lightningOrb.origin = body.corePosition;
+                        lightningOrb.bouncesRemaining = 0;
+                        lightningOrb.lightningType = LightningOrb.LightningType.Loader;
+                        lightningOrb.procCoefficient = procCoefficient;
+                        lightningOrb.target = hurtBox;
+                        lightningOrb.damageType = new DamageTypeCombo(DamageType.Shock5s, DamageTypeExtended.Generic, DamageSource.NoneSpecified);
+                        OrbManager.instance.AddOrb(lightningOrb);
+                    }
+                }
+
+                body.AddTimedBuffAuthority(Fuse.fuseRecharge.buffIndex, Fuse.fuseRechargeTime);
+                EffectManager.SpawnEffect(Fuse.fuseNovaEffectPrefab, new EffectData
+                {
+                    origin = transform.position,
+                    scale = currentRadius
+                }, true);
+                //BlastAttack fuseNova = new BlastAttack()
+                //{
+                //    baseDamage = self.body.damage,
+                //    radius = currentRadius,
+                //    procCoefficient = Mathf.Lerp(minStunDuration, maxStunDuration, shieldHealthFraction),
+                //    position = self.transform.position,
+                //    attacker = self.gameObject,
+                //    crit = Util.CheckRoll(self.body.crit, self.body.master),
+                //    falloffModel = BlastAttack.FalloffModel.None,
+                //    damageType = DamageType.Stun1s,
+                //    teamIndex = TeamComponent.GetObjectTeam(self.gameObject)
+                //};
+                //fuseNova.Fire();
+            }
         }
     }
 }

@@ -22,7 +22,8 @@ namespace SwanSongExtended.Items
         public static BuffDef gammaKnifeTemporaryBuff;
         public static int gammaKnifeMaxBuffs = 9;
         public static float attackSpeedBonus = 0.04f;
-        public static float cdrBonus = 0.04f;
+        public static float cdrBonus = 0.05f;
+        public static int armorBonus = 5;
         public static float luckBonusDuration = 9;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Gamma Knife";
@@ -32,11 +33,11 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => $"Killing champions permanently increases attack speed and temporarily increases Luck. " +
             $"{VoidColor("Corrupts all Obsidian Scalpels.")}";
 
-        public override string ItemFullDescription => $"Killing a <style=cIsDamage>Champion</style> increases your <style=cIsUtility>Luck</style> by " +
-            $"<style=cIsUtility>1</style> <style=cStack>(+1 per stack)</style> for <style=cIsUtility>{luckBonusDuration} seconds</style> " +
-            $"AND <style=cIsHealth>permanently</style> increases your <style=cIsDamage>attack speed</style> " +
-            $"by <style=cIsDamage>{Tools.ConvertDecimal(attackSpeedBonus)}</style> and reduces your " +
-            $"<style=cIsDamage>cooldowns</style> by <style=cIsDamage>{Tools.ConvertDecimal(cdrBonus)}</style>, " +
+        public override string ItemFullDescription => $"Killing a <style=cIsDamage>Champion</style> increases your <style=cIsDamage>Critical Strike chance</style> by " +
+            $"<style=cIsDamage>100%</style> for <style=cIsDamage>{luckBonusDuration}</style> seconds " +
+            $"AND <style=cIsHealth>permanently</style> increases your <style=cIsUtility>armor</style> " +
+            $"by <style=cIsUtility>{armorBonus}</style> and reduces all " +
+            $"<style=cIsDamage>ability cooldowns</style> by <style=cIsDamage>{Tools.ConvertDecimal(-cdrBonus)}</style>, " +
             $"up to <style=cIsUtility>{gammaKnifeMaxBuffs}</style> <style=cStack>(+{gammaKnifeMaxBuffs} per stack)</style> times. " +
             $"<style=cIsVoid>Corrupts all Obsidian Scalpels.</style>";
 
@@ -73,62 +74,12 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += GammaKnifeOnKill;
-            On.RoR2.CharacterBody.RecalculateStats += GammaKnifeCdr;
+            GlobalEventManager.onCharacterDeathGlobal += GammaKnifeOnKill;
             GetStatCoefficients += GammaKnifeStatBoosts;
-            GetMoreStatCoefficients += GammaKnifeLuck;
         }
 
-        private void GammaKnifeLuck(CharacterBody sender, MoreStatHookEventArgs args)
+        private void GammaKnifeOnKill(DamageReport damageReport)
         {
-            if (sender.HasBuff(gammaKnifeTemporaryBuff))
-            {
-                args.luckAdd += GetCount(sender);
-            }
-        }
-
-        private void GammaKnifeCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            Inventory inventory = self.inventory;
-            if (inventory)
-            {
-                int itemCount = GetCount(inventory);
-                int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
-                if (itemCount > 0 && permanentBuffCount > 0)
-                {
-                    float cdrBoost = Mathf.Pow(1 - cdrBonus, permanentBuffCount);
-
-                    SkillLocator skillLocator = self.skillLocator;
-                    if (skillLocator != null)
-                    {
-                        Tools.ApplyCooldownScale(skillLocator.primary, cdrBoost);
-                        Tools.ApplyCooldownScale(skillLocator.secondary, cdrBoost);
-                        Tools.ApplyCooldownScale(skillLocator.utility, cdrBoost);
-                        Tools.ApplyCooldownScale(skillLocator.special, cdrBoost);
-                    }
-                }
-            }
-        }
-
-        private void GammaKnifeStatBoosts(CharacterBody sender, StatHookEventArgs args)
-        {
-            Inventory inventory = sender.inventory;
-            if (inventory)
-            {
-                int itemCount = GetCount(inventory);
-                int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
-                if (itemCount > 0 && permanentBuffCount > 0)
-                {
-                    args.baseAttackSpeedAdd += attackSpeedBonus * permanentBuffCount;
-                }
-            }
-        }
-
-        private void GammaKnifeOnKill(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            orig(self, damageReport);
-
             CharacterBody enemyBody = damageReport.victimBody;
             CharacterBody attackerBody = damageReport.attackerBody;
             if (enemyBody == null || attackerBody == null)
@@ -139,7 +90,7 @@ namespace SwanSongExtended.Items
                 return;
 
             Inventory attackerInventory = attackerBody.inventory;
-            if(attackerInventory != null)
+            if (attackerInventory != null)
             {
                 int itemCount = GetCount(attackerInventory);
                 if (itemCount > 0)
@@ -148,13 +99,34 @@ namespace SwanSongExtended.Items
                     attackerBody.AddTimedBuffAuthority(gammaKnifeTemporaryBuff.buffIndex, buffDuration);
 
                     int permanentBuffCount = attackerInventory.GetItemCountEffective(statBoostItemDef);
-                    if(permanentBuffCount < gammaKnifeMaxBuffs * itemCount)
+                    if (permanentBuffCount < gammaKnifeMaxBuffs * itemCount)
                     {
-                        attackerInventory.GiveItem(statBoostItemDef);
-                        if(!statBoostItemDef.hidden)
+                        attackerInventory.GiveItemPermanent(statBoostItemDef);
+                        if (!statBoostItemDef.hidden)
                             CharacterMasterNotificationQueue.PushItemNotification(attackerBody.master, statBoostItemDef.itemIndex);
                     }
                 }
+            }
+        }
+
+        private void GammaKnifeStatBoosts(CharacterBody sender, StatHookEventArgs args)
+        {
+            Inventory inventory = sender.inventory;
+            if (inventory)
+            {
+                int itemCount = GetCount(sender);
+                int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
+                if (itemCount > 0 && permanentBuffCount > 0)
+                {
+                    args.baseAttackSpeedAdd += attackSpeedBonus * permanentBuffCount;
+                    float cdrBoost = Mathf.Pow(1 - cdrBonus, permanentBuffCount);
+                    args.allSkills.cooldownMultiplier *= cdrBoost;
+                }
+            }
+
+            if (sender.HasBuff(gammaKnifeTemporaryBuff))
+            {
+                args.critAdd += 100;
             }
         }
 
@@ -165,7 +137,8 @@ namespace SwanSongExtended.Items
                 itemDef1 = DisposableScalpel.instance.ItemsDef, //consumes ignition tank
                 itemDef2 = GammaKnife.instance.ItemsDef
             };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = 
+                ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
             orig();
         }
     }

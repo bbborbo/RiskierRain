@@ -2,6 +2,7 @@
 using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
+using RoR2.Items;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
@@ -103,30 +104,9 @@ namespace SwanSongExtended.Items
         {
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Items.HealingPotion);
             On.RoR2.HealthComponent.UpdateLastHitTime += ElixirHook;
-            GetStatCoefficients += BerserkerBrewBuff;
 
             On.RoR2.CharacterMaster.OnServerStageBegin += TryRegenerateElixir;
             GetStatCoefficients += BerserkerBrewBuff;
-            On.RoR2.CharacterBody.RecalculateStats += BerserkerBrewCdr;
-        }
-        private void BerserkerBrewCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            int stack = GetCount(self);
-            if (stack > 0)
-            {
-                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
-                float cdrBoost = Mathf.Pow(1 - cooldownReduction, stack);
-
-                SkillLocator skillLocator = self.skillLocator;
-                if (skillLocator != null)
-                {
-                    Tools.ApplyCooldownScale(skillLocator.primary, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.secondary, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.utility, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.special, cdrBoost);
-                }
-            }
         }
 
         private void TryRegenerateElixir(On.RoR2.CharacterMaster.orig_OnServerStageBegin orig, CharacterMaster self, Stage stage)
@@ -168,6 +148,7 @@ namespace SwanSongExtended.Items
                 {
                     args.attackSpeedMultAdd += attackSpeedBuff * stack;
                     args.moveSpeedMultAdd += attackSpeedBuff * stack;
+                    args.allSkills.cooldownMultiplier *= Mathf.Pow(1 - cooldownReduction, stack);
                 }
             }
         }

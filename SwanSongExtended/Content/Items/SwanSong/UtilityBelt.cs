@@ -48,57 +48,18 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnSkillActivated += UtilityBeltBarrierGrant;
-            //hard compat
-            On.EntityStates.Mage.Weapon.PrepWall.OnExit += PrepWall_OnExit;
-            On.EntityStates.Captain.Weapon.CallAirstrikeBase.OnEnter += CallAirstrikeBase_OnEnter;
-            On.EntityStates.Engi.EngiMissilePainter.Fire.FireMissile += Fire_FireMissile;
         }
 
         private void UtilityBeltBarrierGrant(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
         {
             orig(self, skill);
 
-            if (!blacklistedSkillNameTokens.Contains(skill.skillNameToken) && skill == self.skillLocator.utility)
+            if (skill == self.skillLocator.utility)
             {
                 UtilityBelt.GiveUtilityBarrier(self, skill.baseRechargeInterval);
             }
         }
 
-        #region hard compat
-        private void Fire_FireMissile(On.EntityStates.Engi.EngiMissilePainter.Fire.orig_FireMissile orig, EntityStates.Engi.EngiMissilePainter.Fire self, HurtBox target, Vector3 position)
-        {
-            orig(self, target, position);
-            UtilityBelt.GiveUtilityBarrier(self.characterBody, self.activatorSkillSlot);
-        }
-
-        private void CallAirstrikeBase_OnEnter(On.EntityStates.Captain.Weapon.CallAirstrikeBase.orig_OnEnter orig, EntityStates.Captain.Weapon.CallAirstrikeBase self)
-        {
-            orig(self);
-            SkillLocator skillLocator = self.skillLocator;
-            if (skillLocator)
-            {
-                GiveUtilityBarrier(self.characterBody, skillLocator.utility.baseRechargeInterval / 3);
-            }
-        }
-
-    private void PrepWall_OnExit(On.EntityStates.Mage.Weapon.PrepWall.orig_OnExit orig, EntityStates.Mage.Weapon.PrepWall self)
-    {
-        if (!self.outer.destroying)
-        {
-            if (self.goodPlacement)
-            {
-                SkillLocator skillLocator = self.skillLocator;
-                if (skillLocator)
-                {
-                    GiveUtilityBarrier(self.characterBody, skillLocator.utility);
-                }
-            }
-        }
-        orig(self);
-    }
-        #endregion
-
-        #region grant barrier
         public static void GiveUtilityBarrier(CharacterBody body, GenericSkill skill)
         {
             if (skill != null)
@@ -121,6 +82,5 @@ namespace SwanSongExtended.Items
                 }
             }
         }
-        #endregion
     }
 }

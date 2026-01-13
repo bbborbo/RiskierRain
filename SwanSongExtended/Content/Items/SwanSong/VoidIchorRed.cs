@@ -60,8 +60,8 @@ namespace SwanSongExtended.Items
         public override void AddVoidRelationships()
         {
             base.AddVoidRelationships();
-            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
             AddVoidItemRelationship(VoidIchorYellow.instance.ItemsDef);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
         }
 
         private void RedIchorStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)

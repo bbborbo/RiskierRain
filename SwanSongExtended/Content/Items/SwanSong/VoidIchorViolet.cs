@@ -71,8 +71,8 @@ namespace SwanSongExtended.Items
         public override void AddVoidRelationships()
         {
             base.AddVoidRelationships();
-            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
             AddVoidItemRelationship(VoidIchorRed.instance.ItemsDef);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
         }
     }
 

@@ -53,8 +53,8 @@ namespace SwanSongExtended.Items
         public override void AddVoidRelationships()
         {
             base.AddVoidRelationships();
-            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Syringe.Syringe_asset);
             AddVoidItemRelationship(ItemsDef, VoidIchorRed.instance.ItemsDef);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Syringe.Syringe_asset);
         }
         public override void Hooks()
         {

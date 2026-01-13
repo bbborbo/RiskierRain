@@ -104,6 +104,9 @@ namespace RainrotSharedUtils.Difficulties
 
         public static bool ValidateCachedDifficultyStats()
         {
+            //cachedDifficultyStats = GetMoreDifficultyStats(Run.instance.selectedDifficulty);
+            //return true;
+
             if (cachedDifficultyStats == null)
             {
                 if (Run.instance == null || Run.instance.selectedDifficulty == DifficultyIndex.Invalid)
@@ -197,7 +200,7 @@ namespace RainrotSharedUtils.Difficulties
                 return;
             _hooksEnabled = true;
 
-            On.RoR2.Run.OnRuleBookUpdated += CacheDifficultyStats;
+            Run.onRunSetRuleBookGlobal += CacheDifficultyStats;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AddDifficultyStats;
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
@@ -267,10 +270,9 @@ namespace RainrotSharedUtils.Difficulties
             }
         }
 
-        private static void CacheDifficultyStats(On.RoR2.Run.orig_OnRuleBookUpdated orig, Run self, NetworkRuleBook networkRuleBookComponent)
+        private static void CacheDifficultyStats(Run self, RuleBook ruleBook)
         {
-            orig(self, networkRuleBookComponent);
-            cachedDifficultyStats = GetMoreDifficultyStats(self.selectedDifficulty);
+            cachedDifficultyStats = GetMoreDifficultyStats(ruleBook.FindDifficulty());
             if (cachedDifficultyStats.ambientLevelCap != -1)
                 Run.ambientLevelCap = cachedDifficultyStats.ambientLevelCap;
             else

@@ -100,10 +100,11 @@ namespace SwanSongExtended.Items
         {
             if (!NetworkServer.active)
                 return;
-            if (damageInfo.damage / attackerBody.damage < 4)
+            if (!damageInfo.damageType.IsDamageSourceSkillBased)
             {
                 return;
             }
+            RollForPears(damageInfo.damage / attackerBody.damage, victimBody);
             int pearCount = GetCount(attackerBody);
             if (pearCount <= 0)
             {
@@ -112,7 +113,10 @@ namespace SwanSongExtended.Items
             if (attackerBody.GetBuffCount(pearBuff) < pearCount * 3)//make this not hardcoded idgaf
             attackerBody.AddBuff(pearBuff);
         }
-
+        private void RollForPears(float damageCoefficient, CharacterBody body)
+        {
+            Util.CheckRoll(damageCoefficient / 10f, body.master);
+        }
         private void PearWigglerTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
         {
             orig(self, damageInfo);
@@ -136,13 +140,13 @@ namespace SwanSongExtended.Items
             WigglePears(itemCount --, percentLost, body, self);
         }
 
-        private void WigglePears(int a, int b, CharacterBody body, HealthComponent healthComponent)
+        private void WigglePears(int itemCount, int percentLost, CharacterBody body, HealthComponent healthComponent)
         {
             if (!NetworkServer.active)
                 return;
-            for (int i = 0; i < b && body.GetBuffCount(pearBuff) > 0; i++)//a=itemcount -1; b=%hp lost
+            for (int i = 0;i < 3 && body.GetBuffCount(pearBuff) > 0; i++)//a=itemcount -1; b=%hp lost
             {
-                WigglePear(a, healthComponent);
+                WigglePear(itemCount, healthComponent);
                 body.RemoveBuff(pearBuff);
             }
         }
@@ -150,7 +154,7 @@ namespace SwanSongExtended.Items
 
         private void WigglePear(int i, HealthComponent a)
         {
-            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 30/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
+            GameObject pearInstance = UnityEngine.Object.Instantiate<GameObject>(pear, a.body.corePosition + UnityEngine.Random.insideUnitSphere * a.body.radius * 35/*hopefully this will make it so the pears arent immediately munched*/, UnityEngine.Random.rotation);
             TeamFilter pearFilter = pearInstance.GetComponent<TeamFilter>();
             if (pearFilter)
             {

@@ -28,7 +28,7 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 1f; //1f
+        public static float baseScalingMultiplier = 0.9f; //1f
         /// <summary>
         /// exponential
         /// </summary>
@@ -590,9 +590,9 @@ namespace RiskierRain
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 1f;//1
+        public static float fastDirectorEliteBias = 1.2f;//1
         public static float fastDirectorCreditMultiplier = 0.75f;//0.75f
-        public static float slowDirectorEliteBias = 1f;//1
+        public static float slowDirectorEliteBias = 1.2f;//1
         public static float slowDirectorCreditMultiplier = 1f;//0.75f
 
         public static float teleLesserEliteBias = 1f;//1

@@ -150,11 +150,12 @@ namespace SwanSongExtended.Storms
                         break;
                 }
 
-                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyIndex);
                 difficultyStats.desiredStormTime_ForSwanSong = desiredStormTime;
                 difficultyStats.desiredStormWarningTime_ForSwanSong = desiredStormWarningTime;
                 difficultyStats.delayFirstStorm_ForSwanSong = delayFirstStorm;
                 difficultyStats.stormIntensifyStrength_ForSwanSong = stormIntensifyStrength;
+                DifficultyUtilsModule.difficultyCustomStats[difficultyIndex] = difficultyStats;
             }
         }
 

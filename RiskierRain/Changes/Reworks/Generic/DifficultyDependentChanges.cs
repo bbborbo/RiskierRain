@@ -153,13 +153,14 @@ namespace RiskierRain
                         break;
                 }
 
-                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyIndex);
                 difficultyStats.startingDifficultyDisplay = (float)startingDifficulty;
                 difficultyStats.startingLevelBoost = levelBoost;
                 difficultyStats.startingDifficultyCoefficientBoost = difficultyBoost;
                 difficultyStats.ambientLevelCap = levelCap;
                 difficultyStats.tier2EliteStage = tier2Stage;
                 difficultyStats.teleporterParticleRangeMultiplier = teleParticleRangeMultiplier;
+                DifficultyUtilsModule.difficultyCustomStats[difficultyIndex] = difficultyStats;
             }
         }
 

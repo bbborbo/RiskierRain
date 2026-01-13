@@ -19,6 +19,7 @@ namespace SwanSongExtended.Elites
 {
     class SimulatedAspect : EliteEquipmentBase<SimulatedAspect>
     {
+        public override bool isEnabled => false;
         #region
         public override string ConfigName => "Elites : " + EliteModifier;
         #endregion
@@ -62,12 +63,40 @@ namespace SwanSongExtended.Elites
         public override void Hooks()
         {
             Log.Warning("simu elites dont have config cause fuck that for now lol");
-            On.RoR2.CharacterBody.OnInventoryChanged += AddSimulatedBehavior;
+            CharacterBody.onBodyInventoryChangedGlobal += AddSimulatedBodyBehavior;
             GetStatCoefficients += SimulatedStatBuff;
-            On.RoR2.CharacterBody.RecalculateStats += SimulatedCooldownBuff;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += SimulatedSpawn;
+            GlobalEventManager.onCharacterDeathGlobal += SpawnSimulatedElite;
             IL.RoR2.CharacterBody.UpdateHurtBoxesEnabled += SimulatedHurtbox;
             IL.RoR2.CharacterModel.UpdateOverlays += SimulatedOverlay;
+        }
+
+        private void AddSimulatedBodyBehavior(CharacterBody obj)
+        {
+            obj.AddItemBehavior<AffixSimulatedBehavior>(IsElite(obj) ? 1 : 0);
+        }
+
+        private void SpawnSimulatedElite(DamageReport damageReport)
+        {
+            CharacterBody victimBody = damageReport.victimBody;
+            if (victimBody.isPlayerControlled)
+                return;
+
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if (damageReport.damageInfo == null || !damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.VoidDeath))
+                return;
+            if (Util.CheckRoll(50))
+                return;
+
+            int duration = (int)((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth) * maxDuration);
+            CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, Math.Max(duration, minDuration));
+            if (!ghost)
+                return;
+
+            CharacterMaster ghostMaster = ghost.master;
+            if (ghostMaster == null || ghostMaster.inventory == null)
+                return;
+                ghost.inventory.SetEquipmentIndex(EliteEquipmentDef.equipmentIndex, false);
+                ghost.inventory.GiveItemPermanent(RoR2Content.Items.UseAmbientLevel);
         }
 
         private void SimulatedOverlay(ILContext il)
@@ -121,53 +150,6 @@ namespace SwanSongExtended.Elites
         private int maxDuration = 30; // just enough time to get 2 simu attacks, probably
         private int minDuration = 7; // just enough time to get 2 simu attacks, probably
 
-        private void SimulatedSpawn(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            orig(self, damageReport);
-            CharacterBody victimBody = damageReport.victimBody;
-            CharacterBody attackerBody = damageReport.attackerBody;
-
-            if (damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.VoidDeath))
-            {
-                if (!victimBody.isPlayerControlled)
-                {
-                    if (attackerBody)
-                    {
-                        if (Util.CheckRoll(50))//chance i tink
-                        {
-                            return;
-                        }
-                        int duration = (int) ((damageReport.combinedHealthBeforeDamage / victimBody.healthComponent.fullCombinedHealth) * maxDuration);
-                        CharacterBody ghost = Util.TryToCreateGhost(victimBody, attackerBody, Math.Max(duration, minDuration));
-                        CharacterMaster ghostMaster = ghost.master;
-                        if (ghostMaster != null)
-                        {
-                            if (ghostMaster.inventory == null)
-                            {
-                                Debug.Log("ghost inv null");
-                                    
-                            }
-                            else
-                            {
-                                ghost.inventory.SetEquipmentIndex(EliteEquipmentDef.equipmentIndex);
-                                ghost.inventory.GiveItem(RoR2Content.Items.UseAmbientLevel);
-                            }
-                        }
-                        else
-                        {
-                            Debug.Log("ghostMaster null");
-                        }
-                    }
-                }
-            }
-        }
-
-        private void AddSimulatedBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, CharacterBody self)
-        {
-            orig(self);
-            self.AddItemBehavior<AffixSimulatedBehavior>(IsElite(self) ? 1 : 0);
-        }
-
         private void SimulatedStatBuff(CharacterBody sender, StatHookEventArgs args)
         {
             if (IsElite(sender, EliteBuffDef))
@@ -183,39 +165,15 @@ namespace SwanSongExtended.Elites
                 {
                     args.baseRegenAdd -= 8f;
                 }
+                float scale = 0.85f;
+                args.allSkills.cooldownMultiplier *= scale;
             }
         }
 
         internal static void RemoveAllOfItem(Inventory inv, ItemDef itemDef)
         {
             int damageBoostCount = inv.GetItemCountEffective(itemDef);
-            inv.RemoveItem(itemDef, damageBoostCount);
-        }
-
-        private void SimulatedCooldownBuff(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-
-            if (IsElite(self, EliteBuffDef))
-            {
-                float scale = 0.85f;
-                if (self.skillLocator.primary)
-                {
-                    self.skillLocator.primary.cooldownScale *= scale;
-                }
-                if (self.skillLocator.secondary)
-                {
-                    self.skillLocator.secondary.cooldownScale *= scale;
-                }
-                if (self.skillLocator.utility)
-                {
-                    self.skillLocator.utility.cooldownScale *= scale;
-                }
-                if (self.skillLocator.special)
-                {
-                    self.skillLocator.special.cooldownScale *= scale;
-                }
-            }
+            inv.RemoveItemPermanent(itemDef, damageBoostCount);
         }
 
         public void SetTeamToVoid(CharacterBody body)
@@ -234,8 +192,9 @@ namespace SwanSongExtended.Elites
             if (simulatedBehavior != null)
             {
                 simulatedBehavior.AffixSimulatedAttack();
+                return true;
             }
-            return true; 
+            return false; 
         }
     }
 

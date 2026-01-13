@@ -13,6 +13,7 @@ namespace SwanSongExtended.Interactables
 {
     class ShrineConverge : InteractableBase<ShrineConverge>
     {
+        public override bool isEnabled => false;
         public override string ConfigName => "Shrine of Convergence";
         public static string ShrineConvergeUseToken = "SHRINE_CONVERGE_USE_MESSAGE";
         public static string ShrineConvergeBeginToken = "SHRINE_CONVERGE_BEGIN_MESSAGE";

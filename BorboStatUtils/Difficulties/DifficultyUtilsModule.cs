@@ -90,13 +90,16 @@ namespace RainrotSharedUtils.Difficulties
         }
 
         public static MoreDifficultyStats cachedDifficultyStats { get; private set; } = null;
-        public static MoreDifficultyStats GetMoreDifficultyStats(DifficultyDef difficulty)
+        public static MoreDifficultyStats GetMoreDifficultyStats(DifficultyIndex difficulty)
         {
-            if (difficulty == null)
-                return null;
-            return difficultyCustomStats.GetOrCreateValue(difficulty);
+            if (difficultyCustomStats.ContainsKey(difficulty))
+                return difficultyCustomStats[difficulty];
+
+            MoreDifficultyStats stats = new MoreDifficultyStats();
+            difficultyCustomStats.Add(difficulty, stats);
+            return stats;
         }
-        public static FixedConditionalWeakTable<DifficultyDef, MoreDifficultyStats> difficultyCustomStats = new FixedConditionalWeakTable<DifficultyDef, MoreDifficultyStats>();
+        public static Dictionary<DifficultyIndex, MoreDifficultyStats> difficultyCustomStats = new Dictionary<DifficultyIndex, MoreDifficultyStats>();
 
 
         public static bool ValidateCachedDifficultyStats()
@@ -105,7 +108,7 @@ namespace RainrotSharedUtils.Difficulties
             {
                 if (Run.instance == null || Run.instance.selectedDifficulty == DifficultyIndex.Invalid)
                     return false;
-                cachedDifficultyStats = GetMoreDifficultyStats(DifficultyCatalog.GetDifficultyDef(Run.instance.selectedDifficulty));
+                cachedDifficultyStats = GetMoreDifficultyStats(Run.instance.selectedDifficulty);
             }
             return true;
         }
@@ -151,7 +154,7 @@ namespace RainrotSharedUtils.Difficulties
             {
                 if (Run.instance == null || Run.instance.selectedDifficulty == DifficultyIndex.Invalid)
                     return 0;
-                cachedDifficultyStats = GetMoreDifficultyStats(DifficultyCatalog.GetDifficultyDef(Run.instance.selectedDifficulty));
+                cachedDifficultyStats = GetMoreDifficultyStats(Run.instance.selectedDifficulty);
             }
 
             return cachedDifficultyStats.startingLevelBoost;
@@ -267,7 +270,7 @@ namespace RainrotSharedUtils.Difficulties
         private static void CacheDifficultyStats(On.RoR2.Run.orig_OnRuleBookUpdated orig, Run self, NetworkRuleBook networkRuleBookComponent)
         {
             orig(self, networkRuleBookComponent);
-            cachedDifficultyStats = GetMoreDifficultyStats(DifficultyCatalog.GetDifficultyDef(self.selectedDifficulty));
+            cachedDifficultyStats = GetMoreDifficultyStats(self.selectedDifficulty);
             if (cachedDifficultyStats.ambientLevelCap != -1)
                 Run.ambientLevelCap = cachedDifficultyStats.ambientLevelCap;
             else

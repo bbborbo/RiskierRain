@@ -89,6 +89,9 @@ namespace FruityElites
                 AssetAsyncReferenceManager<GameObject>.LoadAsset(ref1).Completed += (ctx) => BuffSunder(ctx.Result);
             }
 
+
+            Modules.Config.Save();
+
             bool Bind(string configName, string configDesc = "")
             {
                 return GetConfigBool(true, configName, configDesc);// CustomConfigFile.Bind<bool>("Elite Reworks", configName, true, configDesc).Value;

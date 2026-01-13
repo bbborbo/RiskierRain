@@ -64,7 +64,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.3.2";
+        public const string version = "1.3.9";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -135,6 +135,7 @@ namespace RiskierRain
 
             //RoR2Application.onLoad += InitializeEverything;
 
+            SaveConfig();
 
             new ContentPacks().Initialize();
         }
@@ -896,6 +897,7 @@ namespace RiskierRain
         private void InitializeConfig()
         {
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
+            CustomConfigFile.SaveOnConfigSet = false;
 
             EnableConfig = CustomConfigFile.Bind<bool>("Allow Config Options", "Enable Config", false,
                 "Set this to true to enable config options. Please keep in mind that it was not within my design intentions to play this way. " +
@@ -903,6 +905,11 @@ namespace RiskierRain
                 "If you have any issues or feedback on my mod balance, please feel free to send in feedback with the contact info in the README or Thunderstore description.");
 
             Debug.Log("Config initialized!");
+        }
+        private void SaveConfig()
+        {
+            CustomConfigFile.SaveOnConfigSet = true;
+            CustomConfigFile.Save();
         }
 
         void InitializeCoreModules()

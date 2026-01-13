@@ -182,6 +182,7 @@ namespace SurvivorTweaks.Skills
             SkillDef.requiredStock = SkillData.requiredStock;
             SkillDef.resetCooldownTimerOnUse = SkillData.resetCooldownTimerOnUse;
             SkillDef.stockToConsume = SkillData.stockToConsume;
+            SkillDef.suppressSkillActivation = SkillData.suppressSkillActivation;
 
             SkillDef.cancelSprintingOnActivation = Bind(SkillData.cancelSprintingOnActivation, "Cancels Sprinting", "Recommended to use HuntressBuffULTIMATE for intended behavior.");
             SkillDef.forceSprintDuringState = Bind(SkillData.forceSprintingDuringState, "Force Sprinting During State", "Used by mobility skills.");
@@ -304,10 +305,10 @@ namespace SurvivorTweaks.Skills
         {
             public SimpleSkillData(int baseMaxStock = 1, bool beginSkillCooldownOnSkillEnd = false,
                 bool canceledFromSprinting = false, bool cancelSprintingOnActivation = true, bool forceSprintingDuringState = false,
-                bool dontAllowPastMaxStocks = true, bool fullRestockOnAssign = true,
+                bool dontAllowPastMaxStocks = false, bool fullRestockOnAssign = true,
                 bool isCombatSkill = true, bool mustKeyPress = false, int rechargeStock = 1,
                 int requiredStock = 1, bool resetCooldownTimerOnUse = false, int stockToConsume = 1,
-                bool useAttackSpeedScaling = false)
+                bool useAttackSpeedScaling = false, bool suppressSkillActivation = false)
             {
                 this.baseMaxStock = baseMaxStock;
                 this.beginSkillCooldownOnSkillEnd = beginSkillCooldownOnSkillEnd;
@@ -323,6 +324,7 @@ namespace SurvivorTweaks.Skills
                 this.resetCooldownTimerOnUse = resetCooldownTimerOnUse;
                 this.stockToConsume = stockToConsume;
                 this.useAttackSpeedScaling = useAttackSpeedScaling;
+                this.suppressSkillActivation = suppressSkillActivation;
             }
 
             internal int baseMaxStock;
@@ -339,6 +341,7 @@ namespace SurvivorTweaks.Skills
             internal bool resetCooldownTimerOnUse;
             internal int stockToConsume;
             internal bool useAttackSpeedScaling;
+            internal bool suppressSkillActivation;
         }
     }
 }

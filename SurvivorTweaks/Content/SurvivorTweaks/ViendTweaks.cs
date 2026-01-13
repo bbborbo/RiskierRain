@@ -57,11 +57,17 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             //GetBodyObject();
-            bodyObject = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab).WaitForCompletion();
-            GetSkillsFromBodyObject(bodyObject);
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseMaxHealth = baseMaxHealth;
-            body.levelMaxHealth = baseMaxHealth * 0.3f;
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMaxHealth = baseMaxHealth;
+                body.levelMaxHealth = baseMaxHealth * 0.3f;
+
+                DoViendPrimary();
+            });
+
             On.RoR2.HealthComponent.Heal += ViendNoHealing;
             GetStatCoefficients += ViendStatCoefficients;
 
@@ -70,7 +76,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             //On.RoR2.Skills.VoidSurvivorSkillDef.HasRequiredCorruption += VoidSurvivorSkillDef_HasRequiredCorruption;
             #endregion
 
-            DoViendPrimary();
 
             #region secondary
             DoViendSecondary();
@@ -226,46 +231,50 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void DoViendPrimary()
         {
-            Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidRaidCrab.VoidRaidCrabMultiBeamDotZone_prefab).Completed += (ctx) => CreateSloshProjectile(ctx.Result);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidRaidCrab.VoidRaidCrabMultiBeamDotZone_prefab, 
+                CreateSloshProjectile);
 
-            SkillDef viendPrimary = Addressables.LoadAssetAsync<SkillDef>("RoR2/DLC1/VoidSurvivor/FireHandBeam.asset").WaitForCompletion();
             SteppedSkillDef viendComboPrimary = ScriptableObject.CreateInstance<SteppedSkillDef>();
+            SurvivorTweaksPlugin.LoadAsync<SkillDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidSurvivor.FireHandBeam_asset, (viendPrimary) =>
+            {
+                viendComboPrimary.stepCount = primaryStepCount;
+                viendComboPrimary.stepGraceDuration = 0.15f;
 
-            viendComboPrimary.stepCount = primaryStepCount;
-            viendComboPrimary.stepGraceDuration = 0.15f;
-
-            viendComboPrimary.keywordTokens = viendPrimary.keywordTokens;
-            viendComboPrimary.icon = viendPrimary.icon;
-            viendComboPrimary.skillName = "FSTViendPrimary";
-            viendComboPrimary.skillNameToken = viendPrimary.skillNameToken;
-            viendComboPrimary.skillDescriptionToken = viendPrimary.skillDescriptionToken;
-            viendComboPrimary.activationStateMachineName = viendPrimary.activationStateMachineName;
-            viendComboPrimary.baseRechargeInterval = viendPrimary.baseRechargeInterval;
-            viendComboPrimary.baseMaxStock = viendPrimary.baseMaxStock;
-            viendComboPrimary.rechargeStock = viendPrimary.rechargeStock;
-            viendComboPrimary.interruptPriority = viendPrimary.interruptPriority;
-            viendComboPrimary.beginSkillCooldownOnSkillEnd = viendPrimary.beginSkillCooldownOnSkillEnd;
-            viendComboPrimary.dontAllowPastMaxStocks = viendPrimary.dontAllowPastMaxStocks;
-            viendComboPrimary.fullRestockOnAssign = viendPrimary.fullRestockOnAssign;
-            viendComboPrimary.isCombatSkill = viendPrimary.isCombatSkill;
-            viendComboPrimary.mustKeyPress = viendPrimary.mustKeyPress;
-            viendComboPrimary.requiredStock = viendPrimary.requiredStock;
-            viendComboPrimary.resetCooldownTimerOnUse = viendPrimary.resetCooldownTimerOnUse;
-            viendComboPrimary.stockToConsume = viendPrimary.stockToConsume;
-            viendComboPrimary.cancelSprintingOnActivation = viendPrimary.cancelSprintingOnActivation;
-            viendComboPrimary.forceSprintDuringState = viendPrimary.forceSprintDuringState;
-            viendComboPrimary.canceledFromSprinting = viendPrimary.canceledFromSprinting;
+                viendComboPrimary.keywordTokens = viendPrimary.keywordTokens;
+                viendComboPrimary.icon = viendPrimary.icon;
+                viendComboPrimary.skillName = "FSTViendPrimary";
+                viendComboPrimary.skillNameToken = viendPrimary.skillNameToken;
+                viendComboPrimary.skillDescriptionToken = viendPrimary.skillDescriptionToken;
+                viendComboPrimary.activationStateMachineName = viendPrimary.activationStateMachineName;
+                viendComboPrimary.baseRechargeInterval = viendPrimary.baseRechargeInterval;
+                viendComboPrimary.baseMaxStock = viendPrimary.baseMaxStock;
+                viendComboPrimary.rechargeStock = viendPrimary.rechargeStock;
+                viendComboPrimary.interruptPriority = viendPrimary.interruptPriority;
+                viendComboPrimary.beginSkillCooldownOnSkillEnd = viendPrimary.beginSkillCooldownOnSkillEnd;
+                viendComboPrimary.dontAllowPastMaxStocks = viendPrimary.dontAllowPastMaxStocks;
+                viendComboPrimary.fullRestockOnAssign = viendPrimary.fullRestockOnAssign;
+                viendComboPrimary.isCombatSkill = viendPrimary.isCombatSkill;
+                viendComboPrimary.mustKeyPress = viendPrimary.mustKeyPress;
+                viendComboPrimary.requiredStock = viendPrimary.requiredStock;
+                viendComboPrimary.resetCooldownTimerOnUse = viendPrimary.resetCooldownTimerOnUse;
+                viendComboPrimary.stockToConsume = viendPrimary.stockToConsume;
+                viendComboPrimary.cancelSprintingOnActivation = viendPrimary.cancelSprintingOnActivation;
+                viendComboPrimary.forceSprintDuringState = viendPrimary.forceSprintDuringState;
+                viendComboPrimary.canceledFromSprinting = viendPrimary.canceledFromSprinting;
+            });
 
             primary.variants[0] = new SkillFamily.Variant
             {
                 skillDef = viendComboPrimary,
                 unlockableDef = null,
                 viewableNode = new ViewablesCatalog.Node(viendComboPrimary.skillNameToken, false, null)
-            };             
+            };
             Content.AddSkillDef(viendComboPrimary);
             Content.AddEntityState(typeof(FireHandBeamLight));
+
             SerializableEntityStateType newViendPrimaryCharge = new SerializableEntityStateType(typeof(FireHandBeamLight));
             viendComboPrimary.activationState = newViendPrimaryCharge;
+
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION",
                 $"Fire a <style=cIsUtility>slowing</style> long-range beam for " +
                 $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)} damage</style>. " +

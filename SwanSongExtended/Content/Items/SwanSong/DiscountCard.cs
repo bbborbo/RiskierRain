@@ -113,13 +113,14 @@ namespace SwanSongExtended.Items
 
         public void DegradeItem(CharacterMaster master, Inventory inventory, ItemDef currentItem, ItemDef nextItem)
         {
-            inventory.RemoveItem(currentItem, 1);
-            inventory.GiveItem(nextItem, 1);
-
-            CharacterMasterNotificationQueue.SendTransformNotification(
-                master, currentItem.itemIndex,
-                nextItem.itemIndex,
-                CharacterMasterNotificationQueue.TransformationType.Suppressed);
+            Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+            new Inventory.ItemTransformation
+            {
+                originalItemIndex = currentItem.itemIndex,
+                newItemIndex = nextItem.itemIndex,
+                maxToTransform = 1,
+                transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Suppressed
+            }.TryTransform(inventory, out tryTransformResult);
         }
 
         private uint GetCashBackValue()

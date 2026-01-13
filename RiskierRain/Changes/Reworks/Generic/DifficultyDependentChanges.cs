@@ -28,7 +28,7 @@ namespace RiskierRain
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 1f; //1f
+        public static float baseScalingMultiplier = 0.9f; //1f
         /// <summary>
         /// exponential
         /// </summary>
@@ -153,13 +153,14 @@ namespace RiskierRain
                         break;
                 }
 
-                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+                MoreDifficultyStats difficultyStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyIndex);
                 difficultyStats.startingDifficultyDisplay = (float)startingDifficulty;
                 difficultyStats.startingLevelBoost = levelBoost;
                 difficultyStats.startingDifficultyCoefficientBoost = difficultyBoost;
                 difficultyStats.ambientLevelCap = levelCap;
                 difficultyStats.tier2EliteStage = tier2Stage;
                 difficultyStats.teleporterParticleRangeMultiplier = teleParticleRangeMultiplier;
+                DifficultyUtilsModule.difficultyCustomStats[difficultyIndex] = difficultyStats;
             }
         }
 
@@ -334,11 +335,14 @@ namespace RiskierRain
                 if (selectedDifficulty >= DifficultyIndex.Hard)
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
+                    float clamped = Mathf.Clamp01(compensatedLevel / 200f);
 
-                    if(sender.baseNameToken != "JELLYFISH_BODY_NAME")
-                    {
-                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 4f;
-                    }
+                    float attackSpeedFactor = 
+                        (sender.baseNameToken == "CLAYBRUISER_BODY_NAME" 
+                            || sender.baseNameToken == "LUNARWISP_BODY_NAME"
+                            || sender.baseNameToken == "JELLYFISH_BODY_NAME") 
+                        ? 2f : 4f;
+                    args.attackSpeedMultAdd += clamped * attackSpeedFactor;
 
                     if (sender.isChampion)
                     {
@@ -346,7 +350,7 @@ namespace RiskierRain
                     }
                     else
                     {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 2f;
+                        args.moveSpeedMultAdd += clamped * 2f;
                     }
                 }
             }
@@ -587,9 +591,9 @@ namespace RiskierRain
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 1f;//1
+        public static float fastDirectorEliteBias = 1.2f;//1
         public static float fastDirectorCreditMultiplier = 0.75f;//0.75f
-        public static float slowDirectorEliteBias = 1f;//1
+        public static float slowDirectorEliteBias = 1.2f;//1
         public static float slowDirectorCreditMultiplier = 1f;//0.75f
 
         public static float teleLesserEliteBias = 1f;//1

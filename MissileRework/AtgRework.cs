@@ -141,7 +141,7 @@ namespace MissileRework
 
             FireProjectileInfo newMissile = new FireProjectileInfo
             {
-                projectilePrefab = missilePrefab,
+                projectilePrefab = GlobalEventManager.CommonAssets.missilePrefab,
                 procChainMask = damageInfo.procChainMask,
                 damage = atgMk3BaseDamageCoefficientPerRocket * attackerBody.damage,
                 crit = damageInfo.crit,

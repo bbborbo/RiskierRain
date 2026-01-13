@@ -39,9 +39,10 @@ namespace RainrotSharedUtils.Compat
         public const string modName = "RainrotSharedCompats";
         public const string version = "1.0.0";
         #endregion
-        public static bool ModLoaded(string modGuid) { return modGuid != "" && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
+        public static bool ModLoaded(string modGuid) { return !modGuid.IsNullOrWhiteSpace() && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
         public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
         public static bool snowtimeLoaded => ModLoaded(Snowtime.SnowtimeStage.GUID);
+        public static bool riskierLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
 
         void Awake()
         {
@@ -61,7 +62,7 @@ namespace RainrotSharedUtils.Compat
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void DoSnowtimeCompat()
         {
-            DifficultyDef difficultyDef = Snowtime.SnowtimeStage.SnowtimeLegendaryDiffDef;
+            DifficultyIndex difficultyDef = Snowtime.SnowtimeStage.SnowtimeLegendaryDiffIndex;
 
             MoreDifficultyStats legendaryStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
             legendaryStats.startingLevelBoost = 9;
@@ -74,15 +75,14 @@ namespace RainrotSharedUtils.Compat
             legendaryStats.desiredStormTime_ForSwanSong = 3f;
             legendaryStats.desiredStormWarningTime_ForSwanSong = 0.5f;
             legendaryStats.stormIntensifyStrength_ForSwanSong = 0.7f;
-
-            DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
+            DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = legendaryStats;
         }
 
         #region inferno
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void DoInfernoCompat()
         {
-            DifficultyDef difficultyDef = Inferno.Main.InfernoDiffDef;
+            DifficultyIndex difficultyDef = Inferno.Main.InfernoDiffIndex;
 
             MoreDifficultyStats infernoStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
             infernoStats.startingLevelBoost = Inferno.Main.LevelDiffBoost.Value;
@@ -94,8 +94,8 @@ namespace RainrotSharedUtils.Compat
             infernoStats.desiredStormTime_ForSwanSong = 3.5f;
             infernoStats.desiredStormWarningTime_ForSwanSong = 1f;
             infernoStats.stormIntensifyStrength_ForSwanSong = 0.6f;
+            DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = infernoStats;
 
-            DifficultyUtilsModule.UseDifficultyStats = true;
             DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
 
             //Run.onRunSetRuleBookGlobal -= Inferno.Main.;
@@ -104,7 +104,8 @@ namespace RainrotSharedUtils.Compat
 
         private static void RemoveInfernoHooks(Run obj)
         {
-            On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
+            if(riskierLoaded)
+                On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
         }
 
         public delegate bool orig_ChangeAmbientCap(Inferno.Main main, Run run, RuleBook ruleBook);

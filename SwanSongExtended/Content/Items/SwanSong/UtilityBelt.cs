@@ -51,7 +51,6 @@ namespace SwanSongExtended.Items
         {
         }
 
-        #region grant barrier
         public static void GiveUtilityBarrier(CharacterBody body, GenericSkill skill)
         {
             if (skill != null)

@@ -62,7 +62,7 @@ namespace RainrotSharedUtils.Compat
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void DoSnowtimeCompat()
         {
-            DifficultyDef difficultyDef = Snowtime.SnowtimeStage.SnowtimeLegendaryDiffDef;
+            DifficultyIndex difficultyDef = Snowtime.SnowtimeStage.SnowtimeLegendaryDiffIndex;
 
             MoreDifficultyStats legendaryStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
             legendaryStats.startingLevelBoost = 9;
@@ -75,13 +75,14 @@ namespace RainrotSharedUtils.Compat
             legendaryStats.desiredStormTime_ForSwanSong = 3f;
             legendaryStats.desiredStormWarningTime_ForSwanSong = 0.5f;
             legendaryStats.stormIntensifyStrength_ForSwanSong = 0.7f;
+            DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = legendaryStats;
         }
 
         #region inferno
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void DoInfernoCompat()
         {
-            DifficultyDef difficultyDef = Inferno.Main.InfernoDiffDef;
+            DifficultyIndex difficultyDef = Inferno.Main.InfernoDiffIndex;
 
             MoreDifficultyStats infernoStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
             infernoStats.startingLevelBoost = Inferno.Main.LevelDiffBoost.Value;
@@ -93,6 +94,7 @@ namespace RainrotSharedUtils.Compat
             infernoStats.desiredStormTime_ForSwanSong = 3.5f;
             infernoStats.desiredStormWarningTime_ForSwanSong = 1f;
             infernoStats.stormIntensifyStrength_ForSwanSong = 0.6f;
+            DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = infernoStats;
 
             DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
 

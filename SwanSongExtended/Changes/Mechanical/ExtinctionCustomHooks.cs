@@ -55,7 +55,7 @@ namespace SwanSongExtended
 
             difficultyIndexExtinction = DifficultyAPI.AddDifficulty(difficultyDefExtinction);
 
-            MoreDifficultyStats extinctionStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDefExtinction);
+            MoreDifficultyStats extinctionStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyIndexExtinction);
             extinctionStats.ambientLevelCap = 999;
             extinctionStats.delayFirstStorm_ForSwanSong = false;
             extinctionStats.desiredStormTime_ForSwanSong = StormsCore.monsoonStormDelayMinutes;
@@ -66,6 +66,7 @@ namespace SwanSongExtended
             extinctionStats.stormIntensifyStrength_ForSwanSong = StormsCore.stormStrengthIncreaseBase + StormsCore.stormStrengthIncreasePerDifficulty * 4;
             extinctionStats.teleporterParticleRangeMultiplier = 0;
             extinctionStats.tier2EliteStage = 4;
+            DifficultyUtilsModule.difficultyCustomStats[difficultyIndexExtinction] = extinctionStats;
 
             LanguageAPI.Add(difficultyToken + "_NAME", extinctionName);
             LanguageAPI.Add(difficultyToken + "_DESC", extinctionDesc);

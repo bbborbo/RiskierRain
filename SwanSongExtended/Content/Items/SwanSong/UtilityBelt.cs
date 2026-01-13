@@ -74,7 +74,6 @@ namespace SwanSongExtended.Items
                 }
             }
         }
-        #endregion
     }
 
     public class UtilityKnifeBehavior : BaseItemBodyBehavior

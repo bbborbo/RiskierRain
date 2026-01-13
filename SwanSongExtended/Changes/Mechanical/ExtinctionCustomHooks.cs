@@ -95,23 +95,20 @@ namespace SwanSongExtended
             float ambientLevelBoost = eclipseDifficultyBoost;
             if (sender.teamComponent.teamIndex != TeamIndex.Player)
             {
-                if (selectedDifficulty >= DifficultyIndex.Hard)
+                float compensatedLevel = sender.level - ambientLevelBoost;
+
+                if (sender.baseNameToken != "JELLYFISH_BODY_NAME")
                 {
-                    float compensatedLevel = sender.level - ambientLevelBoost;
+                    args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 4f;
+                }
 
-                    if (sender.baseNameToken != "JELLYFISH_BODY_NAME")
-                    {
-                        args.attackSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 4f;
-                    }
-
-                    if (sender.isChampion)
-                    {
-                        args.armorAdd += 3 * compensatedLevel;
-                    }
-                    else
-                    {
-                        args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 2f;
-                    }
+                if (sender.isChampion)
+                {
+                    args.armorAdd += 3 * compensatedLevel;
+                }
+                else
+                {
+                    args.moveSpeedMultAdd += Mathf.Clamp01(compensatedLevel / 200f) * 2f;
                 }
             }
         }

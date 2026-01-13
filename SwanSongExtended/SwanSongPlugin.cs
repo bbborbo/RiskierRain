@@ -95,7 +95,7 @@ namespace SwanSongExtended
         public static bool ModLoaded(string modGuid) { return modGuid != "" && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
         public static bool iabMissilesLoaded => ModLoaded("com.HouseOfFruits.IAmBecomeMissiles");
         public static bool isAELoaded => ModLoaded("com.Borbo.ArtificerExtended");
-        public static bool is2R4RLoaded => ModLoaded("com.HouseOfFruits.RiskierRain");
+        public static bool is2R4RLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
         public static bool isHBULoaded => ModLoaded("com.Borbo.HuntressBuffULTIMATE");
         public static bool isScepterLoaded => ModLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => ModLoaded("com.johnedwa.RTAutoSprintEx");

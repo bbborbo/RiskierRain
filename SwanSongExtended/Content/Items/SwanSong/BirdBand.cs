@@ -108,7 +108,7 @@ namespace SwanSongExtended.Items
             if (damageReport.attackerBody == null)
                 return;
 
-            if (stack <= 0 || body.HasBuff(BirdBand.birdBuff))
+            if (stack <= 0 || !body.HasBuff(BirdBand.birdBuff))
                 return;
 
             float damageCoefficient = damageReport.damageInfo.damage / body.damage;

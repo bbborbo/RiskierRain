@@ -28,11 +28,12 @@ namespace SurvivorTweaks.States.Captain
 
         private void Fire()
         {
-            if (!this.rigidbody)
+            if (!this.rigidbody || !this.characterBody.master)
             {
                 activatorSkillSlot.AddOneStock();
                 return;
             }
+            characterBody.OnSkillActivated(activatorSkillSlot);
             Util.PlaySound(FireTazer.attackString, base.gameObject);
             base.AddRecoil(-1f * FireTazer.recoilAmplitude, -1.5f * FireTazer.recoilAmplitude, -0.25f * FireTazer.recoilAmplitude, 0.25f * FireTazer.recoilAmplitude);
             base.characterBody.AddSpreadBloom(FireTazer.bloom);
@@ -72,11 +73,21 @@ namespace SurvivorTweaks.States.Captain
 
         void FireZipline()
         {
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Zipline"));
+            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(PocketWormholeSkill.ziplinePrefab);
             ZiplineController component2 = gameObject.GetComponent<ZiplineController>();
             component2.SetPointAPosition(startPos);
             component2.SetPointBPosition(endpointPos);
-            gameObject.AddComponent<DestroyOnTimer>().duration = PocketWormholeSkill.maxTunnelDuration;
+            DestroyOnTimer dot = gameObject.AddComponent<DestroyOnTimer>();
+                dot.duration = PocketWormholeSkill.maxTunnelDuration;
+
+            gameObject.GetComponent<TeamFilter>().teamIndex = characterBody.teamComponent.teamIndex;
+            gameObject.GetComponent<GenericOwnership>().ownerObject = characterBody.gameObject;
+            Deployable deployableComponent = gameObject.GetComponent<Deployable>();
+            if (deployableComponent && characterBody.master)
+            {
+                deployableComponent.onUndeploy.AddListener(deployableComponent.DestroyGameObject);
+                characterBody.master.AddDeployable(deployableComponent, PocketWormholeSkill.wormholeDeployableSlot);
+            }
             NetworkServer.Spawn(gameObject);
         }
 

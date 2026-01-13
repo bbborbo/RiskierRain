@@ -70,7 +70,7 @@ namespace SurvivorTweaks.Skills
         public override void Init()
         {
             KeywordTokens = new string[1] { "KEYWORD_SLAYER" };
-            CreateProjectile();
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Saw.Sawmerang_prefab, CreateProjectile);
             base.Init();
         }
         public override void Hooks()
@@ -78,19 +78,23 @@ namespace SurvivorTweaks.Skills
 
         }
 
-        private void CreateProjectile()
+        private void CreateProjectile(GameObject projectilePrefab)
         {
-            boomerangPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/Sawmerang").InstantiateClone("HuntressLaserrang", true);
-            GameObject ghost = LegacyResourcesAPI.Load<GameObject>("prefabs/projectileghosts/GlaiveGhost").InstantiateClone("HuntressLaserrangGhost", false);
+            boomerangPrefab = projectilePrefab.InstantiateClone("HuntressLaserrang", true);
             boomerangPrefab.transform.localScale = Vector3.one * boomerangScale;
+
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Junk_Huntress.GlaiveGhost_prefab, (ghost) =>
+            {
+                ProjectileController pc = boomerangPrefab.GetComponent<ProjectileController>();
+                pc.ghostPrefab = ghost;
+            });
 
             BoomerangProjectile bp = boomerangPrefab.GetComponent<BoomerangProjectile>();
             bp.travelSpeed = boomerangSpeed;
             bp.transitionDuration = 0.8f;
             bp.distanceMultiplier = maxFlyOutTime;
+            bp.isStunAndPierce = true;
 
-            ProjectileController pc = bp.GetComponent<ProjectileController>();
-            pc.ghostPrefab = ghost;
 
             ProjectileDamage pd = bp.GetComponent<ProjectileDamage>();
             pd.damageType |= DamageType.BonusToLowHealth;

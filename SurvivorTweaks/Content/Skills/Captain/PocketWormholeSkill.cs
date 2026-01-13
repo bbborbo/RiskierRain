@@ -9,12 +9,16 @@ using System.Text;
 using UnityEngine;
 using SurvivorTweaks.Modules;
 using static SurvivorTweaks.Modules.Language.Styling;
+using R2API;
 
 namespace SurvivorTweaks.Skills
 {
     class PocketWormholeSkill : SkillBase<PocketWormholeSkill>
     {
-        public override float BaseCooldown => 15f;
+        public DeployableAPI.GetDeployableSameSlotLimit GetWormholeSlotLimit;
+        public static DeployableSlot wormholeDeployableSlot;
+        public static GameObject ziplinePrefab;
+        public override float BaseCooldown => 20f;
         public override InterruptPriority InterruptPriority => InterruptPriority.Skill;
 
         public override Type BaseSkillDef => typeof(SkillDef);
@@ -22,10 +26,14 @@ namespace SurvivorTweaks.Skills
         public override AssetBundle assetBundle => SurvivorTweaksPlugin.mainAssetBundle;
         public override string ConfigName => "Skills : Captain : Pocket Wormhole";
 
+        [AutoConfig("Max Wormhole Count Base", 1)]
+        public static float maxWormholesBase = 1;
+        [AutoConfig("Max Wormhole Count Per Upgrade", 0.5f)]
+        public static float maxWormholesUpgrade = 0.5f;
         [AutoConfig("Max Wormhole Distance", 60)]
         public static int maxTunnelDistance = 60;
-        [AutoConfig("Max Wormhole Duration", 15)]
-        public static float maxTunnelDuration = 15;
+        [AutoConfig("Max Wormhole Duration", 999)]
+        public static float maxTunnelDuration = 999;
 
         [AutoConfig("Base Enter Duration", 0.8f)]
         public static float baseEnterDuration = 0.8f;
@@ -35,7 +43,7 @@ namespace SurvivorTweaks.Skills
         public override string SkillName => "Pocket Wormhole";
 
         public override string SkillDescription => $"Create a {UtilityColor("quantum tunnel")} for ALL allies to use. " +
-            $"Lasts for {UtilityColor(maxTunnelDuration.ToString())} seconds.";
+            $"Lasts until replaced.";
 
         public override string TOKEN_IDENTIFIER => "CAPTAINTUNNEL";
 
@@ -53,25 +61,51 @@ namespace SurvivorTweaks.Skills
                 mustKeyPress: true,
                 isCombatSkill: false,
                 beginSkillCooldownOnSkillEnd: true,
-                canceledFromSprinting: true
+                canceledFromSprinting: true,
+                suppressSkillActivation: true
             );
         public override void Init()
         {
             base.Init();
+            GetWormholeSlotLimit += GetMaxWormholes;
+            wormholeDeployableSlot = DeployableAPI.RegisterDeployableSlot(GetWormholeSlotLimit);
             Content.AddEntityState(typeof(FireWormhole));
+            SurvivorTweaksPlugin.LoadAsync<EquipmentDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Gateway.Gateway_asset, (equip) =>
+            {
+                equip.canDrop = false;
+                equip.enigmaCompatible = false;
+                equip.canBeRandomlyTriggered = false;
+            });
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Gateway.Zipline_prefab, (zipline) =>
+            {
+                ziplinePrefab = zipline.InstantiateClone("PocketWormholeZipline", true);
+                if (!ziplinePrefab.TryGetComponent(out TeamFilter teamFilter))
+                {
+                    teamFilter = ziplinePrefab.AddComponent<TeamFilter>();
+                }
+                if (!ziplinePrefab.TryGetComponent(out GenericOwnership genericOwnership))
+                {
+                    genericOwnership = ziplinePrefab.AddComponent<GenericOwnership>();
+                }
+                if (!ziplinePrefab.TryGetComponent(out Deployable deployableComponent))
+                {
+                    deployableComponent = ziplinePrefab.AddComponent<Deployable>();
+                }
+            });
         }
 
         public override void Hooks()
         {
-            On.RoR2.EquipmentCatalog.SetEquipmentDefs += Gah;
         }
 
-        private void Gah(On.RoR2.EquipmentCatalog.orig_SetEquipmentDefs orig, EquipmentDef[] newEquipmentDefs)
+
+        private int GetMaxWormholes(CharacterMaster self, int deployableCountMultiplier)
         {
-            RoR2Content.Equipment.Gateway.canDrop = false;
-            RoR2Content.Equipment.Gateway.enigmaCompatible = false;
-            RoR2Content.Equipment.Gateway.canBeRandomlyTriggered = false;
-            orig(newEquipmentDefs);
+            int wormholes = 
+                (int)maxWormholesBase + 
+                Mathf.CeilToInt(self.inventory.GetItemCountPermanent(RoR2Content.Items.SecondarySkillMagazine) * maxWormholesUpgrade);
+            GameObject body = self.GetBodyObject();
+            return wormholes * deployableCountMultiplier;
         }
     }
 }

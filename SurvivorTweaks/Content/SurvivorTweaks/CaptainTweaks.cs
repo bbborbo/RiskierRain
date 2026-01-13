@@ -43,7 +43,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static int tazerTotalTargets = 3; //1
 
         //public static GameObject diabloPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
-        float diabloMaxDuration = 40; //40
+        float diabloMaxDuration = 10; //20
 
 
         public static bool refreshSupplyDrops = true;
@@ -256,8 +256,28 @@ namespace SurvivorTweaks.SurvivorTweaks
                     {
                         osc.timeMax = diabloMaxDuration;
                     }
+                    if (osc.name == "Sphere, Inner Expanding")
+                    {
+                        osc.timeMax = diabloMaxDuration;
+                    }
+                }
+                ObjectTransformCurve[] diabloIndicators2 = prefab.GetComponentsInChildren<ObjectTransformCurve>();
+                foreach (ObjectTransformCurve osc in diabloIndicators2)
+                {
+                    //Debug.Log(osc.name);
+                    if (osc.name == "Laser")
+                    {
+                        osc.timeMax = diabloMaxDuration;
+                    }
                 }
             }
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainAirstrikeAltProjectile_prefab, (prefab) =>
+            {
+                if(prefab.TryGetComponent(out ProjectileImpactExplosion pie))
+                {
+                    pie.lifetime = diabloMaxDuration;
+                }
+            });
         }
 
         private void ModifyDiabloFriendlyFire(On.RoR2.Projectile.ProjectileManager.orig_InitializeProjectile orig, ProjectileController projectileController, FireProjectileInfo fireProjectileInfo)

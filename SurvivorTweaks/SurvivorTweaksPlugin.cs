@@ -115,6 +115,11 @@ namespace SurvivorTweaks
         {
             expansionDefSS2 = SwanSongExtended.SwanSongPlugin.expansionDefSS2;
         }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static bool GetBodyHasWarfare(CharacterBody body)
+        {
+            return false;
+        }
 
         private void InitializeContent()
         {

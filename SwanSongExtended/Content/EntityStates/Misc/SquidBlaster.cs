@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Linq;
 using SwanSongExtended.Modules;
+using SwanSongExtended.Changes;
 
 namespace SwanSongExtended.States
 {
@@ -80,7 +81,7 @@ namespace SwanSongExtended.States
 
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
             {
-                projectilePrefab = CommonAssets.squidBlasterBall,
+                projectilePrefab = Squolyp.squidBlasterBall,
                 position = aimRay.origin,
                 rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
                 owner = base.gameObject,

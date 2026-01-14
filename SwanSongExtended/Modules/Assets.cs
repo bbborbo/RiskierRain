@@ -141,53 +141,6 @@ namespace SwanSongExtended.Modules
         #endregion
 
 
-        public static GameObject squidBlasterBall;
-        public static GameObject squidBlasterBallGhost;
-        private static void CreateSquidBlasterBall()
-        {
-            squidBlasterBall = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Toolbot/ToolbotGrenadeLauncherProjectile.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
-            squidBlasterBallGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballGhost.prefab").WaitForCompletion().InstantiateClone("SquidBlasterBallGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
-
-            ProjectileController pc = squidBlasterBall.GetComponent<ProjectileController>();
-            if (pc)
-            {
-                pc.ghostPrefab = squidBlasterBallGhost;
-
-            }
-            else
-            {
-                Log.Error("squid projectile conrroller rip");
-            }
-            ProjectileSteerTowardTarget pstt = squidBlasterBall.GetComponent<ProjectileSteerTowardTarget>(); //no homing
-            if (pstt)
-            {
-                UnityEngine.Object.Destroy(pstt);
-            }
-            ProjectileDirectionalTargetFinder pdtf = squidBlasterBall.GetComponent<ProjectileDirectionalTargetFinder>();
-            if (pdtf)
-            {
-                pdtf.ignoreAir = false;
-            }
-            //ProjectileCharacterController pcc = squidBlasterBall.GetComponent<ProjectileCharacterController>();
-            //if (pcc)
-            //{
-            //    pcc.
-            //}
-            //CharacterController cc = squidBlasterBall.GetComponent<CharacterController>();
-            //if (cc)
-            //{
-            //    UnityEngine.Object.Destroy(cc);
-            //}
-            ProjectileImpactExplosion pie = squidBlasterBall.GetComponent<ProjectileImpactExplosion>();
-            if (pie)
-            {
-                pie.lifetime = 1;
-                pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballExplosion.prefab").WaitForCompletion();
-            }
-
-
-            R2API.ContentAddition.AddProjectile(squidBlasterBall);
-        }
 
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;

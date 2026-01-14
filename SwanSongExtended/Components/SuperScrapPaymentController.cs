@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using RoR2.Items;
+using SwanSongExtended.Changes;
 
 namespace SwanSongExtended.Components
 {

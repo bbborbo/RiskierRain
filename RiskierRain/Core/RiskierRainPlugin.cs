@@ -23,6 +23,8 @@ using MonoMod.Cil;
 using RoR2BepInExPack.GameAssetPathsBetter;
 using RoR2.ContentManagement;
 using RainrotSharedUtils.Difficulties;
+using static MoreStats.StatHooks;
+using MoreStats;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -215,6 +217,13 @@ namespace RiskierRain
             // defense
             TeddyChanges();
 
+            // barrier
+            if (GetConfigBool(true, "Barrier Decay Rate"))
+            {
+                BaseStats.BarrierDecayStaticMaxHealthTime = 30f;// BarrierDecayRateStatic.Value; //30f
+                BaseStats.BarrierHighDecayFactor = 5f;// BarrierDecayHighFactor.Value; //3f
+                BaseStats.BarrierLowDecayFactor = 0.33f;// BarrierDecayLowFactor.Value; //0.5f
+            }
             // scythe
             if (GetConfigBool(true, "Harvesters Scythe"))
             {

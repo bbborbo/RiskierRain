@@ -15,7 +15,7 @@ namespace RiskierRain
         public void ChangeSpawnlists()
         {
             //roost
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.DistantRoost);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.DistantRoost);
 
 #pragma warning disable CS0618 // It tells me its obsolete but its just easier to do it this way
 
@@ -31,7 +31,7 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(monsterCardHolder, false, DirectorAPI.Stage.DistantRoost);
 
             //plains
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.TitanicPlains);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusInvalidator, DirectorAPI.Stage.TitanicPlains);
 
 
@@ -52,16 +52,23 @@ namespace RiskierRain
 
             //shabodes
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusProspector, DirectorAPI.Stage.ShatteredAbodes);
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.ShatteredAbodes);
+
+            Helpers.AddNewMonsterToStage(DirectorCards.Dunestrider, MonsterCategory.Champions, DirectorAPI.Stage.ShatteredAbodes);
             //impact
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.BeetleQueen, DirectorAPI.Stage.ShatteredAbodes);
+
             Helpers.AddNewMonsterToStage(DirectorCards.SolusProspector, MonsterCategory.BasicMonsters, DirectorAPI.Stage.DisturbedImpact);
+            Helpers.AddNewMonsterToStage(DirectorCards.Dunestrider, MonsterCategory.Champions, DirectorAPI.Stage.DisturbedImpact);
+
 
             //wetland
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.WetlandAspect);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.WetlandAspect);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusTransporter, DirectorAPI.Stage.WetlandAspect);
 
             Helpers.AddNewMonsterToStage(DirectorCards.AlphaConstruct, MonsterCategory.BasicMonsters, DirectorAPI.Stage.WetlandAspect);
             Helpers.AddNewMonsterToStage(DirectorCards.ElderLemurian, MonsterCategory.Minibosses, DirectorAPI.Stage.WetlandAspect);
-            Helpers.AddNewMonsterToStage(DirectorCards.ImpOverlord, MonsterCategory.Champions, DirectorAPI.Stage.WetlandAspect);
+            //Helpers.AddNewMonsterToStage(DirectorCards.ImpOverlord, MonsterCategory.Champions, DirectorAPI.Stage.WetlandAspect);
 
             //aqwuaduct
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusInvalidator, DirectorAPI.Stage.AbandonedAqueduct);
@@ -94,7 +101,7 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.SolusInvalidator, MonsterCategory.Minibosses, DirectorAPI.Stage.RallypointDelta);
 
             //sulfur pools
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SulfurPools);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SulfurPools);
 
             Helpers.AddNewMonsterToStage(DirectorCards.Larva, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SulfurPools);
             Helpers.AddNewMonsterToStage(DirectorCards.ClayApothecary, MonsterCategory.Minibosses, DirectorAPI.Stage.SulfurPools);
@@ -106,7 +113,7 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.GoldenDieback);
 
             //abyssal
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
 
             //sirens call
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.Beetle, DirectorAPI.Stage.SirensCall);
@@ -117,7 +124,7 @@ namespace RiskierRain
             //grove
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SunderedGrove);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitan, DirectorAPI.Stage.SunderedGrove);
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.WanderingVagrant, DirectorAPI.Stage.SunderedGrove);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.WanderingVagrant, DirectorAPI.Stage.SunderedGrove);
 
             Helpers.AddNewMonsterToStage(DirectorCards.AlphaConstruct, MonsterCategory.BasicMonsters, DirectorAPI.Stage.SunderedGrove);
             Helpers.AddNewMonsterToStage(DirectorCards.XiConstruct, MonsterCategory.Champions, DirectorAPI.Stage.SunderedGrove);
@@ -132,7 +139,7 @@ namespace RiskierRain
             //Sky meadow
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.LesserWisp, DirectorAPI.Stage.SkyMeadow);
             Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.ElderLemurian, DirectorAPI.Stage.SkyMeadow);
-            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.XiConstruct, DirectorAPI.Stage.SkyMeadow);
+            //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.XiConstruct, DirectorAPI.Stage.SkyMeadow);
 
             Helpers.AddNewMonsterToStage(DirectorCards.MagmaWorm, MonsterCategory.Champions, DirectorAPI.Stage.SkyMeadow);
 #pragma warning restore CS0618 // Type or member is obsolet

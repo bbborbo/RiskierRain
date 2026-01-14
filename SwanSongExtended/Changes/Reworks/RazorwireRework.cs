@@ -124,9 +124,9 @@ namespace SwanSongExtended
 					return 0;
 				CharacterBody body = hc.body;
 				buffCount = 0;
-				while (body.HasBuff(CommonAssets.razorChargeBuff))
+				while (body.HasBuff(razorChargeBuff))
 				{
-					body.RemoveBuff(CommonAssets.razorChargeBuff);
+					body.RemoveBuff(razorChargeBuff);
 					buffCount++;
 				}
 				if (buffCount <= 0)
@@ -177,7 +177,7 @@ namespace SwanSongExtended
 		public static int stackRazors = 1;
 
 		private float reloadTimer;
-		BuffDef razorBuff => CommonAssets.razorChargeBuff;
+		BuffDef razorBuff => Razorwire.razorChargeBuff;
 
 		void Awake()
         {

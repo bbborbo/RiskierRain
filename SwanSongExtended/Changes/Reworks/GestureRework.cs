@@ -19,7 +19,8 @@ namespace SwanSongExtended
         public static float gestureCdiStack = 0.5f;
         public void GestureChanges()
         {
-            LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", $"Greatly increase equipment stock... {HealthColor("BUT greatly increase equipment cooldown.")} " +
+            LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_PICKUP", 
+                $"Greatly increase equipment stock... {HealthColor("BUT greatly increase equipment cooldown.")} " +
                 $"Equipments can be activated during their cooldown, {HealthColor("with a chance to break.")}");
             LanguageAPI.Add("ITEM_AUTOCASTEQUIPMENT_DESC", 
                 $"Hold {UtilityColor($"{gestureStockBase} additional equipment charges")} {StackText($"+{gestureStockStack}")}... " +

@@ -17,6 +17,8 @@ namespace SwanSongExtended.Items
 {
     class RandomBarrierTarget : ItemBase<RandomBarrierTarget>
     {
+        public static BuffDef harpoonDebuff;
+        public static GameObject harpoonEffectPrefab;
         public override bool isEnabled => true; 
 
         public static float harpoonBarrierBase = 6;
@@ -52,6 +54,20 @@ namespace SwanSongExtended.Items
             return new ItemDisplayRuleDict();
         }
 
+        public override void Init()
+        {
+            harpoonDebuff = Content.CreateAndAddBuff(
+                "bdHarpoonTargetDebuff",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
+                new Color(0.9f, 0.7f, 0.1f),
+                true,
+                true);
+            harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+
+            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
+            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
+            base.Init();
+        }
         public override void Hooks()
         {
             harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
@@ -86,7 +102,7 @@ namespace SwanSongExtended.Items
         {
             Inventory inv = attackerBody.inventory;
             HealthComponent hc = attackerBody.healthComponent;
-            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(CommonAssets.harpoonDebuff))
+            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(harpoonDebuff))
             {
                 int harpoonCount = inv.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
                 if (harpoonCount > 0)
@@ -172,7 +188,7 @@ namespace SwanSongExtended.Items
         {
             for (int n = 0; n < stack; n++)
             {
-                enemyBody.AddTimedBuffAuthority(CommonAssets.harpoonDebuff.buffIndex, RandomBarrierTarget.harpoonTargetTime);
+                enemyBody.AddTimedBuffAuthority(RandomBarrierTarget.harpoonDebuff.buffIndex, RandomBarrierTarget.harpoonTargetTime);
             }
 
             //thanks hifu <3

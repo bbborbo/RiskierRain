@@ -82,7 +82,6 @@ namespace SwanSongExtended.Modules
             AddCombatTelescopeCritChance();
 
             AddMaskHauntAssets();
-            AddHarpoonAssets();
             AddRazorwireAssets();
             AddBrittleCrownAssets();
             AddGestureAssets();
@@ -141,23 +140,6 @@ namespace SwanSongExtended.Modules
         }
         #endregion
 
-        #region hunters harpoon
-        public static BuffDef harpoonDebuff;
-        public static GameObject harpoonEffectPrefab;
-        private static void AddHarpoonAssets()
-        {
-            harpoonDebuff = Content.CreateAndAddBuff(
-                "bdHarpoonTargetDebuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
-                new Color(0.9f, 0.7f, 0.1f),
-                true,
-                true);
-            harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-
-            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
-        }
-        #endregion
 
         public static GameObject squidBlasterBall;
         public static GameObject squidBlasterBallGhost;

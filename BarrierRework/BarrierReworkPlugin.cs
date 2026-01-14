@@ -57,23 +57,6 @@ namespace BarrierRework
         {
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + "\\FruityBarrierDecay.cfg", true);
 
-            AegisRework = CustomConfigFile.Bind<bool>(
-                "Aegis Rework",
-                "Enable Aegis Rework",
-                true,
-                "Set to true to use fruity aegis, set to false for vanilla aegis."
-                );
-
-            AegisBarrierFlat = CustomConfigFile.Bind<float>(
-                "Aegis Rework",
-                "Aegis Barrier On Interactable (Flat)",
-                _aegisBarrierFlat,
-                "How much barrier the reworked Aegis grants on using interactables.");
-            AegisBarrierPercent = CustomConfigFile.Bind<float>(
-                "Aegis Rework",
-                "Aegis Barrier On Interactable (Percent)",
-                _aegisBarrierPercent,
-                "How much barrier the reworked Aegis grants on using interactables. Approaches and does not exceed 100%.");
 
             BarrierDecayRateStatic = CustomConfigFile.Bind<float>(
                 "Barrier Stats",
@@ -92,8 +75,6 @@ namespace BarrierRework
                 _barrierDecayLowFactor,
                 "Decay rate modifier when at LOW barrier, vanilla is 0.5. Expressed as a multiplication of base decay.");
 
-            if (AegisRework.Value == true)
-                ReworkAegis();
             RoR2Application.onLoad += BuffBarrier;
         }
         void BuffBarrier()

@@ -1,0 +1,156 @@
+﻿using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using RoR2;
+using On.RoR2.Items;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.AddressableAssets;
+using R2API;
+using static MoreStats.StatHooks;
+
+namespace SwanSongExtended
+{
+    public partial class SwanSongPlugin
+    {
+        public static float _aegisBarrierFlat = 40;
+        public static float _aegisBarrierPercent = 10f;
+        public static BuffDef aegisDecayBuff;
+
+        public void ReworkAegis()
+        {
+            CreateBuff();
+            Hooks();
+            IL.RoR2.HealthComponent.Heal += RemoveAegisOverheal;
+
+            LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_PICKUP", "Gain barrier on any interaction. While out of danger, barrier stops decaying.");
+            LanguageAPI.Add("ITEM_BARRIERONOVERHEAL_DESC",
+                $"Using any interactable grants a <style=cIsHealing>temporary barrier</style> " +
+                $"for <style=cIsHealing>{_aegisBarrierFlat} health</style> <style=cStack>(+{_aegisBarrierFlat} per stack)</style> " +
+                $"plus an additional " +
+                $"<style=cIsHealing>{_aegisBarrierPercent}%</style> <style=cStack>(+{_aegisBarrierPercent}% per stack)</style> " +
+                $"of <style=cIsHealing>maximum health</style>. " +
+                $"While outside of danger, <style=cIsUtility>barrier will not decay</style>.");
+        }
+
+        private void RemoveAegisOverheal(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdfld<HealthComponent.ItemCounts>(nameof(HealthComponent.ItemCounts.barrierOnOverHeal)));
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Ldc_I4_0);
+        }
+
+
+        private void CreateBuff()
+        {
+            aegisDecayBuff = ScriptableObject.CreateInstance<BuffDef>();
+            aegisDecayBuff.name = "AegisDecayFreeze";
+            aegisDecayBuff.buffColor = new Color(0.95f, 0.85f, 0.08f);
+            aegisDecayBuff.canStack = false;
+            aegisDecayBuff.isDebuff = false;
+            aegisDecayBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffGenericShield.tif").WaitForCompletion();
+            R2API.ContentAddition.AddBuffDef(aegisDecayBuff);
+        }
+
+        #region rework
+        public void Hooks()
+        {
+            MultiShopCardUtils.OnMoneyPurchase += OnMoneyPurchase;
+            MultiShopCardUtils.OnNonMoneyPurchase += OnNonMoneyPurchase;
+            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            GetMoreStatCoefficients += AegisDecayFreeze;
+        }
+
+        private void AegisDecayFreeze(CharacterBody body, MoreStatHookEventArgs args)
+        {
+            if (body.HasBuff(aegisDecayBuff))
+                args.barrierFreezeCount += 1;
+        }
+
+        private void OnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
+        {
+            AegisBarrierGrant(context);
+            orig(context);
+        }
+
+        private void OnMoneyPurchase(MultiShopCardUtils.orig_OnMoneyPurchase orig, CostTypeDef.PayCostContext context)
+        {
+            AegisBarrierGrant(context);
+            orig(context);
+        }
+
+        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        {
+            orig(self);
+            if (NetworkServer.active)
+            {
+                self.AddItemBehavior<AegisDecayBehavior>(self.inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal));
+            }
+        }
+
+        private void AegisBarrierGrant(CostTypeDef.PayCostContext context)
+        {
+            CharacterBody activator = context.activatorMaster?.GetBody();
+            if (activator)
+            {
+                int aegisCount = activator.inventory.GetItemCountEffective(RoR2Content.Items.BarrierOnOverHeal);
+                HealthComponent hc = activator.healthComponent;
+                if (aegisCount > 0 && hc != null)
+                {
+                    float barrierPercent = Util.ConvertAmplificationPercentageIntoReductionNormalized(_aegisBarrierPercent * 0.01f) * hc.fullCombinedHealth;
+                    float barrierFlat = aegisCount * _aegisBarrierFlat;
+                    hc.AddBarrierAuthority(barrierPercent + barrierFlat);
+                }
+            }
+        }
+        #endregion
+    }
+    public class AegisDecayBehavior : CharacterBody.ItemBehavior
+    {
+        bool decayFrozen = false;
+
+        public void FixedUpdate()
+        {
+            if (body.outOfDanger != decayFrozen)
+            {
+                if (!decayFrozen)
+                {
+                    FreezeDecay();
+                }
+                else
+                {
+                    UnfreezeDecay();
+                }
+            }
+        }
+
+        private void FreezeDecay()
+        {
+            if (!NetworkServer.active)
+                return;
+            decayFrozen = true;
+            body.AddBuff(SwanSongPlugin.aegisDecayBuff);
+            //body.barrierDecayRate = 0;
+        }
+
+        private void UnfreezeDecay()
+        {
+            if (!NetworkServer.active)
+                return;
+            decayFrozen = false;
+            body.RemoveBuff(SwanSongPlugin.aegisDecayBuff);
+            //body.barrierDecayRate = body.maxBarrier / 30f;
+        }
+
+        void OnDisable()
+        {
+            if (decayFrozen)
+                UnfreezeDecay();
+        }
+    }
+}

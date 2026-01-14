@@ -110,7 +110,6 @@ namespace RiskierRain
 
             On.RoR2.CharacterBody.RemoveBuff_BuffDef += Gah;
             #region rework pending / priority removal
-            RiskierRainPlugin.RetierItemAsync(RoR2_Base_StunChanceOnHit.StunChanceOnHit_asset);//stun grenade
             RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
             RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
 

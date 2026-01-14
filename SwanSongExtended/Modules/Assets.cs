@@ -76,70 +76,11 @@ namespace SwanSongExtended.Modules
         public static void Init()
         {
             CreateMeatballNapalmPool();
-            CreateSquidBlasterBall();
 
             AddTrophyHunterDebuffs();
-            AddCombatTelescopeCritChance();
-
-            AddMaskHauntAssets();
-            AddRazorwireAssets();
-            AddBrittleCrownAssets();
-            AddGestureAssets();
-        }
-
-        public static BuffDef gestureQueueEquipBreak;
-        private static void AddGestureAssets()
-        {
-            gestureQueueEquipBreak = Content.CreateAndAddBuff(
-                "bdGestureBreakPending",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(),
-                Color.cyan, false, false);
-            gestureQueueEquipBreak.isHidden = true;
-        }
-
-        public static BuffDef brittleCrownCursePurchase;
-        private static void AddBrittleCrownAssets()
-        {
-            brittleCrownCursePurchase = Content.CreateAndAddBuff(
-                "bdBrittleCrownCursePurchase", 
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(), 
-                Color.cyan, true, false);
         }
 
         public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
-
-        #region razorwire
-        public static BuffDef razorChargeBuff;
-        private static void AddRazorwireAssets()
-        {
-            razorChargeBuff = Content.CreateAndAddBuff(
-                "bdRazorChargeBuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(), //replace me
-                Color.white,
-                true,
-                false);
-            razorChargeBuff.isCooldown = true;
-        }
-        #endregion
-
-        #region happiest mask
-        public static BuffDef hauntDebuff;
-        public static GameObject hauntEffectPrefab;
-        private static void AddMaskHauntAssets()
-        {
-            hauntDebuff = Content.CreateAndAddBuff(
-                "bdHappiestMaskHauntDebuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(), //replace me
-                new Color(0.9f, 0.7f, 1.0f),
-                false,
-                true);
-            hauntDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-
-            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
-        }
-        #endregion
-
 
 
         public static float survivorExecuteThreshold = 0.15f;
@@ -156,17 +97,6 @@ namespace SwanSongExtended.Modules
                 false,
                 true);
             bossHunterDebuffWithScalpel.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-        }
-
-        public static BuffDef combatTelescopeCritChance;
-        private static void AddCombatTelescopeCritChance()
-        {
-            combatTelescopeCritChance = Content.CreateAndAddBuff(
-                "bdCombatTelescopeCrit",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
-                Color.red,
-                false,
-                false);
         }
 
         public static GameObject meatballNapalmPool;

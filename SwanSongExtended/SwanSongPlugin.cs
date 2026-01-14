@@ -24,6 +24,7 @@ using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using SwanSongExtended.Changes;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -198,6 +199,8 @@ namespace SwanSongExtended
             ///elites
             ///artifacts
             ///scavengers
+            BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
+
             BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
 
             BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
@@ -223,7 +226,11 @@ namespace SwanSongExtended
         }
         private void InitializeChanges()
         {
-            //BurnReworks();
+            /*BurnReworks();
+            if (GetConfigBool(true, "Reworks : Executive Card"))
+            {
+                ExecutiveCardChanges();
+            }
             if (GetConfigBool(true, "Reworks : Razorwire"))
             {
                 RazorwireRework();
@@ -248,10 +255,6 @@ namespace SwanSongExtended
             if (GetConfigBool(true, "Reworks : Squid Polyp"))
             {
                 SquolypRework();
-            }
-            if(GetConfigBool(true, "Reworks : Executive Card"))
-            {
-                ExecutiveCardChanges();
             }
             if (GetConfigBool(true, "Reworks : Leeching Seed"))
             {
@@ -280,7 +283,7 @@ namespace SwanSongExtended
             if (GetConfigBool(true, "Reworks : Prayer Beads"))
             {
                 PrayerBeadsRework();
-            }
+            }*/
             //interactables bc they need to load after items:
             //InitializeInteractables();
             //need to do this after interactablestuff

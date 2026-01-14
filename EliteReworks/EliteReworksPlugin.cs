@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace FruityElites
 {
@@ -226,6 +227,37 @@ namespace FruityElites
         }
 
         #region modify items and equipments
+
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
+        {
+            void onCompleted(AsyncOperationHandle<T> handle)
+            {
+                if (!(handle.Result is T) || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
+                    return;
+                }
+
+                callback(handle.Result);
+            }
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if (callback == null)
+            {
+                return ref1;
+            }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
+        }
         static public ItemDef RetierItem(ItemDef def, ItemTier tier = ItemTier.NoTier)
         {
             if (def != null)

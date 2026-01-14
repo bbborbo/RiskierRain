@@ -177,8 +177,8 @@ namespace FruityElites.Equipment
 
         public override void Init()
         {
-            AssetReferenceT<ItemDef> refGuillotineItemDef = new AssetReferenceT<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_ExecuteLowHealthElite.ExecuteLowHealthElite_asset);
-            AssetAsyncReferenceManager<ItemDef>.LoadAsset(refGuillotineItemDef).Completed += (ctx) => EliteReworksPlugin.RetierItem(ctx.Result);
+            EliteReworksPlugin.LoadAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ExecuteLowHealthElite.ExecuteLowHealthElite_asset, 
+                (item) => EliteReworksPlugin.RetierItem(item));
             //EliteReworksPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/ExecuteLowHealthElite/ExecuteLowHealthElite.asset").WaitForCompletion());
             //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
 
@@ -196,6 +196,43 @@ namespace FruityElites.Equipment
             base.Init();
 
             EquipDef.unlockableDef = UnlockableCatalog.GetUnlockableDef("KillElitesMilestone");
+
+            EliteReworksPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdExecuteLowHealthElite_asset,
+            (craftable) => {
+                craftable.itemIndex = ItemIndex.None;
+                craftable.equipmentIndex = this.EquipDef.equipmentIndex;
+
+
+                RecipeIngredient crowbar = new RecipeIngredient();
+                crowbar.type = IngredientTypeIndex.AssetReference;
+                crowbar.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Crowbar.Crowbar_asset).WaitForCompletion();
+                RecipeIngredient apr = new RecipeIngredient();
+                apr.type = IngredientTypeIndex.AssetReference;
+                apr.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BossDamageBonus.BossDamageBonus_asset).WaitForCompletion();
+                RecipeIngredient anyGreenOnKill = new RecipeIngredient();
+                anyGreenOnKill.type = IngredientTypeIndex.AnyItem;
+                anyGreenOnKill.itemTier = ItemTier.Tier2;
+                anyGreenOnKill.requiredTags = new ItemTag[] { ItemTag.OnKillEffect };
+                anyGreenOnKill.forbiddenTags = new ItemTag[] { ItemTag.Count };
+
+                Recipe newRecipe1 = new Recipe();
+                newRecipe1.craftableDef = craftable;
+                newRecipe1.priority = -1;
+                newRecipe1.ingredients = new RecipeIngredient[]
+                {
+                    crowbar,
+                    anyGreenOnKill
+                };
+                Recipe newRecipe2 = new Recipe();
+                newRecipe2.craftableDef = craftable;
+                newRecipe2.priority = -1;
+                newRecipe2.ingredients = new RecipeIngredient[]
+                {
+                    apr,
+                    anyGreenOnKill
+                };
+                craftable.recipes = new Recipe[] { newRecipe1, newRecipe2 };
+            });
         }
 
         public override void Hooks()

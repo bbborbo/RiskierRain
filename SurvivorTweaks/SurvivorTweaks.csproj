@@ -75,7 +75,6 @@
     <ProjectReference Include="..\MissileRework\MissileRework.csproj" />
     <ProjectReference Include="..\NegativeRegenFix\NegativeRegenFix.csproj" />
     <ProjectReference Include="..\JumpRework\JumpRework.csproj" />
-    <ProjectReference Include="..\BarrierRework\BarrierRework.csproj" />
     <ProjectReference Include="..\MoreStats\MoreStats.csproj" />
     <ProjectReference Include="..\SwanSongExtended\SwanSongExtended.csproj" />
   </ItemGroup>

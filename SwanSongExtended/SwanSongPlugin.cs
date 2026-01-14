@@ -223,7 +223,7 @@ namespace SwanSongExtended
         }
         private void InitializeChanges()
         {
-            BurnReworks();
+            //BurnReworks();
             if (GetConfigBool(true, "Reworks : Razorwire"))
             {
                 RazorwireRework();

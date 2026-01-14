@@ -9,8 +9,6 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
-using static BarrierRework.BarrierReworkPlugin;
-using BarrierRework;
 using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items

@@ -412,6 +412,15 @@ namespace RiskierRain
             // damage
             this.NerfBands();
 
+            if(GetConfigBool(true, "Ignition Tank"))
+            {
+                GetMoreStatCoefficients += (sender, args) =>
+                {
+                    if ((sender.inventory?.GetItemCountEffective(DLC1Content.Items.StrengthenBurn) ?? 0) > 0)
+                        args.burnChanceOnHit += 10;
+                };
+            }
+
             // crits
             if (GetConfigBool(true, "Critical Strike"))
             {

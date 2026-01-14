@@ -86,9 +86,9 @@ namespace SwanSongExtended.Items
                 );
             base.Init();
         }
-        public override void AddVoidRelationships()
+        public override void PostInit()
         {
-            base.AddVoidRelationships();
+            base.PostInit();
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Behemoth.Behemoth_asset);
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LaserTurbine.LaserTurbine_asset);
         }

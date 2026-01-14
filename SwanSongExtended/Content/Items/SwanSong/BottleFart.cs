@@ -76,9 +76,9 @@ namespace SwanSongExtended.Items
             CreateProjectile();
             base.Init();
         }
-        public override void AddVoidRelationships()
+        public override void PostInit()
         {
-            base.AddVoidRelationships();
+            base.PostInit();
             AddVoidItemRelationship(BottleCloud.instance.ItemsDef);
         }
         public override void Hooks()

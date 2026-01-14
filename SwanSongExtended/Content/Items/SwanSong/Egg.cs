@@ -65,9 +65,9 @@ namespace SwanSongExtended.Items
             base.Init();
             Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
         }
-        public override void AddVoidRelationships()
+        public override void PostInit()
         {
-            base.AddVoidRelationships();
+            base.PostInit();
             //to add: -chocolate egg
             //compat: -donut (mystics) -probably a bunch of ss2 stuff
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Infusion.Infusion_asset);

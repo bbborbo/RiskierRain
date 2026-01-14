@@ -75,9 +75,9 @@ namespace SwanSongExtended.Items
 
             base.Init();
         }
-        public override void AddVoidRelationships()
+        public override void PostInit()
         {
-            base.AddVoidRelationships();
+            base.PostInit();
             AddVoidItemRelationship(DisposableScalpel.instance.ItemsDef);
         }
 

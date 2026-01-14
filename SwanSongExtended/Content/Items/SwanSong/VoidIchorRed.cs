@@ -57,9 +57,9 @@ namespace SwanSongExtended.Items
         {
             RecalculateStatsAPI.GetStatCoefficients += RedIchorStats;
         }
-        public override void AddVoidRelationships()
+        public override void PostInit()
         {
-            base.AddVoidRelationships();
+            base.PostInit();
             AddVoidItemRelationship(VoidIchorYellow.instance.ItemsDef);
             AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
         }

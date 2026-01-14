@@ -53,12 +53,6 @@ namespace SwanSongExtended.Items
         {
             CreateItem();
             base.Init();
-            SwanSongPlugin.onSwanSongLoaded += AddVoidRelationships;
-        }
-
-        public virtual void AddVoidRelationships()
-        {
-            SwanSongPlugin.onSwanSongLoaded -= AddVoidRelationships;
         }
 
         internal static bool CheckDLC1Entitlement()

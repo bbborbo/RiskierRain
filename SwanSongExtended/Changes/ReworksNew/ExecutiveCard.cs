@@ -1,0 +1,217 @@
+﻿using EntityStates.CaptainSupplyDrop;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using R2API;
+using RoR2;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+
+namespace SwanSongExtended.Changes
+{
+    public class ExecutiveCard : ReworkBase<ExecutiveCard>
+    {
+        public static float cooldown = 90f;
+        public static float secondsPerCost = 0.5f;
+        public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_MultiShopCard.MultiShopCard_asset;
+        public override bool IsEquipment => true;
+
+        public override string ItemName => "Executive Card";
+
+        public override string ItemPickupDesc =>
+            "Hack a targeted interactable. Hacked Multishops remain open.";
+
+        public override string ItemFullDesc => 
+            $"Target an interactable to <style=cIsUtility>hack</style> it, unlocking its contents for <style=cIsUtility>free</style>. " +
+            $"If the target is a <style=cIsUtility>multishop</style> terminal, the other terminals will <style=cIsUtility>remain open</style>.";
+
+        public override void OnEquipmentLoaded(EquipmentDef item)
+        {
+            base.OnEquipmentLoaded(item);
+            item.cooldown = cooldown;
+        }
+        public override void Hooks()
+        {
+            IL.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
+            //On.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
+            On.RoR2.EquipmentSlot.UpdateTargets += CardTargetInteractables;
+            On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
+        }
+
+        private void FreezeCard(ILContext il)
+        {
+            // :}
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<Inventory>("get_currentEquipmentIndex")
+                );
+            c.Remove();
+            c.EmitDelegate<Func<Inventory, int>>((inv) =>
+            {
+                return (int)EquipmentIndex.None;
+            });
+
+        }
+
+        private bool PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentDef equipmentDef)
+        {
+            if (equipmentDef == DLC1Content.Equipment.MultiShopCard)
+            {
+                return ActivateEquipment(self);
+            }
+            else
+            {
+                return orig(self, equipmentDef);
+            }
+
+            bool ActivateEquipment(EquipmentSlot slot)
+            {
+                bool b = false;
+                GameObject targetObject = slot.currentTarget.rootObject;
+                if (targetObject != null)
+                {
+                    PurchaseInteraction targetPurchase = targetObject.GetComponent<PurchaseInteraction>();
+                    if (targetPurchase != null && HackingMainState.PurchaseInteractionIsValidTarget(targetPurchase))
+                    {
+                        //int difficultyScaledCost = Run.instance.GetDifficultyScaledCost(HackingInProgressState.baseGoldForBaseDuration, Stage.instance.entryDifficultyCoefficient);
+                        //float cost = (float)(targetPurchase.cost / difficultyScaledCost);
+                        //slot.inventory?.DeductActiveEquipmentCooldown(-cost * secondsPerCost);
+
+                        targetPurchase.Networkcost = 0;
+
+                        ShopTerminalBehavior terminalBehavior = targetObject.GetComponent<ShopTerminalBehavior>();
+                        if (terminalBehavior)
+                        {
+                            terminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(targetPurchase.GetComponent<PurchaseInteraction>(), false);
+                        }
+
+                        Interactor interactor = slot.characterBody?.GetComponent<Interactor>();
+                        if (interactor)
+                        {
+                            interactor.AttemptInteraction(targetObject);
+                        }
+
+                        slot.InvalidateCurrentTarget();
+                        b = true;
+                    }
+                }
+                return b;
+            }
+        }
+
+        private void CardTargetInteractables(On.RoR2.EquipmentSlot.orig_UpdateTargets orig, EquipmentSlot self, EquipmentIndex targetingEquipmentIndex, bool userShouldAnticipateTarget)
+        {
+            bool isCard = targetingEquipmentIndex == DLC1Content.Equipment.MultiShopCard.equipmentIndex;
+            if (!isCard || !userShouldAnticipateTarget)
+            {
+                orig(self, targetingEquipmentIndex, userShouldAnticipateTarget);
+                return;
+            }
+            float maxDistance = 150;
+            float maxAngle = 10;
+            var minDot = Mathf.Cos(Mathf.Clamp(maxAngle, 0f, 180f) * Mathf.PI / 180f);
+
+            float camAdjust;
+            Ray aim = CameraRigController.ModifyAimRayIfApplicable(self.GetAimRay(), self.characterBody.gameObject, out camAdjust);
+            Collider[] results = Physics.OverlapSphere(aim.origin, maxDistance + camAdjust, Physics.AllLayers, QueryTriggerInteraction.Collide);
+
+
+            bool currentTargetValid = false;
+            GameObject currentTargetObject = self.currentTarget.rootObject;
+            if (currentTargetObject != null)
+            {
+                PurchaseInteraction currentTargetInteraction = currentTargetObject?.GetComponent<PurchaseInteraction>();
+                if (currentTargetInteraction != null)
+                    currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
+
+                Vector3 origin = aim.origin;
+                Vector3 targetPosition = currentTargetObject.transform.position;
+
+                if (!currentTargetValid
+                    || (targetPosition - origin).sqrMagnitude > maxDistance * maxDistance
+                    || Vector3.Dot(aim.direction, (targetPosition - origin).normalized) < minDot
+                    //|| !HasLos(origin, targetPosition)
+                    )
+                    self.InvalidateCurrentTarget();
+            }
+
+            bool validTarget = false;
+            PurchaseInteraction targetPurchase = null;
+            foreach (Collider collider in results)
+            {
+                var vdot = Vector3.Dot(aim.direction, (collider.transform.position - aim.origin).normalized);
+                if (vdot < minDot)
+                    continue;
+                Vector3 origin = aim.origin;
+                Vector3 targetPosition = collider.transform.position;
+                if (!HasLos(origin, targetPosition))
+                    continue;
+
+                EntityLocator el = collider.GetComponent<EntityLocator>();
+                if (!el)
+                    continue;
+                PurchaseInteraction component = el.entity.GetComponent<PurchaseInteraction>();
+                if (component)
+                {
+                    //using hack beacon criteria
+                    validTarget = HackingMainState.PurchaseInteractionIsValidTarget(component);
+
+                    if (validTarget)
+                    {
+                        validTarget = true;
+                        targetPurchase = component;
+                        break;
+                    }
+                    else if (targetPurchase == null && component.available)
+                    {
+                        targetPurchase = component;
+                    }
+                }
+            }
+
+            if (targetPurchase != null)
+            {
+                if (validTarget && userShouldAnticipateTarget)
+                {
+                    //valid indicator
+                    self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/RecyclerIndicator");
+                }
+                else
+                {
+                    //invalid indicator
+                    self.targetIndicator.visualizerPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/RecyclerBadIndicator");
+                }
+
+                self.currentTarget = new EquipmentSlot.UserTargetInfo
+                {
+                    transformToIndicateAt = targetPurchase.gameObject.transform,
+                    pickupController = null,
+                    hurtBox = null,
+                    rootObject = targetPurchase.gameObject,
+                };
+                self.targetIndicator.active = true;
+                self.targetIndicator.targetTransform = self.currentTarget.transformToIndicateAt;
+            }
+            else
+            {
+                self.InvalidateCurrentTarget();
+                self.targetIndicator.active = false;
+            }
+        }
+
+        public bool HasLos(Vector3 origin, Vector3 targetPosition)
+        {
+            Vector3 direction = targetPosition - origin;
+            RaycastHit raycastHit;
+            return !Physics.Raycast(origin, direction, out raycastHit, direction.magnitude - 1, LayerIndex.world.mask, QueryTriggerInteraction.Ignore);
+        }
+
+        private void FreezeCardf(On.RoR2.Items.MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)
+        {
+            // :)
+        }
+    }
+}

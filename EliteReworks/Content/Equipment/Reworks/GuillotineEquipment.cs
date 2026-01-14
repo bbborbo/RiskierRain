@@ -177,8 +177,8 @@ namespace FruityElites.Equipment
 
         public override void Init()
         {
-            AssetReferenceT<ItemDef> refGuillotineItemDef = new AssetReferenceT<ItemDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_ExecuteLowHealthElite.ExecuteLowHealthElite_asset);
-            AssetAsyncReferenceManager<ItemDef>.LoadAsset(refGuillotineItemDef).Completed += (ctx) => EliteReworksPlugin.RetierItem(ctx.Result);
+            EliteReworksPlugin.LoadAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ExecuteLowHealthElite.ExecuteLowHealthElite_asset, 
+                (item) => EliteReworksPlugin.RetierItem(item));
             //EliteReworksPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/ExecuteLowHealthElite/ExecuteLowHealthElite.asset").WaitForCompletion());
             //Debug.LogError("Riskier Rain Guillotine Equipment still needs to be fixed!");
 
@@ -196,6 +196,36 @@ namespace FruityElites.Equipment
             base.Init();
 
             EquipDef.unlockableDef = UnlockableCatalog.GetUnlockableDef("KillElitesMilestone");
+
+            EliteReworksPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdExecuteLowHealthElite_asset,
+            (craftable) => {
+
+                craftable.pickup = this.EquipDef;
+
+                RecipeIngredient crowbar = new RecipeIngredient();
+                crowbar.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Crowbar.Crowbar_asset).WaitForCompletion();
+                crowbar.type = IngredientTypeIndex.AssetReference;
+                RecipeIngredient apr = new RecipeIngredient();
+                apr.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BossDamageBonus.BossDamageBonus_asset).WaitForCompletion();
+                apr.type = IngredientTypeIndex.AssetReference;
+                RecipeIngredient willo = new RecipeIngredient();
+                willo.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ExplodeOnDeath.ExplodeOnDeath_asset).WaitForCompletion();
+                willo.type = IngredientTypeIndex.AssetReference;
+                
+                Recipe newRecipe1 = new Recipe();
+                newRecipe1.ingredients = new RecipeIngredient[]
+                {
+                    crowbar,
+                    willo
+                };
+                Recipe newRecipe2 = new Recipe();
+                newRecipe2.ingredients = new RecipeIngredient[]
+                {
+                    apr,
+                    willo
+                };
+                craftable.recipes = new Recipe[2] { newRecipe1, newRecipe2 };
+            });
         }
 
         public override void Hooks()

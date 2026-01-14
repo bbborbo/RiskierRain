@@ -121,7 +121,7 @@ namespace FruityElites.EliteReworks
                         radius = range
                     };
 
-                    TeamMask teamMask = TeamMask.GetEnemyTeams(attackerBody.teamComponent.teamIndex);
+                    TeamMask teamMask = TeamMask.GetEnemyTeams(TeamIndex.Player);
                     List<HurtBox> hurtBoxesList = new List<HurtBox>();
 
                     sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
@@ -134,6 +134,8 @@ namespace FruityElites.EliteReworks
                         HurtBox targetHurtBox = hurtBoxesList[i];
                         HealthComponent healthComponent = targetHurtBox.healthComponent;
                         CharacterBody enemyBody = healthComponent.body;
+                        if (enemyBody.isPlayerControlled)
+                            continue;
 
                         if (!enemyBody || enemyBody == victimBody)
                         {

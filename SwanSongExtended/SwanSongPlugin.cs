@@ -389,6 +389,13 @@ namespace SwanSongExtended
             handle.Completed += onCompleted;
             return ref1;
         }
+        public static void RemoveCraftingRecipe(string guid)
+        {
+            LoadAsync<CraftableDef>(guid, (craftableDef) =>
+            {
+                craftableDef.recipes = new Recipe[] { };
+            });
+        }
         public static void RetierItemAsync(string itemGuid, ItemTier tier = ItemTier.NoTier, Action<ItemDef> callback = null)
         {
             AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(itemGuid);

@@ -113,6 +113,7 @@ namespace RiskierRain
             Helpers.AddNewMonsterToStage(DirectorCards.Grandparent, MonsterCategory.Champions, DirectorAPI.Stage.GoldenDieback);
 
             //abyssal
+            Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.SolusScorcher, DirectorAPI.Stage.AbyssalDepths);
             //Helpers.RemoveExistingMonsterFromStage(Helpers.MonsterNames.StoneTitanAbyssalDepths, DirectorAPI.Stage.AbyssalDepths);
 
             //sirens call

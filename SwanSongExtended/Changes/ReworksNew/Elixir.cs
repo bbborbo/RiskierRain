@@ -21,9 +21,9 @@ namespace SwanSongExtended.Changes
         public static ItemDef brokenItemDef;
         public static BuffDef brewActiveBuff;
 
-        [AutoConfig("Barrier Fraction On Use", 0.3f)]
-        public static float barrierFraction = 0.3f;
-        [AutoConfig("Health Fraction On Use", 0.3f)]
+        [AutoConfig("Barrier Fraction On Use", 0.35f)]
+        public static float barrierFraction = 0.35f;
+        [AutoConfig("Health Fraction On Use", 0.25f)]
         public static float instantHeal = 0.25f; //0.75f
         [AutoConfig("Move Speed Bonus", 0.14f)]
         public static float moveSpeedBuff = 0.14f;

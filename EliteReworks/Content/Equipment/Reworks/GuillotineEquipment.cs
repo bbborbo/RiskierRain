@@ -199,39 +199,32 @@ namespace FruityElites.Equipment
 
             EliteReworksPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdExecuteLowHealthElite_asset,
             (craftable) => {
-                craftable.itemIndex = ItemIndex.None;
-                craftable.equipmentIndex = this.EquipDef.equipmentIndex;
 
+                craftable.pickup = this.EquipDef;
 
                 RecipeIngredient crowbar = new RecipeIngredient();
-                crowbar.type = IngredientTypeIndex.AssetReference;
                 crowbar.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Crowbar.Crowbar_asset).WaitForCompletion();
+                crowbar.type = IngredientTypeIndex.AssetReference;
                 RecipeIngredient apr = new RecipeIngredient();
-                apr.type = IngredientTypeIndex.AssetReference;
                 apr.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BossDamageBonus.BossDamageBonus_asset).WaitForCompletion();
-                RecipeIngredient anyGreenOnKill = new RecipeIngredient();
-                anyGreenOnKill.type = IngredientTypeIndex.AnyItem;
-                anyGreenOnKill.itemTier = ItemTier.Tier2;
-                anyGreenOnKill.requiredTags = new ItemTag[] { ItemTag.OnKillEffect };
-                anyGreenOnKill.forbiddenTags = new ItemTag[] { ItemTag.Count };
-
+                apr.type = IngredientTypeIndex.AssetReference;
+                RecipeIngredient willo = new RecipeIngredient();
+                willo.pickup = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ExplodeOnDeath.ExplodeOnDeath_asset).WaitForCompletion();
+                willo.type = IngredientTypeIndex.AssetReference;
+                
                 Recipe newRecipe1 = new Recipe();
-                newRecipe1.craftableDef = craftable;
-                newRecipe1.priority = -1;
                 newRecipe1.ingredients = new RecipeIngredient[]
                 {
                     crowbar,
-                    anyGreenOnKill
+                    willo
                 };
                 Recipe newRecipe2 = new Recipe();
-                newRecipe2.craftableDef = craftable;
-                newRecipe2.priority = -1;
                 newRecipe2.ingredients = new RecipeIngredient[]
                 {
                     apr,
-                    anyGreenOnKill
+                    willo
                 };
-                craftable.recipes = new Recipe[] { newRecipe1, newRecipe2 };
+                craftable.recipes = new Recipe[2] { newRecipe1, newRecipe2 };
             });
         }
 

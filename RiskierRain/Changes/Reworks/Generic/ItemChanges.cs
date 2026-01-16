@@ -663,6 +663,117 @@ namespace RiskierRain
                 return damageOut;
             });
         }
+        #endregion
+
+        #region sale star
+
+        public static void SaleStarChanges()
+        {
+            LanguageAPI.Add("ITEM_LOWERPRICEDCHESTS_PICKUP", "First chest bought yields an additional reward. Usable once per stage.");
+            LanguageAPI.Add("ITEM_LOWERPRICEDCHESTS_DESC", 
+                $"Gain <style=cIsUtility>1</style> <style=cStack>(+1 per stack)</style> extra item on the first chest opened per stage.");
+
+            IL.RoR2.PurchaseInteraction.OnInteractionBegin += SaleStarOnInteraction;
+            IL.RoR2.ChestBehavior.BaseItemDrop += SaleStarItemDrop;
+        }
+
+        private static void SaleStarItemDrop(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int droppedCountloc = 3;
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<ChestBehavior>(nameof(ChestBehavior.Roll)),
+                x => x.MatchLdloc(out droppedCountloc)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(SaleStarItemDrop));
+                return;
+            }
+
+            c.Emit(OpCodes.Ldloc, droppedCountloc);
+            c.EmitDelegate<Func<ChestBehavior, int, ChestBehavior>>((chest, dropped) =>
+            {
+                if(dropped >= chest.maxDropCount)
+                {
+                    chest.dropTable = Addressables.LoadAssetAsync<PickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.dtShrineChance_asset).WaitForCompletion();
+                }    
+                return chest;
+            });
+        }
+
+        private static void SaleStarOnInteraction(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int totalTransformedLoc = 13;
+            ILLabel skipLabel = c.DefineLabel();
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<PurchaseInteraction>(nameof(PurchaseInteraction.saleStarCompatible)))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt("RoR2.Inventory/ItemTransformation/TryTransformResult", "get_totalTransformed"),
+                x => x.MatchStloc(out totalTransformedLoc)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(SaleStarOnInteraction), 1);
+                return;
+            }
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcI4(out _),
+                x => x.MatchStloc(out _),
+                x => x.MatchBr(out skipLabel)) 
+                && c.TryGotoPrev(MoveType.Before, 
+                x => x.MatchLdloc(totalTransformedLoc)
+                );
+            if (b2)
+            {
+                c.Emit(OpCodes.Br, skipLabel);
+            }
+            else
+            {
+                DebugBreakpoint(nameof(SaleStarOnInteraction), 2);
+            }
+
+            bool b3 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<ChestBehavior>(nameof(ChestBehavior.dropCount))
+                );
+            if (!b3)
+            {
+                DebugBreakpoint(nameof(SaleStarOnInteraction), 3);
+                return;
+            }
+
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Dup);
+            c.Emit(OpCodes.Ldloc, totalTransformedLoc);
+            c.EmitDelegate<Func<ChestBehavior, int, int>>((chest, totalTransformed) =>
+            {
+                chest.maxDropCount = chest.dropCount;
+                return chest.dropCount + totalTransformed;
+            });
+
+
+            bool b4 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<RouletteChestController>(nameof(RouletteChestController.dropCount))
+                );
+            if (!b4)
+            {
+                DebugBreakpoint(nameof(SaleStarOnInteraction), 4);
+                return;
+            }
+
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Dup);
+            c.Emit(OpCodes.Ldloc, totalTransformedLoc);
+            c.EmitDelegate<Func<RouletteChestController, int, int>>((chest, totalTransformed) =>
+            {
+                return chest.dropCount + totalTransformed;
+            });
+        }
+        #endregion
     }
-    #endregion
+
 }

@@ -25,6 +25,7 @@ using RoR2.ContentManagement;
 using RainrotSharedUtils.Difficulties;
 using static MoreStats.StatHooks;
 using MoreStats;
+using UnityEngine.ResourceManagement.AsyncOperations;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -380,6 +381,10 @@ namespace RiskierRain
             if (GetConfigBool(true, "Bottled Chaos"))
             {
                 BuffBottledChaos();
+            }
+            if(GetConfigBool(true, "Sale Star"))
+            {
+                SaleStarChanges();
             }
 
             if(GetConfigBool(true, "Command/Potential Armor"))
@@ -763,6 +768,37 @@ namespace RiskierRain
         public delegate bool orig_getHasOneShotProtection(CharacterBody self);
 
         #region modify items and equips
+
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
+        {
+            void onCompleted(AsyncOperationHandle<T> handle)
+            {
+                if (!(handle.Result is T) || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
+                    return;
+                }
+
+                callback(handle.Result);
+            }
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if (callback == null)
+            {
+                return ref1;
+            }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
+        }
         public static void RetierItemAsync(string itemGuid, ItemTier tier = ItemTier.NoTier, Action<ItemDef> callback = null)
         {
             AssetReferenceT<ItemDef> ref1 = new AssetReferenceT<ItemDef>(itemGuid);

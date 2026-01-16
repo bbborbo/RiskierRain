@@ -544,6 +544,17 @@ namespace RiskierRain
         public DirectorCard doubleChestDirectorCard;//MOVE THIS SOMEWHERE BETTER LATER :3
         public void DoubleChestHook()
         {
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CasinoChest.CasinoChest_prefab, (casinoChest) =>
+            {
+                if (casinoChest.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+                {
+                    purchaseInteraction.saleStarCompatible = false;
+                }
+                if (casinoChest.TryGetComponent(out RouletteChestController rouletteChestController))
+                {
+                    rouletteChestController.dropCount = 2;
+                }
+            });
             ChangeDoubleChestDropTable();
             BuildDoubleChestDirectorCard();
             AddDoubleChestToStage1();
@@ -648,12 +659,20 @@ namespace RiskierRain
 
         private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, UniquePickup pickup)
         {
-            orig(self, pickup);
-            if (pickup.pickupIndex == PickupIndex.none)
+            if (pickup.Equals(UniquePickup.none))
             {
                 return;
             }
-            PickupDropletController.CreatePickupDroplet(pickup, self.ejectionTransform.position, self.ejectionTransform.rotation * (self.localEjectionVelocity + new Vector3(2, 0, 0)));
+            Vector3 forward = self.ejectionTransform.rotation * self.localEjectionVelocity;
+            float maxYawSpread = 60;
+            float yawPerProjectile = (maxYawSpread * 2) / (self.dropCount + 1);
+            for(int i = 0; i < self.dropCount; i++)
+            {
+                float currentYaw = (self.dropCount == 1) ? 0 : (yawPerProjectile * (i + 1)) - maxYawSpread;
+                Vector3 forward2 = (self.dropCount == 1) ? forward : Util.ApplySpread(forward, 0, 0, 1f, 1f, currentYaw, 0);
+
+                PickupDropletController.CreatePickupDroplet(pickup, self.ejectionTransform.position, forward2 + new Vector3(2,0,0), false, false);
+            }
         }
 
         private UniquePickup DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
@@ -706,6 +725,7 @@ namespace RiskierRain
             }
             purchaseInteraction.costType = CostTypeIndex.Money;
             purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, RoR2.Stage.instance.entryDifficultyCoefficient);
+            purchaseInteraction.saleStarCompatible = false;
         }
 
 

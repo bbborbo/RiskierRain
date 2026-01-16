@@ -23,6 +23,9 @@ namespace SwanSongExtended
         public static float sunDurationStack = 5;
         void PlanulaChanges()
         {
+            LanguageAPI.Add("ITEM_PARENTEGG_PICKUP",
+                $"The unmatched power of the sun!"
+                );
             LanguageAPI.Add("ITEM_PARENTEGG_DESC",
                 $"After beginning the teleporter event, " +
                 $"{DamageColor("summon a sun overhead")} that lasts for " +

@@ -76,11 +76,11 @@ namespace SwanSongExtended.Items
         {
             SwanSongPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_RegeneratingScrap.RegeneratingScrap_asset);// nameof(DLC1Content.Items.RegeneratingScrap));
 
-            SwanSongPlugin.LoadAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_RegeneratingScrap.RegeneratingScrapConsumed_asset, (icon) =>
+            SwanSongPlugin.LoadAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_RegeneratingScrap.texRegeneratingScrapConsumedIcon_png, (icon) =>
             {
                 usedItemDef = CreateNewUntieredItem("SUPERSCRAPUSED", icon, itemTags: ItemTags);
-                DoLangForItem(usedItemDef, ItemName + " (Consumed)", "It has no purpose anymore.",
-                    "It has no purpose anymore.");
+                DoLangForItem(usedItemDef, ItemName + " (Consumed)", "It's dead and not coming back.",
+                    "It's dead and not coming back.");
             });
             base.Init();
         }

@@ -95,7 +95,7 @@ namespace SwanSongExtended.Items
         static PickupIndex wishPickupAlt1 = PickupIndex.none;
         static PickupIndex wishPickupAlt2 = PickupIndex.none;
 
-        private static void CreateBossRewardDroplet(UniquePickup pickup, Vector3 position, Vector3 velocity, int rewardTotal, int indexOfCurrentReward)
+        private static void CreateBossRewardDroplet(UniquePickup pickup, Vector3 position, Vector3 velocity, int indexOfCurrentReward, BossGroup bossGroup)
         {
             GenericPickupController.CreatePickupInfo pickupInfo = new GenericPickupController.CreatePickupInfo
             {
@@ -103,7 +103,7 @@ namespace SwanSongExtended.Items
                 pickup = pickup,
                 position = position
             };
-            int rewardIndexPerPlayer = indexOfCurrentReward % Run.instance.participatingPlayerCount;
+            int rewardIndexPerPlayer = indexOfCurrentReward % (1 + bossGroup.bonusRewardCount);
             bool firstRewardPerPlayer = rewardIndexPerPlayer == 0;
             //bool idk = indexOfCurrentReward == rewardIndexPerPlayer;
             //if any wishbones have been added and the current reward is the first for each player
@@ -147,7 +147,7 @@ namespace SwanSongExtended.Items
         {
             if (serverWishboneCount > 0)
             {
-                Chat.AddMessage("<style=cIsDamage>A wish is granted...</style>");
+                Chat.ServerAttemptBroadcastChat("<style=cIsDamage>A wish is granted...</style>");
             }
             orig(self);
             serverWishboneCount = 0;
@@ -181,11 +181,11 @@ namespace SwanSongExtended.Items
                 if (ILFound2)
                 {
                     c.Remove();
-                    c.Emit(OpCodes.Ldloc, rewardCountLoc);
                     c.Emit(OpCodes.Ldloc, rewardIndexLoc);
-                    c.EmitDelegate<Action<UniquePickup, Vector3, Vector3, int, int>>
-                        ((pickup, position, velocity, rewardCount, rewardIndex) =>
-                        CreateBossRewardDroplet(pickup, position, velocity, rewardCount, rewardIndex));
+                    c.Emit(OpCodes.Ldarg_0);
+                    c.EmitDelegate<Action<UniquePickup, Vector3, Vector3, int, BossGroup>>
+                        ((pickup, position, velocity, rewardIndex, bossGroup) =>
+                        CreateBossRewardDroplet(pickup, position, velocity, rewardIndex, bossGroup));
                 }
             }
         }

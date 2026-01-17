@@ -2,6 +2,7 @@
 using RoR2;
 using SwanSongExtended.Components;
 using SwanSongExtended.Items;
+using SwanSongExtended.Storms;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,11 @@ namespace SwanSongExtended.Interactables
 {
     class WishboneCarcass : InteractableBase<WishboneCarcass>
     {
+        public override bool GetPrerequisites()
+        {
+            return StormsCore.stormsEnabled;
+        }
+        public override bool forcePrerequisites => true;
         public override string InteractableName => "Omen";
 
         public override string InteractableContext => "Break Omen";

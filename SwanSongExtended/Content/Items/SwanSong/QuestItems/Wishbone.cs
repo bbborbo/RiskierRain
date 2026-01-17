@@ -17,6 +17,10 @@ namespace SwanSongExtended.Items
 {
     class Wishbone : ItemBase<Wishbone>
     {
+        public override bool GetPrerequisites()
+        {
+            return StormsCore.stormsEnabled;
+        }
         public override bool forcePrerequisites => true;
         static ItemDef brokenItemDef;
         public override bool CanBeTemporary => false;

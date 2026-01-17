@@ -32,7 +32,10 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Boss;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.WorldUnique, ItemTag.CannotCopy, ItemTag.InteractableRelated, ItemTag.HoldoutZoneRelated, ItemTag.ObjectiveRelated };
+        public override ItemTag[] ItemTags => new ItemTag[] 
+            { ItemTag.WorldUnique, ItemTag.CannotCopy, ItemTag.InteractableRelated, 
+                ItemTag.HoldoutZoneRelated, ItemTag.ObjectiveRelated, 
+                ItemTag.CannotSteal, ItemTag.DevotionBlacklist, ItemTag.RebirthBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab();
 

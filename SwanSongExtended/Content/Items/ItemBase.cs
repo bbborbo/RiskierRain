@@ -187,7 +187,7 @@ namespace SwanSongExtended.Items
         {
             Content.AddVoidItemRelationship(itemToCorrupt, itemThatCorrupts);
         }
-        public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc, string lore = "")
+        public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc = "", string lore = "")
         {
             LanguageAPI.Add(itemDef.nameToken, name);
             LanguageAPI.Add(itemDef.pickupToken, pickupDesc);

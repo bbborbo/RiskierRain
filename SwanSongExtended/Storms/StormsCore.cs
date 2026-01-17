@@ -202,6 +202,7 @@ namespace SwanSongExtended.Storms
             erc.requiredExpansion = SwanSongPlugin.expansionDefSS2;
 
             StormsRunBehaviorPrefab.AddComponent<StormRunBehavior>();
+            StormsRunBehaviorPrefab.AddComponent<NetworkIdentity>();
 
             SwanSongPlugin.expansionDefSS2.runBehaviorPrefab = StormsRunBehaviorPrefab;
 

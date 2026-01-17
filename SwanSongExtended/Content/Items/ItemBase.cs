@@ -168,11 +168,11 @@ namespace SwanSongExtended.Items
             Content.AddItemDef(itemDef);
             return itemDef;
         }
-        public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc, string lore = "")
+        public static void DoLangForItem(ItemDef itemDef, string name, string pickupDesc, string fullDesc = "", string lore = "")
         {
             LanguageAPI.Add(itemDef.nameToken, name);
             LanguageAPI.Add(itemDef.pickupToken, pickupDesc);
-            LanguageAPI.Add(itemDef.descriptionToken, fullDesc);
+            LanguageAPI.Add(itemDef.descriptionToken, string.IsNullOrWhiteSpace(fullDesc) ? pickupDesc : fullDesc);
             LanguageAPI.Add(itemDef.loreToken, lore);
         }
 

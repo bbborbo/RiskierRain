@@ -46,7 +46,7 @@ namespace SwanSongExtended.Items
         {
             brokenItemDef = CreateNewUntieredItem("BROKENWISH",
                 Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Core.texNullIcon_png).WaitForCompletion());
-            DoLangForItem(brokenItemDef, "Bone", "The shorter half of a broken wishbone. It is useless.", "Useless.");
+            DoLangForItem(brokenItemDef, "Bone", "The mundane half of a broken wishbone. Better luck next time.");
             base.Init();
         }
 
@@ -59,6 +59,90 @@ namespace SwanSongExtended.Items
             On.RoR2.HealthComponent.TakeDamageProcess += DestroyWishboneOnDamage;
         }
 
+        private void BreakWishbones(CharacterBody body, int wishboneCount, bool badBreak = true)
+        {
+            if (wishboneCount <= 0)
+                return;
+
+            if (!badBreak)
+            {
+                body.inventory.RemoveItemPermanent(this.ItemsDef.itemIndex, wishboneCount);
+                return;
+            }
+
+            //transform into broken wishbone
+            Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+            new Inventory.ItemTransformation
+            {
+                originalItemIndex = ItemsDef.itemIndex,
+                newItemIndex = brokenItemDef.itemIndex,
+                maxToTransform = int.MaxValue,
+                transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Default
+            }.TryTransform(body.inventory, out tryTransformResult);
+
+            EffectData effectData2 = new EffectData
+            {
+                origin = body.corePosition
+            };
+            effectData2.SetNetworkedObjectReference(body.gameObject);
+            EffectManager.SpawnEffect(HealthComponent.AssetReferences.fragileDamageBonusBreakEffectPrefab, effectData2, true);
+        }
+
+        public static int upgradeChance = 30;
+        static bool upgradeAlt1 = false;
+        static bool upgradeAlt2 = false;
+        static int serverWishboneCount = 0;
+        static PickupIndex wishPickupAlt1 = PickupIndex.none;
+        static PickupIndex wishPickupAlt2 = PickupIndex.none;
+
+        private static void CreateBossRewardDroplet(UniquePickup pickup, Vector3 position, Vector3 velocity, int rewardTotal, int indexOfCurrentReward)
+        {
+            GenericPickupController.CreatePickupInfo pickupInfo = new GenericPickupController.CreatePickupInfo
+            {
+                rotation = Quaternion.identity,
+                pickup = pickup,
+                position = position
+            };
+            int rewardIndexPerPlayer = indexOfCurrentReward % Run.instance.participatingPlayerCount;
+            bool firstRewardPerPlayer = rewardIndexPerPlayer == 0;
+            //bool idk = indexOfCurrentReward == rewardIndexPerPlayer;
+            //if any wishbones have been added and the current reward is the first for each player
+            if (firstRewardPerPlayer && serverWishboneCount > 0)
+            {
+                //subtract a wishbone from the total
+                serverWishboneCount--;
+                UniquePickup pickupAlt1 = GetWishPickup(ref wishPickupAlt1, upgradeAlt1);
+                UniquePickup pickupAlt2 = GetWishPickup(ref wishPickupAlt2, upgradeAlt2);
+
+                pickupInfo.pickerOptions = PickupPickerController.GenerateOptionsFromList(new List<UniquePickup>(3) { pickupAlt1, pickup, pickupAlt2 });
+                pickupInfo.prefabOverride = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
+                pickupInfo.pickupIndex = PickupCatalog.FindPickupIndex(ItemTier.Tier2);
+            }
+            PickupDropletController.CreatePickupDroplet(pickupInfo, position, velocity);
+        }
+        private static bool GetWishUpgraded()
+        {
+            if (serverWishboneCount <= Run.instance.participatingPlayerCount)
+                return false;
+
+            serverWishboneCount--;
+            //if (Util.CheckRoll(upgradeChance))
+                return true;
+            //return false;
+        }
+        private static UniquePickup GetWishPickup(ref PickupIndex pickupIndex, bool isUpgraded)
+        {
+            List<PickupIndex> list = Run.instance.availableTier2DropList;
+            if (isUpgraded)
+            {
+                if(Util.CheckRoll(upgradeChance))
+                    list = Run.instance.availableTier3DropList;
+            }
+            pickupIndex = Run.instance.bossRewardRng.NextElementUniform<PickupIndex>(list);
+            return new UniquePickup(pickupIndex);
+        }
+
+        #region hooks
         private void WishboneRewardMessage(On.RoR2.BossGroup.orig_DropRewards orig, BossGroup self)
         {
             if (serverWishboneCount > 0)
@@ -66,6 +150,44 @@ namespace SwanSongExtended.Items
                 Chat.AddMessage("<style=cIsDamage>A wish is granted...</style>");
             }
             orig(self);
+            serverWishboneCount = 0;
+            upgradeAlt1 = false;
+            upgradeAlt2 = false;
+        }
+        private void WishboneRewards(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int rewardLoc = 1;
+            int rewardCountLoc = 2;
+            int rewardIndexLoc = 8;
+            bool ILFound1 =
+                c.TryGotoNext(MoveType.After,
+                    x => x.MatchCallOrCallvirt<BossGroup>("get_bonusRewardCount"))
+                && c.TryGotoNext(MoveType.After,
+                    x => x.MatchStloc(out rewardCountLoc))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchLdloc(out rewardIndexLoc),
+                x => x.MatchLdloc(rewardCountLoc),
+                x => x.MatchBlt(out _));
+            if (ILFound1)
+            {
+                c.Index = 0;
+                bool ILFound2 = c.TryGotoNext(MoveType.After,
+                        x => x.MatchLdsfld<UniquePickup>(nameof(UniquePickup.none)),
+                        x => x.MatchStloc(out rewardLoc))
+                    && c.TryGotoNext(MoveType.Before,
+                        x => x.MatchCallOrCallvirt<PickupDropletController>(nameof(PickupDropletController.CreatePickupDroplet)));
+                if (ILFound2)
+                {
+                    c.Remove();
+                    c.Emit(OpCodes.Ldloc, rewardCountLoc);
+                    c.Emit(OpCodes.Ldloc, rewardIndexLoc);
+                    c.EmitDelegate<Action<UniquePickup, Vector3, Vector3, int, int>>
+                        ((pickup, position, velocity, rewardCount, rewardIndex) =>
+                        CreateBossRewardDroplet(pickup, position, velocity, rewardCount, rewardIndex));
+                }
+            }
         }
 
         private void DestroyWishboneOnDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
@@ -93,30 +215,6 @@ namespace SwanSongExtended.Items
             BreakWishbones(self, wishboneCount, false);
         }
 
-        private void BreakWishbones(CharacterBody body, int wishboneCount, bool badBreak = true)
-        {
-            if (wishboneCount <= 0)
-                return;
-            body.inventory.RemoveItem(this.ItemsDef.itemIndex, wishboneCount);
-            if (badBreak)
-            {
-                body.inventory.GiveItem(brokenItemDef.itemIndex, wishboneCount);
-
-                CharacterMasterNotificationQueue.SendTransformNotification(body.master,
-                    this.ItemsDef.itemIndex, brokenItemDef.itemIndex,
-                    CharacterMasterNotificationQueue.TransformationType.Default);
-
-                EffectData effectData2 = new EffectData
-                {
-                    origin = body.corePosition
-                };
-                effectData2.SetNetworkedObjectReference(body.gameObject);
-                EffectManager.SpawnEffect(HealthComponent.AssetReferences.fragileDamageBonusBreakEffectPrefab, effectData2, true);
-            }
-        }
-
-        public static int upgradeChance = 30;
-        static int serverWishboneCount = 0;
         private void StealWishboneOnTeleCharge(TeleporterInteraction obj)
         {
             WishboneCarcassComponent.ClearAllCarcasses();
@@ -135,7 +233,7 @@ namespace SwanSongExtended.Items
                         serverWishboneCount += wishboneCount;
 
                         //item transfer effect
-                        if(wishboneCount > 0)
+                        if (wishboneCount > 0)
                         {
                             EffectData effectData = new EffectData
                             {
@@ -150,89 +248,10 @@ namespace SwanSongExtended.Items
                     BreakWishbones(body, wishboneCount, false);
                 }
             }
+
+            upgradeAlt1 = GetWishUpgraded();
+            upgradeAlt2 = GetWishUpgraded();
         }
-
-        PickupIndex wishPickupAlt1 = PickupIndex.none;
-        PickupIndex wishPickupAlt2 = PickupIndex.none;
-        private void WishboneRewards(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int rewardLoc = 1;
-            int rewardCountLoc = 2;
-            int rewardIndexLoc = 8;
-            bool ILFound1 = 
-                c.TryGotoNext(MoveType.After,
-                    x => x.MatchCallOrCallvirt<BossGroup>("get_bonusRewardCount"))
-                && c.TryGotoNext(MoveType.After,
-                    x => x.MatchStloc(out rewardCountLoc))
-                && c.TryGotoNext(MoveType.After,
-                x => x.MatchLdloc(out rewardIndexLoc),
-                x => x.MatchLdloc(rewardCountLoc),
-                x => x.MatchBlt(out _));
-            if (ILFound1)
-            {
-                c.Index = 0;
-                bool ILFound2 = c.TryGotoNext(MoveType.After,
-                        x => x.MatchLdsfld<UniquePickup>(nameof(UniquePickup.none)),
-                        x => x.MatchStloc(out rewardLoc))
-                    && c.TryGotoNext(MoveType.Before,
-                        x => x.MatchCallOrCallvirt<PickupDropletController>(nameof(PickupDropletController.CreatePickupDroplet)));
-                if (ILFound2)
-                {
-                    c.Remove();
-                    c.Emit(OpCodes.Ldloc, rewardCountLoc);
-                    c.Emit(OpCodes.Ldloc, rewardIndexLoc);
-                    c.EmitDelegate<Action<UniquePickup, Vector3, Vector3, int, int>>
-                        ((pickup, position, velocity, rewardCount, rewardIndex) => 
-                        CreateBossRewardDroplet(pickup, position, velocity, rewardCount, rewardIndex));
-                }
-            }
-
-            void CreateBossRewardDroplet(UniquePickup pickup, Vector3 position, Vector3 velocity, int rewardTotal, int indexOfCurrentReward)
-            {
-                GenericPickupController.CreatePickupInfo pickupInfo = new GenericPickupController.CreatePickupInfo
-                {
-                    rotation = Quaternion.identity,
-                    pickup = pickup,
-                    position = position
-                };
-                int rewardIndexPerPlayer = indexOfCurrentReward % Run.instance.participatingPlayerCount;
-                //bool idk = indexOfCurrentReward == rewardIndexPerPlayer;
-                //if any wishbones have been added and the current reward is the first for each player
-                if (serverWishboneCount > 0 && rewardIndexPerPlayer == 0)
-                {
-                    bool first = indexOfCurrentReward == 0 || indexOfCurrentReward == 1;
-                    //subtract a wishbone from the total
-                    serverWishboneCount--;
-                    UniquePickup pickupAlt1 = GetWishPickup(ref wishPickupAlt1, first);
-                    UniquePickup pickupAlt2 = GetWishPickup(ref wishPickupAlt2, first);
-
-                    pickupInfo.pickerOptions = PickupPickerController.GenerateOptionsFromList(new List<UniquePickup>(3) { pickupAlt1, pickup, pickupAlt2 });
-                    pickupInfo.prefabOverride = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
-                    pickupInfo.pickupIndex = PickupCatalog.FindPickupIndex(ItemTier.Tier2);
-
-                    if (indexOfCurrentReward == rewardTotal - 1)
-                        serverWishboneCount = 0;
-                }
-                PickupDropletController.CreatePickupDroplet(pickupInfo, position, velocity);
-            }
-        }
-
-        private static UniquePickup GetWishPickup(ref PickupIndex pickupIndex, bool isFirst)
-        {
-            List<PickupIndex> list = Run.instance.availableTier2DropList;
-            bool shouldTryUpgrade = isFirst && serverWishboneCount > Run.instance.participatingPlayerCount;
-            if (shouldTryUpgrade)
-            {
-                serverWishboneCount--;
-                if (Util.CheckRoll(upgradeChance))
-                {
-                    list = Run.instance.availableTier3DropList;
-                }
-            }
-            pickupIndex = Run.instance.bossRewardRng.NextElementUniform<PickupIndex>(list);
-            return new UniquePickup(pickupIndex);
-        }
+        #endregion
     }
 }

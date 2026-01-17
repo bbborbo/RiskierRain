@@ -20,6 +20,7 @@ namespace SwanSongExtended.Storms
 {
     public static class StormsCore
     {
+        public static bool stormsEnabled = true;
         public const string stormShelterObjectiveToken = "OBJECTIVE_SHELTER";
         public const string wishboneObjectiveToken = "OBJECTIVE_WISHBONE";
         public static GameObject StormsRunBehaviorPrefab;

@@ -14,31 +14,31 @@ namespace SwanSongExtended.Modules
         {
             On.RoR2.GlobalEventManager.OnCharacterDeath += SquidOnDeath;
 
-            On.RoR2.CharacterBody.OnSkillActivated += SnailyOnSkill;
+            //On.RoR2.CharacterBody.OnSkillActivated += SnailyOnSkill;
         }
 
-        private static void SnailyOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
-        {
-            orig(self, skill);
-
-            if (skill != self.skillLocator.primary)
-                return;
-            int count = 0;
-            if(RainbowWave.instance != null && RainbowWave.instance.isEnabled && self.HasBuff(RainbowWave.rainbowBuff))
-            {
-                count = RainbowWave.instance.GetCount(self);
-                RainbowWave.FireRainbowWave(self, count - 1);
-            }
-            else if(Boomerang.instance != null && Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
-            {
-                count = Boomerang.instance.GetCount(self);
-                Boomerang.FireBoomerang(self, count - 1);
-            }
-            else if(Peashooter.instance != null && Peashooter.instance.isEnabled && (count = Peashooter.instance.GetCount(self)) > 0)
-            {
-                Peashooter.FirePeashooter(self, count - 1);
-            }
-        }
+        //private static void SnailyOnSkill(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
+        //{
+        //    orig(self, skill);
+        //
+        //    if (skill != self.skillLocator.primary)
+        //        return;
+        //    int count = 0;
+        //    if(RainbowWave.instance != null && RainbowWave.instance.isEnabled && self.HasBuff(RainbowWave.rainbowBuff))
+        //    {
+        //        count = RainbowWave.instance.GetCount(self);
+        //        RainbowWave.FireRainbowWave(self, count - 1);
+        //    }
+        //    else if(Boomerang.instance != null && Boomerang.instance.isEnabled && self.HasBuff(Boomerang.boomerangBuff))
+        //    {
+        //        count = Boomerang.instance.GetCount(self);
+        //        Boomerang.FireBoomerang(self, count - 1);
+        //    }
+        //    else if(Peashooter.instance != null && Peashooter.instance.isEnabled && (count = Peashooter.instance.GetCount(self)) > 0)
+        //    {
+        //        Peashooter.FirePeashooter(self, count - 1);
+        //    }
+        //}
 
         #region squid hooks
 

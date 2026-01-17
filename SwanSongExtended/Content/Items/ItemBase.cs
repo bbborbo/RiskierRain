@@ -191,7 +191,7 @@ namespace SwanSongExtended.Items
         {
             LanguageAPI.Add(itemDef.nameToken, name);
             LanguageAPI.Add(itemDef.pickupToken, pickupDesc);
-            LanguageAPI.Add(itemDef.descriptionToken, fullDesc);
+            LanguageAPI.Add(itemDef.descriptionToken, string.IsNullOrWhiteSpace(fullDesc) ? pickupDesc : fullDesc);
             LanguageAPI.Add(itemDef.loreToken, lore);
         }
 

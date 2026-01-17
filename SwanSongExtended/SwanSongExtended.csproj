@@ -26,6 +26,13 @@
     <None Include="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
     <None Include="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <None Include="Content\Interactables\QuestInteractables\SpineCharger.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\Boomerang.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\Peashooter.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\RainbowWave.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\ScugShaker.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\ShellShield.cs" />
+    <None Include="Content\Items\SecretsOfTheScug\VoidScug.cs" />
     <None Include="Content\Items\Reworks\ChimeraScrap.cs" />
     <None Include="Content\Items\Reworks\ChocolateCoin.cs" />
     <None Include="Content\Items\Reworks\Elixir2.cs" />
@@ -101,6 +108,13 @@
     <Compile Remove="Content\Items\Reworks\LunarHealthDegen.cs" />
     <Compile Remove="Content\Items\Reworks\Mocha2.cs" />
     <Compile Remove="Content\Items\Reworks\RejuvRack.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\Boomerang.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\Peashooter.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\RainbowWave.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\ScugShaker.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\ShellShield.cs" />
+    <Compile Remove="Content\Items\SecretsOfTheScug\VoidScug.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />

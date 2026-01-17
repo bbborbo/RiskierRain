@@ -179,10 +179,10 @@ namespace SwanSongExtended
             expansionDefSOTS.descriptionToken = expansionToken2 + "_DESCRIPTION";
             expansionDefSOTS.iconSprite = null;
             expansionDefSOTS.disabledIconSprite = null;
-            LanguageAPI.Add(expansionToken2 + "_NAME", expansionName2);
-            LanguageAPI.Add(expansionToken2 + "_DESCRIPTION", $"Adds content from the '{expansionName2}' expansion to the game.");
+            //LanguageAPI.Add(expansionToken2 + "_NAME", expansionName2);
+            //LanguageAPI.Add(expansionToken2 + "_DESCRIPTION", $"Adds content from the '{expansionName2}' expansion to the game.");
 
-            Content.AddExpansionDef(expansionDefSOTS);
+            //Content.AddExpansionDef(expansionDefSOTS);
         }
 
         private void InitializeContent()

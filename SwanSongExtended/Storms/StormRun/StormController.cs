@@ -109,8 +109,80 @@ namespace SwanSongExtended.Storms
                 mainStateMachine.SetNextState(new StormWarning());
             }
         }
+
+        public static void BroadcastStormWarningMessage(StormType stormType)
+        {
+            if (!NetworkServer.active)
+                return;
+            string warningMessage = "";
+            switch (stormType)
+            {
+                case StormType.MeteorDefault:
+                    warningMessage = "<style=cIsUtility>A meteor storm is approaching...</style>";
+                    break;
+                case StormType.Lightning:
+                    warningMessage = "A storm approaches...";
+                    break;
+                case StormType.Fire:
+                    warningMessage = "A meteor storm is approaching...";
+                    break;
+                case StormType.Cold:
+                    warningMessage = "The air around you begins to freeze...";
+                    break;
+            }
+
+            RoR2.Chat.ServerAttemptBroadcastChat(warningMessage);
+        }
+        public static void BroadcastStormActiveMessage(StormType stormType)
+        {
+            if (!NetworkServer.active)
+                return;
+
+            string warningMessage = "";
+            switch (stormType)
+            {
+                case StormType.MeteorDefault:
+                    warningMessage = "<style=cIsUtility>A shower of meteors begins to fall...</style>";
+                    break;
+                    //case StormType.Lightning:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+                    //case StormType.Fire:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+                    //case StormType.Cold:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+            }
+
+            RoR2.Chat.ServerAttemptBroadcastChat(warningMessage);
+        }
+        public static void BroadcastStormIntensifyMessage(StormType stormType)
+        {
+            string warningMessage = "";
+            switch (stormType)
+            {
+                case StormType.MeteorDefault:
+                    warningMessage = "<style=cIsUtility>The storm intensifies...</style>";
+                    break;
+                    //case StormType.Lightning:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+                    //case StormType.Fire:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+                    //case StormType.Cold:
+                    //    warningMessage = "A meteor storm is approaching...";
+                    //    break;
+            }
+
+            Chat.ServerAttemptBroadcastChat(warningMessage);
+        }
+
         internal abstract class BaseStormState : BaseState
         {
+            float runDeltaTimeThisFrame = 0;
+            float runTimeStamp = float.NegativeInfinity;
             public abstract StormState stormState { get; }
             private protected StormType stormType => StormRunBehavior.instance.stormType;
             private protected StormController stormController { get; private set; }
@@ -118,12 +190,23 @@ namespace SwanSongExtended.Storms
             {
                 Debug.Log(stormState.ToString());
                 base.OnEnter();
+                if (runTimeStamp == float.NegativeInfinity)
+                    runTimeStamp = Run.instance.GetRunStopwatch();
                 this.stormController = base.GetComponent<StormController>();
+            }
+
+            public float GetRunDeltaTime()
+            {
+                return runDeltaTimeThisFrame;
             }
 
             public override void FixedUpdate()
             {
-                base.FixedUpdate();
+                this.runDeltaTimeThisFrame = Run.instance.GetRunStopwatch() - runTimeStamp;
+                this.fixedAge += runDeltaTimeThisFrame;
+                if (Run.instance)
+                    runTimeStamp = Run.instance.GetRunStopwatch();
+
                 if(this.stormState >= StormState.ApproachWarning && TeleporterInteraction.instance)
                 {
                     if (TeleporterInteraction.instance)
@@ -149,9 +232,23 @@ namespace SwanSongExtended.Storms
 
                 return DifficultyUtilsModule.cachedDifficultyStats.stormIntensifyStrength_ForSwanSong;
             }
+            public virtual void SetNextState()
+            {
+                BaseStormState nextState = this.GetNextState();
+                nextState.runTimeStamp = this.runTimeStamp;
+                nextState.runDeltaTimeThisFrame = this.runDeltaTimeThisFrame;
+                this.outer.SetNextState(nextState);
+            }
+
+            public abstract BaseStormState GetNextState();
         }
         internal class StormActive : BaseStormState
         {
+            public override BaseStormState GetNextState()
+            {
+                return new StormController.IdleState();
+            }
+
             public override StormState stormState => StormState.Active;
 
             //all the projectile/prefab stuff
@@ -168,13 +265,16 @@ namespace SwanSongExtended.Storms
 
                 if (!Run.instance)
                 {
-                    outer.SetNextState(new StormController.IdleState());
+                    SetNextState();
                     return;
                 }
-                WishboneCarcassComponent.ClearAllCarcasses();
-                stormStrengthIncreaseCountdown = stormStrengthIncreaseTimerSeconds;
                 if (!NetworkServer.active)
                     return;
+
+                BroadcastStormActiveMessage(stormType);
+
+                WishboneCarcassComponent.ClearAllCarcasses();
+                stormStrengthIncreaseCountdown = stormStrengthIncreaseTimerSeconds;
                 this.meteorsToDetonate = new List<MeteorStormController.Meteor>();
                 this.meteorWaves = new List<MeteorStormController.MeteorWave>();
                 //On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
@@ -190,18 +290,18 @@ namespace SwanSongExtended.Storms
             public override void FixedUpdate()
             {
                 base.FixedUpdate();
-                stormStrengthIncreaseCountdown -= Time.fixedDeltaTime;
-                if(stormStrengthIncreaseCountdown <= 0 && Run.instance)
+                if (!NetworkServer.active)
+                    return;
+                stormStrengthIncreaseCountdown -= GetRunDeltaTime();
+                if (stormStrengthIncreaseCountdown <= 0 && Run.instance)
                 {
                     stormStrengthIncreaseCountdown += StormsCore.stormStrengthIncreaseTimerSeconds;
                     stormStrength += GetStormIntensityIncrement();
-                    Chat.AddMessage("<style=cIsUtility>The storm intensifies...</style>");
+                    BroadcastStormIntensifyMessage(stormType);
                 }
-                if (!NetworkServer.active)
-                    return;
 
                 //thisa is just for meteor stuff; we can make it work for the other storsm when they start existing lol.
-                this.waveTimer -= Time.fixedDeltaTime;
+                this.waveTimer -= GetRunDeltaTime();
                 if (this.waveTimer <= 0f)
                 {
                     this.waveTimer = UnityEngine.Random.Range(waveMinInterval, waveMaxInterval) / (1 + stormStrength);
@@ -221,14 +321,14 @@ namespace SwanSongExtended.Storms
                     AddCharacterTargetedStrikes();
                 }
 
-                float num = float.PositiveInfinity;
+                float timeOfImpact = float.PositiveInfinity;
                 if (Run.instance)
-                    num = Run.instance.time - meteorImpactDelay;
-                float num2 = num - meteorTravelEffectDuration;
+                    timeOfImpact = Run.instance.time - meteorImpactDelay;
+                float timeOfTelegraph = timeOfImpact - meteorTravelEffectDuration;
                 for (int j = this.meteorsToDetonate.Count - 1; j >= 0; j--)
                 {
                     MeteorStormController.Meteor meteor = this.meteorsToDetonate[j];
-                    if (meteor.startTime < num)
+                    if (meteor.startTime < timeOfImpact)
                     {
                         this.meteorsToDetonate.RemoveAt(j);
                         this.DetonateMeteor(meteor);
@@ -241,7 +341,7 @@ namespace SwanSongExtended.Storms
                 for (int i = this.meteorWaves.Count - 1; i >= 0; i--)
                 {
                     MeteorStormController.MeteorWave meteorWave = this.meteorWaves[i];
-                    meteorWave.timer -= Time.fixedDeltaTime;
+                    meteorWave.timer -= GetRunDeltaTime();
                     if (meteorWave.timer <= 0f)
                     {
                         meteorWave.timer = UnityEngine.Random.Range(0.05f, 1f);
@@ -397,6 +497,10 @@ namespace SwanSongExtended.Storms
         }
         internal class StormWarning : BaseStormState
         {
+            public override BaseStormState GetNextState()
+            {
+                return new StormController.StormActive();
+            }
             private Dictionary<HUD, GameObject> hudPanels;
             public override StormState stormState => StormState.ApproachWarning;
             public override void OnEnter()
@@ -410,24 +514,7 @@ namespace SwanSongExtended.Storms
                 }
                 SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
 
-                string warningMessage = "";
-                switch (stormType)
-                {
-                    case StormType.MeteorDefault:
-                        warningMessage = "<style=cIsUtility>A meteor storm is approaching...</style>";
-                        break;
-                    case StormType.Lightning:
-                        warningMessage = "A storm approaches...";
-                        break;
-                    case StormType.Fire:
-                        warningMessage = "A meteor storm is approaching...";
-                        break;
-                    case StormType.Cold:
-                        warningMessage = "The air around you begins to freeze...";
-                        break;
-                }
-
-                RoR2.Chat.AddMessage(warningMessage);
+                BroadcastStormWarningMessage(stormType);
             }
             public override void OnExit()
             {
@@ -442,26 +529,7 @@ namespace SwanSongExtended.Storms
                 base.FixedUpdate();
                 if (base.fixedAge >= stormController.stormWarningTime)
                 {
-                    string warningMessage = "";
-                    switch (stormType)
-                    {
-                        case StormType.MeteorDefault:
-                            warningMessage = "<style=cIsUtility>A shower of meteors begins to fall...</style>";
-                            break;
-                        case StormType.Lightning:
-                            warningMessage = "A meteor storm is approaching...";
-                            break;
-                        case StormType.Fire:
-                            warningMessage = "A meteor storm is approaching...";
-                            break;
-                        case StormType.Cold:
-                            warningMessage = "A meteor storm is approaching...";
-                            break;
-                    }
-
-                    RoR2.Chat.AddMessage(warningMessage);
-
-                    outer.SetNextState(new StormActive());
+                    SetNextState();
                 }
 
                 if (stormType == StormType.None || !Run.instance)
@@ -528,6 +596,17 @@ namespace SwanSongExtended.Storms
         }
         internal class StormApproach : BaseStormState
         {
+            public override BaseStormState GetNextState()
+            {
+                if (stormType > StormType.None)
+                {
+                    if (stormController.stormWarningTime > 0)
+                        return new StormWarning();
+                    else
+                        return new StormActive();
+                }
+                return new StormController.IdleState();
+            }
             public override StormState stormState => StormState.Approaching;
             public override void OnEnter()
             {
@@ -539,13 +618,7 @@ namespace SwanSongExtended.Storms
                 base.FixedUpdate();
                 if (base.fixedAge >= stormController.stormDelayTime)
                 {
-                    if (stormType > StormType.None)
-                    {
-                        if (stormController.stormWarningTime > 0)
-                            outer.SetNextState(new StormWarning());
-                        else
-                            outer.SetNextState(new StormActive());
-                    }
+                    SetNextState();
                 }
             }
             public override InterruptPriority GetMinimumInterruptPriority()
@@ -555,6 +628,10 @@ namespace SwanSongExtended.Storms
         }
         internal class IdleState : BaseStormState
         {
+            public override BaseStormState GetNextState()
+            {
+                return new IdleState();
+            }
             public override StormState stormState => StormState.Idle;
         }
     }

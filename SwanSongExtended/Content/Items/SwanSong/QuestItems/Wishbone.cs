@@ -19,6 +19,7 @@ namespace SwanSongExtended.Items
     {
         public override bool lockEnabled => true;
         static ItemDef brokenItemDef;
+        public override bool CanBeTemporary => false;
         public override string ItemName => "Wishbone";
 
         public override string ItemLangTokenName => "WISHBONE";

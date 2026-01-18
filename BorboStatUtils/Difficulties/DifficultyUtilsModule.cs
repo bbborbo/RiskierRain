@@ -17,6 +17,11 @@ namespace RainrotSharedUtils.Difficulties
 {
     public class MoreDifficultyStats
     {
+        public MoreDifficultyStats(DifficultyIndex difficultyIndex)
+        {
+            this.difficultyIndex = difficultyIndex;
+        }
+        public DifficultyIndex difficultyIndex { get; private set;} = DifficultyIndex.Invalid;
         public enum StartingDifficulty
         {
             Easy = 0,
@@ -96,7 +101,7 @@ namespace RainrotSharedUtils.Difficulties
             if (difficultyCustomStats.ContainsKey(difficulty))
                 return difficultyCustomStats[difficulty];
 
-            MoreDifficultyStats stats = new MoreDifficultyStats();
+            MoreDifficultyStats stats = new MoreDifficultyStats(difficulty);
             difficultyCustomStats.Add(difficulty, stats);
             return stats;
         }
@@ -104,10 +109,17 @@ namespace RainrotSharedUtils.Difficulties
         public static MoreDifficultyStats cachedDifficultyStats { get; internal set; } = null;
         public static bool ValidateCachedDifficultyStats()
         {
-            if (cachedDifficultyStats == null)
+            bool cacheIsNotNull = cachedDifficultyStats != null;
+
+            if (Run.instance == null)
+                return cacheIsNotNull;
+
+            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
+            if (selectedDifficulty == DifficultyIndex.Invalid || selectedDifficulty == DifficultyIndex.Count)
+                return cacheIsNotNull;
+
+            if (!cacheIsNotNull /*cache is null*/ || cachedDifficultyStats.difficultyIndex != Run.instance.selectedDifficulty)
             {
-                if (Run.instance == null || Run.instance.selectedDifficulty == DifficultyIndex.Invalid)
-                    return false;
                 cachedDifficultyStats = GetMoreDifficultyStats(Run.instance.selectedDifficulty);
             }
             return true;

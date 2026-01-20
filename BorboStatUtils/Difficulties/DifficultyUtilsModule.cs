@@ -177,7 +177,7 @@ namespace RainrotSharedUtils.Difficulties
                 return;
             _hooksEnabled = true;
 
-            Run.onRunSetRuleBookGlobal += CacheDifficultyStats;
+            On.RoR2.Run.OnRuleBookUpdated += CacheDifficultyStats;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += RecalculateDifficultyCoefficient_DifficultyStats;
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;

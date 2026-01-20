@@ -637,46 +637,46 @@ namespace MoreStats
 
         private static void ProcessScrapCounts(ILCursor c)
         {
-            ProcessScrapCount(nameof(RoR2Content.Items.ScrapWhite), (scrapCount, self) =>
+            ProcessScrapCount("ScrapWhite", (scrapCount, self) =>
             {
                 MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                 stats.bodyScrapWhiteCount = scrapCount + StatMods.scrapWhiteCountAdd;
                 if(BaseStats.IncludeStrangeScrapInScrapTotal)
                     stats.bodyScrapWhiteCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapWhiteSuppressed);
 
-                return scrapCount + stats.bodyScrapWhiteCount;
+                return stats.bodyScrapWhiteCount;
             });
-            ProcessScrapCount(nameof(RoR2Content.Items.ScrapGreen), (scrapCount, self) =>
+            ProcessScrapCount("ScrapGreen", (scrapCount, self) =>
             {
                 MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                 stats.bodyScrapGreenCount = scrapCount + StatMods.scrapGreenCountAdd;
                 if (BaseStats.IncludeStrangeScrapInScrapTotal)
                     stats.bodyScrapGreenCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapGreenSuppressed);
 
-                return scrapCount + stats.bodyScrapWhiteCount;
+                return stats.bodyScrapGreenCount;
             });
-            ProcessScrapCount(nameof(RoR2Content.Items.ScrapRed), (scrapCount, self) =>
+            ProcessScrapCount("ScrapRed", (scrapCount, self) =>
             {
                 MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                 stats.bodyScrapRedCount = scrapCount + StatMods.scrapRedCountAdd;
                 if (BaseStats.IncludeStrangeScrapInScrapTotal)
                     stats.bodyScrapRedCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapRedSuppressed);
 
-                return scrapCount + stats.bodyScrapWhiteCount;
+                return stats.bodyScrapRedCount;
             });
-            ProcessScrapCount(nameof(RoR2Content.Items.ScrapYellow), (scrapCount, self) =>
+            ProcessScrapCount("ScrapYellow", (scrapCount, self) =>
             {
                 MoreStatCoefficients stats = GetMoreStatsFromBody(self);
                 stats.bodyScrapYellowCount = scrapCount + StatMods.scrapYellowCountAdd;
 
-                return scrapCount + stats.bodyScrapWhiteCount;
+                return stats.bodyScrapYellowCount;
             });
             void ProcessScrapCount(string scrapName, Func<int, CharacterBody, int> callback)
             {
                 c.Index = 0;
                 bool b = c.TryGotoNext(MoveType.After,
                     x => x.MatchLdsfld("RoR2.RoR2Content/Items", scrapName))
-                    && c.TryGotoNext(MoveType.Before,
+                    && c.TryGotoNext(MoveType.After,
                     x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                     );
 
@@ -698,7 +698,7 @@ namespace MoreStats
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureWhite.buffIndex, stats.bodyScrapWhiteCount);
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureGreen.buffIndex, stats.bodyScrapGreenCount);
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureRed.buffIndex, stats.bodyScrapRedCount);
-            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureYellow.buffIndex, stats.bodyScrapRedCount);
+            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureYellow.buffIndex, stats.bodyScrapYellowCount);
         }
         #endregion
     }

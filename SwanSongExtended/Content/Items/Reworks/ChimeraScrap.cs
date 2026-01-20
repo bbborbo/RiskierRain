@@ -77,8 +77,8 @@ namespace SwanSongExtended.Items
         {
             if (sender.inventory)
             {
-                args.scrapGreenCountAdd += GetCount(sender) * regenScrapCommonCredit;
-                args.scrapWhiteCountAdd += GetCount(sender) * regenScrapUncommonCredit;
+                args.scrapWhiteCountAdd += GetCount(sender) * regenScrapCommonCredit;
+                args.scrapGreenCountAdd += GetCount(sender) * regenScrapUncommonCredit;
                 args.scrapRedCountAdd += GetCount(sender) * regenScrapRareCredit;
                 args.scrapYellowCountAdd += GetCount(sender) * regenScrapBossCredit;
             }

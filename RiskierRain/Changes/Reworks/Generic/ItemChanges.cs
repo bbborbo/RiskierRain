@@ -693,10 +693,12 @@ namespace RiskierRain
             }
 
             c.Emit(OpCodes.Ldloc, droppedCountloc);
-            c.EmitDelegate<Func<ChestBehavior, int, ChestBehavior>>((chest, dropped) =>
+            c.EmitDelegate<Func<ChestBehavior, int, ChestBehavior>>((chest, droppedIndex) =>
             {
-                if(dropped >= chest.maxDropCount)
+                //max drop count is used to tell how many items the chest would have dropped
+                if(droppedIndex + 1 /*next drop*/ >= chest.maxDropCount && chest.maxDropCount > chest.dropCount)
                 {
+                    chest.maxDropCount = chest.dropCount;
                     chest.dropTable = Addressables.LoadAssetAsync<PickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.dtShrineChance_asset).WaitForCompletion();
                 }    
                 return chest;

@@ -148,24 +148,40 @@ namespace SwanSongExtended.Changes
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
         private static ItemDef GetItemDef() => DLC1Content.Items.AttackSpeedAndMoveSpeed;
+        int cachedMochaCount = 0;
         bool addingBuffs = false;
-        public int remainingTime = 0;
         float durationPerBuff = 1; //in seconds
 
         private void Start()
         {
-            if (body.HasBuff(Mocha.mochaBuffActive))
-                return;
-
-            if (remainingTime < Mocha.mochaDurationOnEntry)
-                remainingTime = Mocha.mochaDurationOnEntry;
-            SetMochaTime(remainingTime);
+        }
+        private void OnDestroy()
+        {
+            stack = 0;
+            OnInventoryRefresh();
         }
 
-        public void UpdateTime(int newTime)
+        public override void OnInventoryRefresh()
         {
-            remainingTime = newTime;
-            SetMochaTime(newTime);
+            base.OnInventoryRefresh();
+
+            if (stack == 0 /*&& !body.inventory.inventoryDisabled*/)
+            {
+                //body.ClearTimedBuffs(Mocha.mochaBuffActive);
+                //body.RemoveBuff(Mocha.mochaBuffInactive);
+                return;
+            }
+
+            if (cachedMochaCount < stack)
+            {
+                //if already had mochas and gained more, give duration from pickup
+                if (cachedMochaCount != 0)
+                    SetMochaTime(Mocha.mochaDurationOnPickup);
+                //if had no mochas, give duration on entry, but only if mocha hasnt already expired
+                else if (!body.HasBuff(Mocha.mochaBuffInactive))
+                    SetMochaTime(Mocha.mochaDurationOnEntry);
+            }
+            cachedMochaCount = stack;
         }
 
         private void SetMochaTime(int targetCount)

@@ -11,6 +11,62 @@ using UnityEngine;
 
 namespace MoreStats
 {
+    public class MoreStatCoefficients
+    {
+        public bool barrierDecayFrozen = false;
+        public float barrierDecayDynamicHalfLife = 0;
+        public float barrierGenRate = 0;
+        public float barrierDrainRate = 0;
+        public float barrierDecayMult = 1;
+
+        public float luckFromBody = 0;
+        public float luckFromMaster = 0;
+        public float burnChance = 0;
+        //public float chillChance = 0;
+
+        public bool shieldRechargeReady = true;
+        public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
+        float shieldToHealthConversion = 0;
+
+        public float selfExecutionThresholdAdd = 0;
+        public float selfExecutionThresholdBase = Mathf.NegativeInfinity;
+
+        public float healingMult = 1;
+
+        public int bodyScrapWhiteCount = 0;
+        public int bodyScrapGreenCount = 0;
+        public int bodyScrapRedCount = 0;
+        public int bodyScrapYellowCount = 0;
+
+        /// <summary>
+        /// Does not reset luckFromMaster
+        /// </summary>
+        internal void ResetStats()
+        {
+            barrierDecayFrozen = false;
+            barrierDecayDynamicHalfLife = 0;
+            barrierGenRate = 0;
+
+            luckFromBody = 0;
+
+            burnChance = 0;
+            //chillChance = 0;     
+
+            shieldRechargeReady = true;
+            shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
+
+            selfExecutionThresholdAdd = 0;
+            selfExecutionThresholdBase = 0;
+
+            healingMult = 1;
+
+            bodyScrapWhiteCount = 0;
+            bodyScrapGreenCount = 0;
+            bodyScrapRedCount = 0;
+            bodyScrapYellowCount = 0;
+        }
+    }
+
     /// <summary>
     /// add to the event GetMoreStatCoefficients to modify stats like RecalculateStatsAPI's GetStatCoefficients
     /// call GetMoreStatsFromBody(CharacterBody) if you need to retrieve processed stat information 
@@ -55,6 +111,9 @@ namespace MoreStats
 
             // Healing
             IL.RoR2.HealthComponent.Heal += ModifyHealing;
+
+            // Body Scrap Count
+            On.RoR2.DrifterTrashToTreasureController.OnInventoryChanged += DrifterUpdateScrapCounts;
         }
 
         private static void HookHealthComponentUpdate(ILContext il)
@@ -68,35 +127,32 @@ namespace MoreStats
         {
             ILCursor c = new ILCursor(il);
 
+            //go to the moment the healing value is saved as a local variable to be applied as healing
             bool b = c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdarg(1),
                 x => x.MatchStloc(out _)
                 );
-            if (b)
+            if (!b)
             {
-                c.Index++;
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<float, HealthComponent, float>>((healAmt, healthComponent) =>
+                MoreStatsPlugin.DebugBreakpoint(nameof(ModifyHealing));
+                return;
+            }
+
+            //inject our healing multiplier at the last moment, then store it and re load the value
+            c.Index++;
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<float, HealthComponent, float>>((healAmt, healthComponent) =>
+            {
+                CharacterBody body = healthComponent.body;
+                MoreStatCoefficients msc = GetMoreStatsFromBody(body);
+                if (msc.healingMult > 0)
                 {
-                    CharacterBody body = healthComponent.body;
-                    MoreStatCoefficients msc = GetMoreStatsFromBody(body);
-                    if (msc.healingMult > 0)
-                    {
-                        return healAmt * msc.healingMult;
-                    }
-                    return healAmt;
-                });
-                c.Emit(OpCodes.Starg, 1);
-                c.Emit(OpCodes.Ldarg_1);
-            }
-            else
-            {
-                Debug.LogError("MoreStats Healing Hook Failed!!!!");
-                Debug.LogError("MoreStats Healing Hook Failed!!!!");
-                Debug.LogError("MoreStats Healing Hook Failed!!!!");
-                Debug.LogError("MoreStats Healing Hook Failed!!!!");
-                Debug.LogError("MoreStats Healing Hook Failed!!!!");
-            }
+                    return healAmt * msc.healingMult;
+                }
+                return healAmt;
+            });
+            c.Emit(OpCodes.Starg, 1);
+            c.Emit(OpCodes.Ldarg_1);
         }
 
         #region events
@@ -245,6 +301,25 @@ namespace MoreStats
             /// </summary>
             public float healingPercentIncreaseMult = 1f;
             #endregion
+
+            #region
+            /// <summary>
+            /// This stat is used for calculating stat bonuses from Scrap - NOT used with printers
+            /// </summary>
+            public int scrapWhiteCountAdd = 0;
+            /// <summary>
+            /// This stat is used for calculating stat bonuses from Scrap - NOT used with printers
+            /// </summary>
+            public int scrapGreenCountAdd = 0;
+            /// <summary>
+            /// This stat is used for calculating stat bonuses from Scrap - NOT used with printers
+            /// </summary>
+            public int scrapRedCountAdd = 0;
+            /// <summary>
+            /// This stat is used for calculating stat bonuses from Scrap - NOT used with printers
+            /// </summary>
+            public int scrapYellowCountAdd = 0;
+            #endregion
         }
         public delegate void MoreStatHookEventHandler(CharacterBody sender, MoreStatHookEventArgs args);
         #endregion
@@ -301,6 +376,7 @@ namespace MoreStats
 
             ProcessLuck(c);
             ProcessMaxJumpCount(c);
+            ProcessScrapCounts(c);
         }
 
         private static void GetStatMods(CharacterBody body)
@@ -312,25 +388,27 @@ namespace MoreStats
             }
         }
 
-        #region barrier
-
+        #region luck
         private static void ProcessLuck(ILCursor c)
         {
             c.Index = 0;
 
-            bool ILFound = c.TryGotoNext(MoveType.Before, x => x.MatchCallOrCallvirt<CharacterMaster>("set_luck"));
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<CharacterMaster>("set_luck")
+                );
 
-            if (ILFound)
+            if (!b)
             {
-                c.EmitDelegate<Func<float>>(() => StatMods.luckAdd);
-                c.Emit(OpCodes.Add);
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessLuck));
+                return;
             }
-            else
-            {
-                Debug.LogError("MORE STATS LUCK STAT HOOK FAILED!!!!");
-            }
+
+            c.EmitDelegate<Func<float>>(() => StatMods.luckAdd);
+            c.Emit(OpCodes.Add);
         }
+        #endregion
 
+        #region barrier
         private static void HookBarrierDecayRate(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -406,39 +484,33 @@ namespace MoreStats
             c.Index = 0;
 
             int featherCountLoc = 0;
-            if(c.TryGotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather")
-                ) &&
-            c.TryGotoNext(MoveType.After,
-                x => x.MatchStloc(out featherCountLoc)
-                ) &&
-            c.TryGotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "Feather"))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchStloc(out featherCountLoc))
+                && c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.baseJumpCount)),
                 x => x.MatchLdloc(featherCountLoc)
-                ))
+                );
+            if (!b)
             {
-                c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<int, CharacterBody, int>>((featherCount, self) =>
-                {
-                    int jumpCount = 0;
-                    MoreStatCoefficients stats = GetMoreStatsFromBody(self);
-                    if (featherCount > 0)
-                    {
-                        jumpCount += BaseStats.FeatherJumpCountBase + BaseStats.FeatherJumpCountStack * (featherCount - 1);
-                    }
-                    jumpCount += StatMods.jumpCountAdd;
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessMaxJumpCount));
+                return;
+            }
 
-                    return Mathf.Max(jumpCount, 0);
-                });
-            }
-            else
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<int, CharacterBody, int>>((featherCount, self) =>
             {
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS JUMP COUNT HOOK FAILED!!!!");
-            }
+                int jumpCount = 0;
+                MoreStatCoefficients stats = GetMoreStatsFromBody(self);
+                if (featherCount > 0)
+                {
+                    jumpCount += BaseStats.FeatherJumpCountBase + BaseStats.FeatherJumpCountStack * (featherCount - 1);
+                }
+                jumpCount += StatMods.jumpCountAdd;
+
+                return Mathf.Max(jumpCount, 0);
+            });
         }
         #endregion
 
@@ -480,29 +552,24 @@ namespace MoreStats
         {
             c.Index = 0;
 
-            if(c.TryGotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_maxShield")
                 ) &&
             c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_outOfDanger")
-                ))
+                );
+            if (!b)
             {
+                MoreStatsPlugin.DebugBreakpoint(nameof(ModifyShieldRechargeReady));
+                return;
+            }
 
-                c.Remove();
-                c.EmitDelegate<Func<CharacterBody, bool>>((body) =>
-                {
-                    MoreStatCoefficients stats = GetMoreStatsFromBody(body);
-                    return stats.shieldRechargeReady;
-                });
-            }
-            else
+            c.Remove();
+            c.EmitDelegate<Func<CharacterBody, bool>>((body) =>
             {
-                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
-                Debug.LogError("MORE STATS SHIELD DECAY HOOK FAILED!!!!");
-            }
+                MoreStatCoefficients stats = GetMoreStatsFromBody(body);
+                return stats.shieldRechargeReady;
+            });
         }
         #endregion
 
@@ -513,15 +580,18 @@ namespace MoreStats
 
             int thresholdPosition = 0;
 
-            c.GotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdcR4(float.NegativeInfinity),
-                x => x.MatchStloc(out thresholdPosition)
-                );
-
-            c.GotoNext(MoveType.Before,
+                x => x.MatchStloc(out thresholdPosition))
+                && c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdarg(0),
                 x => x.MatchCallOrCallvirt<HealthComponent>("get_isInFrozenState")
                 );
+            if (!b)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(InterceptExecutionThreshold));
+                return;
+            }
 
             c.Emit(OpCodes.Ldloc, thresholdPosition);
             c.Emit(OpCodes.Ldarg, 0);
@@ -562,50 +632,74 @@ namespace MoreStats
             return values;
         }
         #endregion
-    }
-    public class MoreStatCoefficients
-    {
-        public bool  barrierDecayFrozen = false;
-        public float barrierDecayDynamicHalfLife = 0;
-        public float barrierGenRate = 0;
-        public float barrierDrainRate = 0;
-        public float barrierDecayMult = 1;
 
-        public float luckFromBody = 0;
-        public float luckFromMaster = 0;
-        public float burnChance = 0;
-        //public float chillChance = 0;
+        #region scrap
 
-        public bool  shieldRechargeReady = true;
-        public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
-        float shieldToHealthConversion = 0;
-
-        public float selfExecutionThresholdAdd = 0;
-        public float selfExecutionThresholdBase = Mathf.NegativeInfinity;
-
-        public float healingMult = 1;
-
-        /// <summary>
-        /// Does not reset luckFromMaster
-        /// </summary>
-        internal void ResetStats()
+        private static void ProcessScrapCounts(ILCursor c)
         {
-            barrierDecayFrozen = false;
-            barrierDecayDynamicHalfLife = 0;
-            barrierGenRate = 0;
+            ProcessScrapCount(nameof(RoR2Content.Items.ScrapWhite), (scrapCount, self) =>
+            {
+                MoreStatCoefficients stats = GetMoreStatsFromBody(self);
+                stats.bodyScrapWhiteCount = scrapCount + StatMods.scrapWhiteCountAdd;
+                if(BaseStats.IncludeStrangeScrapInScrapTotal)
+                    stats.bodyScrapWhiteCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapWhiteSuppressed);
 
-            luckFromBody = 0;
+                return scrapCount + stats.bodyScrapWhiteCount;
+            });
+            ProcessScrapCount(nameof(RoR2Content.Items.ScrapGreen), (scrapCount, self) =>
+            {
+                MoreStatCoefficients stats = GetMoreStatsFromBody(self);
+                stats.bodyScrapGreenCount = scrapCount + StatMods.scrapGreenCountAdd;
+                if (BaseStats.IncludeStrangeScrapInScrapTotal)
+                    stats.bodyScrapGreenCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapGreenSuppressed);
 
-            burnChance = 0;
-            //chillChance = 0;     
-            
-            shieldRechargeReady = true;
-            shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
+                return scrapCount + stats.bodyScrapWhiteCount;
+            });
+            ProcessScrapCount(nameof(RoR2Content.Items.ScrapRed), (scrapCount, self) =>
+            {
+                MoreStatCoefficients stats = GetMoreStatsFromBody(self);
+                stats.bodyScrapRedCount = scrapCount + StatMods.scrapRedCountAdd;
+                if (BaseStats.IncludeStrangeScrapInScrapTotal)
+                    stats.bodyScrapRedCount += self.inventory.GetItemCountEffective(DLC1Content.Items.ScrapRedSuppressed);
 
-            selfExecutionThresholdAdd = 0;
-            selfExecutionThresholdBase = 0;
+                return scrapCount + stats.bodyScrapWhiteCount;
+            });
+            ProcessScrapCount(nameof(RoR2Content.Items.ScrapYellow), (scrapCount, self) =>
+            {
+                MoreStatCoefficients stats = GetMoreStatsFromBody(self);
+                stats.bodyScrapYellowCount = scrapCount + StatMods.scrapYellowCountAdd;
 
-            healingMult = 1;
+                return scrapCount + stats.bodyScrapWhiteCount;
+            });
+            void ProcessScrapCount(string scrapName, Func<int, CharacterBody, int> callback)
+            {
+                c.Index = 0;
+                bool b = c.TryGotoNext(MoveType.After,
+                    x => x.MatchLdsfld("RoR2.RoR2Content/Items", scrapName))
+                    && c.TryGotoNext(MoveType.Before,
+                    x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
+                    );
+
+                if (!b)
+                {
+                    MoreStatsPlugin.DebugBreakpoint($"{nameof(ProcessScrapCount)}/{scrapName}");
+                    return;
+                }
+
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate(callback);
+            }
         }
+
+        private static void DrifterUpdateScrapCounts(On.RoR2.DrifterTrashToTreasureController.orig_OnInventoryChanged orig, DrifterTrashToTreasureController self)
+        {
+            MoreStatCoefficients stats = GetMoreStatsFromBody(self.body);
+
+            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureWhite.buffIndex, stats.bodyScrapWhiteCount);
+            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureGreen.buffIndex, stats.bodyScrapGreenCount);
+            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureRed.buffIndex, stats.bodyScrapRedCount);
+            self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureYellow.buffIndex, stats.bodyScrapRedCount);
+        }
+        #endregion
     }
 }

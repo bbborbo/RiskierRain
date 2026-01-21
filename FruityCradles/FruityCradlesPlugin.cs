@@ -16,6 +16,7 @@ namespace FruityCradles
     //[BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     //[BepInDependency(MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SoulCostPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.Gorakh.ItemQualities", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
     //[R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]

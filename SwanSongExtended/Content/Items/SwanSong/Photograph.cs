@@ -103,7 +103,7 @@ namespace SwanSongExtended.Items
             if (itemCount <= 0)
                 return;
 
-            float critBonus = photographCritBase + (photographCritFreeStack * (itemCount - 1));
+            float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
             int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
             int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
             int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);

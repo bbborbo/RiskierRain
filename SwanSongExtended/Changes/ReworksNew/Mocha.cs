@@ -154,6 +154,7 @@ namespace SwanSongExtended.Changes
 
         private void Start()
         {
+            OnInventoryRefresh();
         }
         private void OnDestroy()
         {

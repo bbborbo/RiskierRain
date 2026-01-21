@@ -107,7 +107,9 @@ namespace FruityCradles
 
                 List<UniquePickup> drops = new List<UniquePickup>();
 
-                UniquePickup initialDrop = self.dropTable.GeneratePickupPreReplacement(self.rng);
+                bool canBeReplaced = self.dropTable.canDropBeReplaced;
+                self.dropTable.canDropBeReplaced = false;
+                UniquePickup initialDrop = self.dropTable.GeneratePickup(self.rng);
                 drops.Add(initialDrop);
 
                 ItemDef.Pair[] voidPairs = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem];
@@ -131,6 +133,7 @@ namespace FruityCradles
 
                 self.generatedPickups = drops;
                 RandomlyLunarUtils.CheckForLunarReplacementUniqueArray<List<UniquePickup>>(self.generatedPickups, self.rng);
+                self.dropTable.canDropBeReplaced = canBeReplaced;
                 return;
             }
             orig(self);

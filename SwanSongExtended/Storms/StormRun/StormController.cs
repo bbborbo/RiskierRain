@@ -301,7 +301,7 @@ namespace SwanSongExtended.Storms
                 }
 
                 //thisa is just for meteor stuff; we can make it work for the other storsm when they start existing lol.
-                this.waveTimer -= GetRunDeltaTime();
+                this.waveTimer -= Time.fixedDeltaTime;
                 if (this.waveTimer <= 0f)
                 {
                     this.waveTimer = UnityEngine.Random.Range(waveMinInterval, waveMaxInterval) / (1 + stormStrength);

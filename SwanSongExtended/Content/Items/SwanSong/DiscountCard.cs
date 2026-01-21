@@ -35,6 +35,7 @@ namespace SwanSongExtended.Items
         public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlDiscountCard.prefab");
 
         public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/discountcard.png");
+        public override bool CanBeTemporary => false;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

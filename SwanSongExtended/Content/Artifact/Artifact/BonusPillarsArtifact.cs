@@ -23,7 +23,7 @@ namespace SwanSongExtended.Artifacts
         bool useBasicObjective = false;
 
         static string objectiveToken = "OBJECTIVE_BONUSPILLARS";
-        static string objectiveDesc = "Charge the Pillar of Creation";
+        static string objectiveDesc = $"Charge the Pillar{(pillarsPerStage > 1 ? "s" : "")} of Creation";
 
         public override string ArtifactName => "the Inventor";
 

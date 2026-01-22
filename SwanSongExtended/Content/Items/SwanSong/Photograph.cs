@@ -9,11 +9,14 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using static SwanSongExtended.Modules.Language.Styling;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace SwanSongExtended.Items
 {
     class Photograph : ItemBase<Photograph>
     {
+        public static WeightedSelection<string> printerSpawncardPaths;
+
         public static BuffDef photographCritBuff;
         public static float photographCritFreeBase = 0f;
         public static float photographCritFreeStack = 0f;
@@ -58,13 +61,41 @@ namespace SwanSongExtended.Items
                 false,
                 BuffDef.StackingDisplayMethod.Percentage
                 );
+            printerSpawncardPaths = new WeightedSelection<string>();
+            printerSpawncardPaths.AddChoice(RoR2_Base_Duplicator.iscDuplicator_asset, 8);
+            printerSpawncardPaths.AddChoice(RoR2_Base_DuplicatorLarge.iscDuplicatorLarge_asset, 4);
+            printerSpawncardPaths.AddChoice(RoR2_Base_DuplicatorMilitary.iscDuplicatorMilitary_asset, 2);
             base.Init();
         }
 
         public override void Hooks()
         {
+            RoR2.Stage.onServerStageBegin += PhotographPrinterSpawn;
             On.RoR2.Items.MultiShopCardUtils.OnNonMoneyPurchase += PhotographOnNonMoneyPurchase;
             GetStatCoefficients += PhotographCritBonus;
+        }
+
+        private void PhotographPrinterSpawn(Stage obj)
+        {
+            Xoroshiro128Plus rng = Run.instance.stageRng;
+            DirectorPlacementRule placementRule = new DirectorPlacementRule
+            {
+                placementMode = 
+                    SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh 
+                        ? DirectorPlacementRule.PlacementMode.RandomNormalized 
+                        : DirectorPlacementRule.PlacementMode.Random
+            };
+
+            string path = printerSpawncardPaths.Evaluate(rng.nextNormalizedFloat);
+            InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(path).WaitForCompletion();
+            DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
+
+            GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            //if (pillarObject)
+            //{
+            //    createdPillarObjects.Add(pillarObject);
+            //    pillarTypeSpawnCount[pillarIndex]++;
+            //}
         }
 
         private void PhotographCritBonus(CharacterBody sender, StatHookEventArgs args)

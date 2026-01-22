@@ -887,6 +887,103 @@ namespace RiskierRain
             c.Next.Operand = 1 - warpedEchoDamageReduction;
         }
         #endregion
+
+        #region elusive antlers
+        public static float elusiveAntlersPickupDuration = 24f;//60f
+        public static float elusiveAntlersBuffDuration = 18f;//12f
+        public static float elusiveAntlersPickupInterval = 15f;//10f
+        public static float elusiveAntlersPickupIntervalReductionStack = 0.1f;//0.1f
+        public static float elusiveAntlersMoveSpeedPerBuff = hoofSpeedBonusBase / 2;
+        public static float elusiveAntlersFreeMovespeedBase = hoofSpeedBonusBase / 2;
+        public static float elusiveAntlersFreeMovespeedStack = hoofSpeedBonusStack / 2;
+        public static void ElusiveAntlersChanges()
+        {
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.ElusiveAntlersPickup_prefab, (pickupObject) =>
+            {
+                if(pickupObject.TryGetComponent(out BeginRapidlyActivatingAndDeactivating flasher))
+                {
+                    flasher.delayBeforeBeginningBlinking = elusiveAntlersPickupDuration - 2;
+                }
+            });
+            On.RoR2.ElusiveAntlersPickup.Start += ElusiveAntlersPickupStats;
+            IL.RoR2.CharacterBody.RecalculateStats += ElusiveAntlersBuffMoveSpeed;
+            IL.RoR2.ElusiveAntlersBehavior.FixedUpdate += ElusiveAntlersPickupInterval;
+            GetStatCoefficients += ElusiveAntlersBaseMovespeed;
+
+            LanguageAPI.Add("ITEM_SPEEDBOOSTPICKUP_DESC",
+                $"Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>{Tools.ConvertDecimal(elusiveAntlersFreeMovespeedBase)}</style> " +
+                $"<style=cStack>(+{Tools.ConvertDecimal(elusiveAntlersFreeMovespeedStack)} per stack)</style>." +
+                $"Every <style=cIsUtility>{elusiveAntlersPickupInterval}s</style> " +
+                $"<style=cStack>(-{Tools.ConvertDecimal(elusiveAntlersPickupIntervalReductionStack)} per stack)</style>, " +
+                $"spawn an orb of energy nearby granting " +
+                $"<style=cIsUtility>+{Tools.ConvertDecimal(elusiveAntlersMoveSpeedPerBuff)} movement speed</style> up to " +
+                $"<style=cIsUtility>3 <style=cStack>(+3 per stack)</style> " +
+                $"times</style> for <style=cIsUtility>{elusiveAntlersBuffDuration}s</style>.");
+        }
+
+        private static void ElusiveAntlersPickupInterval(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchStfld<ElusiveAntlersBehavior>(nameof(ElusiveAntlersBehavior.spawnTimer))
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(ElusiveAntlersPickupInterval));
+                return;
+            }
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Action<ElusiveAntlersBehavior>>((self) =>
+            {
+                float interval = elusiveAntlersPickupInterval;
+                if (self.body.inventory)
+                {
+                    int itemCount = self.body.inventory.GetItemCountEffective(DLC2Content.Items.SpeedBoostPickup);
+                    if(itemCount > 1)
+                    {
+                        interval *= Mathf.Pow(1 - elusiveAntlersPickupIntervalReductionStack, itemCount - 1);
+                    }
+                }
+                self.spawnTimer = interval;
+            });
+        }
+
+        private static void ElusiveAntlersPickupStats(On.RoR2.ElusiveAntlersPickup.orig_Start orig, ElusiveAntlersPickup self)
+        {
+            self.despawnMinAge = elusiveAntlersPickupDuration;
+            self.shardPickupBuffTimeSeconds = elusiveAntlersBuffDuration;
+            orig(self);
+        }
+
+        private static void ElusiveAntlersBuffMoveSpeed(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Buffs", nameof(DLC2Content.Buffs.ElusiveAntlersBuff)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(ElusiveAntlersBuffMoveSpeed));
+                return;
+            }
+            c.Next.Operand = elusiveAntlersMoveSpeedPerBuff;
+        }
+
+        private static void ElusiveAntlersBaseMovespeed(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (!sender.inventory)
+                return;
+            int itemCount = sender.inventory.GetItemCountEffective(DLC2Content.Items.SpeedBoostPickup);
+            if(itemCount > 0)
+            {
+                args.moveSpeedMultAdd += elusiveAntlersFreeMovespeedBase + elusiveAntlersFreeMovespeedStack * (itemCount - 1);
+            }
+        }
+        #endregion
     }
 
 }

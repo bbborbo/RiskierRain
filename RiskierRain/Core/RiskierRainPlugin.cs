@@ -390,9 +390,13 @@ namespace RiskierRain
             {
                 ChanceDollChanges();
             }
-            if(GetConfigBool(true, "Warped Echo"))
+            if (GetConfigBool(true, "Warped Echo"))
             {
                 WarpedEchoChanges();
+            }
+            if (GetConfigBool(true, "Elusive Antlers"))
+            {
+                ElusiveAntlersChanges();
             }
 
             if (GetConfigBool(true, "Command/Potential Armor"))

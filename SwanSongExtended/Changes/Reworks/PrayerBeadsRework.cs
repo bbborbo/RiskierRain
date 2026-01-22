@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static SwanSongExtended.Modules.Language.Styling;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended
 {
@@ -27,6 +28,7 @@ namespace SwanSongExtended
             On.RoR2.CharacterMaster.TrackBeadExperience += (orig, self, idk) => { };
             IL.RoR2.CharacterBody.RecalculateStats += ChangeBeadAppliedStats;
             On.RoR2.ExperienceManager.AwardExperience += BeadExperience;
+            GetMoreStatCoefficients += BeadScrapCount;
 
             LanguageAPI.Add("ITEM_EXTRASTATSONLEVELUP_PICKUP", 
                 "Prioritized when used with <style=cIsHealing>Uncommon</style> 3D Printers. Permanently increase ALL stats after removal.");
@@ -36,6 +38,14 @@ namespace SwanSongExtended
                 $"<style=cIsUtility>experience gain</style>, " +
                 $"<style=cIsHealing>health</style>, <style=cIsHealing>shield</style>, " +
                 $"<style=cIsHealing>regeneration</style>, and <style=cIsDamage>damage</style>.");
+        }
+
+        private void BeadScrapCount(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.inventory)
+            {
+                args.scrapGreenCountAdd += sender.inventory.GetItemCountEffective(DLC2Content.Items.ExtraStatsOnLevelUp);
+            }
         }
 
         private void BeadExperience(On.RoR2.ExperienceManager.orig_AwardExperience orig, ExperienceManager self, Vector3 origin, CharacterBody body, ulong amount)

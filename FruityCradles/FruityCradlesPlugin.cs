@@ -16,6 +16,7 @@ namespace FruityCradles
     //[BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     //[BepInDependency(MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SoulCostPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.Gorakh.ItemQualities", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
     //[R2APISubmoduleDependency(nameof(LanguageAPI), nameof(ContentAddition), nameof(DamageAPI))]
@@ -106,7 +107,9 @@ namespace FruityCradles
 
                 List<UniquePickup> drops = new List<UniquePickup>();
 
-                UniquePickup initialDrop = self.dropTable.GeneratePickupPreReplacement(self.rng);
+                bool canBeReplaced = self.dropTable.canDropBeReplaced;
+                self.dropTable.canDropBeReplaced = false;
+                UniquePickup initialDrop = self.dropTable.GeneratePickup(self.rng);
                 drops.Add(initialDrop);
 
                 ItemDef.Pair[] voidPairs = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem];
@@ -130,6 +133,7 @@ namespace FruityCradles
 
                 self.generatedPickups = drops;
                 RandomlyLunarUtils.CheckForLunarReplacementUniqueArray<List<UniquePickup>>(self.generatedPickups, self.rng);
+                self.dropTable.canDropBeReplaced = canBeReplaced;
                 return;
             }
             orig(self);

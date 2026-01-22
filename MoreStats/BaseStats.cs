@@ -19,5 +19,7 @@ namespace MoreStats
 
         public static int FeatherJumpCountBase = 1;
         public static int FeatherJumpCountStack = 1;
+
+        public static bool IncludeStrangeScrapInScrapTotal = true;
     }
 }

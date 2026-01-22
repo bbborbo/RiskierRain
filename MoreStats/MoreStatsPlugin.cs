@@ -2,6 +2,7 @@
 using System;
 using System.Security;
 using System.Security.Permissions;
+using UnityEngine;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -18,7 +19,7 @@ namespace MoreStats
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "MoreStats";
-        public const string version = "1.2.5";
+        public const string version = "1.3.0";
         #endregion
 
         void Awake()
@@ -26,6 +27,13 @@ namespace MoreStats
             StatHooks.Init();
             OnHit.Init();
             OnJump.Init();
+        }
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
         }
     }
 }

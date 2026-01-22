@@ -11,6 +11,7 @@ using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using System.Linq;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Items
 {
@@ -70,6 +71,17 @@ namespace SwanSongExtended.Items
             On.RoR2.CostTypeDef.IsAffordable += SuperScrapIsAffordable;
             On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
             On.RoR2.CharacterMaster.TryRegenerateScrap += SuperScrapRegenerate;
+            GetMoreStatCoefficients += ChimeraScrapCount;
+        }
+        private void ChimeraScrapCount(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.inventory)
+            {
+                args.scrapWhiteCountAdd += GetCount(sender) * regenScrapCommonCredit;
+                args.scrapGreenCountAdd += GetCount(sender) * regenScrapUncommonCredit;
+                args.scrapRedCountAdd += GetCount(sender) * regenScrapRareCredit;
+                args.scrapYellowCountAdd += GetCount(sender) * regenScrapBossCredit;
+            }
         }
 
         public override void Init()

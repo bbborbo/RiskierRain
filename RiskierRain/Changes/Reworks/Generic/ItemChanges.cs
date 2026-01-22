@@ -908,9 +908,9 @@ namespace RiskierRain
         public static float elusiveAntlersBuffDuration = 18f;//12f
         public static float elusiveAntlersPickupInterval = 15f;//10f
         public static float elusiveAntlersPickupIntervalReductionStack = 0.1f;//0.1f
-        public static float elusiveAntlersMoveSpeedPerBuff = hoofSpeedBonusBase / 2;
-        public static float elusiveAntlersFreeMovespeedBase = hoofSpeedBonusBase / 2;
-        public static float elusiveAntlersFreeMovespeedStack = hoofSpeedBonusStack / 2;
+        public static float elusiveAntlersMoveSpeedPerBuff = 0.06f; //0.12f
+        public static float elusiveAntlersFreeMovespeedBase = 0.06f; //0f
+        public static float elusiveAntlersFreeMovespeedStack = 0.06f; //0f
         public static void ElusiveAntlersChanges()
         {
             LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.ElusiveAntlersPickup_prefab, (pickupObject) =>
@@ -926,12 +926,12 @@ namespace RiskierRain
             GetStatCoefficients += ElusiveAntlersBaseMovespeed;
 
             LanguageAPI.Add("ITEM_SPEEDBOOSTPICKUP_DESC",
-                $"Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>{Tools.ConvertDecimal(elusiveAntlersFreeMovespeedBase)}</style> " +
-                $"<style=cStack>(+{Tools.ConvertDecimal(elusiveAntlersFreeMovespeedStack)} per stack)</style>." +
+                $"Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>{elusiveAntlersFreeMovespeedBase * 100}%</style> " +
+                $"<style=cStack>(+{elusiveAntlersFreeMovespeedStack * 100}% per stack)</style>. " +
                 $"Every <style=cIsUtility>{elusiveAntlersPickupInterval}s</style> " +
-                $"<style=cStack>(-{Tools.ConvertDecimal(elusiveAntlersPickupIntervalReductionStack)} per stack)</style>, " +
+                $"<style=cStack>(-{elusiveAntlersPickupIntervalReductionStack * 100}% per stack)</style>, " +
                 $"spawn an orb of energy nearby granting " +
-                $"<style=cIsUtility>+{Tools.ConvertDecimal(elusiveAntlersMoveSpeedPerBuff)} movement speed</style> up to " +
+                $"<style=cIsUtility>+{elusiveAntlersMoveSpeedPerBuff * 100}% movement speed</style> up to " +
                 $"<style=cIsUtility>3 <style=cStack>(+3 per stack)</style> " +
                 $"times</style> for <style=cIsUtility>{elusiveAntlersBuffDuration}s</style>.");
         }

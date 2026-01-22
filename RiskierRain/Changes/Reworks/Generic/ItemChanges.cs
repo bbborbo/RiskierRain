@@ -776,6 +776,84 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region Chance Doll
+        public static int chanceDollChanceBase = 30;
+        public static int chanceDollChanceStack = 15;
+        public static void ChanceDollChanges()
+        {
+            IL.RoR2.ShrineChanceBehavior.AddShrineStack += ChanceDollActivationChance;
+            Stage.onServerStageBegin += ChanceDollShrineSpawn;
+
+            LanguageAPI.Add("ITEM_EXTRASHRINEITEM_PICKUP", "Gain a chance for higher rarity items from Shrines of Chance.");
+            LanguageAPI.Add("ITEM_EXTRASHRINEITEM_DESC", 
+                $"On Shrine of Chance success, " +
+                $"<style=cIsUtility>{chanceDollChanceBase}%</style> " +
+                $"<style=cStack>(+{chanceDollChanceStack}% per stack)</style> " +
+                $"chance to get higher rarity items.");
+        }
+
+        private static void ChanceDollActivationChance(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int dollCountLoc = 5;
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Items", nameof(DLC2Content.Items.ExtraShrineItem)),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective)),
+                x => x.MatchStloc(out dollCountLoc))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcI4(out _),
+                x => x.MatchLdloc(dollCountLoc),
+                x => x.MatchLdcI4(out _)
+                );
+
+            if (!b)
+            {
+                DebugBreakpoint(nameof(ChanceDollActivationChance), 1);
+                return;
+            }
+            c.Next.Operand = chanceDollChanceBase;
+            c.Index += 2;
+            c.Next.Operand = chanceDollChanceStack;
+
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchAdd(),
+                x => x.MatchConvR4()
+                );
+            if(!b1)
+            {
+                DebugBreakpoint(nameof(ChanceDollActivationChance), 2);
+                return;
+            }
+            c.EmitDelegate<Func<float, float>>(Util.ConvertAmplificationPercentageIntoReductionPercentage);
+        }
+
+        private static void ChanceDollShrineSpawn(Stage currentStage)
+        {
+            Xoroshiro128Plus rng = Run.instance.stageRng;
+            DirectorPlacementRule placementRule = new DirectorPlacementRule
+            {
+                placementMode =
+                    SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh
+                        ? DirectorPlacementRule.PlacementMode.RandomNormalized
+                        : DirectorPlacementRule.PlacementMode.Random
+            };
+
+            string path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChance_asset;//printerSpawncardPaths.Evaluate(rng.nextNormalizedFloat);
+            if (currentStage.sceneDef.baseSceneName == "goolake"
+                || currentStage.sceneDef.baseSceneName == "ironalluvium")
+                path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSandy_asset;
+            else if (currentStage.sceneDef.baseSceneName == "snowyforest"
+                || currentStage.sceneDef.baseSceneName == "nest"
+                || currentStage.sceneDef.baseSceneName == "frozenwall")
+                path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSnowy_asset;
+            InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(path).WaitForCompletion();
+            DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
+
+            GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+        }
+        #endregion
     }
 
 }

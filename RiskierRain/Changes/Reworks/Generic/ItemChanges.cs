@@ -854,6 +854,39 @@ namespace RiskierRain
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
         }
         #endregion
+
+        #region warped echo
+
+        public static float warpedEchoDamageReduction = 0.3f;
+        public static void WarpedEchoChanges()
+        {
+            IL.RoR2.HealthComponent.TakeDamageProcess += WarpedEchoDamageReduction;
+
+            LanguageAPI.Add("ITEM_DELAYEDDAMAGE_DESC",
+                $"The next source of damage is <style=cIsHealing>reduced</style> by " +
+                $"<style=cIsHealing>{warpedEchoDamageReduction * 100}%</style> and " +
+                $"<style=cIsHealing>spread</style> into <style=cIsUtility>3 <style=cStack>(+1 per stack)</style> hits</style>. " +
+                $"Recharges every <style=cIsUtility>15s</style>.");
+        }
+
+        private static void WarpedEchoDamageReduction(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Items", nameof(DLC2Content.Items.DelayedDamage)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(0.9f)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(WarpedEchoDamageReduction));
+                return;
+            }
+
+            c.Next.Operand = 1 - warpedEchoDamageReduction;
+        }
+        #endregion
     }
 
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static SwanSongExtended.Modules.Language.Styling;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Changes
 {
@@ -40,6 +41,15 @@ namespace SwanSongExtended.Changes
             On.RoR2.CharacterMaster.TrackBeadExperience += (orig, self, idk) => { };
             IL.RoR2.CharacterBody.RecalculateStats += ChangeBeadAppliedStats;
             On.RoR2.ExperienceManager.AwardExperience += BeadExperience;
+            GetMoreStatCoefficients += BeadScrapCount;
+        }
+
+        private void BeadScrapCount(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.inventory)
+            {
+                args.scrapGreenCountAdd += sender.inventory.GetItemCountEffective(DLC2Content.Items.ExtraStatsOnLevelUp);
+            }
         }
 
         private void BeadExperience(On.RoR2.ExperienceManager.orig_AwardExperience orig, ExperienceManager self, Vector3 origin, CharacterBody body, ulong amount)

@@ -382,12 +382,24 @@ namespace RiskierRain
             {
                 BuffBottledChaos();
             }
-            if(GetConfigBool(true, "Sale Star"))
+            if (GetConfigBool(true, "Sale Star"))
             {
                 SaleStarChanges();
             }
+            if (GetConfigBool(true, "Chance Doll"))
+            {
+                ChanceDollChanges();
+            }
+            if (GetConfigBool(true, "Warped Echo"))
+            {
+                WarpedEchoChanges();
+            }
+            if (GetConfigBool(true, "Elusive Antlers"))
+            {
+                ElusiveAntlersChanges();
+            }
 
-            if(GetConfigBool(true, "Command/Potential Armor"))
+            if (GetConfigBool(true, "Command/Potential Armor"))
             {
                 On.RoR2.UI.PickupPickerPanel.Awake += CommandOrPotentialArmor;
                 void CommandOrPotentialArmor(On.RoR2.UI.PickupPickerPanel.orig_Awake orig, RoR2.UI.PickupPickerPanel self)

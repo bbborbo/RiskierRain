@@ -114,8 +114,8 @@ namespace RiskierRain
         #endregion
 
         #region mobility
-        public static float hoofSpeedBonusBase = 0.1f; //0.14
-        public static float hoofSpeedBonusStack = 0.1f; //0.14
+        public static float hoofSpeedBonusBase = 0.14f; //0.14
+        public static float hoofSpeedBonusStack = 0.14f; //0.14
         private void GoatHoofNerf()
         {
             IL.RoR2.CharacterBody.RecalculateStats += HoofNerf;

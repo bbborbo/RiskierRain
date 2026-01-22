@@ -60,6 +60,22 @@ namespace SwanSongExtended.Changes
             $"Using {UtilityColor("any interactable")} while this buff is active will extend the duration of the buff " +
             $"by {UtilityColor($"{mochaDurationOnPurchase} seconds")}.";
 
+        public override void Init()
+        {
+            mochaBuffActive = Content.CreateAndAddBuff(
+                "bdCoffeeActive",
+                mochaCustomSprite,
+                new Color(0.6f, 0.3f, 0.1f),
+                true, false
+                );
+            mochaBuffInactive = Content.CreateAndAddBuff(
+                "bdCoffeeInctive",
+                mochaCustomSprite,
+                new Color(0.1f, 0.1f, 0.2f),
+                false, false
+                );
+            base.Init();
+        }
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;

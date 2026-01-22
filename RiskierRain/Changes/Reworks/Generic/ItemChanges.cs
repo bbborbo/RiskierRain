@@ -817,7 +817,7 @@ namespace RiskierRain
             c.Index += 2;
             c.Next.Operand = chanceDollChanceStack;
 
-            bool b1 = c.TryGotoNext(MoveType.Before,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchAdd(),
                 x => x.MatchConvR4()
                 );
@@ -831,6 +831,21 @@ namespace RiskierRain
 
         private static void ChanceDollShrineSpawn(Stage currentStage)
         {
+            if (!Run.instance)
+                return;
+
+            SceneDef currentScene = currentStage.sceneDef;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.UntimedStage
+                || currentScene.sceneType == SceneType.Junk)
+                return;
+
+            int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, DLC2Content.Items.ExtraShrineItem.itemIndex, true, true);
+            if (itemCount <= 0)
+                return;
+
             Xoroshiro128Plus rng = Run.instance.stageRng;
             DirectorPlacementRule placementRule = new DirectorPlacementRule
             {
@@ -841,12 +856,12 @@ namespace RiskierRain
             };
 
             string path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChance_asset;//printerSpawncardPaths.Evaluate(rng.nextNormalizedFloat);
-            if (currentStage.sceneDef.baseSceneName == "goolake"
-                || currentStage.sceneDef.baseSceneName == "ironalluvium")
+            if (currentScene.baseSceneName == "goolake"
+                || currentScene.baseSceneName == "ironalluvium")
                 path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSandy_asset;
-            else if (currentStage.sceneDef.baseSceneName == "snowyforest"
-                || currentStage.sceneDef.baseSceneName == "nest"
-                || currentStage.sceneDef.baseSceneName == "frozenwall")
+            else if (currentScene.baseSceneName == "snowyforest"
+                || currentScene.baseSceneName == "nest"
+                || currentScene.baseSceneName == "frozenwall")
                 path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSnowy_asset;
             InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(path).WaitForCompletion();
             DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);

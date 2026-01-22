@@ -75,8 +75,23 @@ namespace SwanSongExtended.Items
             GetStatCoefficients += PhotographCritBonus;
         }
 
-        private void PhotographPrinterSpawn(Stage obj)
+        private void PhotographPrinterSpawn(Stage currentStage)
         {
+            if (!Run.instance)
+                return;
+
+            SceneDef currentScene = currentStage.sceneDef;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.UntimedStage
+                || currentScene.sceneType == SceneType.Junk)
+                return;
+
+            int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, instance.ItemsDef.itemIndex, true, true);
+            if (itemCount <= 0)
+                return;
+
             Xoroshiro128Plus rng = Run.instance.stageRng;
             DirectorPlacementRule placementRule = new DirectorPlacementRule
             {

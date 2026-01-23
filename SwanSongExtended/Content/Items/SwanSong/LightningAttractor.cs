@@ -12,6 +12,8 @@ using UnityEngine.Networking;
 using RoR2.Orbs;
 using static RoR2.CharacterBody;
 using RoR2.Items;
+using System.Linq;
+
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
@@ -126,10 +128,19 @@ With your agreement to purchase and use this product, CuCo is released of liabil
             TeamMask teamMask = TeamMask.GetEnemyTeams(attackerBody.teamComponent.teamIndex);
             List<HurtBox> hurtBoxesList = new List<HurtBox>();
 
-            sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
+            sphereSearch
+                .RefreshCandidates()
+                .FilterCandidatesByHurtBoxTeam(teamMask)
+                .FilterCandidatesByDistinctHurtBoxEntities()
+                .GetHurtBoxes(hurtBoxesList);
+            hurtBoxesList.RemoveAll((hurtBox) => victimBody.hurtBoxGroup.hurtBoxes.Contains(hurtBox));
 
-            int i = UnityEngine.Random.Range(0, hurtBoxesList.Count);
-            HurtBox targetHurtBox = hurtBoxesList[i];
+            HurtBox targetHurtBox = victimBody.mainHurtBox;
+            if(hurtBoxesList.Count > 0)
+            {
+                int i = UnityEngine.Random.Range(0, hurtBoxesList.Count);
+                targetHurtBox = hurtBoxesList[i];
+            }
             SetStateOnHurt component = targetHurtBox.healthComponent.GetComponent<SetStateOnHurt>();
             if (component)
             {
@@ -153,6 +164,7 @@ With your agreement to purchase and use this product, CuCo is released of liabil
     {
 
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
+        private static ItemDef GetItemDef() => LightningAttractor.instance.ItemsDef;
 
         private void FixedUpdate()
         {

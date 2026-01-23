@@ -225,5 +225,46 @@ namespace SwanSongExtended
             if (skillSlot != null)
                 skillSlot.cooldownScale *= cooldownScale;
         }
+        /// <summary>
+        /// i have no idea what kind of series this is but its like
+        /// 1x = up to 100%,
+        /// 2x = up to 300%,
+        /// 3x = up to 600%,
+        /// 4x = up to 1000%,
+        /// 5x = up to 1500%,
+        /// 6x = up to 2100%,
+        /// etc
+        /// </summary>
+        public static int CountOverspillTriangular(float totalValue, float incrementor = 1f)
+        {
+            int count = 0;
+            while (totalValue > 0)
+            {
+                count++;
+                totalValue -= incrementor * count;
+            }
+            return count;
+        }
+        /// <summary>
+        /// 1x = up to 100%,
+        /// 2x = up to 300%,
+        /// 3x = up to 500%,
+        /// 4x = up to 800%,
+        /// 5x = up to 1300%,
+        /// 6x = up to 2100%,
+        /// etc
+        /// </summary>
+        public static int CountOverspillFibonacci(float totalValue, float baseIncrementor = 1f)
+        {
+            int lastIncrementor = 1;
+            int currentIncrementor = 1;
+            int count = 0;
+            while (totalValue > currentIncrementor * baseIncrementor)
+            {
+                currentIncrementor += lastIncrementor;
+                lastIncrementor = currentIncrementor - lastIncrementor;
+            }
+            return count;
+        }
     }
 }

@@ -149,19 +149,9 @@ With your agreement to purchase and use this product, CuCo is released of liabil
                 //if the next hit goes over the attack requirement, do lightning
                 //otherwise, extend all fork hit counts
                 //i do it this way so the fork attack count always stays at or above 1
-                int overspillHitCount = CalculateOverspillCount(damageInfo.damage, attackerBody.damage);// Mathf.FloorToInt(damageInfo.damage / (attackerBody.damage * 2f));
-                int CalculateOverspillCount(float attackDamage, float baseDamage)
-                {
-                    int count = 0;
-                    float idek = baseDamage * 2;
-                    while (attackDamage >= idek)
-                    {
-                        count++;
-                        attackDamage -= idek;
-                        idek += baseDamage * 2;
-                    }
-                    return count;
-                }
+                float damageCoefficient = damageInfo.damage / attackerBody.damage;
+                int overspillHitCount = Tools.CountOverspillFibonacci(damageCoefficient, 1f);// Mathf.FloorToInt(damageInfo.damage / (attackerBody.damage * 2f));
+
                 if(forkHits + overspillHitCount >= forkAttackRequirement)
                 {
                     int a = forkAttackRequirement;

@@ -779,9 +779,15 @@ namespace RiskierRain
 
         #region Chance Doll
         public static int chanceDollChanceBase = 30;
-        public static int chanceDollChanceStack = 15;
+        public static int chanceDollChanceStack = 30;
         public static void ChanceDollChanges()
         {
+            LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_ExtraShrineItem.dtChanceDoll_asset, (dropTable) =>
+            {
+                dropTable.tier2Weight = 0.65f;//0.79f
+                dropTable.tier3Weight = 0.30f;//0.20f
+                dropTable.bossWeight = 0.05f;//0.01f
+            });
             IL.RoR2.ShrineChanceBehavior.AddShrineStack += ChanceDollActivationChance;
             Stage.onServerStageBegin += ChanceDollShrineSpawn;
 

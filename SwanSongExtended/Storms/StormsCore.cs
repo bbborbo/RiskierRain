@@ -203,7 +203,6 @@ namespace SwanSongExtended.Storms
             erc.requiredExpansion = SwanSongPlugin.expansionDefSS2;
 
             StormsRunBehaviorPrefab.AddComponent<StormRunBehavior>();
-            StormsRunBehaviorPrefab.AddComponent<NetworkIdentity>();
 
             SwanSongPlugin.expansionDefSS2.runBehaviorPrefab = StormsRunBehaviorPrefab;
 
@@ -223,11 +222,10 @@ namespace SwanSongExtended.Storms
 
                     directorInstanceFound = true;
                     cd.onSpawnedServer.AddListener(OnStormDirectorSpawnServer);
-
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(component);
+                    UnityEngine.Object.DestroyImmediate(component);
                 }
             }
 
@@ -236,8 +234,10 @@ namespace SwanSongExtended.Storms
             esm.mainStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
             StormsControllerPrefab.AddComponent<StormController>();
             StormsControllerPrefab.AddComponent<NetworkIdentity>();
+            StormsControllerPrefab.AddComponent<NetworkStateMachine>().stateMachines = new EntityStateMachine[] { esm };
 
             Content.AddNetworkedObjectPrefab(StormsRunBehaviorPrefab);
+            Content.AddNetworkedObjectPrefab(StormsControllerPrefab);
             Content.AddEntityState(typeof(StormController.IdleState));
             Content.AddEntityState(typeof(StormController.StormApproach));
             Content.AddEntityState(typeof(StormController.StormWarning));

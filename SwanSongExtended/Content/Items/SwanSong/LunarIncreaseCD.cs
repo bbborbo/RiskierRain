@@ -105,6 +105,19 @@ namespace SwanSongExtended.Items
                 float cdIncreaseAmount = cdIncreaseBase + (cdIncreaseStack * itemCount - 1);
 
                 args.allSkills.cooldownFlatReduction -= cdIncreaseAmount;
+
+                SkillLocator skillLocator = sender.skillLocator;
+                if (skillLocator != null)
+                {
+                    if (skillLocator.primary)
+                        args.primarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.primary.rechargeStock - 1);
+                    if (skillLocator.secondary)
+                        args.secondarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.secondary.rechargeStock - 1);
+                    if (skillLocator.utility)
+                        args.utilitySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.utility.rechargeStock - 1);
+                    if (skillLocator.special)
+                        args.specialSkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.special.rechargeStock - 1);
+                }
             }
         }
 

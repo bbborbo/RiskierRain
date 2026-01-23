@@ -38,7 +38,7 @@ namespace SwanSongExtended.Storms
                 return currentState.stormState;
             }
         }
-        public CombatDirector combatDirector;
+        private CombatDirector combatDirector;
         public EntityStateMachine mainStateMachine;
         private StormController.BaseStormState currentState
         {
@@ -202,10 +202,12 @@ namespace SwanSongExtended.Storms
 
             public override void FixedUpdate()
             {
-                this.runDeltaTimeThisFrame = Run.instance.GetRunStopwatch() - runTimeStamp;
-                this.fixedAge += runDeltaTimeThisFrame;
                 if (Run.instance)
+                {
+                    this.runDeltaTimeThisFrame = Run.instance.GetRunStopwatch() - runTimeStamp;
+                    this.fixedAge += runDeltaTimeThisFrame;
                     runTimeStamp = Run.instance.GetRunStopwatch();
+                }
 
                 if(this.stormState >= StormState.ApproachWarning && TeleporterInteraction.instance)
                 {
@@ -223,7 +225,16 @@ namespace SwanSongExtended.Storms
 
             public void EnableDirector()
             {
-                //stormController.combatDirector.enabled = true;
+                //temporarily disabled until storm elites are implemented
+                if (true)//stormController.combatDirector == null)
+                {
+                    Debug.LogError("StormController: Combat Director null!");
+                    return;
+                }
+
+                if (!NetworkServer.active)
+                    return;
+                stormController.combatDirector.enabled = true;
             }
             public float GetStormIntensityIncrement()
             {
@@ -499,6 +510,8 @@ namespace SwanSongExtended.Storms
         {
             public override BaseStormState GetNextState()
             {
+                if (!NetworkServer.active)
+                    return new StormController.IdleState();
                 return new StormController.StormActive();
             }
             private Dictionary<HUD, GameObject> hudPanels;

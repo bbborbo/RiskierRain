@@ -254,15 +254,19 @@ namespace SwanSongExtended
         /// 6x = up to 2100%,
         /// etc
         /// </summary>
-        public static int CountOverspillFibonacci(float totalValue, float baseIncrementor = 1f)
+        public static int CountOverspillFibonacci(float totalValue, float thresholdScale = 1f, int startingIndex = 1)
         {
             int lastIncrementor = 1;
             int currentIncrementor = 1;
-            int count = 0;
-            while (totalValue > currentIncrementor * baseIncrementor)
+            int count = 1;
+            while (totalValue > currentIncrementor * thresholdScale)
             {
                 currentIncrementor += lastIncrementor;
                 lastIncrementor = currentIncrementor - lastIncrementor;
+
+                if (count <= startingIndex)
+                    continue;
+                count++;
             }
             return count;
         }

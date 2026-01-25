@@ -246,7 +246,8 @@ namespace SwanSongExtended
             return count;
         }
         /// <summary>
-        /// 1x = up to 100%,
+        /// with default values:
+        /// 1x = up to 200% totalValue,
         /// 2x = up to 300%,
         /// 3x = up to 500%,
         /// 4x = up to 800%,
@@ -258,7 +259,7 @@ namespace SwanSongExtended
         {
             int lastIncrementor = 1;
             int currentIncrementor = 1;
-            int count = 1;
+            int count = 0;
             while (totalValue > currentIncrementor * thresholdScale)
             {
                 currentIncrementor += lastIncrementor;

@@ -52,6 +52,7 @@ namespace RiskierRain
     [BepInDependency(FruityElites.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.Wolfo.WolfFixes", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInDependency("HIFU.UltimateCustomRun", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]

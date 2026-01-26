@@ -20,8 +20,8 @@ namespace SwanSongExtended.Items
         public static BuffDef photographCritBuff;
         public static float photographCritFreeBase = 0f;
         public static float photographCritFreeStack = 0f;
-        public static float photographCritBase = 12f;
-        public static float photographCritStack = 8f;
+        public static float photographCritBase = 10f;
+        public static float photographCritStack = 5f;
         public static int photographMaxPrintsBase = 3;
         public static int photographMaxPrintsStack = 0;
         public override string ItemName => "Photograph";
@@ -155,6 +155,7 @@ namespace SwanSongExtended.Items
             int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
             if (buffCount >= maxBuff)
                 return;
+            critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
 
             for (int i = 0; i < critBonus; i++)
             {

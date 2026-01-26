@@ -25,8 +25,8 @@ namespace SwanSongExtended.Items
         public static int bouncesStack = 1;
         public static int freeCrit = 5;
         public static float firstBounceDamageBase = 0.8f;
-        public static float firstBounceDamageStack = 0.25f;
-        public static float lastBounceDamageMultiplier = 0.5f;
+        public static float firstBounceDamageStack = 0.2f;
+        public static float lastBounceDamageCoefficient = 0.4f;
         public static float procCoefficientPerBounce = 0.35f;
         public static float bounceRange = 60f;
         public override string ItemName => "Hypo-Threader";
@@ -148,7 +148,8 @@ namespace SwanSongExtended.Items
 
             float damageCoefficient = AoeOnCrit.firstBounceDamageBase + AoeOnCrit.firstBounceDamageStack * (stack - 1);
             int bounces = AoeOnCrit.bouncesBase + AoeOnCrit.bouncesStack * (stack - 1);
-            float damageLoss = bounces > 1f ? Mathf.Pow(AoeOnCrit.lastBounceDamageMultiplier, 1f / ((float)bounces - 1f)) : 0f;
+            float lastBounceDamageMultiplier = AoeOnCrit.lastBounceDamageCoefficient / damageCoefficient;
+            float damageLoss = bounces > 1f ? Mathf.Pow(lastBounceDamageMultiplier, 1f / ((float)bounces - 1f)) : 0f;
 
             ChainGunOrb chainGunOrb = new ChainGunOrb(orbEffectObject);
             chainGunOrb.damageValue = damageReport.damageInfo.damage * damageCoefficient;

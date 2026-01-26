@@ -10,6 +10,13 @@ using RoR2.ContentManagement;
 
 namespace RiskierRain
 {
+    public static class Extensions
+    {
+        public static string AsPercent(this float d)
+        {
+            return (d * 100f).ToString() + "%";
+        }
+    }
     public static class Tools
     {
         #region AssetBundle
@@ -52,9 +59,12 @@ namespace RiskierRain
             }
             return false;
         }
+        /// <summary>
+        /// Old, use float.AsPercent()
+        /// </summary>
         internal static string ConvertDecimal(float d)
         {
-            return (d * 100f).ToString() + "%";
+            return d.AsPercent();
         }
 
         #region Materials + Etc

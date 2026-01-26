@@ -75,6 +75,7 @@
     <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" />
     <PackageReference Include="R2API" Version="5.0.5" />
     <PackageReference Include="R2API.RecalculateStats" Version="1.6.5" />
+    <PackageReference Include="R2API.ProcType" Version="1.0.2" />
   </ItemGroup>
 
   <ItemGroup>

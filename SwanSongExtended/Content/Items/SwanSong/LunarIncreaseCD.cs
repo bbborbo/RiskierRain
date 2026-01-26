@@ -20,6 +20,7 @@ namespace SwanSongExtended.Items
 {
     class LunarIncreaseCD : ItemBase<LunarIncreaseCD>
     {
+        public override bool isEnabled => false;
         GameObject lunarShardProjectile;// => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
         
@@ -110,13 +111,13 @@ namespace SwanSongExtended.Items
                 if (skillLocator != null)
                 {
                     if (skillLocator.primary)
-                        args.primarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.primary.rechargeStock - 1);
+                        args.primarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillFibonacci(skillLocator.primary.rechargeStock);
                     if (skillLocator.secondary)
-                        args.secondarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.secondary.rechargeStock - 1);
+                        args.secondarySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillFibonacci(skillLocator.secondary.rechargeStock);
                     if (skillLocator.utility)
-                        args.utilitySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.utility.rechargeStock - 1);
+                        args.utilitySkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillFibonacci(skillLocator.utility.rechargeStock);
                     if (skillLocator.special)
-                        args.specialSkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillTriangular(skillLocator.special.rechargeStock - 1);
+                        args.specialSkill.cooldownFlatReduction -= cdIncreaseAmount * Tools.CountOverspillFibonacci(skillLocator.special.rechargeStock);
                 }
             }
         }

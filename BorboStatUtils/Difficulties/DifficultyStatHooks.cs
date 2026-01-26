@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using static RainrotSharedUtils.Difficulties.DifficultyUtilsModule;
 
 namespace RainrotSharedUtils.Difficulties
@@ -81,21 +82,34 @@ namespace RainrotSharedUtils.Difficulties
         [SystemInitializer(typeof(CombatDirector))]
         internal static void FixEliteSpawn()
         {
-            if (!UseDifficultyStats)
-                return;
-
             foreach (CombatDirector.EliteTierDef etd in CombatDirector.eliteTiers) //EliteAPI.VanillaEliteTiers)//
             {
                 List<EliteDef> eliteDefs = etd.eliteTypes.ToList();
+                //if (etd.eliteTypes.Contains(RoR2Content.Elites.Fire) && !etd.eliteTypes.Contains(DLC2Content.Elites.Aurelionite))
+                //{
+                //    etd.isAvailable = (SpawnCard.EliteRules rules) => 
+                //        !IsPastMinimumStage(false) &&
+                //        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
+                //}
+                if (etd.eliteTypes.Contains(RoR2Content.Elites.FireHonor) && !etd.eliteTypes.Contains(DLC2Content.Elites.AurelioniteHonor))
+                {
+                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
+                        !IsPastMinimumStage(false) && 
+                        (CombatDirector.IsEliteOnlyArtifactActive() ||
+                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
+                }
                 if (etd.eliteTypes.Contains(DLC2Content.Elites.Aurelionite))
                 {
                     etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default && IsPastMinimumStage(false);
+                        IsPastMinimumStage(false) &&
+                        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
                 }
                 if (etd.eliteTypes.Contains(DLC2Content.Elites.AurelioniteHonor))
                 {
                     etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                        CombatDirector.IsEliteOnlyArtifactActive() && IsPastMinimumStage(false);
+                        IsPastMinimumStage(false) &&
+                        (CombatDirector.IsEliteOnlyArtifactActive() ||
+                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
                 }
                 if (etd.eliteTypes.Contains(RoR2Content.Elites.Poison) || etd.eliteTypes.Contains(RoR2Content.Elites.Haunted))
                 {
@@ -104,17 +118,88 @@ namespace RainrotSharedUtils.Difficulties
                         && IsPastMinimumStage(true);
                 }
             }
-
+            bool GetForceNextSpawnAsElite()
+            {
+                Debug.LogError(forceNextSpawnAsElite);
+                return false;// forceNextSpawnAsElite;
+            }
             bool IsPastMinimumStage(bool isTier2)
             {
                 int minStage = isTier2 ? 4 : 2;
 
-                if (ValidateCachedDifficultyStats())
+                if (UseDifficultyStats && ValidateCachedDifficultyStats())
                 {
                     minStage = (isTier2 ? cachedDifficultyStats.tier2EliteStage : cachedDifficultyStats.tier1AndHalfEliteStage) - 1;
                 }
                 return Run.instance.stageClearCount >= minStage;
             }
+        }
+
+        internal static void OverridePromoteIfHonor(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<RoR2.RunArtifactManager>(nameof(RoR2.RunArtifactManager.IsArtifactEnabled))
+                );
+            if (!b)
+            {
+                SharedUtilsPlugin.DebugBreakpoint(nameof(OverridePromoteIfHonor));
+                return;
+            }
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<bool, CharacterMaster, bool>>((isHonor, master) =>
+            {
+                if (isHonor)
+                    return true;
+
+                return IsForceEliteTrueForMaster(master);
+            });
+        }
+
+        internal static void ForceEliteMonsterWave(On.RoR2.CombatDirector.orig_PrepareNewMonsterWave orig, CombatDirector self, DirectorCard monsterCard)
+        {
+            if (monsterCard != null && monsterCard.IsAvailable())
+            {
+                CharacterSpawnCard spawnCard = monsterCard.GetSpawnCard() as CharacterSpawnCard;
+                forceNextSpawnAsElite = IsForceEliteTrueForSpawncard(spawnCard);
+            }
+
+            orig(self, monsterCard);
+            //forceNextSpawnAsElite = false;
+        }
+        internal static bool ForceEliteSpawn(On.RoR2.CombatDirector.orig_AttemptSpawnOnTarget orig, CombatDirector self, Transform spawnTarget, DirectorPlacementRule.PlacementMode placementMode)
+        {
+            if (self.currentMonsterCard != null && self.currentMonsterCard.IsAvailable())
+            {
+                CharacterSpawnCard spawnCard = self.currentMonsterCard.GetSpawnCard() as CharacterSpawnCard;
+                forceNextSpawnAsElite = IsForceEliteTrueForSpawncard(spawnCard);
+            }
+            return orig(self, spawnTarget, placementMode);
+        }
+        internal static void ForceEliteType(On.RoR2.CombatDirector.orig_ResetEliteType orig, CombatDirector self)
+        {
+            if (self.currentMonsterCard != null && self.currentMonsterCard.IsAvailable())
+            {
+                CharacterSpawnCard spawnCard = self.currentMonsterCard.GetSpawnCard() as CharacterSpawnCard;
+                forceNextSpawnAsElite = IsForceEliteTrueForSpawncard(spawnCard);
+            }
+            orig(self);
+        }
+        internal static void ForceEliteBossGroup(On.RoR2.BossGroup.orig_OnMemberDiscovered orig, BossGroup self, CharacterMaster memberMaster)
+        {
+            orig(self, memberMaster);
+            if (!NetworkServer.active)
+                return;
+            if (!memberMaster)
+                return;
+            CharacterBody body = memberMaster.GetBody();
+            if (!body)
+                return;
+            if (body.isElite /*|| body.baseNameToken.Contains("WORM")*/)
+                return;
+            RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng);
         }
 
         internal static void TeleporterParticleScale(On.RoR2.TeleporterInteraction.BaseTeleporterState.orig_OnEnter orig, RoR2.TeleporterInteraction.BaseTeleporterState self)

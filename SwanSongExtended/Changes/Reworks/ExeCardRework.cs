@@ -72,14 +72,12 @@ namespace SwanSongExtended
 
                         targetPurchase.Networkcost = 0;
 
-                        ShopTerminalBehavior terminalBehavior = targetObject.GetComponent<ShopTerminalBehavior>();
-                        if (terminalBehavior)
+                        if (targetObject.TryGetComponent(out ShopTerminalBehavior terminalBehavior))
                         {
-                            terminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(targetPurchase.GetComponent<PurchaseInteraction>(), false);
+                            terminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(targetPurchase, false);
                         }
 
-                        Interactor interactor = slot.characterBody?.GetComponent<Interactor>();
-                        if (interactor)
+                        if(slot.characterBody != null && slot.characterBody.TryGetComponent(out Interactor interactor))
                         {
                             interactor.AttemptInteraction(targetObject);
                         }

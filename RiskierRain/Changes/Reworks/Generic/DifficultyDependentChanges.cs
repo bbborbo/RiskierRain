@@ -15,6 +15,8 @@ using System.Collections.ObjectModel;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using RainrotSharedUtils.Difficulties;
+using static MoreStats.StatHooks;
+using RiskierRain.Changes.Components;
 
 namespace RiskierRain
 {
@@ -144,12 +146,6 @@ namespace RiskierRain
                         levelBoost = monsoonDifficultyBoost;
                         tier2Stage = Tier2EliteMinimumStageMonsoon;
                         teleParticleRangeMultiplier = hardTeleParticleRadius;
-                        if (difficultyIndex >= eclipseLevelVeryHard)
-                        {
-                            levelBoost = eclipseDifficultyBoost;
-                            difficultyBoost += 1;
-                            startingDifficulty = MoreDifficultyStats.StartingDifficulty.VeryHard;
-                        }
                         break;
                 }
 
@@ -359,43 +355,45 @@ namespace RiskierRain
 
         #region eclipse-exclusive
 
-        public static DifficultyIndex eclipseLevelBossShield = DifficultyIndex.Eclipse1; //
-        public static float eclipseBossShieldFraction = 0.1f;
+        public static DifficultyIndex eclipseLevelBossElite = DifficultyIndex.Eclipse1; //NA
         public static string eclipseOneDesc =
-            $"\n<mspace=0.5em>(1)</mspace> Boss Shields: <style=cIsHealth>+{Tools.ConvertDecimal(eclipseBossShieldFraction)}</style>";
+            $"\n<mspace=0.5em>(1)</mspace> Boss Enemies: <style=cIsHealth>Always Elite</style>";
 
-        public static DifficultyIndex eclipseLevelHoldoutLoss = DifficultyIndex.Eclipse2;
-        public static float eclipseHoldoutLossRate = 0.03f; //pillar of soul is 10%
+        public static DifficultyIndex eclipseLevelEnemyMspd = DifficultyIndex.Eclipse2; //4
+        public static float eclipseEnemyMspd = 0.3f; //0.3f
         public static string eclipseTwoDesc =
-            $"\n<mspace=0.5em>(2)</mspace> Holdout Zone Discharge: <style=cIsHealth>-{Tools.ConvertDecimal(eclipseHoldoutLossRate)} per second</style>";
+            $"\n<mspace=0.5em>(2)</mspace> Enemy Speed: <style=cIsHealth>+{eclipseEnemyMspd.AsPercent()}</style>";
 
-        public static DifficultyIndex eclipseLevelEnemyCdr = DifficultyIndex.Eclipse3; //
-        public static float eclipseEnemyCdr = 0.5f;
+        public static DifficultyIndex eclipseLevelSmallHoldout = DifficultyIndex.Eclipse3; //NA
+        public static DifficultyIndex eclipseLevelHoldoutLoss = DifficultyIndex.Eclipse3; //2
+        public static float eclipseHoldoutLossRate = 0.02f; //pillar of soul is 10%
+        public static float eclipseHoldoutScale = 0.6f; //0.5f
         public static string eclipseThreeDesc =
-            $"\n<mspace=0.5em>(3)</mspace> Enemy Cooldowns: <style=cIsHealth>-{Tools.ConvertDecimal(eclipseEnemyCdr)}</style>";
+            $"\n<mspace=0.5em>(3)</mspace> All Holdout Zones are <style=cIsHealth>Eclipsed</style>";
+        //$"\n<mspace=0.5em>(3)</mspace> Enemy Cooldowns: <style=cIsHealth>-{Tools.ConvertDecimal(eclipseEnemyCdr)}</style>";
 
-        public static DifficultyIndex eclipseLevelSmallHoldout = DifficultyIndex.Eclipse4; //
-        public static float eclipseHoldoutScale = 0.7f;
+        public static DifficultyIndex eclipseHealingLoss = DifficultyIndex.Eclipse4; //5
+        public static float eclipseHealingMultiplier = 0.75f;
         public static string eclipseFourDesc =
-            $"\n<mspace=0.5em>(4)</mspace> Holdout Zone Radius: <style=cIsHealth>-{Tools.ConvertDecimal(1 - eclipseHoldoutScale)}</style>";
+            $"\n<mspace=0.5em>(4)</mspace> Ally Healing: <style=cIsHealth>-{(1 - eclipseHealingMultiplier).AsPercent()}</style>";
 
-        public static DifficultyIndex eclipseLevelEnemyMspd = DifficultyIndex.Eclipse5; //
-        public static float eclipseEnemyMspd = 0.25f;
+        public static DifficultyIndex eclipseLevelEnemyCdr = DifficultyIndex.Eclipse5; //7
+        public static float eclipseEnemyCooldownScale = 0.6f; //0.5f
         public static string eclipseFiveDesc =
-            $"\n<mspace=0.5em>(5)</mspace> Enemy Speed: <style=cIsHealth>+{Tools.ConvertDecimal(eclipseEnemyMspd)}</style>";
+            $"\n<mspace=0.5em>(5)</mspace> Enemy Cooldowns: <style=cIsHealth>-{(1 - eclipseEnemyCooldownScale).AsPercent()}</style>";
 
         public static DifficultyIndex eclipseLevelSpiteArtifact = DifficultyIndex.Eclipse6; //
         public static string eclipseSixDesc =
             $"\n<mspace=0.5em>(6)</mspace> On Kill: <style=cIsHealth>Enemies drop exploding bombs</style>";
 
-        public static DifficultyIndex eclipseLevelVeryHard = DifficultyIndex.Eclipse7; //
+        public static DifficultyIndex eclipseLevelItemTax = DifficultyIndex.Eclipse7; //
+        public static int eclipseItemTaxCount = 2;
+        public static float eclipseItemTaxPercent = 0.2f;
         public static string eclipseSevenDesc =
-            $"\n<mspace=0.5em>(7)</mspace> Difficulty: <style=cIsHealth>Very Hard</style>";
+            $"\n<mspace=0.5em>(7)</mspace> Item Tax: <style=cIsHealth>{eclipseItemTaxPercent.AsPercent()} per Stage</style>";
 
-        public static DifficultyIndex eclipseLevelPlayerDegen = DifficultyIndex.Eclipse8; //
-        public static float eclipsePlayerDegen = 0.2f;
         public static string eclipseEightDesc =
-            $"\n<mspace=0.5em>(8)</mspace> Health Degeneration: <style=cIsHealth>-{Tools.ConvertDecimal(eclipsePlayerDegen)} per level</style>";
+            $"\n<mspace=0.5em>(8)</mspace> Allies recieve <style=cIsHealth>permanent damage</style>";
         private void EclipseChanges()
         {
             //remove old stuff
@@ -403,16 +401,21 @@ namespace RiskierRain
             IL.RoR2.GlobalEventManager.OnCharacterHitGroundServer += RemoveEclipseEffect; //lv3 frailty
             IL.RoR2.HealthComponent.Heal += RemoveEclipseEffect;//lv5 healing
             IL.RoR2.DeathRewards.OnKilledServer += RemoveEclipseEffect;//lv6 gold drops
-            IL.RoR2.HealthComponent.TakeDamageProcess += RemoveEclipseEffect;//lv8 eclipse curse :skull:
+            //IL.RoR2.HealthComponent.TakeDamageProcess += RemoveEclipseEffect;//lv8 eclipse curse :skull:
 
             IL.RoR2.CharacterBody.RecalculateStats += RemoveEclipseStats; //lv4 enemy speed lv7 enemy cooldowns
 
             //new stuff
-            GetStatCoefficients += this.EclipseStatBuffs;
-            On.RoR2.CharacterBody.RecalculateStats += this.EclipseCdr;
+            DifficultyUtilsModule.ForceEliteMasterProvider += EclipseForceEliteMaster;
+            //DifficultyUtilsModule.ForceEliteSpawnProvider += EclipseForceEliteSpawn;
+            //GetStatCoefficients += this.EclipseStatBuffs;
+            GetMoreStatCoefficients += this.EclipseStatBuffs2;
+            //On.RoR2.CharacterBody.RecalculateStats += this.EclipseCdr;
             On.RoR2.RunArtifactManager.SetArtifactEnabled += EclipseSpiteArtifact;
             IL.RoR2.HoldoutZoneController.DoUpdate += EclipseHoldoutScale;
             On.RoR2.HoldoutZoneController.Start += EclipseHoldoutDischarge;
+            Stage.onServerStageBegin += EclipseItemTax;
+
 
             string eclipse8Prefix = "\"You only celebrate in the light... because I allow it.\" \n\n";
             string eclipseStart = "Starts at baseline Monsoon difficulty.<style=cSub>\n";
@@ -432,44 +435,106 @@ namespace RiskierRain
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
         }
 
-        private void EclipseCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
-            if (self.teamComponent.teamIndex != TeamIndex.Player)
-            {
-                //enemy cooldowns
-                if (selectedDifficulty >= eclipseLevelEnemyCdr)
-                {
-                    float cdrBoost = 1 - eclipseEnemyCdr;
 
-                    SkillLocator skillLocator = self.skillLocator;
-                    if (skillLocator != null)
-                    {
-                        ApplyCooldownScale(skillLocator.primary, cdrBoost);
-                        ApplyCooldownScale(skillLocator.secondary, cdrBoost);
-                        ApplyCooldownScale(skillLocator.utility, cdrBoost);
-                        ApplyCooldownScale(skillLocator.special, cdrBoost);
-                    }
+        private void EclipseStatBuffs2(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.teamComponent.teamIndex != TeamIndex.Player || Run.instance.selectedDifficulty <= eclipseLevelItemTax)
+                return;
+            args.healingPercentIncreaseMult *= eclipseHealingMultiplier;
+        }
+
+        private void EclipseItemTax(Stage obj)
+        {
+            //only tax items on stages, not hidden realms
+            if (obj.sceneDef.sceneType != SceneType.Stage
+                && obj.sceneDef.sceneType != SceneType.UntimedStage)
+                return;
+
+            foreach(CharacterMaster master in CharacterMaster.readOnlyInstancesList)
+            {
+                //only tax items on players in difficulty levels at or higher than eclipse 7
+                if (master.teamIndex != TeamIndex.Player || Run.instance.selectedDifficulty <= eclipseLevelItemTax)
+                    continue;
+                if (master.inventory == null)
+                    continue;
+
+                EclipseItemTaxer taxer;
+                if(!master.TryGetComponent(out taxer))
+                {
+                    taxer = master.gameObject.AddComponent<EclipseItemTaxer>();
+                    taxer.master = master;
                 }
+
+                taxer.TaxItems();
             }
+        }
+
+        private bool EclipseForceEliteSpawn(CharacterSpawnCard card)
+        {
+            if (!Run.instance || Run.instance.selectedDifficulty < eclipseLevelBossElite)
+                return false;
+
+            if (card.noElites)
+                return false;
+
+            if (card.prefab && card.prefab.TryGetComponent(out CharacterMaster master))
+                return EclipseForceEliteMasterInternal(master);
+            return false;
+        }
+        private bool EclipseForceEliteMaster(CharacterMaster sender)
+        {
+            if (!Run.instance || Run.instance.selectedDifficulty < eclipseLevelBossElite)
+                return false;
+            if (sender.isBoss)
+                return true;
+            return EclipseForceEliteMasterInternal(sender);
+        }
+        private bool EclipseForceEliteMasterInternal(CharacterMaster sender)
+        {
+            if (sender.bodyPrefab && sender.bodyPrefab.TryGetComponent(out CharacterBody body))
+            {
+                if (body.isChampion)
+                    return true;
+            }
+            return false;
+        }
+
+        internal static void ChangeRequiredDifficultyLevelForStats(ILCursor c, DifficultyIndex difficulty, DifficultyIndex difficultyNew = DifficultyIndex.Count, float newFloatValue = -1)
+        {
+            c.Index = 0;
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<RoR2.Run>("get_selectedDifficulty"),
+                x => x.MatchLdcI4((int)difficulty)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint($"{nameof(ChangeRequiredDifficultyLevelForStats)}/{difficulty}", 1);
+                return;
+            }
+            c.Index--;
+            c.Next.Operand = (int)difficultyNew;
+
+            if (newFloatValue == -1)
+                return;
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b2)
+            {
+                DebugBreakpoint($"{nameof(ChangeRequiredDifficultyLevelForStats)}/{difficulty}", 2);
+                return;
+            }
+            c.Next.Operand = newFloatValue;
         }
 
         private void RemoveEclipseStats(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<RoR2.Run>("get_selectedDifficulty")
-                );
-            c.Emit(OpCodes.Pop);
-            c.Emit(OpCodes.Ldc_I4, (int)DifficultyIndex.Invalid);
+            ChangeRequiredDifficultyLevelForStats(c, DifficultyIndex.Eclipse4, eclipseLevelEnemyMspd, eclipseEnemyMspd);
 
-            c.GotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<RoR2.Run>("get_selectedDifficulty")
-                );
-            c.Emit(OpCodes.Pop);
-            c.Emit(OpCodes.Ldc_I4, (int)DifficultyIndex.Invalid);
+            ChangeRequiredDifficultyLevelForStats(c, DifficultyIndex.Eclipse7, eclipseLevelEnemyCdr, eclipseEnemyCooldownScale);
         }
 
         private void RemoveEclipseEffect(ILContext il)
@@ -488,7 +553,10 @@ namespace RiskierRain
 
             if (Run.instance.selectedDifficulty >= eclipseLevelHoldoutLoss)
             {
+                self.baseIndicatorColor = new Color(0.9f, 0.9f, 0.9f);
                 self.dischargeRate = Mathf.Max(self.dischargeRate, eclipseHoldoutLossRate);
+                if (NetworkServer.active)
+                    Chat.ServerAttemptBroadcastChat("<style=cStack>The holdout zone is <style=cIsHealth>Eclipsed!</style></style>");
             }
             orig(self);
         }
@@ -496,6 +564,9 @@ namespace RiskierRain
         private void EclipseHoldoutScale(ILContext il)
         {
             ILCursor c = new ILCursor(il);
+
+            ChangeRequiredDifficultyLevelForStats(c, DifficultyIndex.Eclipse2, eclipseLevelSmallHoldout, eclipseHoldoutScale);
+            return;
 
             int holdoutScaleLoc = 3;
             c.GotoNext(MoveType.After,
@@ -530,45 +601,6 @@ namespace RiskierRain
             }
 
             orig(self, artifactDef, newEnabled);
-        }
-
-        private void EclipseStatBuffs(CharacterBody sender, StatHookEventArgs args)
-        {
-            DifficultyIndex selectedDifficulty = Run.instance.selectedDifficulty;
-            if (sender.teamComponent.teamIndex != TeamIndex.Player)
-            {
-                //boss shield
-                if (selectedDifficulty >= eclipseLevelBossShield)
-                {
-                    if (sender.isBoss)
-                    {
-                        args.baseShieldAdd += sender.maxHealth * eclipseBossShieldFraction;
-                    }
-                }
-                else return;
-
-                //enemy cooldowns
-                if (selectedDifficulty >= eclipseLevelEnemyCdr)
-                {
-                    //args.cooldownMultAdd *= 1 - eclipseEnemyCdr;
-                }
-                else return;
-
-                //enemy speed
-                if (selectedDifficulty >= eclipseLevelEnemyMspd)
-                {
-                    args.moveSpeedMultAdd += eclipseEnemyMspd;
-                }
-                else return;
-            }
-            if (sender.teamComponent.teamIndex == TeamIndex.Player)
-            {
-                //player degen
-                if (selectedDifficulty >= eclipseLevelPlayerDegen)
-                {
-                    args.baseRegenAdd -= (sender.baseRegen + (sender.levelRegen * sender.level)) * (eclipsePlayerDegen * sender.level);
-                }
-            }
         }
         #endregion
 

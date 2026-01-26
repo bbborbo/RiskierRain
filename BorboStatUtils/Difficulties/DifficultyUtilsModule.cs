@@ -51,6 +51,7 @@ namespace RainrotSharedUtils.Difficulties
     public static class DifficultyUtilsModule
     {
         internal static bool _hooksEnabled = false;
+        internal static bool _hooksEnabledForceElite = false;
         internal static bool _tpContrasted = false;
         public static bool CompensateRewardsForDifficultyScaling = false;
         public static bool CompensateRewardsForDifficultyBoost = false;
@@ -93,6 +94,76 @@ namespace RainrotSharedUtils.Difficulties
             BoostTeleporterContrast = true;
             CompensateRewardsForDifficultyScaling = true;
             CompensateRewardsForDifficultyBoost = true;
+        }
+
+        internal static bool forceNextSpawnAsElite;
+        private static event ForceEliteMasterEventHandler _forceEliteMasterProvider;
+        public static event ForceEliteMasterEventHandler ForceEliteMasterProvider
+        {
+            add
+            {
+                if (_forceEliteMasterProvider == null)
+                {
+                    _forceEliteMasterProvider = new ForceEliteMasterEventHandler(value);
+                    return;
+                }
+                _forceEliteMasterProvider += value;
+            }
+            remove
+            {
+                _forceEliteMasterProvider -= value;
+            }
+        }
+        public delegate bool ForceEliteMasterEventHandler(CharacterMaster sender);
+
+        private static event ForceEliteSpawnEventHandler _forceEliteSpawnProvider;
+        public static event ForceEliteSpawnEventHandler ForceEliteSpawnProvider
+        {
+            add
+            {
+                if (_forceEliteSpawnProvider == null)
+                {
+                    _forceEliteSpawnProvider = new ForceEliteSpawnEventHandler(value);
+                    return;
+                }
+                _forceEliteSpawnProvider += value;
+            }
+            remove
+            {
+                _forceEliteSpawnProvider -= value;
+            }
+        }
+        public delegate bool ForceEliteSpawnEventHandler(CharacterSpawnCard card);
+
+        public static bool IsForceEliteTrueForMaster(CharacterMaster sender)
+        {
+            if (!_hooksEnabledForceElite)
+                return false;
+            if (sender == null)
+                return false;
+
+            foreach (ForceEliteMasterEventHandler feeh in _forceEliteMasterProvider.GetInvocationList())
+            {
+                if (feeh.Invoke(sender))
+                    return true;
+            }
+
+            return false;
+        }
+        public static bool IsForceEliteTrueForSpawncard(CharacterSpawnCard card)
+        {
+            if (!_hooksEnabledForceElite)
+                return false;
+            if (card == null)
+                return false;
+
+            foreach (ForceEliteSpawnEventHandler feeh in _forceEliteSpawnProvider.GetInvocationList())
+            {
+                if (feeh.Invoke(card))
+                    return true;
+            }
+
+            return false;
         }
 
         public static Dictionary<DifficultyIndex, MoreDifficultyStats> difficultyCustomStats = new Dictionary<DifficultyIndex, MoreDifficultyStats>();
@@ -171,11 +242,39 @@ namespace RainrotSharedUtils.Difficulties
 
             return cachedDifficultyStats.startingLevelBoost;
         }
+        private static void SetHooksForceElite()
+        {
+            if (_hooksEnabledForceElite)
+                return;
+            _hooksEnabledForceElite = true;
+
+            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor += OverridePromoteIfHonor;
+            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonorAndApplyStats += OverridePromoteIfHonor;
+            //On.RoR2.CombatDirector.PrepareNewMonsterWave += ForceEliteMonsterWave;
+            //On.RoR2.CombatDirector.ResetEliteType += ForceEliteType;
+            //On.RoR2.CombatDirector.AttemptSpawnOnTarget += ForceEliteSpawn;
+
+            //if (!_hooksEnabled)
+            //    On.RoR2.CombatDirector.Spawn += ForceSpawnToBeElite;
+            On.RoR2.BossGroup.OnMemberDiscovered += ForceEliteBossGroup;
+        }
+
+        private static bool ForceSpawnToBeElite(On.RoR2.CombatDirector.orig_Spawn orig, CombatDirector self, SpawnCard spawnCard, EliteDef eliteDef, Transform spawnTarget, DirectorCore.MonsterSpawnDistance spawnDistance, bool preventOverhead, float valueMultiplier, DirectorPlacementRule.PlacementMode placementMode, bool singleScaledBoss)
+        {
+            bool b = orig(self, spawnCard, eliteDef, spawnTarget, spawnDistance, preventOverhead, valueMultiplier, placementMode, singleScaledBoss);
+            //if(eliteDef == null && (spawnCard as CharacterSpawnCard).noElites == false)
+            //    RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng);
+
+            return b;
+        }
+
         private static void SetHooks()
         {
             if (_hooksEnabled)
                 return;
             _hooksEnabled = true;
+
+            SetHooksForceElite();
 
             On.RoR2.Run.OnRuleBookUpdated += CacheDifficultyStats;
             IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;

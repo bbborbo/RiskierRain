@@ -9,8 +9,12 @@ using UnityEngine.Events;
 
 namespace SwanSongExtended
 {
-    public static class PersistentListeners
+    public static class Extensions
     {
+        public static string AsPercent(this float d)
+        {
+            return (d * 100f).ToString() + "%";
+        }
         public static void AddPersistentListener(this HoldoutZoneController.HoldoutZoneControllerChargedUnityEvent unityEvent, UnityAction<HoldoutZoneController> action)
         {
             unityEvent.m_PersistentCalls.AddListener(new PersistentCall

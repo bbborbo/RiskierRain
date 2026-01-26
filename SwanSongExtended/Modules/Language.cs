@@ -22,7 +22,7 @@ namespace SwanSongExtended.Modules {
             }
             public static string DamageValueText(float value)
             {
-                return DamageColor(ConvertDecimal(value) + " damage");
+                return DamageColor(value.AsPercent() + " damage");
             }
             public static string UtilityColor(string text)
             {

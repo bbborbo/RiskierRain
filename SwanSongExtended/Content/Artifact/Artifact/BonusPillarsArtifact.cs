@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using static SwanSongExtended.PersistentListeners;
+using static SwanSongExtended.Extensions;
 
 namespace SwanSongExtended.Artifacts
 {

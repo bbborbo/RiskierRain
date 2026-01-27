@@ -42,9 +42,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.DevotionBlacklist, ItemTag.InteractableRelated };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlPhotograph");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconPhotograph");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

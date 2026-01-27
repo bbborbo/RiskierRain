@@ -46,9 +46,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.Technology };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlAoeOnCrit");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconAoeOnCrit");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

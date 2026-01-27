@@ -45,9 +45,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlRandomBarrierTarget");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconRandomBarrierTarget");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

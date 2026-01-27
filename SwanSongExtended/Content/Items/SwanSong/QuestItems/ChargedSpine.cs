@@ -36,9 +36,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChargedSpine.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlChargedSpine");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texIconPickupITEM_CHARGED_MALACHITE_SPINE.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconChargedSpine");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

@@ -150,10 +150,7 @@ namespace SwanSongExtended
         }
         public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
         {
-            string s = $"{modName}: {methodName} IL hook failed!";
-            if (breakpointNumber >= 0)
-                s += $" (breakpoint {breakpointNumber})";
-            Debug.LogError(s);
+            Log.DebugBreakpoint(methodName, breakpointNumber);
         }
 
         private void CreateExpansionDef()
@@ -350,6 +347,30 @@ namespace SwanSongExtended
             //    "(The following changes will be enabled if set to true) " + desc).Value;
         }
         #region modify items and equips
+        public static Sprite TryLoadSpriteFromBundle(string path, AssetBundle assetBundle = null, bool fallBackOnWrench = false)
+        {
+            Sprite s = TryLoadFromBundle<Sprite>(path, assetBundle);
+            if (s)
+                return s;
+
+            s = Addressables.LoadAssetAsync<Sprite>(
+                    (fallBackOnWrench ? RoR2BepInExPack.GameAssetPaths.RoR2_Base_Core.texNullIcon_png
+                    : RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texWIPIcon_png)
+                    ).WaitForCompletion();//Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
+            return s;
+        }
+        public static T TryLoadFromBundle<T>(string path, AssetBundle assetBundle = null) where T : UnityEngine.Object
+        {
+            if (assetBundle == null)
+                assetBundle = SwanSongPlugin.mainAssetBundle;
+
+            if (SwanSongPlugin.mainAssetBundle && !string.IsNullOrWhiteSpace(path))
+            {
+                if (SwanSongPlugin.mainAssetBundle.Contains(path))
+                    return SwanSongPlugin.mainAssetBundle.LoadAsset<T>(path);
+            }
+            return null;
+        }
         public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
         {
             void onCompleted(AsyncOperationHandle<T> handle)

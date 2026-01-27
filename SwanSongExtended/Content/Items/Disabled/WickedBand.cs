@@ -39,7 +39,7 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => LoadDropPrefab("WickedBand");
+        public override GameObject ItemModel => LoadDropPrefab("mdlWickedBand");
 
         public override Sprite ItemIcon => LoadItemIcon("texIconWickedBand");
 

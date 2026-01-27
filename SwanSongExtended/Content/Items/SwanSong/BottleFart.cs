@@ -53,9 +53,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/voidBottle.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlBottleFart");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/bottlefart.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconBottleFart");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

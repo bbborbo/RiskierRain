@@ -37,9 +37,9 @@ namespace SwanSongExtended.Items
                 ItemTag.HoldoutZoneRelated, ItemTag.ObjectiveRelated, 
                 ItemTag.CannotSteal, ItemTag.DevotionBlacklist, ItemTag.RebirthBlacklist };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlWishbone");
 
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texWIPIcon_png).WaitForCompletion();
+        public override Sprite ItemIcon => LoadItemIcon("texIconWishbone");// Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texWIPIcon_png).WaitForCompletion();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

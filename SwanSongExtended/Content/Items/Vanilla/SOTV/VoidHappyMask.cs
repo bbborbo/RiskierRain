@@ -36,9 +36,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.VoidTier3;
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.OnKillEffect, ItemTag.Utility };
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlTragicFacade.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlVoidHappyMask");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/voidhappymask.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconVoidHappyMask");
         public override ExpansionDef RequiredExpansion => SotvExpansionDef();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

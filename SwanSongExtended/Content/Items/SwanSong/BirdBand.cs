@@ -65,9 +65,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlBirdBand.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlBirdBand");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/birdband.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconBirdBand");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

@@ -20,9 +20,8 @@ namespace SwanSongExtended.Artifacts
 
         public override string ArtifactLangTokenName => "FREELUNAR";
 
-        public override Sprite ArtifactSelectedIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/freelunar.png");
-
-        public override Sprite ArtifactDeselectedIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/freelunaroff.png");
+        public override Sprite ArtifactSelectedIcon => LoadArtifactIcon("texIconFreeLunar", fallBackOnWrench: true);
+        public override Sprite ArtifactDeselectedIcon => LoadArtifactIcon("texIconFreeLunarOff");
 
         public override void Init()
         {

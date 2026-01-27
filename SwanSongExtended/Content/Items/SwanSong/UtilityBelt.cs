@@ -35,9 +35,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier2;
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlUtilityBelt.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlUtilityBelt");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/utilitybelt.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconUtilityBelt");
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing };
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

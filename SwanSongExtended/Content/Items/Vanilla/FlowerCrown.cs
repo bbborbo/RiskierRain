@@ -49,9 +49,9 @@ Thank you for always sending us gifts. I made some of them into this flower crow
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlFlowerCrown.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlFlowerCrown");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/flowercrown.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconFlowerCrown");
 
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

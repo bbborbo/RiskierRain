@@ -46,9 +46,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.OnKillEffect, ItemTag.Damage };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlGammaKnife.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlGammaKnife");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/gammaknife.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconGammaKnife");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -56,7 +56,7 @@ namespace SwanSongExtended.Items
         }
         public override void Init()
         {
-            statBoostItemDef = CreateNewUntieredItem("GAMMAKNIFESTATBOOST", assetBundle.LoadAsset<Sprite>("Assets/Icons/gammaknifeused.png"), isHidden: hideStatBoost);
+            statBoostItemDef = CreateNewUntieredItem("GAMMAKNIFESTATBOOST", LoadItemIcon("texIconGammaKnifeUsed"), isHidden: hideStatBoost);
             string fullDesc = $"<style=cIsHealth>Permanently</style> increases your <style=cIsDamage>attack speed</style> " +
             $"by <style=cIsDamage>{Tools.ConvertDecimal(attackSpeedBonus)}</style> and reduces your " +
             $"<style=cIsDamage>cooldowns</style> by <style=cIsDamage>{Tools.ConvertDecimal(cdrBonus)}</style> per stack.";

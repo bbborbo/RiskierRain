@@ -47,9 +47,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Boss;
 
-        public override GameObject ItemModel => Resources.Load<GameObject>("prefabs/NullModel");
+        public override GameObject ItemModel => LoadDropPrefab("mdlDesignAnomaly");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/designanomaly.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconDesignAnomaly");
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.BrotherBlacklist, ItemTag.WorldUnique, ItemTag.CannotSteal };
 
 

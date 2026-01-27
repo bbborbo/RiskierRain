@@ -1,9 +1,11 @@
 ﻿using BepInEx.Configuration;
 using BepInEx.Logging;
+using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace SwanSongExtended
 {
@@ -36,6 +38,10 @@ namespace SwanSongExtended
             float count = chance / firstStack;
             float coeff = 100 * firstStack / (cap - firstStack); // should be good
             return cap * (1 - (100 / ((count * coeff) + 100)));
+        }
+        public static ExpansionDef SotvExpansionDef()
+        {
+            return Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
         }
     }
 }

@@ -33,9 +33,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
 
-        public override GameObject ItemModel => LoadDropPrefab("Quiver");
+        public override GameObject ItemModel => LoadDropPrefab("mdlMagicQuiver");
 
-        public override Sprite ItemIcon => LoadItemIcon("texIconQuiver");
+        public override Sprite ItemIcon => LoadItemIcon("texIconMagicQuiver");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

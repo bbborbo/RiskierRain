@@ -23,7 +23,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "LUNAR_GALLERY";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarGallery.prefab");
+        public override GameObject InteractableModel => LoadInteractableModel(modelName);// assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarGallery.prefab");
 
         public override bool ShouldCloneModel => false;
 

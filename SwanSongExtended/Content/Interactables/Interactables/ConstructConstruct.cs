@@ -24,7 +24,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "CONSTRUCTCONSTRUCT";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlConstructConstruct.prefab");
+        public override GameObject InteractableModel => LoadInteractableModel(modelName); //assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlConstructConstruct.prefab");
 
         public override string modelName => "mdlConstructConstruct";
 

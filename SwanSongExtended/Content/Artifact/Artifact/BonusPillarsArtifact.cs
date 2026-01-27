@@ -31,9 +31,9 @@ namespace SwanSongExtended.Artifacts
 
         public override string ArtifactLangTokenName => "BONUSPILLARS";
 
-        public override Sprite ArtifactSelectedIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/bonuspillars.png");
 
-        public override Sprite ArtifactDeselectedIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/bonuspillarsoff.png");
+        public override Sprite ArtifactSelectedIcon => LoadArtifactIcon("texIconBonusPillars", fallBackOnWrench: true);
+        public override Sprite ArtifactDeselectedIcon => LoadArtifactIcon("texIconBonusPillarsOff");
 
         public override void Hooks()
         {

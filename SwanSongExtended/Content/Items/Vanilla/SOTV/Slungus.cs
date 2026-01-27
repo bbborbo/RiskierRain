@@ -68,9 +68,9 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.CannotCopy }; //, ItemTag.Damage
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlSlungus.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlSlungus");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/slungus.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconSlungus");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

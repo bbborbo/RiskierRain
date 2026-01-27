@@ -46,9 +46,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlChefStache.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlChefStache");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/chefreference.png");
+        public override Sprite ItemIcon => LoadItemIcon("chefreference");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

@@ -42,9 +42,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlJellyfishNecklace.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlShieldAmp");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/shieldamp.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconShieldAmp");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

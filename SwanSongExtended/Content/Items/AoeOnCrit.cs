@@ -149,7 +149,9 @@ namespace SwanSongExtended.Items
             float damageCoefficient = AoeOnCrit.firstBounceDamageBase + AoeOnCrit.firstBounceDamageStack * (stack - 1);
             int bounces = AoeOnCrit.bouncesBase + AoeOnCrit.bouncesStack * (stack - 1);
             float lastBounceDamageMultiplier = AoeOnCrit.lastBounceDamageCoefficient / damageCoefficient;
-            float damageLoss = bounces > 1f ? Mathf.Pow(lastBounceDamageMultiplier, 1f / ((float)bounces - 1f)) : 0f;
+            // |  ||
+            // |, |_
+            float loss = bounces > 1f ? Mathf.Pow(lastBounceDamageMultiplier, 1f / ((float)bounces - 1f)) : 0f;
 
             ChainGunOrb chainGunOrb = new ChainGunOrb(orbEffectObject);
             chainGunOrb.damageValue = damageReport.damageInfo.damage * damageCoefficient;
@@ -161,10 +163,10 @@ namespace SwanSongExtended.Items
             chainGunOrb.procChainMask.AddModdedProc(procType);
             chainGunOrb.origin = damageReport.damageInfo.position;
             chainGunOrb.target = target;
-            chainGunOrb.speed = 1200f;
+            chainGunOrb.speed = 600f;
             chainGunOrb.bouncesRemaining = bounces - 1;
             chainGunOrb.bounceRange = AoeOnCrit.bounceRange;
-            chainGunOrb.damageCoefficientPerBounce = damageLoss;// AoeOnCrit.lastBounceDamageMultiplier;
+            chainGunOrb.damageCoefficientPerBounce = loss;// AoeOnCrit.lastBounceDamageMultiplier;
             chainGunOrb.bouncedObjects = new List<HealthComponent>() { damageReport.victimBody.healthComponent };
             chainGunOrb.targetsToFindPerBounce = 1;
             chainGunOrb.canBounceOnSameTarget = false;

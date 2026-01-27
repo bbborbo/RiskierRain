@@ -29,7 +29,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "EGG_PILE";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlEggPile.prefab");
+        public override GameObject InteractableModel => LoadInteractableModel(modelName);
 
         public override string modelName => "mdlEggPile";
 

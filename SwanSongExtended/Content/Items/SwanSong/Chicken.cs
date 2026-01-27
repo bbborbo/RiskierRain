@@ -40,9 +40,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.OnStageBeginEffect };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlRawChicken.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlChicken");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/chicken.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconChicken");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

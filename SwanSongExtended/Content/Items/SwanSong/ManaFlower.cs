@@ -44,9 +44,9 @@ Nature is so magical :)";
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNaturesGift.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlManaFlower");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/manaflower.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconManaFlower");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

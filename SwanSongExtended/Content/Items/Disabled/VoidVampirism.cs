@@ -37,9 +37,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.VoidTier1;
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Damage };
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/coralite.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlCoralite");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/voidvampirism.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconVoidVampirism");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

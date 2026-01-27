@@ -37,9 +37,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlPermafrost.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlPermafrost");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/permafrost.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconPermafrost");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

@@ -39,9 +39,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.AIBlacklist, ItemTag.OnKillEffect };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>(CommonAssets.dropPrefabsPath + "Item/Beans.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlBeans");// assetBundle.LoadAsset<GameObject>(CommonAssets.dropPrefabsPath + "Item/Beans.prefab");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>(CommonAssets.iconsPath + "Item/texIconBeans.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconBeans");// assetBundle.LoadAsset<Sprite>(CommonAssets.iconsPath + "Item/texIconBeans.png");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

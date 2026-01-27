@@ -77,9 +77,9 @@ With your agreement to purchase and use this product, CuCo is released of liabil
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.AIBlacklist };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlLightningAttractor");
 
-        public override Sprite ItemIcon => Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texAttackIcon_png).WaitForCompletion();
+        public override Sprite ItemIcon => LoadItemIcon("texIconLightningAttractor");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

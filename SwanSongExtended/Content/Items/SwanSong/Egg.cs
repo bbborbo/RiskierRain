@@ -51,9 +51,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.OnKillEffect, ItemTag.InteractableRelated/*, ItemTag.WorldUnique*/};
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/egg.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlEgg");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/texEggIcon.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconEgg");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

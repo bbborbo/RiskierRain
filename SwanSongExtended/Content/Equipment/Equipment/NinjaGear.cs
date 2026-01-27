@@ -51,10 +51,9 @@ namespace SwanSongExtended.Equipment
             $"within {smokeBombRadius}m for {UtilityColor($"{smokeBombProcCoefficient} second")}.";
 
         public override string EquipmentLore => "";
+        public override GameObject EquipmentModel => LoadDropPrefab("mdlNinjaGear");
 
-        public override GameObject EquipmentModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlNinjaGear.prefab");
-
-        public override Sprite EquipmentIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/ninjagear.png");
+        public override Sprite EquipmentIcon => LoadItemIcon("texIconNinjaGear");
 
         public override float BaseCooldown => 7f;
         public override bool EnigmaCompatible => true;

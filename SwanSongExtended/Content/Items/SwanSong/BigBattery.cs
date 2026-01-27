@@ -84,9 +84,9 @@ You know?";
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlAAAAAAA.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlBigBattery");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/battery.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconBigBattery");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

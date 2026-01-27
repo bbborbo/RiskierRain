@@ -51,9 +51,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
         //testing egg model
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlFuse.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlFuse");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/fuse.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconFuse");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

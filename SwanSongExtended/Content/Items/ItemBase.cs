@@ -227,45 +227,11 @@ namespace SwanSongExtended.Items
             return baseValue + stackValue * (itemCount - 1);
         }
 
-
-        public static GameObject LoadDropPrefab(string prefabName = "")
-        {
-            GameObject prefab = null;
-            if (SwanSongPlugin.mainAssetBundle && prefabName != "")
-            {
-                prefab = SwanSongPlugin.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab");
-            }
-            
-            if(prefab == null)
-                prefab = Resources.Load<GameObject>("prefabs/NullModel");
-            return prefab;
-        }
-
-        public static GameObject LoadDisplayPrefab(string prefabName = "")
-        {
-            GameObject prefab = null;
-            if(SwanSongPlugin.mainAssetBundle && prefabName != "")
-            {
-                prefab = SwanSongPlugin.mainAssetBundle.LoadAsset<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab"); ;
-            }
-            return prefab;
-        }
-
-        public static Sprite LoadItemIcon(string spriteName = "")
-        {
-            Sprite icon = null;
-            if (SwanSongPlugin.mainAssetBundle && spriteName != "")
-            {
-                icon = SwanSongPlugin.mainAssetBundle.LoadAsset<Sprite>($"Assets/Textures/Icons/Item/{spriteName}.png");
-            }
-
-            if (icon == null)
-                icon = Resources.Load<Sprite>("textures/miscicons/texWIPIcon");
-            return icon;
-        }
-        public static ExpansionDef SotvExpansionDef()
-        {
-            return Addressables.LoadAssetAsync<ExpansionDef>("RoR2/DLC1/Common/DLC1.asset").WaitForCompletion();
-        }
+        public static GameObject LoadDropPrefab(string prefabName = "", AssetBundle bundle = null)
+            => SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/DropPrefabs/Item/{prefabName}.prefab", bundle).FixItemModel();
+        public static GameObject LoadDisplayPrefab(string prefabName = "", AssetBundle bundle = null)
+            => SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/DisplayPrefabs/Item/{prefabName}.prefab", bundle) ?? Resources.Load<GameObject>("prefabs/NullModel");
+        public static Sprite LoadItemIcon(string spriteName = "", AssetBundle bundle = null, bool fallBackOnWrench = false)
+            => SwanSongPlugin.TryLoadSpriteFromBundle($"Assets/Textures/Icons/Item/{spriteName}.png", bundle, fallBackOnWrench);
     }
 }

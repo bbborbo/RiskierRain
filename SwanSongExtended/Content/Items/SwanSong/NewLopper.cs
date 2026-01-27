@@ -63,7 +63,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.LowHealth };
 
-        public override GameObject ItemModel => LoadDropPrefab("NewLopper");
+        public override GameObject ItemModel => LoadDropPrefab("mdlNewLopper");
 
         public override Sprite ItemIcon => LoadItemIcon("texIconNewLopper");
 

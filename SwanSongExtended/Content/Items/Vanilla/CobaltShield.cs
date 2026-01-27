@@ -46,8 +46,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier3;
         public override ItemTag[] ItemTags { get; } = new ItemTag[] { ItemTag.Utility };
-
-        public override GameObject ItemModel => LoadDropPrefab("CobaltShield");
+        public override GameObject ItemModel => LoadDropPrefab("mdlCobaltShield");
 
         public override Sprite ItemIcon => LoadItemIcon("texIconCobaltShield");
 

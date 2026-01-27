@@ -56,9 +56,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Lunar;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlCompressionLoop.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlLunarIncreaseCD");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/lunarincreasecd.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconLunarIncreaseCD");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

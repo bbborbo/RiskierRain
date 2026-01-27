@@ -32,7 +32,7 @@ namespace SwanSongExtended.Interactables
 
         public override string InteractableLangToken => "VOID_HUSK";
 
-        public override GameObject InteractableModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlVoidHusk.prefab");
+        public override GameObject InteractableModel => LoadInteractableModel("mdlVoidHusk");
 
         public override string modelName => "mdlVoidHusk";
 

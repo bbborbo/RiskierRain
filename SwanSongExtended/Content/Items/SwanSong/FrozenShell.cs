@@ -40,9 +40,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Tier2;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/frozenTurtleShell.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlFrozenShell");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/frozenshell.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconFrozenShell");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

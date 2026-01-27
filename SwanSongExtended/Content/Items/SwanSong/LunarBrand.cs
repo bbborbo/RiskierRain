@@ -47,9 +47,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.Lunar;
 
         public override ItemTag[] ItemTags => new ItemTag [] { ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.Damage };
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlLunarBrand.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlLunarBrand");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/lunarbrand.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconLunarBrand");
 
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

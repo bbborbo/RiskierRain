@@ -1132,32 +1132,52 @@ namespace SwanSongExtended.Modules
 
         #region shaders lol
 
-        public static void SwapShadersFromMaterialsInBundle(AssetBundle bundle)
+        public static void SwapShadersFromMaterialsInBundle(AssetBundle bundle) => SwapAllShaders(bundle);
+
+
+        internal static void SwapAllShaders(AssetBundle assetBundle)
         {
-            if (bundle.isStreamedSceneAssetBundle)
+            foreach (var material in assetBundle.LoadAllAssets<Material>())
             {
-                Debug.LogWarning($"Cannot swap material shaders from a streamed scene assetbundle.");
-                return;
+                Log.Debug("Trying to swap shader for " + material.name);
+                TrySwapShader(material);
             }
 
-            Material[] assetBundleMaterials = bundle.LoadAllAssets<Material>().Where(mat => mat.shader.name.StartsWith("Stubbed")).ToArray();
+        }
 
-            for (int i = 0; i < assetBundleMaterials.Length; i++)
+        internal static void TrySwapShader(Material material)
+        {
+            var shaderName = material.shader.name;
+            if (shaderName.Contains("Stubbed"))
             {
-                var material = assetBundleMaterials[i];
-                if (!material.shader.name.StartsWith("Stubbed"))
+                shaderName = shaderName.Replace("Stubbed", string.Empty) + ".shader";
+                var replacementShader = Addressables.LoadAssetAsync<Shader>(shaderName).WaitForCompletion();
+
+                if (replacementShader != null)
                 {
-                    Debug.LogWarning($"The material {material} has a shader which's name doesnt start with \"Stubbed\" ({material.shader.name}), this is not allowed for stubbed shaders for MSU. not swapping shader.");
-                    continue;
+                    material.shader = replacementShader;
+                    //RiskOfRamenMain.LogDebug("Swapped shader " + material.name + "!");
                 }
-                try
+                else
                 {
-                    SwapShader(material);
+                    Log.Error("Failed to load shader " + shaderName);
                 }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Failed to swap shader of material {material}: {ex}");
-                }
+            }
+            else if (shaderName == "Standard")
+            {
+                var normalMap = material.GetTexture("_BumpMap");
+                var normalStrength = material.GetFloat("_BumpScale");
+                var emissionMap = material.GetTexture("_EmissionMap");
+
+                material.shader = Resources.Load<Shader>("Shaders/Deferred/HGStandard");
+
+                material.SetTexture("_NormalMap", normalMap);
+                material.SetFloat("_NormalStrength", normalStrength);
+                material.SetTexture("_EmTex", emissionMap);
+
+                material.SetColor("_EmColor", new Color(0.2f, 0.2f, 0.2f));
+                material.SetFloat("_EmPower", 0.15f);
+
             }
         }
         private static void SwapShader(Material material)

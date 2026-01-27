@@ -64,9 +64,9 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
         public override ItemTier Tier => ItemTier.Lunar;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Cleansable, ItemTag.Damage, ItemTag.AIBlacklist, ItemTag.CannotCopy };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/starVeil.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlStarVeil");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/starveil.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconStarVeil");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

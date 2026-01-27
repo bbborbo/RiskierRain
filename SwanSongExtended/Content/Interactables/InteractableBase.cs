@@ -308,6 +308,9 @@ namespace SwanSongExtended.Interactables
 				self.interactableCategories.AddCard((int)category, customInteractable.directorCard);
 			}
 		}
+
+		public static GameObject LoadInteractableModel(string prefabName = "", AssetBundle bundle = null)
+			=> SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/Interactables/{prefabName}.prefab", bundle);
 	}
 	public class SimpleInteractableData
 	{

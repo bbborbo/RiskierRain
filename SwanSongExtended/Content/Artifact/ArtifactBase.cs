@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace SwanSongExtended.Artifacts
@@ -88,5 +89,9 @@ namespace SwanSongExtended.Artifacts
         {
             return RunArtifactManager.instance.IsArtifactEnabled(ArtifactDef);
         }
+
+        public static Sprite LoadArtifactIcon(string spriteName = "", AssetBundle bundle = null, bool fallBackOnWrench = false) 
+            => SwanSongPlugin.TryLoadSpriteFromBundle($"Assets/Textures/Icons/Artifact/{spriteName}.png", bundle, fallBackOnWrench);
+        
     }
 }

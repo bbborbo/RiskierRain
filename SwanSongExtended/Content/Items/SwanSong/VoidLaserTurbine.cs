@@ -56,9 +56,10 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage };
 
-        public override GameObject ItemModel => assetBundle.LoadAsset<GameObject>("Assets/Prefabs/mdlS2Engine.prefab");
+        public override GameObject ItemModel => LoadDropPrefab("mdlVoidLaserTurbine");
 
-        public override Sprite ItemIcon => assetBundle.LoadAsset<Sprite>("Assets/Icons/voidlaserturbine.png");
+        public override Sprite ItemIcon => LoadItemIcon("texIconVoidLaserTurbine");
+
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

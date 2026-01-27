@@ -11,6 +11,38 @@ namespace SwanSongExtended
 {
     public static class Extensions
     {
+        public static GameObject FixItemModel(this GameObject prefab)
+        {
+            if (prefab == null)
+                prefab = Resources.Load<GameObject>("prefabs/NullModel");
+
+            ModelPanelParameters parameters = prefab.AddComponent<ModelPanelParameters>();
+
+            parameters.minDistance = 1;
+            parameters.maxDistance = 15;
+
+            Transform t = prefab.transform.Find("FocusPos");
+            if (t == null)
+            {
+                GameObject focusPoint = new GameObject("FocusPos");
+                t = focusPoint.transform;
+                t.parent = prefab.transform;
+                t.localPosition = Vector3.zero;
+            }
+            parameters.focusPointTransform = t;
+
+            Transform c = prefab.transform.Find("CameraPos");
+            if (c == null)
+            {
+                GameObject cameraPos = new GameObject("CameraPos");
+                c = cameraPos.transform;
+                c.parent = prefab.transform;
+                c.SetPositionAndRotation(t.position + Vector3.forward * -7 + Vector3.right * -1, c.rotation);
+            }
+            parameters.cameraPositionTransform = c;
+
+            return prefab;
+        }
         public static string AsPercent(this float d)
         {
             return (d * 100f).ToString() + "%";

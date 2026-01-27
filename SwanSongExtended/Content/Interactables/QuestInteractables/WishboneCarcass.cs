@@ -108,7 +108,7 @@ namespace SwanSongExtended.Interactables
                     GameObject glow = ps.gameObject.InstantiateClone("CarcassGlow");
                     glow.transform.parent = interactablePrefab.transform;
                     glow.transform.localPosition = Vector3.zero;
-                    glow.transform.localScale *= 0.22f;
+                    glow.transform.localScale *= 0.35f;
                     break;
                 }
             }

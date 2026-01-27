@@ -14,7 +14,7 @@ namespace SwanSongExtended
         public static GameObject FixItemModel(this GameObject prefab)
         {
             if (prefab == null)
-                Resources.Load<GameObject>("prefabs/NullModel");
+                prefab = Resources.Load<GameObject>("prefabs/NullModel");
 
             ModelPanelParameters parameters = prefab.AddComponent<ModelPanelParameters>();
 

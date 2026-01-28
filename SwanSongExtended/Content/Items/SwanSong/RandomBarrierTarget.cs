@@ -21,8 +21,8 @@ namespace SwanSongExtended.Items
         public static GameObject harpoonEffectPrefab;
         public override bool isEnabled => true; 
 
-        public static float harpoonBarrierBase = 8;
-        public static float harpoonBarrierStack = 8;
+        public static float harpoonBarrierBase = 10;
+        public static float harpoonBarrierStack = 10;
         public static float harpoonTargetTime = 15;
         public static float harpoonDecayReduction = 0.2f;
 
@@ -51,7 +51,7 @@ I ordered this Omen Globe from you guys, and oh my god, I am NEVER buying anythi
 
 I tried for HOURS, for this ball to show me ANYTHING, and never once was I granted a moment of divine clairvoyance. 
 
-And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS Inc. Don't fucking tell me I'm not enlightened enough. I've done more drugs in my life than you can even fathom.
+And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS Inc. Don't fucking tell me I'm not enlightened enough. 
 
 Your crystal, or should I say plastic, ball cost me more than my entire life savings. I demand my money back, or you will face DIRE consequences. ";
 

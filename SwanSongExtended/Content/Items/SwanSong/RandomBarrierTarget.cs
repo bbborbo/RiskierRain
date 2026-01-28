@@ -21,14 +21,14 @@ namespace SwanSongExtended.Items
         public static GameObject harpoonEffectPrefab;
         public override bool isEnabled => true; 
 
-        public static float harpoonBarrierBase = 6;
-        public static float harpoonBarrierStack = 6;
+        public static float harpoonBarrierBase = 8;
+        public static float harpoonBarrierStack = 8;
         public static float harpoonTargetTime = 15;
         public static float harpoonDecayReduction = 0.2f;
 
         public static Material harpoonTargetMaterial;
 
-        public override string ItemName => "Borbo\u2019s Arrowhead";
+        public override string ItemName => "Crystal Ball";
 
         public override string ItemLangTokenName => "RANDOMBARRIERTARGET";
 
@@ -39,7 +39,21 @@ namespace SwanSongExtended.Items
                 $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
                 $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.";
 
-        public override string ItemLore => "Not to be confused with Hunter's Harpoon!";
+        public override string ItemLore =>
+@"Order: Crystal Ball
+Tracking Number: 66***********
+Estimated Delivery: 5/6/2056
+Shipping Method:  Return
+Shipping Address: Arcane Suppliers Inc., The Floating Citadel, Neptune
+Shipping Details:
+
+I ordered this Omen Globe from you guys, and oh my god, I am NEVER buying anything from this place again. This is a total fucking scam. 
+
+I tried for HOURS, for this ball to show me ANYTHING, and never once was I granted a moment of divine clairvoyance. 
+
+And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS Inc. Don't fucking tell me I'm not enlightened enough. I've done more drugs in my life than you can even fathom.
+
+Your crystal, or should I say plastic, ball cost me more than my entire life savings. I demand my money back, or you will face DIRE consequences. ";
 
         public override ItemTier Tier => ItemTier.Tier2;
 

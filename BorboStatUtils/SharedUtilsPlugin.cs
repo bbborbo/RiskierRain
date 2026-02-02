@@ -33,8 +33,20 @@ namespace RainrotSharedUtils
         public const string version = "1.3.6";
         #endregion
 
+        public const string noAttackSpeedKeywordName = "Exacting";
         public const string shelterKeywordToken = "2R4R_SHELTER_KEYWORD";
         public const string executeKeywordToken = "2R4R_EXECUTION_KEYWORD";
+        /// <summary>
+        /// Multiply the attack's total damage
+        /// </summary>
+        public const string noAttackSpeedMultiplicativeKeywordToken = "2R4R_NOATTACKSPEEDMULTIPLICATIVE_KEYWORD";
+        /// <summary>
+        /// Added to the attack's damage multiplier
+        /// </summary>
+        public const string noAttackSpeedAdditiveKeywordToken = "2R4R_NOATTACKSPEEDADDITIVE_KEYWORD";
+        /// <summary>
+        /// Simple form -- deprecated. Use Additive or Multiplicative versions instead.
+        /// </summary>
         public const string noAttackSpeedKeywordToken = "2R4R_NOATTACKSPEED_KEYWORD";
         public const string sparkPickupKeywordToken = "2R4R_SPARKPICKUP_KEYWORD";
         public const float survivorExecuteThreshold = 0.15f;
@@ -51,13 +63,32 @@ namespace RainrotSharedUtils
                 $"<style=cSub>Enemies targeted by this skill can be " +
                 $"<style=cIsHealth>instantly killed</style> if below " +
                 $"<style=cIsHealth>{survivorExecuteThreshold * 100}% health</style>.</style>");
+
             LanguageAPI.Add(noAttackSpeedKeywordToken,
-                $"<style=cKeywordName>Exacting</style>" +
-                $"<style=cSub>This skill <style=cIsHealth>does not gain attack speed bonuses</style>. " +
-                $"Instead, attack speed <style=cIsDamage>increases total damage</style>.</style>");
+                FormatExacting("", "<style=cIsDamage>increase</style> this attack's <style=cIsDamage>total damage</style>."
+                ));
+            LanguageAPI.Add(noAttackSpeedMultiplicativeKeywordToken,
+                FormatExacting("Multiplicative", "<style=cIsDamage>multiply</style> this attack's <style=cIsDamage>total damage</style>."
+                ));
+            LanguageAPI.Add(noAttackSpeedAdditiveKeywordToken,
+                FormatExacting("Additive", "are <style=cIsDamage>added to</style> this attack's <style=cIsDamage>damage multiplier</style>."
+                ));
+
+            string FormatExacting(string exactingType, string attackSpeedBonusesThen)
+            {
+                string keywordName = 
+                    string.IsNullOrWhiteSpace(exactingType) ? noAttackSpeedKeywordName 
+                    : $"{noAttackSpeedKeywordName} ({exactingType})";
+                return $"<style=cKeywordName>{keywordName}</style>" +
+                $"<style=cSub>This skill will always take the same amount of time to cast, " +
+                $"and is <style=cIsHealth>unaffected by attack speed bonuses</style>. " +
+                $"Instead, attack speed bonuses {attackSpeedBonusesThen}.</style>";
+            }
+
             LanguageAPI.Add(shelterKeywordToken,
                 $"<style=cKeywordName>Shelter</style>" +
                 $"<style=cSub>Protects from storms and fog.</style>");
+
             LanguageAPI.Add(sparkPickupKeywordToken,
                 $"<style=cKeywordName>Energizing Sparks</style>" +
                 $"<style=cSub>Creates <style=cIsDamage>spark pickups</style> that increase the " +

@@ -22,7 +22,8 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override string survivorName => "Mercenary";
         public override string bodyName => "MERCBODY";
 
-        public bool attackSpeedDamageAdditive = false;
+        public static bool attackSpeedDamageAdditive = false;
+        private static string exactingKeyword => attackSpeedDamageAdditive ? SharedUtilsPlugin.noAttackSpeedAdditiveKeywordToken : SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken;
         public float moveSpeed = 8f; //7f
 
         public static float primaryDamageCoefficient = 1.3f;//1.3f
@@ -63,7 +64,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             On.EntityStates.Merc.Weapon.GroundLight2.OnEnter += RemovePrimaryAspdScaling;
 
             SkillDef laserSword = family.variants[0].skillDef;
-            laserSword.keywordTokens = new string[] { "KEYWORD_AGILE", SharedUtilsPlugin.noAttackSpeedKeywordToken, "KEYWORD_EXPOSE" };
+            laserSword.keywordTokens = new string[] { "KEYWORD_AGILE", exactingKeyword, "KEYWORD_EXPOSE" };
             LanguageAPI.Add(laserSword.skillDescriptionToken,
                 $"<style=cIsUtility>Agile</style>. <style=cIsUtility>Exacting</style>. " +
                 $"Slice in front for <style=cIsDamage>{Tools.ConvertDecimal(primaryDamageCoefficient)}</style>. " +
@@ -104,7 +105,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             SkillDef uppercut = family.variants[1].skillDef;
             uppercut.baseRechargeInterval = uppercutCooldown;
             uppercut.cancelSprintingOnActivation = false;
-            uppercut.keywordTokens = new string[] { "KEYWORD_STUNNING", SharedUtilsPlugin.noAttackSpeedKeywordToken, "KEYWORD_EXPOSE" };
+            uppercut.keywordTokens = new string[] { exactingKeyword };
             LanguageAPI.Add(uppercut.skillDescriptionToken,
                 $"<style=cIsUtility>Exacting</style>. " +
                 $"Unleash a slicing uppercut, dealing <style=cIsDamage>{Tools.ConvertDecimal(uppercutDamageCoefficient)} damage</style> and sending you airborne.");
@@ -140,7 +141,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             SkillDef focusedDash = family.variants[1].skillDef;
             focusedDash.baseRechargeInterval = focusDashCooldown;
-            focusedDash.keywordTokens = new string[] { "KEYWORD_STUNNING", SharedUtilsPlugin.noAttackSpeedKeywordToken, "KEYWORD_EXPOSE" };
+            focusedDash.keywordTokens = new string[] { "KEYWORD_STUNNING", exactingKeyword, "KEYWORD_EXPOSE" };
             LanguageAPI.Add(focusedDash.skillDescriptionToken,
                 $"<style=cIsUtility>Stunning</style>. <style=cIsUtility>Exacting</style>. " +
                 $"Dash forward, dealing <style=cIsDamage>{Tools.ConvertDecimal(focusDashDamageCoefficient)} damage</style> " +

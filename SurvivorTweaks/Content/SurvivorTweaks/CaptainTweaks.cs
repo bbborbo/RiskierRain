@@ -381,7 +381,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             shotgun.resetCooldownTimerOnUse = true;
             shotgun.mustKeyPress = false;
             shotgun.attackSpeedBuffsRestockSpeed = true;
-            shotgun.keywordTokens = new string[] { RainrotSharedUtils.SharedUtilsPlugin.noAttackSpeedKeywordToken };
+            shotgun.keywordTokens = new string[] { RainrotSharedUtils.SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken };
 
             On.EntityStates.Captain.Weapon.ChargeCaptainShotgun.OnEnter += CaptainShotgunCharge;
             On.EntityStates.Captain.Weapon.FireCaptainShotgun.OnEnter += CaptainShotgunFixes;

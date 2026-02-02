@@ -371,7 +371,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void BanditFinisher(CharacterBody sender, MoreStatHookEventArgs args)
         {
             bool hasBanditExecutionBuff = sender.HasBuff(CommonAssets.desperadoExecutionDebuff) || sender.HasBuff(CommonAssets.lightsoutExecutionDebuff);
-            args.ModifyBaseExecutionThreshold(SharedUtilsPlugin.survivorExecuteThreshold, hasBanditExecutionBuff);
+            args.ModifyBaseExecutionThreshold(SharedUtilsPlugin.GetSurvivorExecuteThreshold(sender.isBoss), hasBanditExecutionBuff);
         }
 
         private void ModifyLightsOutDamage(On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmResetRevolver self, BulletAttack bulletAttack)

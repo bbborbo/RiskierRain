@@ -50,6 +50,12 @@ namespace RainrotSharedUtils
         public const string noAttackSpeedKeywordToken = "2R4R_NOATTACKSPEED_KEYWORD";
         public const string sparkPickupKeywordToken = "2R4R_SPARKPICKUP_KEYWORD";
         public const float survivorExecuteThreshold = 0.15f;
+        public static float GetSurvivorExecuteThreshold(bool isBoss)
+        {
+            if (isBoss)
+                return survivorExecuteThreshold / 2;
+            return survivorExecuteThreshold;
+        }
 
         public void Awake()
         {
@@ -62,7 +68,8 @@ namespace RainrotSharedUtils
                 $"<style=cKeywordName>Finisher</style>" +
                 $"<style=cSub>Enemies targeted by this skill can be " +
                 $"<style=cIsHealth>instantly killed</style> if below " +
-                $"<style=cIsHealth>{survivorExecuteThreshold * 100}% health</style>.</style>");
+                $"<style=cIsHealth>{survivorExecuteThreshold * 100}% health</style>. " +
+                $"Half as effective against Boss enemies.</style>");
 
             LanguageAPI.Add(noAttackSpeedKeywordToken,
                 FormatExacting("", "<style=cIsDamage>increase</style> this attack's <style=cIsDamage>total damage</style>."

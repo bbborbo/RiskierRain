@@ -63,7 +63,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void HarvestFinisher(CharacterBody sender, MoreStatHookEventArgs args)
         {
             bool hasRexHarvestBuff = sender.HasBuff(RoR2Content.Buffs.Fruiting);
-            args.ModifyBaseExecutionThreshold(SharedUtilsPlugin.survivorExecuteThreshold, hasRexHarvestBuff);
+            args.ModifyBaseExecutionThreshold(SharedUtilsPlugin.GetSurvivorExecuteThreshold(sender.isBoss), hasRexHarvestBuff);
         }
 
         private void NerfSyringe(On.EntityStates.Treebot.Weapon.FireSyringe.orig_OnEnter orig, FireSyringe self)

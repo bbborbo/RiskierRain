@@ -22,7 +22,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override string survivorName => "Mercenary";
         public override string bodyName => "MERCBODY";
 
-        public static bool attackSpeedDamageAdditive = false;
+        public static bool attackSpeedDamageAdditive = true;
         private static string exactingKeyword => attackSpeedDamageAdditive ? SharedUtilsPlugin.noAttackSpeedAdditiveKeywordToken : SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken;
         public float moveSpeed = 8f; //7f
 

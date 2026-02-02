@@ -17,6 +17,13 @@ namespace SurvivorTweaks
                 "Enable debug outputs to the log for troubleshooting purposes. Enabling this will slow down the game.");
             _logSource = logSource;
         }
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{SurvivorTweaksPlugin.modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Log.Error(s);
+        }
         internal static string Combine(params string[] parameters)
         {
             string s = $"{SurvivorTweaksPlugin.modName} : ";

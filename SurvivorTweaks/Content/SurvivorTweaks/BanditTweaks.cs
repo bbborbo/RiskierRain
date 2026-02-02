@@ -18,15 +18,26 @@ using UnityEngine.AddressableAssets;
 using RainrotSharedUtils;
 using static R2API.RecalculateStatsAPI;
 using static SurvivorTweaks.Modules.Language.Styling;
+using SurvivorTweaks.Components;
+using MonoMod.Cil;
+using EntityStates;
+using Mono.Cecil.Cil;
+using EntityStates.Bandit2.Weapon;
+using EntityStates.Toolbot;
+using EntityStates.Huntress.HuntressWeapon;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
     class BanditTweaks : SurvivorTweakBase<BanditTweaks>
     {
+        public static bool noFinishersFromSkillSourcedDamage = true;
         public static float shotgunDamageCoeff = 0.75f; //1
         public static float rifleDamageCoeff = 2.8f; // 3.3
         public static float rifleSpreadBloom = 0.4f; //0.5f
-        public static float reloadBaseDuration = 0.6f; //0.5
+        public static float reloadEnterBaseDuration = 0.4f; //0.25f
+        public static float reloadBaseDuration = 0.6f; //0.3f
+        public static float primaryMinDuration = 0.1f;
+        public static float primaryAutoDuration = 0.375f;
 
         public static float daggerDamageCoeff = 6f; //3.6
         public static float daggerCooldown = 6f; //4 
@@ -36,14 +47,20 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static int shivStock = 2; //1
 
         public static float stealthHopVelocity = 13f; //15
-        public static float stealthDuration = 4f; //3
-        public static float stealthCooldown = 9f; //6
-        public static float stealthAspdBonus = 2f; //0
+        public static float stealthDuration = 4.5f; //3
+        public static float stealthCooldown = 6f; //6
+        public static float stealthAspdBonus = 1f; //0
 
-        public static float lightsOutDamage = 7f; //6
+        public static float finisherDebuffDuration = 1f;//0f
+        public static float lightsOutDamage = 5f; //6
         public static float lightsOutCooldown = 8f; //4
-        public static float desperadoDamage = 2.5f; //6
+        public static float desperadoDamage = 3f; //6
         public static float desperadoCooldown = 3f; //4
+        public static float desperadoDamagePerToken = 0.05f; //0.1f
+        public static float desperadoAttackSpeedPerToken = 0.05f; //0f
+        public static int desperadoTokensPerLevel = 2;
+        public static float finisherAimDuration = 1.0f;
+        public static float finisherEndlag = 10f;
 
         public static float hemmorageDamageBase = 15;
         public static float hemmorageDamageMin = 0.5f;
@@ -71,9 +88,9 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"Can deal <style=cIsDamage>up to {hemmorageDamageMax / hemmorageDamageMin}x</style> as much damage against healthy enemies. " +
                 $"<i>Hemorrhage can stack.</i></style>");
 
-            CharacterBody.onBodyStartGlobal += RecalculateTokenAmount;
-            TeleporterInteraction.onTeleporterFinishGlobal += OnAdvanceStageSaveTokens;
-            ShowReport.OnEnter += ResetTokens;
+            //CharacterBody.onBodyStartGlobal += RecalculateTokenAmount;
+            //TeleporterInteraction.onTeleporterFinishGlobal += OnAdvanceStageSaveTokens;
+            //ShowReport.OnEnter += ResetTokens;
 
             //On.RoR2.CharacterBody.RecalculateStats += BackstabPassiveCritChance;
             On.RoR2.CharacterBody.Start += BackstabPassiveCritChance;
@@ -83,9 +100,16 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void BanditCloakBuff(CharacterBody sender, StatHookEventArgs args)
         {
-            if(sender.HasBuff(RoR2Content.Buffs.Cloak) && sender.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
+            if(sender.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
             {
-                args.attackSpeedMultAdd += stealthAspdBonus;
+                if(sender.HasBuff(RoR2Content.Buffs.Cloak))
+                    args.attackSpeedMultAdd += stealthAspdBonus;
+
+                int baseTokenCount = sender.GetBuffCount(banditSkullBuff);
+                int surplusTokenCount = sender.GetBuffCount(banditSkullSurplusBuff);
+                int totalTokenCount = baseTokenCount + surplusTokenCount;
+                if (totalTokenCount > 0)
+                    args.attackSpeedMultAdd += desperadoAttackSpeedPerToken * totalTokenCount;
             }
         }
 
@@ -106,91 +130,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             }
         }
 
-        #region Desperado
-        public struct BodyDesperadoPair
-        {
-            public short id;
-            public int tokens;
-        }
-        public static List<BodyDesperadoPair> lastStageDesperadoTokens = new List<BodyDesperadoPair>();
-
-        private void ResetTokens(ShowReport.orig_OnEnter orig, EntityStates.GameOver.ShowReport self)
-        {
-            lastStageDesperadoTokens = new List<BodyDesperadoPair>();
-            orig(self);
-        }
-
-        private void OnAdvanceStageSaveTokens(TeleporterInteraction interaction)
-        {
-            lastStageDesperadoTokens = new List<BodyDesperadoPair>(PlayerCharacterMasterController.instances.Count);
-
-            if (lastStageDesperadoTokens.Capacity == 0)
-            {
-                Debug.Log("Desperado Token Thing Fail!");
-            }
-
-            for (int i = 0; i < lastStageDesperadoTokens.Capacity; i++) 
-            {
-                PlayerCharacterMasterController instance = PlayerCharacterMasterController.instances[i];
-                CharacterBody body = instance.master.GetBody();
-
-                BodyDesperadoPair newPair = new BodyDesperadoPair();
-                newPair.id = body.playerControllerId;
-                newPair.tokens = body.GetBuffCount(RoR2Content.Buffs.BanditSkull);
-
-                //Debug.Log(i);
-                lastStageDesperadoTokens.Add(newPair);
-            }
-            /*foreach (PlayerCharacterMasterController instance in PlayerCharacterMasterController.instances)
-            {
-                BodyDesperadoPair newPair = new BodyDesperadoPair();
-                newPair.body = instance.master.GetBody();
-                newPair.tokens = newPair.body.GetBuffCount(RoR2Content.Buffs.BanditSkull);
-
-                lastStageDesperadoTokens.Add(newPair);
-            }*/
-        }
-
-        private void RecalculateTokenAmount(CharacterBody body)
-        {
-            if (!NetworkServer.active)
-                return;
-
-            if (body.isPlayerControlled && body.teamComponent.teamIndex == TeamIndex.Player)
-            {
-                if(lastStageDesperadoTokens.Capacity == 0)
-                {
-                    lastStageDesperadoTokens = new List<BodyDesperadoPair>(PlayerCharacterMasterController.instances.Count);
-                }
-                try
-                {
-                    for (int i = 0; i < lastStageDesperadoTokens.Capacity; i++)
-                    {
-                        BodyDesperadoPair pair = lastStageDesperadoTokens[i];
-                        if (body.playerControllerId == pair.id && pair.tokens > 0)
-                        {
-                            //Debug.Log("Matching body found in desperado pair!");
-                            int currentTokenAmount = body.GetBuffCount(RoR2Content.Buffs.BanditSkull);
-                            int newTokenAmount = (int)Mathf.Min(pair.tokens, body.level * 2);
-
-                            if (currentTokenAmount < newTokenAmount)
-                            {
-                                for (int k = 0; k < newTokenAmount - currentTokenAmount; k++)
-                                {
-                                    body.AddBuff(RoR2Content.Buffs.BanditSkull);
-                                }
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    //Debug.Log("Error detected when trying to recalculate desperado tokens!");
-                }
-            }
-        }
-        #endregion
-
         private void BanditTweaksTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             CharacterBody attackerBody = null;
@@ -208,34 +147,42 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             orig(self, damageInfo);
 
-            if (NetworkServer.active && (self.health <= 0 || !self.alive) && attackerBody != null && attackerBody.bodyIndex == BodyCatalog.FindBodyIndexCaseInsensitive("Bandit2Body"))
+            if (!NetworkServer.active)
+                return;
+            if (self.health > 0 || self.alive)
+                return;
+            if (attackerBody == null)
+                return;
+            if (attackerBody.bodyIndex != BodyCatalog.FindBodyIndexCaseInsensitive("Bandit2Body"))
+                return;
+            if (damageInfo.damageType.damageSource != DamageSource.NoneSpecified && noFinishersFromSkillSourcedDamage)
+                return;
+
+            if (self.body.HasBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
             {
-                if (self.body.HasBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
-                {
-                    self.body.RemoveBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex);
+                self.body.RemoveBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex);
 
-                    EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2ResetEffect"), new EffectData
-                    {
-                        origin = damageInfo.position
-                    }, true);
-                    SkillLocator skillLocator = attackerBody.skillLocator;
-                    if (skillLocator)
-                    {
-                        skillLocator.ResetSkills();
-                    }
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2ResetEffect"), new EffectData
+                {
+                    origin = damageInfo.position
+                }, true);
+                SkillLocator skillLocator = attackerBody.skillLocator;
+                if (skillLocator)
+                {
+                    skillLocator.ResetSkills();
                 }
-                if (self.body.HasBuff(CommonAssets.desperadoExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
-                {
-                    self.body.RemoveBuff(CommonAssets.desperadoExecutionDebuff.buffIndex);
+            }
+            if (self.body.HasBuff(CommonAssets.desperadoExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
+            {
+                self.body.RemoveBuff(CommonAssets.desperadoExecutionDebuff.buffIndex);
 
-                    EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2KillEffect"), new EffectData
-                    {
-                        origin = damageInfo.position
-                    }, true);
-                    if (attackerBody)
-                    {
-                        attackerBody.AddBuff(RoR2Content.Buffs.BanditSkull);
-                    }
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2KillEffect"), new EffectData
+                {
+                    origin = damageInfo.position
+                }, true);
+                if (attackerBody)
+                {
+                    attackerBody.AddBuff(RoR2Content.Buffs.BanditSkull);
                 }
             }
         }
@@ -244,28 +191,93 @@ namespace SurvivorTweaks.SurvivorTweaks
         void ChangeVanillaPrimaries(SkillFamily family)
         {
             On.EntityStates.GenericBulletBaseState.OnEnter += ModifyRifleAttacks;
+            On.EntityStates.GenericBulletBaseState.FixedUpdate += RifleFixedUpdate;
             On.EntityStates.Bandit2.Weapon.Reload.OnEnter += ChangeReloadDuration;
+            On.EntityStates.Bandit2.Weapon.Reload.GiveStock += AutoFireOnReload;
+            On.EntityStates.Bandit2.Weapon.EnterReload.GetMinimumInterruptPriority += (orig, self) => { return InterruptPriority.Skill; };
+            On.EntityStates.Bandit2.Weapon.Reload.GetMinimumInterruptPriority += (orig, self) => { return InterruptPriority.Skill; };
+            On.EntityStates.Bandit2.Weapon.EnterReload.OnEnter += ChangeReloadEnterDuration;
+            On.EntityStates.Bandit2.Weapon.Bandit2FirePrimaryBase.GetMinimumInterruptPriority += (orig, self) =>
+            {
+                if (self.fixedAge <= self.minimumDuration)
+                {
+                    return InterruptPriority.Pain;
+                }
+                return InterruptPriority.PrioritySkill;
+            };
 
             //shotgun primary
-            LanguageAPI.Add("BANDIT2_PRIMARY_DESCRIPTION", $"Fire a shotgun burst for <style=cIsDamage>5x{Tools.ConvertDecimal(shotgunDamageCoeff)} damage</style>. Can hold up to 4 shells.");
+            SkillDef shotgun = family.variants[0].skillDef;
+            shotgun.interruptPriority = InterruptPriority.PrioritySkill;
+            //shotgun.mustKeyPress = false;
+            LanguageAPI.Add("BANDIT2_PRIMARY_DESCRIPTION", 
+                $"Fire a shotgun burst for <style=cIsDamage>5x{shotgunDamageCoeff.AsPercent()} damage</style>. " +
+                $"Tap to fire faster. Can hold up to 4 shells.");
 
             //rifle primary
-            LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION", $"Fire a rifle blast for <style=cIsDamage>{Tools.ConvertDecimal(rifleDamageCoeff)} damage</style>. Can hold up to 4 bullets.");
+            SkillDef rifle = family.variants[1].skillDef;
+            rifle.interruptPriority = InterruptPriority.PrioritySkill;
+            //rifle.mustKeyPress = false;
+            LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION", 
+                $"Fire a rifle blast for <style=cIsDamage>{rifleDamageCoeff.AsPercent()} damage</style>. " +
+                $"Tap to fire faster. Can hold up to 4 bullets.");
+        }
 
+        private void AutoFireOnReload(On.EntityStates.Bandit2.Weapon.Reload.orig_GiveStock orig, Reload self)
+        {
+            orig(self);
+            if(self.inputBank && self.inputBank.skill1.down)
+            {
+                self.skillLocator.primary.ExecuteIfReady();
+            }
         }
 
         private void ModifyRifleAttacks(On.EntityStates.GenericBulletBaseState.orig_OnEnter orig, EntityStates.GenericBulletBaseState self)
         {
-            if(self is EntityStates.Bandit2.Weapon.Bandit2FireRifle)
+            if (self is Bandit2FireRifle || self is FireShotgun2)
             {
-                self.spreadBloomValue = rifleSpreadBloom;
-                self.damageCoefficient = rifleDamageCoeff;
-            }
-            else if(self is EntityStates.Bandit2.Weapon.FireShotgun2)
-            {
-                self.damageCoefficient = shotgunDamageCoeff;
+                if(self is Bandit2FireRifle)
+                {
+                    self.spreadBloomValue = rifleSpreadBloom;
+                    self.damageCoefficient = rifleDamageCoeff;
+                }
+                else
+                {
+                    self.damageCoefficient = shotgunDamageCoeff;
+                }
+                self.baseDuration = primaryAutoDuration;
+                (self as Bandit2FirePrimaryBase).minimumBaseDuration = primaryMinDuration;
             }
             orig(self);
+        }
+
+        private void RifleFixedUpdate(On.EntityStates.GenericBulletBaseState.orig_FixedUpdate orig, GenericBulletBaseState self)
+        {
+            if(self is Bandit2FirePrimaryBase state && self.skillLocator && self.skillLocator.primary)
+            {
+                //if the primary skill is released, exit early
+                //otherwise, if the skill is held for long enough, fire again
+                bool heldDown = self.inputBank && self.inputBank.skill1.down && state.duration != state.minimumDuration;
+                if (!heldDown)
+                    state.duration = state.minimumDuration;
+                else
+                {
+                    state.fixedAge += Time.fixedDeltaTime;
+                    if (state.fixedAge >= state.duration)
+                    {
+                        state.skillLocator.primary.ExecuteIfReady();
+                    }
+                    return;
+                }
+            }
+            orig(self);
+        }
+
+        private void ChangeReloadEnterDuration(On.EntityStates.Bandit2.Weapon.EnterReload.orig_OnEnter orig, EnterReload self)
+        {
+            EnterReload.baseDuration = reloadEnterBaseDuration;
+            orig(self);
+            EnterReload.baseDuration = reloadEnterBaseDuration;
         }
 
         private void ChangeReloadDuration(On.EntityStates.Bandit2.Weapon.Reload.orig_OnEnter orig, EntityStates.Bandit2.Weapon.Reload self)
@@ -283,6 +295,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             SkillDef dagger = family.variants[0].skillDef;
             dagger.baseRechargeInterval = daggerCooldown;
             dagger.mustKeyPress = true;
+            dagger.interruptPriority = InterruptPriority.PrioritySkill;
             LanguageAPI.Add("BANDIT2_SECONDARY_DESCRIPTION", $"Lunge and slash for <style=cIsDamage>{Tools.ConvertDecimal(daggerDamageCoeff)} damage</style>. " +
                 $"Critical Strikes also cause <style=cIsHealth>hemorrhaging</style>.");
 
@@ -293,6 +306,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             shiv.baseMaxStock = shivStock;
             shiv.rechargeStock = shivStock;
             shiv.mustKeyPress = true;
+            shiv.interruptPriority = InterruptPriority.PrioritySkill;
             LanguageAPI.Add("BANDIT2_SECONDARY_ALT_DESCRIPTION", $"Throw a hidden blade for <style=cIsDamage>{Tools.ConvertDecimal(shivDamageCoeff)} damage</style>. " +
                 $"Critical Strikes also cause <style=cIsHealth>hemorrhaging</style>. " + (shivStock > 1 ? $"Hold up to {shivStock}." : ""));
         }
@@ -315,11 +329,24 @@ namespace SurvivorTweaks.SurvivorTweaks
         void ChangeVanillaUtilities(SkillFamily family)
         {
             On.EntityStates.Bandit2.StealthMode.FireSmokebomb += ModifySmokeBomb;
-            family.variants[0].skillDef.baseRechargeInterval = stealthCooldown;
+            On.EntityStates.Bandit2.StealthMode.OnExit += ReleaseSmokeBombState;
+            SkillDef smokeBomb = family.variants[0].skillDef;
+            smokeBomb.baseRechargeInterval = stealthCooldown;
+            smokeBomb.interruptPriority = InterruptPriority.PrioritySkill;
+            smokeBomb.isCooldownBlockedUntilManuallyReset = true;
 
             LanguageAPI.Add("BANDIT2_UTILITY_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
-                $"Deal <style=cIsDamage>200% damage</style>, become <style=cIsUtility>invisible</style>, then deal <style=cIsDamage>200% damage</style> again." +
-                $"While cloaked, gain +{DamageColor(ConvertDecimal(stealthAspdBonus))} attack speed.");
+                $"Deal <style=cIsDamage>200% damage</style>, then become <style=cIsUtility>invisible</style> until your next attack. " +
+                $"While invisible, gain {DamageColor($"+{stealthAspdBonus.AsPercent()}")} attack speed.");
+        }
+
+        private void ReleaseSmokeBombState(On.EntityStates.Bandit2.StealthMode.orig_OnExit orig, EntityStates.Bandit2.StealthMode self)
+        {
+            orig(self);
+            if(self.skillLocator && self.skillLocator.utility)
+            {
+                self.skillLocator.utility.SetBlockedCooldownSkillState(false);
+            }
         }
 
         private void ModifySmokeBomb(On.EntityStates.Bandit2.StealthMode.orig_FireSmokebomb orig, EntityStates.Bandit2.StealthMode self)
@@ -333,38 +360,201 @@ namespace SurvivorTweaks.SurvivorTweaks
         #region specials
         void ChangeVanillaSpecials(SkillFamily family)
         {
-            GetHitBehavior += BanditExecutionOnHit;
+            GlobalEventManager.onServerDamageDealt += BanditFinisherDebuffOnHit;
             GetMoreStatCoefficients += BanditFinisher;
+            On.RoR2.CharacterBody.SetBuffCount += OnDesperadoTokenAdded;
+
+            On.EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState.OnEnter += PrepSidearmRevolverEnter;
+            IL.EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState.FixedUpdate += PrepSidearmRevolverFixedUpdate;
+            On.EntityStates.Bandit2.Weapon.BaseFireSidearmRevolverState.OnEnter += FireSidearmRevolverEnter;
+            On.EntityStates.Bandit2.Weapon.BaseFireSidearmRevolverState.FixedUpdate += FireSidearmRevolverFixedUpdate;
+            On.EntityStates.Bandit2.Weapon.BaseSidearmState.GetMinimumInterruptPriority += RevolverInterruptPriority;
+            On.EntityStates.EntityState.ModifyNextState += BanditHipFire;
 
             //lights out
             On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.ModifyBullet += ModifyLightsOutDamage;
-            family.variants[0].skillDef.baseRechargeInterval = lightsOutCooldown;
-            special.variants[0].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", SharedUtilsPlugin.executeKeywordToken };
-            LanguageAPI.Add("BANDIT2_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Slayer</style>. <style=cIsHealth>Finisher</style>. " +
+            SkillDef lightsOutRevolver = family.variants[0].skillDef;
+            lightsOutRevolver.baseRechargeInterval = lightsOutCooldown;
+            lightsOutRevolver.stockToConsume = 0;
+            lightsOutRevolver.suppressSkillActivation = true;
+            lightsOutRevolver.interruptPriority = InterruptPriority.Skill;
+            lightsOutRevolver.keywordTokens = new string[] { SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken, SharedUtilsPlugin.executeKeywordToken };
+            LanguageAPI.Add(lightsOutRevolver.skillDescriptionToken, $"<style=cIsDamage>Exacting</style>. <style=cIsHealth>Finisher</style>. " +
                 $"Fire a revolver shot for <style=cIsDamage>{Tools.ConvertDecimal(lightsOutDamage)} damage</style>. " +
                 $"Kills <style=cIsUtility>reset all your cooldowns</style>.");
 
             //desperado
+            string tokenKeyword = "2R4R_DESPERADOTOKEN_KEYWORD";
             On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.ModifyBullet += ModifyDesperadoDamage;
-            family.variants[1].skillDef.baseRechargeInterval = desperadoCooldown;
-            special.variants[1].skillDef.keywordTokens = new string[2] { "KEYWORD_SLAYER", SharedUtilsPlugin.executeKeywordToken };
-            LanguageAPI.Add("BANDIT2_SPECIAL_ALT_DESCRIPTION", $"<style=cIsDamage>Slayer</style>. <style=cIsHealth>Finisher</style>. " +
-                $"Fire a revolver shot for <style=cIsDamage>{Tools.ConvertDecimal(desperadoDamage)} damage</style>. " +
-                $"Kills grant <style=cIsDamage>stacking tokens</style> for <style=cIsDamage>10%</style> more Desperado damage.");
+            SkillDef desperadoRevolver = family.variants[1].skillDef;
+            desperadoRevolver.baseRechargeInterval = desperadoCooldown;
+            desperadoRevolver.stockToConsume = 0;
+            desperadoRevolver.suppressSkillActivation = true;
+            desperadoRevolver.interruptPriority = InterruptPriority.Skill;
+            desperadoRevolver.keywordTokens = new string[] { SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken, SharedUtilsPlugin.executeKeywordToken, tokenKeyword };
+            LanguageAPI.Add(desperadoRevolver.skillDescriptionToken, $"<style=cIsDamage>Exacting</style>. <style=cIsHealth>Finisher</style>. " +
+                $"Fire a revolver shot for <style=cIsDamage>{desperadoDamage.AsPercent()} damage</style>. " +
+                $"Kills grant <style=cIsDamage>stacking tokens</style> for " +
+                $"<style=cIsDamage>{(desperadoDamagePerToken + desperadoAttackSpeedPerToken).AsPercent()}</style> more Desperado damage.");
+            LanguageAPI.Add(tokenKeyword, KeywordText("Desperado Tokens", 
+                $"Each token held increases Bandit's <style=cIsDamage>attack speed</style> by " +
+                $"<style=cIsDamage>+{desperadoAttackSpeedPerToken.AsPercent()}</style>, and increases the damage of <style=cIsUtility>Desperado</style> " +
+                $"by an additional <style=cIsDamage>+{desperadoDamagePerToken.AsPercent()} TOTAL damage</style>. " +
+                $"Retain up to <style=cIsUtility>{desperadoTokensPerLevel}</style> tokens per level between stages."));
         }
 
-        private void BanditExecutionOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
+        private void BanditHipFire(On.EntityStates.EntityState.orig_ModifyNextState orig, EntityState self, EntityState nextState)
         {
-            if (NetworkServer.active)
+            orig(self, nextState);
+            if(self is BaseFireSidearmRevolverState fireState && nextState is BasePrepSidearmRevolverState prepState)
             {
-                if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill) || (damageInfo.damageType & DamageType.ResetCooldownsOnKill) != 0UL)
+                prepState.baseDuration = 0f;
+            }
+        }
+
+        private InterruptPriority RevolverInterruptPriority(On.EntityStates.Bandit2.Weapon.BaseSidearmState.orig_GetMinimumInterruptPriority orig, BaseSidearmState self)
+        {
+            if(self is BasePrepSidearmRevolverState || self is BaseFireSidearmRevolverState)
+            {
+                if (self.skillLocator && self.skillLocator.special
+                        && self.skillLocator.special.stock >= self.skillLocator.special.skillDef.requiredStock)
+                    return InterruptPriority.PrioritySkill;
+                return InterruptPriority.Skill;
+            }
+            return orig(self);
+        }
+
+        private void FireSidearmRevolverFixedUpdate(On.EntityStates.Bandit2.Weapon.BaseFireSidearmRevolverState.orig_FixedUpdate orig, BaseFireSidearmRevolverState self)
+        {
+            if (self.isAuthority)
+            {
+                if (self.characterBody.isSprinting)
                 {
-                    victimBody.AddTimedBuff(CommonAssets.lightsoutExecutionDebuff, 0.6f);
+                    self.outer.SetNextState(new ExitSidearmRevolver());
+                    return;
                 }
-                if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill) || (damageInfo.damageType & DamageType.GiveSkullOnKill) != 0UL)
+            }
+            orig(self);
+        }
+
+        private void FireSidearmRevolverEnter(On.EntityStates.Bandit2.Weapon.BaseFireSidearmRevolverState.orig_OnEnter orig, BaseFireSidearmRevolverState self)
+        {
+            self.baseDuration = finisherEndlag;
+            if (self.skillLocator && self.skillLocator.special)
+            {
+                self.characterBody.OnSkillActivated(self.skillLocator.special);
+                self.skillLocator.special.DeductStock(1);
+            }
+
+            orig(self);
+
+            self.duration = finisherEndlag;
+        }
+
+        private void PrepSidearmRevolverFixedUpdate(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<EntityState>("get_fixedAge")
+                );
+            if (!b)
+            {
+                Log.DebugBreakpoint(nameof(PrepSidearmRevolverFixedUpdate));
+                return;
+            }
+
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<float, BasePrepSidearmRevolverState, float>>((fixedAge, self) =>
+            {
+                //prevents the skill from firing until the input is released
+                if (self.inputBank.skill4.down)
                 {
-                    victimBody.AddTimedBuff(CommonAssets.desperadoExecutionDebuff, 0.6f);
+                    if(fixedAge > self.duration)
+                    {
+                        if(self.duration > 0)
+                        {
+                            self.duration = 0;
+
+                            string muzzleName = "MuzzlePistol";
+                            Util.PlaySound(AimStunDrone.exitSoundString, self.gameObject);
+                            GameObject effectPrefab = ChargeArrow.muzzleflashEffectPrefab;
+                            if (effectPrefab)
+                            {
+                                EffectManager.SimpleMuzzleFlash(effectPrefab, self.gameObject, muzzleName, false);
+                            }
+                        }
+                    }
+
+                    return -1;
                 }
+                return fixedAge;
+            });
+        }
+
+        private void PrepSidearmRevolverEnter(On.EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState.orig_OnEnter orig, EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState self)
+        {
+            bool isHipFire = false;
+            if (self.inputBank.skill4.down && self.baseDuration <= 0.1f)
+            {
+                isHipFire = true;
+            }
+            self.baseDuration = finisherAimDuration;
+            orig(self);
+            self.duration = isHipFire ? 0.1f : finisherAimDuration;
+        }
+
+        static BuffIndex banditSkullBuff => RoR2Content.Buffs.BanditSkull?.buffIndex ?? BuffIndex.None;
+        static BuffIndex banditSkullSurplusBuff => CommonAssets.desperadoTokenSurplusBuff?.buffIndex ?? BuffIndex.None;
+        private void OnDesperadoTokenAdded(On.RoR2.CharacterBody.orig_SetBuffCount orig, CharacterBody self, BuffIndex buffType, int newCount)
+        {
+            if (buffType != banditSkullBuff)
+            {
+                orig(self, buffType, newCount);
+                return;
+            }
+            // the following code is only run for desperado tokens!
+            int baseTokenCount = newCount;// self.GetBuffCount(banditSkullBuff);
+            int surplusTokenCount = self.GetBuffCount(banditSkullSurplusBuff);
+            int totalTokenCount = baseTokenCount + surplusTokenCount;
+
+            int max = MasterDesperadoTokenTracker.GetMaxPersistentTokenCountFromLevel(self.level);
+            if (totalTokenCount > max)
+            {
+                orig(self, banditSkullBuff, 0);
+                orig(self, banditSkullSurplusBuff, totalTokenCount);
+            }
+            else
+            {
+                orig(self, banditSkullBuff, totalTokenCount);
+                orig(self, banditSkullSurplusBuff, 0);
+            }
+
+            if (self.master == null || !NetworkServer.active)
+                return;
+
+            if(!self.master.TryGetComponent(out MasterDesperadoTokenTracker tracker))
+            {
+                tracker = self.master.gameObject.AddComponent<MasterDesperadoTokenTracker>();
+                tracker.master = self.master;
+            }
+            tracker.SetTokenCount(totalTokenCount);
+        }
+
+        private void BanditFinisherDebuffOnHit(DamageReport damageReport)
+        {
+            DamageInfo damageInfo = damageReport.damageInfo;
+            CharacterBody victimBody = damageReport.victimBody;
+            if (damageInfo == null || victimBody == null || victimBody.healthComponent.alive == false)
+                return;
+
+            if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill) || (damageInfo.damageType & DamageType.ResetCooldownsOnKill) != 0UL)
+            {
+                victimBody.AddTimedBuff(CommonAssets.lightsoutExecutionDebuff, finisherDebuffDuration);
+            }
+            if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill) || (damageInfo.damageType & DamageType.GiveSkullOnKill) != 0UL)
+            {
+                victimBody.AddTimedBuff(CommonAssets.desperadoExecutionDebuff, finisherDebuffDuration);
             }
         }
 
@@ -377,22 +567,20 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void ModifyLightsOutDamage(On.EntityStates.Bandit2.Weapon.FireSidearmResetRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmResetRevolver self, BulletAttack bulletAttack)
         {
             orig(self, bulletAttack);
-            bulletAttack.damage = lightsOutDamage * self.damageStat;
-            //bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
+            bulletAttack.damage = lightsOutDamage * self.damageStat * self.attackSpeedStat;
+            bulletAttack.damageType.damageType = bulletAttack.damageType.damageType & ~DamageType.BonusToLowHealth;
         }
 
         private void ModifyDesperadoDamage(On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver self, BulletAttack bulletAttack)
         {
             orig(self, bulletAttack);
-            bulletAttack.damage = desperadoDamage * self.damageStat;
-            //bulletAttack.damageType = bulletAttack.damageType & ~DamageType.BonusToLowHealth;
-
-            int num = 0;
+            int tokenCount = 0;
             if (self.characterBody)
             {
-                num = self.characterBody.GetBuffCount(RoR2Content.Buffs.BanditSkull);
+                tokenCount = self.characterBody.GetBuffCount(RoR2Content.Buffs.BanditSkull) + self.characterBody.GetBuffCount(CommonAssets.desperadoTokenSurplusBuff);
             }
-            bulletAttack.damage *= 1f + 0.1f * (float)num;
+            bulletAttack.damage = desperadoDamage * self.damageStat * (self.attackSpeedStat + (desperadoDamagePerToken * (float)tokenCount));
+            bulletAttack.damageType.damageType = bulletAttack.damageType.damageType & ~DamageType.BonusToLowHealth;
         }
         #endregion
     }

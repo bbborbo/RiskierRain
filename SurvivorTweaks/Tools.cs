@@ -10,8 +10,12 @@ using RoR2.Projectile;
 
 namespace SurvivorTweaks
 {
-    public static class PersistentListeners
+    public static class Extensions
     {
+        public static string AsPercent(this float d)
+        {
+            return (d * 100f).ToString() + "%";
+        }
         public static void AddPersistentListener(this ProjectileImpactEvent unityEvent, UnityAction<ProjectileImpactInfo> action)
         {
             unityEvent.m_PersistentCalls.AddListener(new PersistentCall

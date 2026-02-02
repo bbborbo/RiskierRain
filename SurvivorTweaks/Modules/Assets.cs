@@ -56,6 +56,7 @@ namespace SurvivorTweaks.Modules
         public static BuffDef aspdPenaltyDebuff;
         public static float aspdPenaltyPercent = 0.25f;
 
+        public static BuffDef desperadoTokenSurplusBuff;
         public static BuffDef desperadoExecutionDebuff;
         public static BuffDef lightsoutExecutionDebuff;
         public static void Init()
@@ -75,6 +76,13 @@ namespace SurvivorTweaks.Modules
 
         public static void AddBanditExecutionBuffs()
         {
+            desperadoTokenSurplusBuff = 
+                Content.CreateAndAddBuff(
+                    "bdDesperadoTokenSurplus", 
+                    Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Bandit2.texBuffBanditSkullIcon_tif).WaitForCompletion(), 
+                    new Color(0.6f,0.9f,0.8f,1f), 
+                    true, false);
+
             desperadoExecutionDebuff = Content.CreateAndAddBuff("bdDesperadoExecute", null, Color.black, false, true);
             desperadoExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             desperadoExecutionDebuff.isHidden = true;

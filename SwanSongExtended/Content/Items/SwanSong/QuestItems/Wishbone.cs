@@ -48,7 +48,7 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             brokenItemDef = CreateNewUntieredItem("BROKENWISH",
-                Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Core.texNullIcon_png).WaitForCompletion());
+                LoadItemIcon("texIconWishboneBroken"));
             DoLangForItem(brokenItemDef, "Bone", "The mundane half of a broken wishbone. Better luck next time.");
             base.Init();
         }

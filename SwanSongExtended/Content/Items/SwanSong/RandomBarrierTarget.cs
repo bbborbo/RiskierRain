@@ -12,6 +12,8 @@ using UnityEngine.Networking;
 using static MoreStats.OnHit;
 using static MoreStats.StatHooks;
 using static SwanSongExtended.Modules.Language.Styling;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -34,7 +36,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Target a nearby enemy, gaining barrier on hit.";
 
-        public override string ItemFullDescription => $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>." +
+        public override string ItemFullDescription => $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>. " +
                 $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
                 $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
                 $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.";
@@ -86,20 +88,14 @@ Your crystal, or should I say plastic, ball cost me more than my entire life sav
         {
             harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
 
-            //IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHarpoonRights;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddHarpoonBehavior;
-            GetHitBehavior += HarpoonOnHit;
             GetMoreStatCoefficients += HarpoonDecay;
         }
 
         private void HarpoonDecay(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            if (sender.inventory && sender.inventory)
-            {
-                int count = GetCount(sender);
-                if (count > 0)
-                    args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
-            }
+            int count = GetCount(sender);
+            if (count > 0)
+                args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
         }
 
         public static Material CreateMatRecolor(Color32 blueEquivalent)
@@ -110,28 +106,6 @@ Your crystal, or should I say plastic, ball cost me more than my entire life sav
             mat.SetInt("_Cull", 1);
 
             return mat;
-        }
-
-        private void HarpoonOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
-        {
-            Inventory inv = attackerBody.inventory;
-            HealthComponent hc = attackerBody.healthComponent;
-            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(harpoonDebuff))
-            {
-                int harpoonCount = inv.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-                if (harpoonCount > 0)
-                {
-                    float barrierGrant = harpoonBarrierBase + harpoonBarrierStack * (harpoonCount - 1);
-                    hc.AddBarrierAuthority(barrierGrant * damageInfo.procCoefficient);
-                }
-            }
-        }
-
-        private void AddHarpoonBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            int maskCount = self.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-            self.AddItemBehavior<RandomBarrierTargetBehavior>(maskCount);
         }
 
         private void RevokeHarpoonRights(ILContext il)
@@ -146,14 +120,28 @@ Your crystal, or should I say plastic, ball cost me more than my entire life sav
             c.Emit(OpCodes.Ldc_I4, 0);
         }
     }
-    public class RandomBarrierTargetBehavior : RoR2.CharacterBody.ItemBehavior
+    public class RandomBarrierTargetBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = true)]
+        private static ItemDef GetItemDef() => CoinGun.instance.ItemsDef;
         public static float baseHauntRadius = 35;
         public static float hauntRetryTime = 1;
         float hauntStopwatch = 0;
         void Start()
         {
             hauntStopwatch = RandomBarrierTarget.harpoonTargetTime;
+        }
+
+        public void OnDamageDealtServer(DamageReport damageReport)
+        {
+            if (!damageReport.victimBody.HasBuff(RandomBarrierTarget.harpoonDebuff))
+                return;
+
+            if (stack > 0)
+            {
+                float barrierGrant = RandomBarrierTarget.harpoonBarrierBase + RandomBarrierTarget.harpoonBarrierStack * (stack - 1);
+                body.healthComponent.AddBarrierAuthority(barrierGrant * damageReport.damageInfo.procCoefficient);
+            }
         }
         private void FixedUpdate()
         {

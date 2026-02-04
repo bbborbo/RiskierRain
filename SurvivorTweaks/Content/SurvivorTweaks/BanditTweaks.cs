@@ -31,6 +31,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     class BanditTweaks : SurvivorTweakBase<BanditTweaks>
     {
         public static bool noFinishersFromSkillSourcedDamage = true;
+        public static bool useBanditSkullSurplus = false;
         public static float shotgunDamageCoeff = 0.75f; //1
         public static float rifleDamageCoeff = 2.8f; // 3.3
         public static float rifleSpreadBloom = 0.4f; //0.5f
@@ -49,18 +50,21 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float stealthHopVelocity = 13f; //15
         public static float stealthDuration = 4.5f; //3
         public static float stealthCooldown = 6f; //6
-        public static float stealthAspdBonus = 1f; //0
+        public static float stealthAspdBonus = 0.6f; //0
 
-        public static float finisherDebuffDuration = 1f;//0f
-        public static float lightsOutDamage = 5f; //6
+        public static float lightsOutDamage = 6f; //6
         public static float lightsOutCooldown = 8f; //4
         public static float desperadoDamage = 3f; //6
         public static float desperadoCooldown = 3f; //4
-        public static float desperadoDamagePerToken = 0.05f; //0.1f
-        public static float desperadoAttackSpeedPerToken = 0.05f; //0f
+        public static float desperadoDamagePerToken = 0.03f; //0.1f
+        public static float desperadoAttackSpeedPerToken = 0.07f; //0f
         public static int desperadoTokensPerLevel = 2;
-        public static float finisherAimDuration = 1.0f;
-        public static float finisherEndlag = 10f;
+        public static float revolverDebuffDuration = 1f;//0f
+        public static float revolverDrawDuration = 0.8f; //idk
+        public static float finisherAimDuration = 10f; //n/a
+        public static float revolverBulletRadius = 1.5f;
+        public static float revolverHipFireBulletRadius = 3.0f;
+        public static float revolverHipFireGraceDuration = 0.25f;
 
         public static float hemmorageDamageBase = 15;
         public static float hemmorageDamageMin = 0.5f;
@@ -142,7 +146,28 @@ namespace SurvivorTweaks.SurvivorTweaks
                 //float normalBleedDamage = damageInfo.damage * hemmorageDamageBase;
                 float damage2 = damageInfo.damage * Mathf.Lerp(hemmorageDamageMin, hemmorageDamageMax, self.combinedHealthFraction);
                 damageInfo.damage = damage2;// scalingBleedDamage + normalBleedDamage;
-                damageInfo.damageType |= DamageType.NonLethal;
+                damageInfo.damageType.damageType |= DamageType.NonLethal;
+            }
+
+            BanditFinisherDebuffOnHit(damageInfo, self.body);
+            void BanditFinisherDebuffOnHit(DamageInfo damageInfo, CharacterBody victimBody)
+            {
+                if (damageInfo == null || victimBody == null || victimBody.healthComponent.alive == false)
+                    return;
+
+                bool b = false;
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill) || (damageInfo.damageType & DamageType.ResetCooldownsOnKill) != 0UL)
+                {
+                    victimBody.AddTimedBuff(CommonAssets.lightsoutExecutionDebuff, revolverDebuffDuration);
+                    b = true;
+                }
+                if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill) || (damageInfo.damageType & DamageType.GiveSkullOnKill) != 0UL)
+                {
+                    victimBody.AddTimedBuff(CommonAssets.desperadoExecutionDebuff, revolverDebuffDuration);
+                    b = true;
+                }
+                if (b)
+                    victimBody.RecalculateStats();
             }
 
             orig(self, damageInfo);
@@ -360,7 +385,6 @@ namespace SurvivorTweaks.SurvivorTweaks
         #region specials
         void ChangeVanillaSpecials(SkillFamily family)
         {
-            GlobalEventManager.onServerDamageDealt += BanditFinisherDebuffOnHit;
             GetMoreStatCoefficients += BanditFinisher;
             On.RoR2.CharacterBody.SetBuffCount += OnDesperadoTokenAdded;
 
@@ -406,9 +430,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void BanditHipFire(On.EntityStates.EntityState.orig_ModifyNextState orig, EntityState self, EntityState nextState)
         {
             orig(self, nextState);
-            if(self is BaseFireSidearmRevolverState fireState && nextState is BasePrepSidearmRevolverState prepState)
+            if(self is BaseFireSidearmRevolverState && nextState is BasePrepSidearmRevolverState prepState)
             {
                 prepState.baseDuration = 0f;
+            }
+            else if (self is BasePrepSidearmRevolverState prepState2 && nextState is BaseFireSidearmRevolverState fireState)
+            {
+                bool isHipFire = prepState2.fixedAge > prepState2.baseDuration + revolverHipFireGraceDuration;
+                fireState.bulletRadius = isHipFire ? revolverHipFireBulletRadius : revolverBulletRadius;
             }
         }
 
@@ -416,9 +445,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             if(self is BasePrepSidearmRevolverState || self is BaseFireSidearmRevolverState)
             {
-                if (self.skillLocator && self.skillLocator.special
+                if (self is BaseFireSidearmRevolverState)
+                {
+                    if (self.skillLocator && self.skillLocator.special
                         && self.skillLocator.special.stock >= self.skillLocator.special.skillDef.requiredStock)
-                    return InterruptPriority.PrioritySkill;
+                        return InterruptPriority.PrioritySkill;
+                }
+                //else if (self.fixedAge > self.baseDuration)
+                //    return InterruptPriority.Pain;
                 return InterruptPriority.Skill;
             }
             return orig(self);
@@ -435,11 +469,12 @@ namespace SurvivorTweaks.SurvivorTweaks
                 }
             }
             orig(self);
+
         }
 
         private void FireSidearmRevolverEnter(On.EntityStates.Bandit2.Weapon.BaseFireSidearmRevolverState.orig_OnEnter orig, BaseFireSidearmRevolverState self)
         {
-            self.baseDuration = finisherEndlag;
+            self.baseDuration = finisherAimDuration;
             if (self.skillLocator && self.skillLocator.special)
             {
                 self.characterBody.OnSkillActivated(self.skillLocator.special);
@@ -448,7 +483,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             orig(self);
 
-            self.duration = finisherEndlag;
+            self.duration = finisherAimDuration;
         }
 
         private void PrepSidearmRevolverFixedUpdate(ILContext il)
@@ -484,11 +519,26 @@ namespace SurvivorTweaks.SurvivorTweaks
                                 EffectManager.SimpleMuzzleFlash(effectPrefab, self.gameObject, muzzleName, false);
                             }
                         }
+
+                        if (self.inputBank && self.inputBank.skill1.down && !self.inputBank.skill1.wasDown)
+                        {
+                            self.outer.SetNextState(GetNextState());
+                        }
                     }
 
                     return -1;
                 }
+
                 return fixedAge;
+
+                EntityState GetNextState()
+                {
+                    if (self is FireSidearmResetRevolver)
+                        return new PrepSidearmResetRevolver();
+                    if (self is FireSidearmSkullRevolver)
+                        return new PrepSidearmSkullRevolver();
+                    return new ExitSidearmRevolver();
+                }
             });
         }
 
@@ -499,9 +549,9 @@ namespace SurvivorTweaks.SurvivorTweaks
             {
                 isHipFire = true;
             }
-            self.baseDuration = finisherAimDuration;
+            self.baseDuration = revolverDrawDuration;
             orig(self);
-            self.duration = isHipFire ? 0.1f : finisherAimDuration;
+            self.duration = isHipFire ? 0.1f : revolverDrawDuration;
         }
 
         static BuffIndex banditSkullBuff => RoR2Content.Buffs.BanditSkull?.buffIndex ?? BuffIndex.None;
@@ -515,11 +565,11 @@ namespace SurvivorTweaks.SurvivorTweaks
             }
             // the following code is only run for desperado tokens!
             int baseTokenCount = newCount;// self.GetBuffCount(banditSkullBuff);
-            int surplusTokenCount = self.GetBuffCount(banditSkullSurplusBuff);
+            int surplusTokenCount = useBanditSkullSurplus ? self.GetBuffCount(banditSkullSurplusBuff) : 0;
             int totalTokenCount = baseTokenCount + surplusTokenCount;
 
             int max = MasterDesperadoTokenTracker.GetMaxPersistentTokenCountFromLevel(self.level);
-            if (totalTokenCount > max)
+            if (totalTokenCount > max && useBanditSkullSurplus)
             {
                 orig(self, banditSkullBuff, 0);
                 orig(self, banditSkullSurplusBuff, totalTokenCount);
@@ -541,22 +591,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             tracker.SetTokenCount(totalTokenCount);
         }
 
-        private void BanditFinisherDebuffOnHit(DamageReport damageReport)
-        {
-            DamageInfo damageInfo = damageReport.damageInfo;
-            CharacterBody victimBody = damageReport.victimBody;
-            if (damageInfo == null || victimBody == null || victimBody.healthComponent.alive == false)
-                return;
-
-            if (damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill) || (damageInfo.damageType & DamageType.ResetCooldownsOnKill) != 0UL)
-            {
-                victimBody.AddTimedBuff(CommonAssets.lightsoutExecutionDebuff, finisherDebuffDuration);
-            }
-            if (damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill) || (damageInfo.damageType & DamageType.GiveSkullOnKill) != 0UL)
-            {
-                victimBody.AddTimedBuff(CommonAssets.desperadoExecutionDebuff, finisherDebuffDuration);
-            }
-        }
 
         private void BanditFinisher(CharacterBody sender, MoreStatHookEventArgs args)
         {

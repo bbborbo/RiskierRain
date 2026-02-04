@@ -58,12 +58,16 @@ namespace SwanSongExtended.Interactables
             int eggsToHide = Run.instance.participatingPlayerCount + 2;
             Log.Warning($"Hiding {eggsToHide} wishbones");
 
+            DirectorPlacementRule placementRule = new DirectorPlacementRule
+            {
+                placementMode =
+                    SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh
+                        ? DirectorPlacementRule.PlacementMode.RandomNormalized
+                        : DirectorPlacementRule.PlacementMode.Random
+            };
             for (int j = 0; j < eggsToHide; j++)
             {
-                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(WishboneCarcass.instance.customInteractable.spawnCard, new DirectorPlacementRule
-                {
-                    placementMode = DirectorPlacementRule.PlacementMode.Random
-                }, rng));
+                DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(WishboneCarcass.instance.customInteractable.spawnCard, placementRule, rng));
             }
         }
 

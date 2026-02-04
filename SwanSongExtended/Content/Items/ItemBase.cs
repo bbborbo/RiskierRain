@@ -176,24 +176,29 @@ namespace SwanSongExtended.Items
             LanguageAPI.Add(itemDef.loreToken, lore);
         }
 
-        public int GetCount(CharacterBody body)
+        public int GetCount(CharacterBody body, bool permanentOnly = false)
         {
-            if (!body || !body.inventory) { return 0; }
+            if (body == null) 
+                return 0;
 
-            return body.inventory.GetItemCountEffective(ItemsDef);
+            return GetCount(body.inventory, permanentOnly);
         }
-        public int GetCount(Inventory inventory)
+        public int GetCount(Inventory inventory, bool permanentOnly = false)
         {
-            if (!inventory) { return 0; }
+            if (inventory == null)
+                return 0;
 
+            if (permanentOnly)
+                return inventory.GetItemCountPermanent(ItemsDef);
             return inventory.GetItemCountEffective(ItemsDef);
         }
 
-        public int GetCount(CharacterMaster master)
+        public int GetCount(CharacterMaster master, bool permanentOnly = false)
         {
-            if (!master || !master.inventory) { return 0; }
+            if (master == null) 
+                return 0;
 
-            return master.inventory.GetItemCountEffective(ItemsDef);
+            return GetCount(master.inventory, permanentOnly);
         }
 
         public int GetCountSpecific(CharacterBody body, ItemDef itemIndex)

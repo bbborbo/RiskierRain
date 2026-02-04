@@ -214,7 +214,7 @@ namespace SwanSongExtended.Items
             orig(self);
             if (!NetworkServer.active)
                 return;
-            int wishboneCount = GetCount(self);
+            int wishboneCount = GetCount(self, true);
             BreakWishbones(self, wishboneCount, false);
         }
 
@@ -230,7 +230,7 @@ namespace SwanSongExtended.Items
                 CharacterBody body = characterMaster.GetBody();
                 if (body)
                 {
-                    int wishboneCount = GetCount(characterMaster.inventory);
+                    int wishboneCount = GetCount(characterMaster.inventory, true);
                     if (body.healthComponent.alive)
                     {
                         serverWishboneCount += wishboneCount;

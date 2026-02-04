@@ -234,6 +234,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             //shotgun primary
             SkillDef shotgun = family.variants[0].skillDef;
             shotgun.interruptPriority = InterruptPriority.PrioritySkill;
+            shotgun.baseRechargeInterval = reloadBaseDuration;
             //shotgun.mustKeyPress = false;
             LanguageAPI.Add("BANDIT2_PRIMARY_DESCRIPTION", 
                 $"Fire a shotgun burst for <style=cIsDamage>5x{shotgunDamageCoeff.AsPercent()} damage</style>. " +
@@ -242,6 +243,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             //rifle primary
             SkillDef rifle = family.variants[1].skillDef;
             rifle.interruptPriority = InterruptPriority.PrioritySkill;
+            rifle.baseRechargeInterval = reloadBaseDuration;
             //rifle.mustKeyPress = false;
             LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION", 
                 $"Fire a rifle blast for <style=cIsDamage>{rifleDamageCoeff.AsPercent()} damage</style>. " +
@@ -250,10 +252,16 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void AutoFireOnReload(On.EntityStates.Bandit2.Weapon.Reload.orig_GiveStock orig, Reload self)
         {
+            bool g = self.hasGivenStock;
             orig(self);
-            if(self.inputBank && self.inputBank.skill1.down)
+            if (self.hasGivenStock != g)
             {
-                self.skillLocator.primary.ExecuteIfReady();
+                self.characterBody.OnSkillCooldown(self.skillLocator.primary, 1);
+
+                if (self.inputBank && self.inputBank.skill1.down)
+                {
+                    self.skillLocator.primary.ExecuteIfReady();
+                }
             }
         }
 

@@ -1005,6 +1005,56 @@ namespace RiskierRain
             }
         }
         #endregion
+
+        #region luminous shot
+
+        public static float luminousTotalDamageBase = 1.75f;//1.75f
+        public static float luminousTotalDamageStack = 1.0f;//0.5f
+        public static void LuminousShotBuff()
+        {
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangeLuminousShotStats;
+
+            LanguageAPI.Add("ITEM_INCREASEPRIMARYDAMAGE_DESC",
+                $"Activating <style=cIsUtility>Secondary skill</style> stores " +
+                $"up to <style=cIsUtility>5 charges</style> <style=cStack>(+1 per stack)</style>. " +
+                $"Requires <style=cIsUtility>3 charges</style> for your " +
+                $"<style=cIsUtility>Primary skill</style> to fire lightning strikes, " +
+                $"dealing <style=cIsDamage>{luminousTotalDamageBase.AsPercent()} TOTAL damage</style> " +
+                $"<style=cStack>(+{luminousTotalDamageStack.AsPercent()} per stack)</style> each. " +
+                $"<style=cIsUtility>Reduces Secondary skill cooldown by 20%</style>."
+                );
+        }
+
+        private static void ChangeLuminousShotStats(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Items", nameof(DLC2Content.Items.IncreasePrimaryDamage)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(ChangeLuminousShotStats), 1);
+                return;
+            }
+
+            c.Next.Operand = luminousTotalDamageBase;
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchMul()
+                );
+            if (!b2)
+            {
+                DebugBreakpoint(nameof(ChangeLuminousShotStats), 2);
+                return;
+            }
+
+            c.Next.Operand = luminousTotalDamageStack;
+        }
+        #endregion
     }
 
 }

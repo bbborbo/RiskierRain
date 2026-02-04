@@ -399,6 +399,10 @@ namespace RiskierRain
             {
                 ElusiveAntlersChanges();
             }
+            if (GetConfigBool(true, "Luminous Shot"))
+            {
+                LuminousShotBuff();
+            }
 
             if (GetConfigBool(true, "Command/Potential Armor"))
             {

@@ -112,7 +112,7 @@ namespace RiskierRain
 
             On.RoR2.CharacterBody.RemoveBuff_BuffDef += Gah;
             #region rework pending / priority removal
-            RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
+            //RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
             RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
@@ -123,7 +123,7 @@ namespace RiskierRain
             RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
 
             RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
+            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
             RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset); //scorpion
             RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_DroneWeapons.DroneWeapons_asset); //sdp
             RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BarrageOnBoss.BarrageOnBoss_asset); //war bonds
@@ -402,6 +402,10 @@ namespace RiskierRain
             if (GetConfigBool(true, "Luminous Shot"))
             {
                 LuminousShotBuff();
+            }
+            if (GetConfigBool(true, "Eclipse Lite"))
+            {
+                EclipseLiteChanges();
             }
 
             if (GetConfigBool(true, "Command/Potential Armor"))

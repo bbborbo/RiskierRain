@@ -1220,6 +1220,9 @@ namespace RiskierRain
                 DebugBreakpoint(nameof(TopazBroochPercentBarrier));
                 return;
             }
+
+            c.Emit(OpCodes.Ldloc, broochCountLoc);
+            c.Emit(OpCodes.Ldloc, bodyLoc);
             c.EmitDelegate<Func<float, int, CharacterBody, float>>((barrierIn, stack, body) =>
             {
                 if (body == null)

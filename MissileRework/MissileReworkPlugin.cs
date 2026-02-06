@@ -16,6 +16,8 @@ using MoreStats;
 using System.Runtime.CompilerServices;
 using ProcSolver;
 using RainrotSharedUtils.MoreProjectiles;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using RoR2.ContentManagement;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -197,6 +199,37 @@ namespace MissileRework
         public static void ModularEclipseCompat(ArtifactDef artifactDef)
         {
             ModularEclipsePlugin.SetArtifactDefaultWhitelist(artifactDef, true);
+        }
+
+        public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
+        {
+            void onCompleted(AsyncOperationHandle<T> handle)
+            {
+                if (!(handle.Result is T) || handle.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+                {
+                    Debug.LogError($"Failed to load asset [{handle.DebugName}] : {handle.OperationException}");
+                    return;
+                }
+
+                callback(handle.Result);
+            }
+
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(guid);
+            AsyncOperationHandle<T> handle = AssetAsyncReferenceManager<T>.LoadAsset(ref1);
+
+            if (callback == null)
+            {
+                return ref1;
+            }
+
+            if (handle.IsDone)
+            {
+                onCompleted(handle);
+                return ref1;
+            }
+
+            handle.Completed += onCompleted;
+            return ref1;
         }
     }
 }

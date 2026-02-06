@@ -270,7 +270,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             bool g = self.hasGivenStock;
             orig(self);
-            if (self.hasGivenStock != g)
+            if (self.hasGivenStock != g && self.hasGivenStock == true)
             {
                 self.characterBody.OnSkillCooldown(self.skillLocator.primary, 1);
 
@@ -306,7 +306,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             {
                 //if the primary skill is released, exit early
                 //otherwise, if the skill is held for long enough, fire again
-                bool heldDown = self.inputBank && self.inputBank.skill1.down && state.duration != state.minimumDuration;
+                bool heldDown = self.inputBank && self.inputBank.skill1.down && state.duration != state.minimumDuration && state.skillLocator.primary.stock > 0;
                 if (!heldDown)
                     state.duration = state.minimumDuration;
                 else

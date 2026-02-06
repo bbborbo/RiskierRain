@@ -52,7 +52,7 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             brokenItemDef = CreateNewUntieredItem("BROKENWISH",
-                Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Core.texNullIcon_png).WaitForCompletion());
+                LoadItemIcon("texIconWishboneBroken"));
             DoLangForItem(brokenItemDef, "Bone", "The mundane half of a broken wishbone. Better luck next time.");
             base.Init();
         }
@@ -217,7 +217,7 @@ namespace SwanSongExtended.Items
         {
             if (!NetworkServer.active)
                 return;
-            int wishboneCount = GetCount(self);
+            int wishboneCount = GetCount(self, true);
             BreakWishbones(self, wishboneCount, false);
         }
 
@@ -233,7 +233,7 @@ namespace SwanSongExtended.Items
                 CharacterBody body = characterMaster.GetBody();
                 if (body)
                 {
-                    int wishboneCount = GetCount(characterMaster.inventory);
+                    int wishboneCount = GetCount(characterMaster.inventory, true);
                     if (body.healthComponent.alive)
                     {
                         serverWishboneCount += wishboneCount;

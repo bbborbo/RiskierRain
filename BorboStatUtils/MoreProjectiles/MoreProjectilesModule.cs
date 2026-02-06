@@ -12,6 +12,11 @@ namespace RainrotSharedUtils.MoreProjectiles
 {
     public static class MoreProjectilesModule
     {
+        //public static bool UseCommonEnemyProjectiles = true;
+        //public static bool UseRareEnemyProjectiles = true;
+        //public static bool UseItemAndEquipmentProjectiles = true;
+        //public static bool UseSurvivorProjectiles = true;
+        public static bool UseExpensiveProjectiles = true;
         private static bool _hooksEnabled = false;
         private static event MoreProjectilesEventHandler _moreProjectilesProvider;
         public static event MoreProjectilesEventHandler MoreProjectilesProvider
@@ -63,48 +68,11 @@ namespace RainrotSharedUtils.MoreProjectiles
             On.EntityStates.GenericProjectileBaseState.FireProjectile += MissileArtifact_FireProjectile;
             IL.EntityStates.FlyingVermin.Weapon.Spit.FireProjectile += MissileArtifact_VerminSpit;
             //hooks of heresy
-            On.EntityStates.Mage.Weapon.BaseThrowBombState.Fire += MissileArtifact_ThrowBomb;
+            On.EntityStates.Mage.Weapon.BaseThrowBombState.Fire += MissileArtifact_ThrowBombHeresy;
 
             //shuriken
             IL.RoR2.PrimarySkillShurikenBehavior.FireShuriken += MissileArtifact_Shuriken;
-
-            //preon
-            On.RoR2.EquipmentSlot.FireBfg += (orig, self) => {
-                if (orig(self))
-                {
-                    FireWarfareProjectilesSimple(self.characterBody, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
-                    return true;
-                }
-                return false;
-            };
-            //primordial cube
-            On.RoR2.EquipmentSlot.FireBlackhole += (orig, self) => {
-                if (orig(self))
-                {
-                    FireWarfareProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
-                    return true;
-                }
-                return false;
-            };
-            //molotov
-            On.RoR2.EquipmentSlot.FireMolotov += (orig, self) => {
-                if (orig(self))
-                {
-                    FireWarfareProjectilesSimple(self.characterBody, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
-                    return true;
-                }
-                return false;
-            };
-            //goobo
-            On.RoR2.EquipmentSlot.FireGummyClone += (orig, self) => {
-                if (orig(self))
-                {
-                    if (self.characterBody && self.characterBody.master && !self.characterBody.master.IsDeployableLimited(DeployableSlot.GummyClone))
-                        FireWarfareProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
-                    return true;
-                }
-                return false;
-            };
+            EquipmentsLol();
 
             //viend m2
             On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.FireProjectiles += MissileArtifact_ViendSecondary;

@@ -29,233 +29,8 @@ using EntityStates.Bell.BellWeapon;
 
 namespace RainrotSharedUtils.MoreProjectiles
 {
-    public static class MoreProjectilesHooks
+    public static partial class MoreProjectilesHooks
     {
-        public const float missileSpread = 45;
-        public const float projectileSpread = 20;
-
-        public static void OverrideIcbmMissiles(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int itemCountLoc = 0;
-            bool b1 = c.TryGotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoreMissile"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
-                );
-            if (!b1)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(OverrideIcbmMissiles), 1);
-                return;
-            }
-            bool b2 = c.TryGotoNext(MoveType.Before,
-                x => x.MatchLdcI4(0),
-                x => x.MatchBle(out _)
-                );
-            if (!b2)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(OverrideIcbmMissiles), 2);
-                return;
-            }
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<int, CharacterBody, int>>((icbmCount, body) =>
-            {
-                if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(body))
-                    icbmCount += 1;
-                return icbmCount;
-            });
-
-            //bool b = c.TryGotoNext(MoveType.Before,
-            //    x => x.MatchLdloc(0),
-            //    x => x.MatchLdcI4(0),
-            //    x => x.MatchBle(out _)
-            //    );
-            //c.Remove();
-            //c.EmitDelegate<Func<int>>(() =>
-            //{
-            //    return RunArtifactManager.instance.IsArtifactEnabled(MissileArtifact) ? 1 : 0;
-            //});
-        }
-
-        public static void MissileArtifact_FireProjectile(On.EntityStates.GenericProjectileBaseState.orig_FireProjectile orig, EntityStates.GenericProjectileBaseState self)
-        {
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-            {
-                if (self.isAuthority)
-                {
-                    bool isValidState = false;
-                    bool isVertical = false;
-                    float spread = projectileSpread;
-
-                    //alpha construct, phase round, scrap cannon
-                    if (self is EntityStates.MinorConstruct.Weapon.FireConstructBeam
-                        || self is EntityStates.Commando.CommandoWeapon.FireFMJ
-                        || self is EntityStates.Toolbot.FireGrenadeLauncher)
-                    {
-                        isValidState = true;
-                    }
-                    else
-                    {
-                        //blind pest
-                        if (self is EntityStates.FlyingVermin.Weapon.Spit)
-                        {
-                            isValidState = true;
-                            isVertical = true;
-                        }
-
-                        //barnacle
-                        if (self is EntityStates.VoidBarnacle.Weapon.Fire)
-                        {
-                            isValidState = true;
-                            spread = missileSpread;
-                        }
-                    }
-
-                    if (isValidState)
-                    {
-                        Ray aimRay = self.GetAimRay();
-                        aimRay = self.ModifyProjectileAimRay(aimRay);
-                        aimRay.direction = Util.ApplySpread(aimRay.direction, self.minSpread, self.maxSpread, 1f, 1f, 0f, self.projectilePitchBonus);
-
-                        FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                        {
-                            projectilePrefab = self.projectilePrefab,
-                            position = aimRay.origin,
-                            rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                            owner = self.gameObject,
-                            damage = self.damageStat * self.damageCoefficient,
-                            crit = Util.CheckRoll(self.critStat, self.characterBody.master),
-                            force = self.force
-                        };
-                        ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-
-                        Vector3 axis = Vector3.Cross(Vector3.up, aimRay.direction);
-                        if(!isVertical)
-                            axis = Vector3.Cross(aimRay.direction, axis);
-
-                        MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, spread, axis);
-                        return;
-                    }
-                }
-            }
-            orig(self);
-        }
-
-        public static void MissileArtifact_FireHuntressSeekingArrow(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int orbLoc = 0;
-            bool b = c.TryGotoNext(MoveType.After,
-                x => x.MatchLdloc(out orbLoc),
-                x => x.MatchCallOrCallvirt<RoR2.Orbs.OrbManager>(nameof(RoR2.Orbs.OrbManager.AddOrb))
-                );
-            if (!b)
-            {
-                Debug.LogError("IABM Huntress fail");
-                return;
-            }
-            c.Emit(OpCodes.Ldloc, orbLoc);
-            c.Emit(OpCodes.Ldarg, 0);
-            c.EmitDelegate<Action<Orb, EntityState>>((orb, state) =>
-            {
-                if (!MoreProjectilesModule.IsMoreProjectilesActiveForBody(state.characterBody))
-                    return;
-                OrbManager.instance.AddOrb(orb);
-                OrbManager.instance.AddOrb(orb);
-            });
-        }
-
-        public static void MissileArtifact_Shuriken(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            bool b = c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<ProjectileManager>(nameof(ProjectileManager.FireProjectileWithoutDamageType))
-                );
-            if (!b)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_Shuriken));
-                return;
-            }
-            c.Remove();
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Action<ProjectileManager, GameObject, Vector3, Quaternion, GameObject, float, float, bool, DamageColorIndex, GameObject, float, PrimarySkillShurikenBehavior>>(
-                (projectileManagerInstance, projectilePrefab, origin, rotation, owner, damage, force, crit, damageColorIndex, target, speedOverride, behavior) =>
-                {
-                    projectileManagerInstance.FireProjectileWithoutDamageType(projectilePrefab, origin, rotation, owner, damage, force, crit, damageColorIndex, target, speedOverride);
-
-                    if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(behavior.body))
-                    {
-                        Ray aimRay = behavior.GetAimRay();
-                        FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                        {
-                            projectilePrefab = projectilePrefab,
-                            position = origin,
-                            rotation = rotation,
-                            owner = owner,
-                            damage = damage,
-                            crit = crit
-                        };
-                        MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
-                    }
-                });
-        }
-        public static void MissileArtifact_VerminSpit(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int aimRayLoc = 0;
-            int damageLoc = 0;
-            bool b1 = c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<BaseState>(nameof(BaseState.GetAimRay)),
-                x => x.MatchStloc(out aimRayLoc)
-                );
-            if (!b1)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_VerminSpit), 1);
-                return;
-            }
-            bool b2 = c.TryGotoNext(MoveType.Before,
-                x => x.MatchLdfld<BaseState>(nameof(BaseState.damageStat)))
-                && c.TryGotoNext(MoveType.Before,
-                x => x.MatchStloc(out damageLoc)
-                );
-            if (!b2)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_VerminSpit), 2);
-                return;
-            }
-            bool b4 = c.TryGotoNext(MoveType.After,
-                x => x.MatchCallOrCallvirt<ProjectileManager>(nameof(ProjectileManager.FireProjectileWithoutDamageType))
-                );
-            if (!b4)
-            {
-                SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_VerminSpit), 3);
-                return;
-            }
-            c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldloc, aimRayLoc);
-            c.Emit(OpCodes.Ldloc, damageLoc);
-            c.EmitDelegate<Action<EntityStates.FlyingVermin.Weapon.Spit, Ray, float>>((self, aimRay, damage) =>
-            {
-                if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-                {
-                    FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                    {
-                        projectilePrefab = self.projectilePrefab,
-                        position = aimRay.origin,
-                        rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                        owner = self.gameObject,
-                        damage = damage,
-                        crit = Util.CheckRoll(self.critStat, self.characterBody.master)
-                    };
-                    Vector3 axis = Vector3.Cross(Vector3.up, aimRay.direction);
-                    MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
-                }
-            });
-        }
-
         public static void MissileArtifact_ChargeTrioBomb(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -280,7 +55,6 @@ namespace RainrotSharedUtils.MoreProjectiles
                 return bellCount + 2;
             });
         }
-
         public static Transform MissileArtifact_FindTrioBombTransform(On.EntityStates.Bell.BellWeapon.ChargeTrioBomb.orig_FindTargetChildTransformFromBombIndex orig, EntityStates.Bell.BellWeapon.ChargeTrioBomb self)
         {
             Transform t = orig(self);
@@ -298,69 +72,32 @@ namespace RainrotSharedUtils.MoreProjectiles
                 int firstRingSize = 7;
                 float radius = baseRadius;
 
-                    float currentStepSize = 2 * Mathf.PI / firstRingSize;
-                    int step = Mathf.FloorToInt(index / 2);
-                    int clockwise = (index % 2 == 0) ? 1 : -1;
-                    float currentPos = startingPos + (currentStepSize * step) * clockwise;
+                float currentStepSize = 2 * Mathf.PI / firstRingSize;
+                int step = Mathf.FloorToInt(index / 2);
+                int clockwise = (index % 2 == 0) ? 1 : -1;
+                float currentPos = startingPos + (currentStepSize * step) * clockwise;
 
-                        float x = Mathf.Sin(currentPos) * radius;
-                        float y = Mathf.Cos(currentPos) * radius;
-                        float z = 0f;
-                        Vector3 vector = new Vector3(x, y, z);
-                        GameObject newGameObject = new GameObject();
-                        newGameObject.name = "ProjectilePosition" + self.currentBombIndex;
-                        newGameObject.transform.parent = parent;
-                        newGameObject.transform.localPosition = vector;
-                        newGameObject.transform.localScale = Vector3.one;
-                        newGameObject.transform.rotation = Quaternion.identity;
-                        Transform newTransform = newGameObject.transform;
-                        return newTransform;
+                float x = Mathf.Sin(currentPos) * radius;
+                float y = Mathf.Cos(currentPos) * radius;
+                float z = 0f;
+                Vector3 vector = new Vector3(x, y, z);
+                GameObject newGameObject = new GameObject();
+                newGameObject.name = "ProjectilePosition" + self.currentBombIndex;
+                newGameObject.transform.parent = parent;
+                newGameObject.transform.localPosition = vector;
+                newGameObject.transform.localScale = Vector3.one;
+                newGameObject.transform.rotation = Quaternion.identity;
+                Transform newTransform = newGameObject.transform;
+                return newTransform;
             }
         }
-
         #region simples
-        public static void MissileArtifact_ChildSpark(On.EntityStates.ChildMonster.SparkBallFire.orig_FireBomb orig, EntityStates.ChildMonster.SparkBallFire self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, SparkBallFire.bombDamageCoefficient, SparkBallFire.projectilePrefab);
-        }
-        public static void MissileArtifact_SeekerPunch(On.EntityStates.Seeker.SpiritPunch.orig_FireGauntlet orig, EntityStates.Seeker.SpiritPunch self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
-        }
-        public static void MissileArtifact_SonSurvivorSpike(On.EntityStates.FalseSon.LunarSpikes.orig_FireLunarSpike orig, EntityStates.FalseSon.LunarSpikes self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
-        }
-        public static void MissileArtifact_LodrPylon(On.EntityStates.Loader.ThrowPylon.orig_OnEnter orig, EntityStates.Loader.ThrowPylon self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, ThrowPylon.damageCoefficient, ThrowPylon.projectilePrefab);
-        }
-        public static void MissileArtifact_ArtiBolts(On.EntityStates.Mage.Weapon.FireFireBolt.orig_FireGauntlet orig, EntityStates.Mage.Weapon.FireFireBolt self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
-        }
         public static void MissileArtifact_VagrantTrackingBomb(On.EntityStates.VagrantMonster.FireTrackingBomb.orig_FireBomb orig, EntityStates.VagrantMonster.FireTrackingBomb self)
         {
             orig(self);
             MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireTrackingBomb.bombDamageCoefficient, FireTrackingBomb.projectilePrefab);
         }
-        public static void MissileArtifact_CaptainTazer(On.EntityStates.Captain.Weapon.FireTazer.orig_Fire orig, EntityStates.Captain.Weapon.FireTazer self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireTazer.damageCoefficient, FireTazer.projectilePrefab);
-        }
-        public static void MissileArtifact_ViendSecondary(On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.orig_FireProjectiles orig, EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
-        }
         #endregion
-
         public static void MissileArtifact_GreaterWispFireCannons(On.EntityStates.GreaterWispMonster.FireCannons.orig_OnEnter orig, EntityStates.GreaterWispMonster.FireCannons self)
         {
             orig(self);
@@ -406,7 +143,6 @@ namespace RainrotSharedUtils.MoreProjectiles
                 MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
             }
         }
-
         public static void MissileArtifact_BrotherFistSlam(On.EntityStates.BrotherMonster.FistSlam.orig_OnEnter orig, EntityStates.BrotherMonster.FistSlam self)
         {
             orig(self);
@@ -431,53 +167,6 @@ namespace RainrotSharedUtils.MoreProjectiles
             if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
             {
                 EntityStates.BrotherMonster.WeaponSlam.waveProjectileCount += 2;
-            }
-        }
-
-        public static void MissileArtifact_GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)
-        {
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-            {
-                self.spawnCount = 3;
-            }
-            orig(self);
-        }
-
-        public static void MissileArtifact_ChefCleaver(On.EntityStates.Chef.Dice.orig_OnEnter orig, EntityStates.Chef.Dice self)
-        {
-            orig(self);
-            if (self.isAuthority)
-            {
-                if (!self.hasBoost && MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-                {
-                    Ray aimRay = self.GetAimRay();
-
-                    Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                    Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
-
-                    FireProjectileInfo fireProjectileInfo = default(FireProjectileInfo);
-                    fireProjectileInfo.projectilePrefab = self.projectilePrefab;
-                    fireProjectileInfo.position = aimRay.origin;
-                    fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(aimRay.direction);
-                    fireProjectileInfo.owner = self.gameObject;
-                    fireProjectileInfo.damage = self.damageStat * self.damageCoefficient;
-                    fireProjectileInfo.force = self.force;
-                    fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
-
-                    FireProjectileInfo fireProjectileInfo2 = fireProjectileInfo;
-                    fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(-missileSpread, axis) * aimRay.direction);
-                    fireProjectileInfo2.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(missileSpread, axis) * aimRay.direction);
-                    if (!NetworkServer.active && self.chefController)
-                    {
-                        self.chefController.CacheCleaverProjectileFireInfo(fireProjectileInfo);
-                    }
-                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                    if (!NetworkServer.active && self.chefController)
-                    {
-                        self.chefController.CacheCleaverProjectileFireInfo(fireProjectileInfo2);
-                    }
-                    ProjectileManager.instance.FireProjectile(fireProjectileInfo2);
-                }
             }
         }
 
@@ -518,90 +207,6 @@ namespace RainrotSharedUtils.MoreProjectiles
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
                 MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
-            }
-        }
-
-        public static void MissileArtifact_RailerPistol(On.EntityStates.Railgunner.Weapon.FirePistol.orig_FireBullet orig, EntityStates.Railgunner.Weapon.FirePistol self, Ray aimRay)
-        {
-            if (!MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-            {
-                orig(self, aimRay);
-                return;
-            }
-
-            self.StartAimMode(aimRay, 2f, false);
-            Util.PlaySound(self.fireSoundString, self.gameObject);
-            EffectManager.SimpleMuzzleFlash(self.muzzleFlashPrefab, self.gameObject, self.muzzleName, false);
-            self.PlayAnimation(self.animationLayerName, self.animationStateName, self.animationPlaybackRateParam, self.duration);
-            self.AddRecoil(self.recoilYMin, self.recoilYMax, self.recoilXMin, self.recoilXMax);
-            if (self.isAuthority)
-            {
-                float num = 0f;
-                if (self.characterBody)
-                {
-                    num = self.characterBody.spreadBloomAngle;
-                }
-                Quaternion rhs = Quaternion.AngleAxis((float)UnityEngine.Random.Range(0, 360), Vector3.forward);
-                Quaternion rhs2 = Quaternion.AngleAxis(UnityEngine.Random.Range(0f, self.baseInaccuracyDegrees + num), Vector3.left);
-                Quaternion rotation = Util.QuaternionSafeLookRotation(aimRay.direction, Vector3.up) * rhs * rhs2;
-                FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                {
-                    projectilePrefab = self.projectilePrefab,
-                    position = aimRay.origin,
-                    rotation = rotation,
-                    owner = self.gameObject,
-                    damage = self.damageStat * self.damageCoefficient,
-                    crit = self.RollCrit(),
-                    force = self.force,
-                    procChainMask = default(ProcChainMask),
-                    damageColorIndex = DamageColorIndex.Default
-                };
-                ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
-
-                self.characterBody.characterMotor.ApplyForce(-self.selfKnockbackForce * aimRay.direction, false, false);
-            }
-            self.characterBody.AddSpreadBloom(self.spreadBloomValue);
-        }
-
-        public static void MissileArtifact_ThrowBomb(On.EntityStates.Mage.Weapon.BaseThrowBombState.orig_Fire orig, EntityStates.Mage.Weapon.BaseThrowBombState self)
-        {
-            orig(self);
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-            {
-                if (self.isAuthority)
-                {
-                    //hooks of heresy
-                    if (self is EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary)
-                    {
-                        Ray aimRay = self.GetAimRay();
-                        if (self.projectilePrefab != null)
-                        {
-                            float num = Util.Remap(self.charge, 0f, 1f, self.minDamageCoefficient, self.maxDamageCoefficient);
-                            float num2 = self.charge * self.force;
-                            FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
-                            {
-                                projectilePrefab = self.projectilePrefab,
-                                position = aimRay.origin,
-                                rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                                owner = self.gameObject,
-                                damage = self.damageStat * num,
-                                force = num2,
-                                crit = self.RollCrit()
-                            };
-                            self.ModifyProjectile(ref fireProjectileInfo);
-                            ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-
-                            MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
-                        }
-                        if (self.characterMotor)
-                        {
-                            self.characterMotor.ApplyForce(aimRay.direction * (-self.selfForce * self.charge), false, false);
-                        }
-                        return;
-                    }
-                }
             }
         }
 
@@ -786,12 +391,6 @@ namespace RainrotSharedUtils.MoreProjectiles
             }
         }
 
-        public static void MissileArtifact_LemurianFireball(On.EntityStates.LemurianMonster.FireFireball.orig_OnEnter orig, EntityStates.LemurianMonster.FireFireball self)
-        {
-            orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireFireball.damageCoefficient, FireFireball.projectilePrefab);
-        }
-
         public static void MissileArtifact_FireMeatballs(On.RoR2.WormBodyPositions2.orig_FireMeatballs orig, WormBodyPositions2 self, Vector3 impactNormal, Vector3 impactPosition, Vector3 forward, int meatballCount, float meatballAngle, float meatballForce)
         {
             if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
@@ -841,16 +440,6 @@ namespace RainrotSharedUtils.MoreProjectiles
                     self.outer.SetNextStateToMain();
                 }
             }
-        }
-
-        public static void MissileArtifact_ViendCorruptSecondary(On.EntityStates.VoidSurvivor.Weapon.FireCorruptDisks.orig_OnEnter orig, EntityStates.VoidSurvivor.Weapon.FireCorruptDisks self)
-        {
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
-            {
-                self.projectileCount = 3;
-                self.yawPerProjectile = projectileSpread;
-            }
-            orig(self);
         }
 
         public static void MissileArtifact_MushrumSporeGrenade(On.EntityStates.MiniMushroom.SporeGrenade.orig_FireGrenade orig, EntityStates.MiniMushroom.SporeGrenade self, string targetMuzzle)

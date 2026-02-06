@@ -873,6 +873,8 @@ namespace RiskierRain
             DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            Debug.Log($"(chance doll) chance shrine spawned at " +
+                $"[{pillarObject.transform.position.x}, {pillarObject.transform.position.y}, {pillarObject.transform.position.z}] ");
         }
         #endregion
 
@@ -912,7 +914,7 @@ namespace RiskierRain
         #region elusive antlers
         public static float elusiveAntlersPickupDuration = 24f;//60f
         public static float elusiveAntlersBuffDuration = 18f;//12f
-        public static float elusiveAntlersPickupInterval = 15f;//10f
+        public static float elusiveAntlersPickupInterval = 12f;//10f
         public static float elusiveAntlersPickupIntervalReductionStack = 0.1f;//0.1f
         public static float elusiveAntlersMoveSpeedPerBuff = 0.06f; //0.12f
         public static float elusiveAntlersFreeMovespeedBase = 0.06f; //0f
@@ -925,6 +927,11 @@ namespace RiskierRain
                 {
                     flasher.delayBeforeBeginningBlinking = elusiveAntlersPickupDuration - 2;
                 }
+                //destroying on timer is manually implemented in ElusiveAntlersPickup
+                //if(pickupObject.TryGetComponent(out DestroyOnTimer timer))
+                //{
+                //    timer.duration = elusiveAntlersPickupDuration;
+                //}
             });
             On.RoR2.ElusiveAntlersPickup.Start += ElusiveAntlersPickupStats;
             IL.RoR2.CharacterBody.RecalculateStats += ElusiveAntlersBuffMoveSpeed;
@@ -932,12 +939,12 @@ namespace RiskierRain
             GetStatCoefficients += ElusiveAntlersBaseMovespeed;
 
             LanguageAPI.Add("ITEM_SPEEDBOOSTPICKUP_DESC",
-                $"Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>{elusiveAntlersFreeMovespeedBase * 100}%</style> " +
-                $"<style=cStack>(+{elusiveAntlersFreeMovespeedStack * 100}% per stack)</style>. " +
+                $"Increases <style=cIsUtility>movement speed</style> by <style=cIsUtility>{elusiveAntlersFreeMovespeedBase.AsPercent()}</style> " +
+                $"<style=cStack>(+{elusiveAntlersFreeMovespeedStack.AsPercent()} per stack)</style>. " +
                 $"Every <style=cIsUtility>{elusiveAntlersPickupInterval}s</style> " +
-                $"<style=cStack>(-{elusiveAntlersPickupIntervalReductionStack * 100}% per stack)</style>, " +
+                $"<style=cStack>(-{elusiveAntlersPickupIntervalReductionStack.AsPercent()} per stack)</style>, " +
                 $"spawn an orb of energy nearby granting " +
-                $"<style=cIsUtility>+{elusiveAntlersMoveSpeedPerBuff * 100}% movement speed</style> up to " +
+                $"<style=cIsUtility>+{elusiveAntlersMoveSpeedPerBuff.AsPercent()} movement speed</style> up to " +
                 $"<style=cIsUtility>3 <style=cStack>(+3 per stack)</style> " +
                 $"times</style> for <style=cIsUtility>{elusiveAntlersBuffDuration}s</style>.");
         }
@@ -946,7 +953,9 @@ namespace RiskierRain
         {
             ILCursor c = new ILCursor(il);
 
-            bool b = c.TryGotoNext(MoveType.After,
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<ElusiveAntlersBehavior>(nameof(ElusiveAntlersBehavior.spawnTimer))) 
+                && c.TryGotoNext(MoveType.Before,
                 x => x.MatchStfld<ElusiveAntlersBehavior>(nameof(ElusiveAntlersBehavior.spawnTimer))
                 );
             if (!b)
@@ -955,7 +964,7 @@ namespace RiskierRain
                 return;
             }
             c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Action<ElusiveAntlersBehavior>>((self) =>
+            c.EmitDelegate<Func<float, ElusiveAntlersBehavior, float>>((timerOld, self) =>
             {
                 float interval = elusiveAntlersPickupInterval;
                 if (self.body.inventory)
@@ -963,10 +972,10 @@ namespace RiskierRain
                     int itemCount = self.body.inventory.GetItemCountEffective(DLC2Content.Items.SpeedBoostPickup);
                     if(itemCount > 1)
                     {
-                        interval *= Mathf.Pow(1 - elusiveAntlersPickupIntervalReductionStack, itemCount - 1);
+                        interval *= Mathf.Pow(1f - elusiveAntlersPickupIntervalReductionStack, itemCount - 1f);
                     }
                 }
-                self.spawnTimer = interval;
+                return interval;
             });
         }
 
@@ -1003,6 +1012,222 @@ namespace RiskierRain
             {
                 args.moveSpeedMultAdd += elusiveAntlersFreeMovespeedBase + elusiveAntlersFreeMovespeedStack * (itemCount - 1);
             }
+        }
+        #endregion
+
+        #region luminous shot
+
+        public static float luminousTotalDamageBase = 1.75f;//1.75f
+        public static float luminousTotalDamageStack = 1.0f;//0.5f
+        public static void LuminousShotBuff()
+        {
+            IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangeLuminousShotStats;
+
+            LanguageAPI.Add("ITEM_INCREASEPRIMARYDAMAGE_DESC",
+                $"Activating <style=cIsUtility>Secondary skill</style> stores " +
+                $"up to <style=cIsUtility>5 charges</style> <style=cStack>(+1 per stack)</style>. " +
+                $"Requires <style=cIsUtility>3 charges</style> for your " +
+                $"<style=cIsUtility>Primary skill</style> to fire lightning strikes, " +
+                $"dealing <style=cIsDamage>{luminousTotalDamageBase.AsPercent()} TOTAL damage</style> " +
+                $"<style=cStack>(+{luminousTotalDamageStack.AsPercent()} per stack)</style> each. " +
+                $"<style=cIsUtility>Reduces Secondary skill cooldown by 20%</style>."
+                );
+        }
+
+        private static void ChangeLuminousShotStats(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.DLC2Content/Items", nameof(DLC2Content.Items.IncreasePrimaryDamage)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(ChangeLuminousShotStats), 1);
+                return;
+            }
+
+            c.Next.Operand = luminousTotalDamageBase;
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchMul()
+                );
+            if (!b2)
+            {
+                DebugBreakpoint(nameof(ChangeLuminousShotStats), 2);
+                return;
+            }
+
+            c.Next.Operand = luminousTotalDamageStack;
+        }
+        #endregion
+
+        #region eclipse lite
+
+        public static float eclipseLiteHealPerSecondBase = 1f;
+        public static float eclipseLiteHealPerSecondStack = 1f;
+        public static void EclipseLiteChanges()
+        {
+            On.RoR2.CharacterBody.OnSkillCooldown += FixEclipseLiteRestockScaling;
+            IL.RoR2.CharacterBody.OnSkillCooldown += ChangeEclipseLiteStats;
+
+            LanguageAPI.Add("ITEM_BARRIERONCOOLDOWN_PICKUP", "Gain a small heal when a skill comes off cooldown.");
+            LanguageAPI.Add("ITEM_BARRIERONCOOLDOWN_DESC", 
+                $"When a skill comes off cooldown, <style=cIsHealing>heal</style> for " +
+                $"<style=cIsHealing>{eclipseLiteHealPerSecondBase} <style=cStack>(+{eclipseLiteHealPerSecondStack} per stack)</style> health</style>. " +
+                $"Scales with the skill's base cooldown.");
+        }
+
+        private static void FixEclipseLiteRestockScaling(On.RoR2.CharacterBody.orig_OnSkillCooldown orig, CharacterBody self, GenericSkill skill, int restocks)
+        {
+            if(restocks > 1)
+            {
+                int rechargeStock = skill.skillDef.GetRechargeStock(skill);
+                if (rechargeStock > 1)
+                    restocks = Mathf.CeilToInt(restocks / rechargeStock);
+            }
+            orig(self, skill, restocks);
+        }
+
+        private static void ChangeEclipseLiteStats(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            ChangeEclipseLiteToHealing(c);
+            RemoveEclipseLiteMaxHealthScaling(c);
+        }
+
+        private static HealthComponent ecliteThingy = null;
+        private static void ChangeEclipseLiteToHealing(ILCursor c)
+        {
+            c.Index = 0;
+
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<HealthComponent>(nameof(HealthComponent.AddBarrierAuthority))
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(ChangeEclipseLiteToHealing));
+                return;
+            }
+
+            c.Remove();
+            c.EmitDelegate<Action<HealthComponent, float>>((healthComponent, value) =>
+            {
+                ecliteThingy = healthComponent;
+                healthComponent.Heal(value, default(ProcChainMask), true);
+            });
+        }
+
+        private static void RemoveEclipseLiteMaxHealthScaling(ILCursor c)
+        {
+            c.Index = 0;
+
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_maxHealth")
+                );
+            if (!b1)
+            {
+                DebugBreakpoint(nameof(RemoveEclipseLiteMaxHealthScaling), 1);
+                return;
+            }
+            //replace max health with 1
+            c.EmitDelegate<Func<float, float>>((maxHealthWhichFunctionsAsAMultiplier) => { return 1; });
+
+            //change the fraction values to not be fractions of 1
+            ChangeSingleValue(eclipseLiteHealPerSecondBase, index: 1);
+            ChangeSingleValue(eclipseLiteHealPerSecondStack, index: 2);
+
+            void ChangeSingleValue(float newValue, int index)
+            {
+                bool b2 = c.TryGotoNext(MoveType.Before,
+                    x => x.MatchLdcR4(out _)
+                    );
+                if (!b2)
+                {
+                    DebugBreakpoint($"{nameof(RemoveEclipseLiteMaxHealthScaling)}:{nameof(ChangeSingleValue)}", 1);
+                    return;
+                }
+                c.Next.Operand = newValue;
+            }
+        }
+
+        private static void RemoveEclipseLiteRestockScaling(ILCursor c)
+        {
+            c.Index = 0;
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdarg(2),
+                x => x.MatchConvR4()
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(RemoveEclipseLiteRestockScaling));
+                return;
+            }
+
+            c.EmitDelegate<Func<float, GenericSkill, float>>((restocks, skill) =>
+            {
+                int rechargeStock = skill.skillDef.GetRechargeStock(skill);
+                if (rechargeStock > 1)
+                {
+                    restocks /= rechargeStock;
+                }
+                return restocks;
+            });
+            //c.EmitDelegate<Func<int, int>>((_) => { return 1; });
+        }
+        #endregion
+
+        #region topaz brooch
+
+        public static float broochPercentBase = 0.02f;
+        public static float broochPercentStack = 0.0f;
+        public static float broochFlatBase = 15f;//15f
+        public static float broochFlatStack = 15f;//15f
+
+        public static void TopazBroochBuff()
+        {
+            IL.RoR2.GlobalEventManager.OnCharacterDeath += TopazBroochPercentBarrier;
+
+            LanguageAPI.Add("ITEM_BARRIERONKILL_DESC",
+                $"Gain a <style=cIsHealing>temporary barrier</style> on kill " +
+                $"for <style=cIsHealing>15 health <style=cStack>(+15 per stack)</style></style> " +
+                $"PLUS <style=cIsHealing>{broochPercentBase.AsPercent()}</style> of your <style=cIsHealing>maximum health</style>.");
+        }
+
+        private static void TopazBroochPercentBarrier(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int broochCountLoc = 55;
+            int bodyLoc = 16;
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", nameof(RoR2Content.Items.BarrierOnKill)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchStloc(out broochCountLoc))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchLdloc(out bodyLoc),
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_healthComponent"))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<HealthComponent>(nameof(HealthComponent.AddBarrier))
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(TopazBroochPercentBarrier));
+                return;
+            }
+            c.EmitDelegate<Func<float, int, CharacterBody, float>>((barrierIn, stack, body) =>
+            {
+                if (body == null)
+                    return barrierIn;
+
+                float percentInBarrier = broochPercentBase + (broochPercentStack * (stack - 1));
+                return barrierIn + body.healthComponent.fullCombinedHealth * percentInBarrier;
+            });
         }
         #endregion
     }

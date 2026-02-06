@@ -18,8 +18,8 @@ namespace SwanSongExtended.Items
         static float minBaseCooldown = 2f;
         static float maxBaseCooldown = 20f;
 
-        public static float castBarrierBase = 0.02f;
-        public static float castBarrierStack = 0.01f;
+        public static float castBarrierBase = 0.03f;
+        public static float castBarrierStack = 0.015f;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Utility Knife";
 

@@ -13,6 +13,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static MoreStats.OnHit;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -24,62 +26,56 @@ namespace MissileRework
     public partial class MissileReworkPlugin
     {
         public static GameObject missilePrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/MissileProjectile");
-        public float procCoefficient = 0.4f;
+        public float procCoefficient = 0.75f;
         public float procChance = 10;
-        public static float atgMk3BaseDamageCoefficientPerRocket = 3;
-        static int maxMissiles = 100;
-        string damagePerMissile = (atgMk3BaseDamageCoefficientPerRocket * 100).ToString() + "%";
-        string overspillThreshold = (overspillThresholdCoefficient * 100).ToString() + "%";
-        public static float overspillThresholdCoefficient = 2;
-        public static int missilesPerOverspillBase = 1;
-        public static int missilesPerOverspillStack = 1;
+        public static float missileTotalDamageBase = 3;
+        public static float missileTotalDamageStack = 3;
+        static int maxMissiles = 40;
+        public static float overspillBaseDamageThreshold = 3;
 
         internal void ReworkAtg()
         {
-            missilePrefab.GetComponent<ProjectileController>().procCoefficient = procCoefficient;
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.MissileProjectile_prefab, (projectile) =>
+            {
+                if(projectile.TryGetComponent(out ProjectileController pc))
+                {
+                    pc.procCoefficient = procCoefficient;
+                }
+            });
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveVanillaAtgLogic;
 
             GetHitBehavior += AtgReworkLogic;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
 
             LanguageAPI.Add("ITEM_MISSILE_NAME", "AtG Missile Mk.3");
-            LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Chance to fire a volley of missiles. Missiles fired are increased by higher damage hits. Watch for the backblast.");
+            LanguageAPI.Add("ITEM_MISSILE_PICKUP", "Watch for the backblast.");
             LanguageAPI.Add("ITEM_MISSILE_DESC", 
-                $"<style=cIsDamage>{procChance}%</style> chance to fire a volley of " +
-                $"<style=cIsDamage>{missilesPerOverspillBase}</style> <style=cStack>(+{missilesPerOverspillStack} per stack)</style> missiles on hit " +
-                $"for <style=cIsDamage>{damagePerMissile}</style> base damage each. " +
-                $"Every <style=cIsDamage>{overspillThreshold}</style> attack damage dealt increases " +
-                $"volleys loaded by <style=cIsDamage>1</style>."
+                $"<style=cIsDamage>{procChance}%</style> chance to fire a volley of missiles on hit " +
+                $"for <style=cIsDamage>{missileTotalDamageBase.AsPercent()} TOTAL damage</style> " +
+                $"<style=cStack>(+{missileTotalDamageStack.AsPercent()} per stack)</style>. " +
+                $"Every <style=cIsDamage>{overspillBaseDamageThreshold.AsPercent()}</style> attack damage dealt " +
+                $"causes an additional missile to fire, splitting the total damage."
             );
         }
 
         private void AtgReworkLogic(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
-            if (!damageInfo.procChainMask.HasProc(ProcType.Missile))
+            if (damageInfo.procChainMask.HasProc(ProcType.Missile))
+                return;
+            CharacterMaster attackerMaster = attackerBody.master;
+            Inventory inv = attackerBody.inventory;
+            if (attackerMaster == null || inv == null)
+                return;
+
+            int missileItemCount = inv.GetItemCountEffective(RoR2Content.Items.Missile);
+
+            if (missileItemCount > 0 && Util.CheckRoll(procChance * GetProcRate(damageInfo), attackerMaster))
             {
-                CharacterMaster attackerMaster = attackerBody.master;
-                Inventory inv = attackerBody.inventory;
-                if (attackerMaster != null && inv != null)
-                {
-                    int missileItemCount = inv.GetItemCountEffective(RoR2Content.Items.Missile);
-                    if(missileItemCount > 0 && Util.CheckRoll(procChance * GetProcRate(damageInfo), attackerMaster))
-                    {
-                        DoMissileProc(damageInfo, victimBody.gameObject, attackerBody, attackerMaster, missileItemCount);
-                    }
-                }
+                DoMissileProc(damageInfo, victimBody.gameObject, attackerBody, attackerMaster, missileItemCount);
             }
         }
 
         #region mundane stuff
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                self.AddItemBehavior<Mk3MissileBehavior>(self.inventory.GetItemCountEffective(RoR2Content.Items.Missile));
-            }
-        }
         private void RemoveVanillaAtgLogic(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -135,20 +131,24 @@ namespace MissileRework
             //    }
             //}
 
-            int overspillCount = 1 + CalculateOverspill(damageInfo, attackerBody.damage, overspillThresholdCoefficient);
-            int missilesPerOverspill = missilesPerOverspillBase + missilesPerOverspillStack * (missileItemCount - 1);
-            int totalMissilesToFire = overspillCount * missilesPerOverspill;
+            float damageDealt = damageInfo.damage;
+            float damageCoefficientDealt = damageDealt / attackerBody.damage;
+            int missilesToFire = Mathf.CeilToInt(damageCoefficientDealt / overspillBaseDamageThreshold);
+            float totalDamageToDeal = damageDealt * (missileTotalDamageBase + missileTotalDamageStack * (missileItemCount - 1));
+            //int overspillCount = 1 + CalculateOverspill(damageInfo, attackerBody.damage, overspillThresholdCoefficient);
+            //int missilesPerOverspill = missilesPerOverspillBase + missilesPerOverspillStack * (missileItemCount - 1);
+            //int totalMissilesToFire = overspillCount * missilesPerOverspill;
 
             FireProjectileInfo newMissile = new FireProjectileInfo
             {
                 projectilePrefab = GlobalEventManager.CommonAssets.missilePrefab,
                 procChainMask = damageInfo.procChainMask,
-                damage = atgMk3BaseDamageCoefficientPerRocket * attackerBody.damage,
+                damage = totalDamageToDeal / missilesToFire,
                 crit = damageInfo.crit,
                 target = victim
             };
 
-            missileLauncher.AddMissiles(newMissile, Mathf.Min(totalMissilesToFire, maxMissiles - missileLauncher.currentMissiles.Count));
+            missileLauncher.AddMissiles(newMissile, Mathf.Min(missilesToFire, maxMissiles - missileLauncher.currentMissiles.Count));
 
             /*int currentMissiles = missileLauncher.currentMissiles.Count;
             List<FireProjectileInfo> missilesToFire = new List<FireProjectileInfo>();
@@ -160,11 +160,14 @@ namespace MissileRework
             missileLauncher.SetMissiles(missilesToFire);*/
         }
     }
-    public class Mk3MissileBehavior : RoR2.CharacterBody.ItemBehavior
+    public class Mk3MissileBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => RoR2Content.Items.Missile;
+
         public List<FireProjectileInfo> currentMissiles = new List<FireProjectileInfo>(0);
 
-        float missileMaxTimer = 0.075f;
+        float missileMaxTimer = 0.2f;
         float currentMissileTimer = 0;
         float missileSpread = 0;
         float missileSpreadFraction = 0.33f;
@@ -191,7 +194,8 @@ namespace MissileRework
 
                     //ProjectileManager.instance.FireProjectile(missile);
                     MissileUtils.FireMissile(body.corePosition, body, missile.procChainMask, missile.target, 
-                        missile.damage, missile.crit, missile.projectilePrefab, DamageColorIndex.Item, Vector3.up + UnityEngine.Random.insideUnitSphere * missileSpread, 200f, true);
+                        missile.damage, missile.crit, missile.projectilePrefab, DamageColorIndex.Item, 
+                        Vector3.up + UnityEngine.Random.insideUnitSphere * missileSpread, 200f, true);
 
                     currentMissiles.RemoveAt(0);
                     currentMissileTimer += GetScaledDelay();

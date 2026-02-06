@@ -105,6 +105,13 @@ namespace FruityElites.EliteReworks
                 float barrierAmt = 0;
                 barrierAmt = healAmount;
                 targetHealthComponent.AddBarrier(barrierAmt);
+
+                targetHealthComponent.body.UpdateSingleTemporaryVisualEffect(
+                    ref targetHealthComponent.body.barrierTempEffectInstance, 
+                    CharacterBody.AssetReferences.barrierTempEffectPrefab,
+                    targetHealthComponent.body.bestFitRadius,
+                    targetHealthComponent.barrier > 0f, 
+                    "");
                 //}
                 //else
                 //{

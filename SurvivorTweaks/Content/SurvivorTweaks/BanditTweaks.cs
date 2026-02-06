@@ -215,6 +215,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         #region primaries
         void ChangeVanillaPrimaries(SkillFamily family)
         {
+            IL.RoR2.CharacterBody.OnSkillCooldown += EclipseLiteFix;
             On.EntityStates.GenericBulletBaseState.OnEnter += ModifyRifleAttacks;
             On.EntityStates.GenericBulletBaseState.FixedUpdate += RifleFixedUpdate;
             On.EntityStates.Bandit2.Weapon.Reload.OnEnter += ChangeReloadDuration;
@@ -248,6 +249,21 @@ namespace SurvivorTweaks.SurvivorTweaks
             LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION", 
                 $"Fire a rifle blast for <style=cIsDamage>{rifleDamageCoeff.AsPercent()} damage</style>. " +
                 $"Tap to fire faster. Can hold up to 4 bullets.");
+        }
+
+        private void EclipseLiteFix(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<GenericSkill>("get_rechargeStock")
+                );
+            if (!b)
+            {
+                Log.DebugBreakpoint(nameof(EclipseLiteFix));
+                return;
+            }
+            c.EmitDelegate<Func<int, int>>((_) => { return 1; });
         }
 
         private void AutoFireOnReload(On.EntityStates.Bandit2.Weapon.Reload.orig_GiveStock orig, Reload self)

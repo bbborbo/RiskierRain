@@ -8,6 +8,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using UnityEngine.AddressableAssets;
+using RainrotSharedUtils.MoreProjectiles;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -25,12 +26,21 @@ namespace MissileRework
 
         internal void ReworkIcbm()
         {
-            DisableICBM();
-
-            LanguageAPI.Add("ITEM_MOREMISSILE_PICKUP", "Knock \'em dead, faggot.");
-            LanguageAPI.Add("ITEM_MOREMISSILE_DESC", "Knock \'em dead, faggot.");
+            MoreProjectilesModule.MoreProjectilesProvider += IsVanillaIcbmHeld;
+            On.RoR2.MissileUtils.GetMoreMissileDamageMultiplier += ChangeIcbmMissileDamageMultiplier;
+            //DisableICBM();
+            //
+            //LanguageAPI.Add("ITEM_MOREMISSILE_PICKUP", "Knock \'em dead, faggot.");
+            //LanguageAPI.Add("ITEM_MOREMISSILE_DESC", "Knock \'em dead, faggot.");
+            LanguageAPI.Add("ITEM_MOREMISSILE_PICKUP", "Triple most projectile attacks.");
+            LanguageAPI.Add("ITEM_MOREMISSILE_DESC", "Most projectile attacks fire an additional <style=cIsDamage>2 projectiles</style>. " +
+                "Increase missile damage by <style=cIsDamage>0%</style> <style=cStack>+50% per stack)</style>.");
         }
 
+        private float ChangeIcbmMissileDamageMultiplier(On.RoR2.MissileUtils.orig_GetMoreMissileDamageMultiplier orig, int moreMissileCount)
+        {
+            return orig(moreMissileCount);
+        }
 
         private void DisableICBM()
         {

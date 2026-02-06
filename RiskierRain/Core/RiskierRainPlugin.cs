@@ -407,6 +407,10 @@ namespace RiskierRain
             {
                 EclipseLiteChanges();
             }
+            if (GetConfigBool(true, "Topaz Brooch"))
+            {
+                TopazBroochBuff();
+            }
 
             if (GetConfigBool(true, "Command/Potential Armor"))
             {

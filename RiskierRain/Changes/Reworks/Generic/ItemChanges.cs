@@ -1181,6 +1181,55 @@ namespace RiskierRain
             //c.EmitDelegate<Func<int, int>>((_) => { return 1; });
         }
         #endregion
+
+        #region topaz brooch
+
+        public static float broochPercentBase = 0.02f;
+        public static float broochPercentStack = 0.0f;
+        public static float broochFlatBase = 15f;//15f
+        public static float broochFlatStack = 15f;//15f
+
+        public static void TopazBroochBuff()
+        {
+            IL.RoR2.GlobalEventManager.OnCharacterDeath += TopazBroochPercentBarrier;
+
+            LanguageAPI.Add("ITEM_BARRIERONKILL_DESC",
+                $"Gain a <style=cIsHealing>temporary barrier</style> on kill " +
+                $"for <style=cIsHealing>15 health <style=cStack>(+15 per stack)</style></style> " +
+                $"PLUS <style=cIsHealing>{broochPercentBase.AsPercent()}</style> of your <style=cIsHealing>maximum health</style>.");
+        }
+
+        private static void TopazBroochPercentBarrier(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int broochCountLoc = 55;
+            int bodyLoc = 16;
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", nameof(RoR2Content.Items.BarrierOnKill)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchStloc(out broochCountLoc))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchLdloc(out bodyLoc),
+                x => x.MatchCallOrCallvirt<CharacterBody>("get_healthComponent"))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<HealthComponent>(nameof(HealthComponent.AddBarrier))
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(TopazBroochPercentBarrier));
+                return;
+            }
+            c.EmitDelegate<Func<float, int, CharacterBody, float>>((barrierIn, stack, body) =>
+            {
+                if (body == null)
+                    return barrierIn;
+
+                float percentInBarrier = broochPercentBase + (broochPercentStack * (stack - 1));
+                return barrierIn + body.healthComponent.fullCombinedHealth * percentInBarrier;
+            });
+        }
+        #endregion
     }
 
 }

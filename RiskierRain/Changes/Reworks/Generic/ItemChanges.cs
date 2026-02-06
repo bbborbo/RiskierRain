@@ -914,7 +914,7 @@ namespace RiskierRain
         #region elusive antlers
         public static float elusiveAntlersPickupDuration = 24f;//60f
         public static float elusiveAntlersBuffDuration = 18f;//12f
-        public static float elusiveAntlersPickupInterval = 15f;//10f
+        public static float elusiveAntlersPickupInterval = 12f;//10f
         public static float elusiveAntlersPickupIntervalReductionStack = 0.1f;//0.1f
         public static float elusiveAntlersMoveSpeedPerBuff = 0.06f; //0.12f
         public static float elusiveAntlersFreeMovespeedBase = 0.06f; //0f

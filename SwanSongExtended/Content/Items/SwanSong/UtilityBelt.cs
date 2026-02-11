@@ -90,7 +90,7 @@ namespace SwanSongExtended.Items
         }
         private void OnSkillActivated(GenericSkill skill)
         {
-            if (skill.baseRechargeInterval > 0 && skill.rechargeStock > 0)
+            if (skill.baseRechargeInterval > 0 && skill.rechargeStock > 0 && skill == body.skillLocator.utility)
             {
                 float effectiveCooldown = skill.baseRechargeInterval;
                 if (skill.rechargeStock > 1)

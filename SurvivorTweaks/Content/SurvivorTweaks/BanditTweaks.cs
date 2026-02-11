@@ -32,13 +32,16 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static bool noFinishersFromSkillSourcedDamage = true;
         public static bool useBanditSkullSurplus = false;
-        public static float shotgunDamageCoeff = 0.75f; //1
+
+        public static float baseMaxHealth = 90f;//110
+
+        public static float shotgunDamageCoeff = 0.7f; //1
         public static float rifleDamageCoeff = 2.8f; // 3.3
-        public static float rifleSpreadBloom = 0.4f; //0.5f
+        public static float rifleSpreadBloom = 0.3f; //0.5f
         public static float reloadEnterBaseDuration = 0.4f; //0.25f
-        public static float reloadBaseDuration = 0.6f; //0.3f
+        public static float reloadBaseDuration = 0.5f; //0.3f
         public static float primaryMinDuration = 0.1f;
-        public static float primaryAutoDuration = 0.375f;
+        public static float primaryAutoDuration = 0.325f;
 
         public static float daggerDamageCoeff = 6f; //3.6
         public static float daggerCooldown = 6f; //4 
@@ -52,16 +55,16 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float stealthCooldown = 6f; //6
         public static float stealthAspdBonus = 0.6f; //0
 
-        public static float lightsOutDamage = 6f; //6
-        public static float lightsOutCooldown = 8f; //4
+        public static float lightsOutDamage = 7f; //6
+        public static float lightsOutCooldown = 10f; //4
         public static float desperadoDamage = 3f; //6
         public static float desperadoCooldown = 3f; //4
-        public static float desperadoDamagePerToken = 0.03f; //0.1f
-        public static float desperadoAttackSpeedPerToken = 0.07f; //0f
+        public static float desperadoDamagePerToken = 0.02f; //0.1f
+        public static float desperadoAttackSpeedPerToken = 0.08f; //0f
         public static int desperadoTokensPerLevel = 2;
         public static float revolverDebuffDuration = 1f;//0f
         public static float revolverDrawDuration = 0.8f; //idk
-        public static float finisherAimDuration = 10f; //n/a
+        public static float finisherAimDuration = 5f; //n/a
         public static float revolverBulletRadius = 1.5f;
         public static float revolverHipFireBulletRadius = 3.0f;
         public static float revolverHipFireGraceDuration = 0.25f;
@@ -75,14 +78,21 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Bandit2.Bandit2Body_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMaxHealth = baseMaxHealth;
+                body.levelMaxHealth = baseMaxHealth * 0.3f;
 
+                GetSkillsFromBodyObject(bodyObject);
+                ChangeVanillaPrimaries(primary);
+                ChangeVanillaSecondaries(secondary);
+                ChangeVanillaUtilities(utility);
+                ChangeVanillaSpecials(special);
+            });
 
-            ChangeVanillaPrimaries(primary);
-            ChangeVanillaSecondaries(secondary);
-            ChangeVanillaUtilities(utility);
-            ChangeVanillaSpecials(special);
 
             GetStatCoefficients += BanditCloakBuff;
             On.RoR2.HealthComponent.TakeDamageProcess += BanditTweaksTakeDamage;
@@ -146,7 +156,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 //float normalBleedDamage = damageInfo.damage * hemmorageDamageBase;
                 float damage2 = damageInfo.damage * Mathf.Lerp(hemmorageDamageMin, hemmorageDamageMax, self.combinedHealthFraction);
                 damageInfo.damage = damage2;// scalingBleedDamage + normalBleedDamage;
-                damageInfo.damageType.damageType |= DamageType.NonLethal;
+                damageInfo.damageType.damageType = DamageType.Generic | DamageType.NonLethal | DamageType.DoT;
             }
 
             BanditFinisherDebuffOnHit(damageInfo, self.body);

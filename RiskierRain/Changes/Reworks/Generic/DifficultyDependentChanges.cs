@@ -331,7 +331,7 @@ namespace RiskierRain
                 if (selectedDifficulty >= DifficultyIndex.Hard || selectedDifficulty == SwanSongExtended.SwanSongPlugin.difficultyIndexExtinction)
                 {
                     float compensatedLevel = sender.level - ambientLevelBoost;
-                    float clamped = Mathf.Clamp01(compensatedLevel / 200f);
+                    float clamped = Mathf.Clamp01(compensatedLevel / 300f);
 
                     float attackSpeedFactor = 
                         (sender.baseNameToken == "CLAYBRUISER_BODY_NAME" 

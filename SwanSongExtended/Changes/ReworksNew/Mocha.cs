@@ -23,6 +23,7 @@ namespace SwanSongExtended.Changes
 {
     public class Mocha : ReworkBase<Mocha>
     {
+        public static GameObject mochaSipEffect;
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;
         public static Sprite mochaCustomSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texMovespeedBuffIcon.tif").WaitForCompletion();
@@ -53,15 +54,20 @@ namespace SwanSongExtended.Changes
 
         public override string ItemFullDesc => 
             $"For <style=cIsUtility>{mochaDurationOnEntry}</style> seconds after entering any stage, " +
-            $"increase {DamageColor("attack speed")} and {DamageColor("movement speed")} " +
+            $"increase {DamageColor("attack")} and {DamageColor("movement speed")} " +
             $"by {DamageColor(Tools.ConvertDecimal(spdBoostBuff))} {StackText($"+{Tools.ConvertDecimal(spdBoostBuff)}")}, " +
             $"and reduce {UtilityColor("skill cooldowns")} by " +
             $"{UtilityColor($"-{Tools.ConvertDecimal(cdrBoostBuff)}")} {StackText($"-{Tools.ConvertDecimal(cdrBoostBuff)}")}. " +
-            $"Using {UtilityColor("any interactable")} while this buff is active will extend the duration of the buff " +
+            $"Activating an interactable extends the buff " +
             $"by {UtilityColor($"{mochaDurationOnPurchase} seconds")}.";
 
         public override void Init()
         {
+            SwanSongPlugin.LoadAsync<GameObject>(
+                RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldownProc_prefab, 
+                CreateMochaSipEffect
+                );
+
             mochaBuffActive = Content.CreateAndAddBuff(
                 "bdCoffeeActive",
                 mochaCustomSprite,
@@ -76,6 +82,13 @@ namespace SwanSongExtended.Changes
                 );
             base.Init();
         }
+
+        private void CreateMochaSipEffect(GameObject eclipseLiteSipEffect)
+        {
+            mochaSipEffect = eclipseLiteSipEffect.InstantiateClone("MochaSipEffect");
+            Content.CreateAndAddEffectDef(mochaSipEffect);
+        }
+
         public override void Hooks()
         {
             On.RoR2.CharacterBody.OnBuffFinalStackLost += MochaExpiredBuff;
@@ -122,6 +135,9 @@ namespace SwanSongExtended.Changes
             int buffCount = body.GetBuffCount(mochaBuffActive);
             if (buffCount <= 0)
                 return;
+
+
+            EffectManager.SimpleEffect(mochaSipEffect, body.corePosition, Quaternion.identity, true);
 
             float newBuffCount = Mathf.Min(buffCount + mochaDurationOnPurchase, mochaDurationOnEntry - 1);
             for (int i = buffCount; i < newBuffCount; i++)

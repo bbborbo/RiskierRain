@@ -1233,6 +1233,46 @@ namespace RiskierRain
             });
         }
         #endregion
+
+        #region box of dynamite
+
+        public static float dynamiteDamageBase = 3.5f;
+        public static float dynamiteDamageStack = 2.8f;
+        public static void BoxOfDynamiteBuff()
+        {
+            IL.RoR2.Items.DroneDynamiteBehaviour.FixedUpdate += IncreaseBoxOfDynamiteDamage;
+
+            LanguageAPI.Add("ITEM_DRONESDROPDYNAMITE_DESC", 
+                $"Gain <style=cIsDamage>Lt. Droneboy</style>. " +
+                $"While in combat, your drones drop sticks of dynamite " +
+                $"that detonate for <style=cIsDamage>{dynamiteDamageBase.AsPercent()} damage " +
+                $"<style=cStack>(+{dynamiteDamageStack.AsPercent()} per stack)</style></style>" +
+                $", <style=cIsDamage>Stunning</style> enemies. " +
+                $"Recharges after <style=cIsUtility>10</style> seconds.");
+        }
+
+        private static void IncreaseBoxOfDynamiteDamage(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<FireProjectileInfo>(nameof(FireProjectileInfo.damage)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdfld<BaseItemBodyBehavior>(nameof(BaseItemBodyBehavior.stack)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(IncreaseBoxOfDynamiteDamage));
+                return;
+            }
+            c.Next.Operand = dynamiteDamageBase;
+            c.Index++;
+            c.Next.Operand = dynamiteDamageStack;
+        }
+        #endregion
     }
 
 }

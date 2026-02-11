@@ -415,6 +415,10 @@ namespace RiskierRain
             {
                 DoSacrificeDropLimit();
             }
+            if (GetConfigBool(true, "Box of Dynamite"))
+            {
+                BoxOfDynamiteBuff();
+            }
 
             if (GetConfigBool(true, "Command/Potential Armor"))
             {

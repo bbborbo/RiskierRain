@@ -22,12 +22,12 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "BOSSITEMCONSUMABLE";
 
-        public override string ItemPickupDesc => "Powerful enemes have a much greater chance of dropping a trophy. Consumed on drop.";
+        public override string ItemPickupDesc => "Large monsters have a much greater chance of dropping a trophy. Consumed on drop.";
 
-        public override string ItemFullDescription => $"Every <style=cIsDamage>Champion</style> " +
-            $"you kill has an <style=cIsUtility>additional {bonusDropChance}%</style> chance " +
-            $"to drop a <style=cIsDamage>trophy</style>. " +
-            $"Consumes <style=cIsUtility>1</style> stack when a Trophy drops.";
+        public override string ItemFullDescription => $"Killing enemies who are capable of dropping <style=cIsDamage>trophy items</style> " +
+            $"yields an additional <style=cIsUtility>{bonusDropChance}%</style> chance " +
+            $"to drop the <style=cIsDamage>trophy</style>. " +
+            $"Consumed on successful use.";
 
         public override string ItemLore =>
 @"Order: Medical Scalpel (Obsidian)

@@ -88,7 +88,7 @@ namespace SwanSongExtended.Storms
             stormControllerInstance = stormControllerObject.GetComponent<StormController>();
 
             if (Run.instance.stageClearCount == 0 && DifficultyUtilsModule.cachedDifficultyStats.delayFirstStorm_ForSwanSong)
-                stormTime += 1.5f;
+                stormTime += 1f;
             stormTime += Run.instance.stageRng.RangeFloat(0, 1);
 
             stormControllerInstance.BeginStormApproach(stormTime, warningTime);

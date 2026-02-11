@@ -21,7 +21,6 @@ namespace SwanSongExtended.Items
         {
             return RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Command);
         }
-        public override bool lockEnabled => true;
         public override bool GetPrerequisites()
         {
             return StormsCore.stormsEnabled;

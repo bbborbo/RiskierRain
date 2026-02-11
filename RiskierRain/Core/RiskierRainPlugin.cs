@@ -419,6 +419,10 @@ namespace RiskierRain
             {
                 BoxOfDynamiteBuff();
             }
+            if (GetConfigBool(true, "Warbanner"))
+            {
+                WarbannerBuff();
+            }
 
             if (GetConfigBool(true, "Command/Potential Armor"))
             {

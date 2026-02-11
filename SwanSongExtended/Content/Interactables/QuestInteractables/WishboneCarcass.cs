@@ -13,6 +13,8 @@ namespace SwanSongExtended.Interactables
 {
     class WishboneCarcass : InteractableBase<WishboneCarcass>
     {
+        public static int omensPerPlayer = 1;
+        public static int omensBonus = 2;
         public override string InteractableName => "Omen";
 
         public override string InteractableContext => "Break Omen";
@@ -55,7 +57,10 @@ namespace SwanSongExtended.Interactables
         public static void ScatterWishbones()
         {
             rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
-            int eggsToHide = Run.instance.participatingPlayerCount + 2;
+            int eggsToHide = Run.instance.participatingPlayerCount * omensPerPlayer;
+            if (!Wishbone.UseSimpleWishboneBehavior())
+                eggsToHide += omensBonus;
+
             Log.Warning($"Hiding {eggsToHide} wishbones");
 
             DirectorPlacementRule placementRule = new DirectorPlacementRule

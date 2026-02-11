@@ -86,6 +86,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 body.baseMaxHealth = baseMaxHealth;
                 body.levelMaxHealth = baseMaxHealth * 0.3f;
 
+                GetSkillsFromBodyObject(bodyObject);
                 ChangeVanillaPrimaries(primary);
                 ChangeVanillaSecondaries(secondary);
                 ChangeVanillaUtilities(utility);

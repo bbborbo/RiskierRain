@@ -123,7 +123,7 @@ Your crystal, or should I say plastic, ball cost me more than my entire life sav
     public class RandomBarrierTargetBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => CoinGun.instance.ItemsDef;
+        private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
         public static float baseHauntRadius = 35;
         public static float hauntRetryTime = 1;
         float hauntStopwatch = 0;

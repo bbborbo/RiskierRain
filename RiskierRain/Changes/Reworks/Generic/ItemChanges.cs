@@ -2,7 +2,7 @@
 using EntityStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using On.RoR2.Items;
+using RoR2.Items;
 using R2API;
 using RiskierRain.Changes.Components;
 using RoR2;
@@ -1231,6 +1231,133 @@ namespace RiskierRain
                 float percentInBarrier = broochPercentBase + (broochPercentStack * (stack - 1));
                 return barrierIn + body.healthComponent.fullCombinedHealth * percentInBarrier;
             });
+        }
+        #endregion
+
+        #region box of dynamite
+
+        public static float dynamiteDamageBase = 3.5f;
+        public static float dynamiteDamageStack = 2.8f;
+        public static void BoxOfDynamiteBuff()
+        {
+            IL.RoR2.Items.DroneDynamiteBehaviour.FixedUpdate += IncreaseBoxOfDynamiteDamage;
+
+            LanguageAPI.Add("ITEM_DRONESDROPDYNAMITE_DESC", 
+                $"Gain <style=cIsDamage>Lt. Droneboy</style>. " +
+                $"While in combat, your drones drop sticks of dynamite " +
+                $"that detonate for <style=cIsDamage>{dynamiteDamageBase.AsPercent()} damage " +
+                $"<style=cStack>(+{dynamiteDamageStack.AsPercent()} per stack)</style></style>" +
+                $", <style=cIsDamage>Stunning</style> enemies. " +
+                $"Recharges after <style=cIsUtility>10</style> seconds.");
+        }
+
+        private static void IncreaseBoxOfDynamiteDamage(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<FireProjectileInfo>(nameof(FireProjectileInfo.damage)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdfld<BaseItemBodyBehavior>(nameof(BaseItemBodyBehavior.stack)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(IncreaseBoxOfDynamiteDamage));
+                return;
+            }
+            c.Next.Operand = dynamiteDamageBase;
+            c.Index++;
+            c.Next.Operand = dynamiteDamageStack;
+        }
+        #endregion
+
+        #region warbanner
+
+        public static float warbannerRadiusBase = 18f;
+        public static float warbannerRadiusStack = 2f;
+        public static float warbannerRegenBase = 1f; //0
+        public static float warbannerRegenStack = 1f; //0
+        public static float warbannerSpeedBase = 0.3f; //0.3f
+        public static float warbannerSpeedStack = 0.15f; //00.3f
+        public static void WarbannerBuff()
+        {
+            IL.RoR2.Items.WardOnLevelManager.OnCharacterLevelUp += WarbannerRadiusStacking;
+            IL.RoR2.CharacterBody.RecalculateStats += WarbannerStatsScaleWithStacks;
+            GetStatCoefficients += WarbannerBonusStats;
+
+            LanguageAPI.Add("ITEM_WARDONLEVEL_PICKUP",
+                $"Drop a warbanner on level up and during boss events. Strengthens all allies."
+                );
+            LanguageAPI.Add("ITEM_WARDONLEVEL_DESC",
+                $"On <style=cIsUtility>level up</style> and during boss events, " +
+                $"drop a banner that strengthens all allies " +
+                $"within <style=cIsUtility>{warbannerRadiusBase}m</style> <style=cStack>(+{warbannerRadiusStack}m per stack)</style>. " +
+                $"Raise <style=cIsDamage>attack</style> and <style=cIsUtility>movement speed</style> " +
+                $"by <style=cIsDamage>{warbannerSpeedBase.AsPercent()}</style> <style=cStack>(+{warbannerSpeedStack.AsPercent()} per stack)</style>. " +
+                $"Also increases <style=cIsHealing>base health regeneration</style> by " +
+                $"<style=cIsHealing>+{warbannerRegenBase} hp/s</style> <style=cStack>(+{warbannerRegenStack} hp/s per stack)</style>."
+                );
+        }
+
+        private static void WarbannerRadiusStacking(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallOrCallvirt<BuffWard>("set_Networkradius"))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchLdcR4(out _)
+                );
+            if (!b)
+            {
+                DebugBreakpoint(nameof(WarbannerRadiusStacking));
+                return;
+            }
+
+            c.Next.Operand = warbannerRadiusBase - warbannerRadiusStack;
+            c.Index++;
+            c.Next.Operand = warbannerRadiusStack;
+        }
+
+        private static void WarbannerBonusStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (sender.HasBuff(RoR2Content.Buffs.Warbanner))
+            {
+                int warbannerCount = 0;
+                if (sender.inventory)
+                    warbannerCount = sender.inventory.GetItemCountEffective(RoR2Content.Items.WardOnLevel);
+
+                args.baseRegenAdd += warbannerRegenBase + warbannerRegenStack * Mathf.Max(0, warbannerCount - 1);
+            }
+        }
+
+        private static void WarbannerStatsScaleWithStacks(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int matches = 0;
+            while(c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Buffs", nameof(RoR2Content.Buffs.Warbanner))) 
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _))
+                )
+            {
+                c.Prev.Operand = warbannerSpeedBase;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<float, CharacterBody, float>>((idc, body) =>
+                {
+                    if (!body.inventory)
+                        return warbannerSpeedBase;
+                    int count = body.inventory.GetItemCountEffective(RoR2Content.Items.WardOnLevel);
+                    return warbannerSpeedBase + warbannerSpeedStack * Mathf.Max(0, count - 1);
+                });
+                matches++;
+            }
+            Debug.LogError("2r4r Warbanner stats matches: [" + matches + "/2]");
         }
         #endregion
     }

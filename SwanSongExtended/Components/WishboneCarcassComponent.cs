@@ -28,8 +28,9 @@ namespace SwanSongExtended.Components
                 WishboneCarcassComponent carcass = readonlyInstancesList[i];
                 if(carcass != null)
                 {
+                    GameObject o = carcass.gameObject;
                     Destroy(carcass);
-                    Destroy(carcass.gameObject);
+                    Destroy(o);
                 }
             }
         }
@@ -47,7 +48,6 @@ namespace SwanSongExtended.Components
             if (instancesList.Count == 0)
                 SetWishboneObjective(false);
         }
-
         void SetWishboneObjective(bool enable)
         {
             if (enable)

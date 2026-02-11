@@ -17,6 +17,11 @@ namespace SwanSongExtended.Items
 {
     class Wishbone : ItemBase<Wishbone>
     {
+        public static bool UseSimpleWishboneBehavior()
+        {
+            return RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Command);
+        }
+        public override bool lockEnabled => true;
         public override bool GetPrerequisites()
         {
             return StormsCore.stormsEnabled;
@@ -123,7 +128,7 @@ namespace SwanSongExtended.Items
 
                 pickupInfo.pickerOptions = PickupPickerController.GenerateOptionsFromList(new List<UniquePickup>(3) { pickupAlt1, pickup, pickupAlt2 });
                 pickupInfo.prefabOverride = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/OptionPickup/OptionPickup.prefab").WaitForCompletion();
-                pickupInfo.pickupIndex = PickupCatalog.FindPickupIndex(ItemTier.Tier2);
+                pickupInfo.pickupIndex = Wishbone.UseSimpleWishboneBehavior() ? PickupCatalog.FindPickupIndex(ItemTier.Tier3) : PickupCatalog.FindPickupIndex(ItemTier.Tier2);
             }
             PickupDropletController.CreatePickupDroplet(pickupInfo, position, velocity);
         }
@@ -131,6 +136,8 @@ namespace SwanSongExtended.Items
         {
             if (serverWishboneCount <= Run.instance.participatingPlayerCount)
                 return false;
+            if (Wishbone.UseSimpleWishboneBehavior())
+                return true;
 
             serverWishboneCount--;
             //if (Util.CheckRoll(upgradeChance))

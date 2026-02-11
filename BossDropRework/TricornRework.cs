@@ -24,11 +24,11 @@ namespace BossDropRework
 
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_PICKUP", "Cripple a large monster and claim its <style=cIsDamage>trophy</style> after it dies. Consumed on use.");
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_DESC", 
-                $"Targets any enemy capable of dropping a <style=cIsDamage>unique reward</style>, " +
+                $"Targets any enemy capable of dropping a <style=cIsDamage>trophy item</style>, " +
                 $"dealing <style=cIsDamage>{TricornDamageCoefficient.Value * 100}% damage</style>, " +
                 $"then <style=cIsUtility>Crippling and Hemorrhaging</style> it " +
                 $"for <style=cIsUtility>{tricornDebuffDuration}</style> seconds. " +
-                $"When the enemy dies, it has a 100% chance to drop it's <style=cIsDamage>trophy</style>. " +
+                $"When the enemy dies, it has a 100% chance to drop its <style=cIsDamage>trophy</style>. " +
                 $"Equipment is <style=cIsUtility>consumed</style> on use.");
             //"<style=cIsDamage>Execute</style> any enemy capable of spawning a <style=cIsDamage>unique reward</style>,
             //and it will drop that <style=cIsDamage>item</style>. Equipment is <style=cIsUtility>consumed</style> on use.");

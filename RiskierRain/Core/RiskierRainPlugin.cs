@@ -411,6 +411,18 @@ namespace RiskierRain
             {
                 TopazBroochBuff();
             }
+            if(GetConfigBool(true, "Artifact of Sacrifice/Sonorous Whispers"))
+            {
+                DoSacrificeDropLimit();
+            }
+            if (GetConfigBool(true, "Box of Dynamite"))
+            {
+                BoxOfDynamiteBuff();
+            }
+            if (GetConfigBool(true, "Warbanner"))
+            {
+                WarbannerBuff();
+            }
 
             if (GetConfigBool(true, "Command/Potential Armor"))
             {

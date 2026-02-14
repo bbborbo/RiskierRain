@@ -81,15 +81,23 @@ namespace SwanSongExtended.Items
 					bool usedCard = false;
 
 					GameObject purchasedObject = context.purchasedObject;
-					ShopTerminalBehavior shopTerminalBehavior = (purchasedObject != null) ? purchasedObject.GetComponent<ShopTerminalBehavior>() : null;
 					PurchaseInteraction purchaseInteraction = purchasedObject.GetComponent<PurchaseInteraction>();
-					if (shopTerminalBehavior && shopTerminalBehavior.serverMultiShopController && purchaseInteraction)
+                    ShopTerminalBehavior shopTerminalBehavior = null;
+                    DroneVendorTerminalBehavior droneVendorBehavior = null;
+                    if ((purchasedObject.TryGetComponent(out shopTerminalBehavior)
+                        || purchasedObject.TryGetComponent(out droneVendorBehavior))
+                        && shopTerminalBehavior 
+                        && shopTerminalBehavior.serverMultiShopController 
+                        && purchaseInteraction)
 					{
                         //dont clsoe terminal
-                        shopTerminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(purchaseInteraction, false);
+                        if(shopTerminalBehavior != null)
+                            shopTerminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(purchaseInteraction, false);
+                        if(droneVendorBehavior != null)
+                            droneVendorBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(purchaseInteraction, false);
 
                         //cash back
-						GoldOrb goldOrb = new GoldOrb();
+                        GoldOrb goldOrb = new GoldOrb();
 						Vector3? vector;
 						if (purchasedObject == null)
 						{

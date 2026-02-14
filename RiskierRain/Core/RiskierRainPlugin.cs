@@ -431,7 +431,7 @@ namespace RiskierRain
                 {
                     RoR2.LocalUser user = RoR2.LocalUserManager.GetFirstLocalUser();
                     RoR2.CharacterBody body = user.cachedBody;
-                    body.AddTimedBuffAuthority(RoR2.RoR2Content.Buffs.HiddenInvincibility.buffIndex, 4);
+                    body.AddTimedBuffAuthority(RoR2.RoR2Content.Buffs.Immune.buffIndex, 4);
                     orig(self);
                 };
             }

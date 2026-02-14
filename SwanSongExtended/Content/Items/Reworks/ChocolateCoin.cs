@@ -48,7 +48,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Utility };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.Utility, ItemTag.FoodRelated };
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GoldOnHurt/PickupRollOfPennies.prefab").WaitForCompletion();//Resources.Load<GameObject>("prefabs/pickupmodels/PickupGoldOnHurt");
 

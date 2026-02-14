@@ -55,23 +55,23 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float stealthCooldown = 6f; //6
         public static float stealthAspdBonus = 0.6f; //0
 
-        public static float lightsOutDamage = 7f; //6
-        public static float lightsOutCooldown = 10f; //4
+        public static float lightsOutDamage = 4.5f; //6
+        public static float lightsOutCooldown = 8f; //4
         public static float desperadoDamage = 3f; //6
         public static float desperadoCooldown = 3f; //4
-        public static float desperadoDamagePerToken = 0.02f; //0.1f
-        public static float desperadoAttackSpeedPerToken = 0.08f; //0f
+        public static float desperadoDamagePerToken = 0.075f; //0.1f
+        public static float desperadoAttackSpeedPerToken = 0.025f; //0f
         public static int desperadoTokensPerLevel = 2;
-        public static float revolverDebuffDuration = 1f;//0f
+        public static float revolverDebuffDuration = 1.6f;//0f
         public static float revolverDrawDuration = 0.8f; //idk
         public static float finisherAimDuration = 5f; //n/a
         public static float revolverBulletRadius = 1.5f;
         public static float revolverHipFireBulletRadius = 3.0f;
         public static float revolverHipFireGraceDuration = 0.25f;
 
-        public static float hemmorageDamageBase = 15;
-        public static float hemmorageDamageMin = 0.5f;
-        public static float hemmorageDamageMax = 2.5f;
+        public static float hemorrhageDamageBase = 15;
+        public static float hemorrhageDamageMin = 0.5f;
+        public static float hemorrhageDamageMax = 2.5f;
 
         public override string bodyName => "Bandit2Body";
         public override string survivorName => "Hopoo Bandit";
@@ -96,10 +96,11 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             GetStatCoefficients += BanditCloakBuff;
             On.RoR2.HealthComponent.TakeDamageProcess += BanditTweaksTakeDamage;
-            LanguageAPI.Add("KEYWORD_SUPERBLEED", 
+            GlobalEventManager.onCharacterDeathGlobal += BanditOnKill;
+            LanguageAPI.Add("KEYWORD_SUPERBLEED",
                 $"<style=cKeywordName>Hemorrhage</style>" +
-                $"<style=cSub>Bleed enemies for <style=cIsDamage>{Tools.ConvertDecimal(hemmorageDamageBase * hemmorageDamageMin)}</style> base damage over 15s. " +
-                $"Can deal <style=cIsDamage>up to {hemmorageDamageMax / hemmorageDamageMin}x</style> as much damage against healthy enemies. " +
+                $"<style=cSub>Bleed enemies for <style=cIsDamage>{Tools.ConvertDecimal(hemorrhageDamageBase * hemorrhageDamageMin)}</style> base damage over 15s. " +
+                $"Can deal <style=cIsDamage>up to {hemorrhageDamageMax / hemorrhageDamageMin}x</style> as much damage against healthy enemies. " +
                 $"<i>Hemorrhage can stack.</i></style>");
 
             //CharacterBody.onBodyStartGlobal += RecalculateTokenAmount;
@@ -110,6 +111,48 @@ namespace SurvivorTweaks.SurvivorTweaks
             On.RoR2.CharacterBody.Start += BackstabPassiveCritChance;
             LanguageAPI.Add("BANDIT2_PASSIVE_DESCRIPTION", "All attacks from <style=cIsDamage>behind</style> are <style=cIsDamage>Critical Strikes</style>. " +
                 "All <style=cIsDamage>Critical Strike Chance</style> is instead converted into <style=cIsDamage>Critical Strike Damage</style>.");
+        }
+
+        private void BanditOnKill(DamageReport damageReport)
+        {
+            if (!NetworkServer.active)
+                return;
+            if (damageReport.damageInfo.damageType.damageSource != DamageSource.NoneSpecified && noFinishersFromSkillSourcedDamage)
+                return;
+
+            if (damageReport.attackerBody == null || damageReport.victimBody == null || damageReport.attackerBody.bodyIndex != BodyCatalog.FindBodyIndexCaseInsensitive("Bandit2Body"))
+                return;
+            HealthComponent victimHealthComponent = damageReport.victimBody.healthComponent;
+            if (victimHealthComponent.health > 0 || victimHealthComponent.alive)
+                return;
+
+            if (damageReport.victimBody.HasBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex) && !damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
+            {
+                damageReport.victimBody.RemoveBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex);
+
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2ResetEffect"), new EffectData
+                {
+                    origin = damageReport.damageInfo.position
+                }, true);
+                SkillLocator skillLocator = damageReport.attackerBody.skillLocator;
+                if (skillLocator)
+                {
+                    skillLocator.ResetSkills();
+                }
+            }
+            if (damageReport.victimBody.HasBuff(CommonAssets.desperadoExecutionDebuff.buffIndex) && !damageReport.damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
+            {
+                damageReport.victimBody.RemoveBuff(CommonAssets.desperadoExecutionDebuff.buffIndex);
+
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2KillEffect"), new EffectData
+                {
+                    origin = damageReport.damageInfo.position
+                }, true);
+                if (damageReport.attackerBody)
+                {
+                    damageReport.attackerBody.AddBuff(RoR2Content.Buffs.BanditSkull);
+                }
+            }
         }
 
         private void BanditCloakBuff(CharacterBody sender, StatHookEventArgs args)
@@ -154,7 +197,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             {
                 //float scalingBleedDamage = damageInfo.damage * hemmorageDamageMultiplier * self.combinedHealthFraction;
                 //float normalBleedDamage = damageInfo.damage * hemmorageDamageBase;
-                float damage2 = damageInfo.damage * Mathf.Lerp(hemmorageDamageMin, hemmorageDamageMax, self.combinedHealthFraction);
+                float damage2 = damageInfo.damage * Mathf.Lerp(hemorrhageDamageMin, hemorrhageDamageMax, self.combinedHealthFraction);
                 damageInfo.damage = damage2;// scalingBleedDamage + normalBleedDamage;
                 damageInfo.damageType.damageType = DamageType.Generic | DamageType.NonLethal | DamageType.DoT;
             }
@@ -181,45 +224,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             }
 
             orig(self, damageInfo);
-
-            if (!NetworkServer.active)
-                return;
-            if (self.health > 0 || self.alive)
-                return;
-            if (attackerBody == null)
-                return;
-            if (attackerBody.bodyIndex != BodyCatalog.FindBodyIndexCaseInsensitive("Bandit2Body"))
-                return;
-            if (damageInfo.damageType.damageSource != DamageSource.NoneSpecified && noFinishersFromSkillSourcedDamage)
-                return;
-
-            if (self.body.HasBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.ResetCooldownsOnKill))
-            {
-                self.body.RemoveBuff(CommonAssets.lightsoutExecutionDebuff.buffIndex);
-
-                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2ResetEffect"), new EffectData
-                {
-                    origin = damageInfo.position
-                }, true);
-                SkillLocator skillLocator = attackerBody.skillLocator;
-                if (skillLocator)
-                {
-                    skillLocator.ResetSkills();
-                }
-            }
-            if (self.body.HasBuff(CommonAssets.desperadoExecutionDebuff.buffIndex) && !damageInfo.damageType.damageType.HasFlag(DamageType.GiveSkullOnKill))
-            {
-                self.body.RemoveBuff(CommonAssets.desperadoExecutionDebuff.buffIndex);
-
-                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/Bandit2KillEffect"), new EffectData
-                {
-                    origin = damageInfo.position
-                }, true);
-                if (attackerBody)
-                {
-                    attackerBody.AddBuff(RoR2Content.Buffs.BanditSkull);
-                }
-            }
         }
 
         #region primaries
@@ -436,8 +440,8 @@ namespace SurvivorTweaks.SurvivorTweaks
             lightsOutRevolver.stockToConsume = 0;
             lightsOutRevolver.suppressSkillActivation = true;
             lightsOutRevolver.interruptPriority = InterruptPriority.Skill;
-            lightsOutRevolver.keywordTokens = new string[] { SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken, SharedUtilsPlugin.executeKeywordToken };
-            LanguageAPI.Add(lightsOutRevolver.skillDescriptionToken, $"<style=cIsDamage>Exacting</style>. <style=cIsHealth>Finisher</style>. " +
+            lightsOutRevolver.keywordTokens = new string[] { SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken, "KEYWORD_SLAYER", SharedUtilsPlugin.executeKeywordToken };
+            LanguageAPI.Add(lightsOutRevolver.skillDescriptionToken, $"<style=cIsDamage>Exacting</style>. <style=cIsDamage>Slayer</style>. <style=cIsHealth>Finisher</style>. " +
                 $"Fire a revolver shot for <style=cIsDamage>{Tools.ConvertDecimal(lightsOutDamage)} damage</style>. " +
                 $"Kills <style=cIsUtility>reset all your cooldowns</style>.");
 
@@ -636,7 +640,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             orig(self, bulletAttack);
             bulletAttack.damage = lightsOutDamage * self.damageStat * self.attackSpeedStat;
-            bulletAttack.damageType.damageType = bulletAttack.damageType.damageType & ~DamageType.BonusToLowHealth;
+            //bulletAttack.damageType.damageType = bulletAttack.damageType.damageType & ~DamageType.BonusToLowHealth;
         }
 
         private void ModifyDesperadoDamage(On.EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver.orig_ModifyBullet orig, EntityStates.Bandit2.Weapon.FireSidearmSkullRevolver self, BulletAttack bulletAttack)

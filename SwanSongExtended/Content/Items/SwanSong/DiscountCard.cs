@@ -86,14 +86,12 @@ namespace SwanSongExtended.Items
                     DroneVendorTerminalBehavior droneVendorBehavior = null;
                     if ((purchasedObject.TryGetComponent(out shopTerminalBehavior)
                         || purchasedObject.TryGetComponent(out droneVendorBehavior))
-                        && shopTerminalBehavior 
-                        && shopTerminalBehavior.serverMultiShopController 
                         && purchaseInteraction)
 					{
                         //dont clsoe terminal
-                        if(shopTerminalBehavior != null)
+                        if(shopTerminalBehavior != null && shopTerminalBehavior.serverMultiShopController)
                             shopTerminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(purchaseInteraction, false);
-                        if(droneVendorBehavior != null)
+                        if(droneVendorBehavior != null && droneVendorBehavior.serverMultiShopController)
                             droneVendorBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(purchaseInteraction, false);
 
                         //cash back

@@ -72,11 +72,11 @@ namespace SwanSongExtended
 
                         targetPurchase.Networkcost = 0;
 
-                        if (targetObject.TryGetComponent(out ShopTerminalBehavior terminalBehavior))
+                        if (targetObject.TryGetComponent(out ShopTerminalBehavior terminalBehavior) && terminalBehavior.serverMultiShopController)
                         {
                             terminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(targetPurchase, false);
                         }
-                        if(targetObject.TryGetComponent(out DroneVendorTerminalBehavior droneTerminalBehavior))
+                        if(targetObject.TryGetComponent(out DroneVendorTerminalBehavior droneTerminalBehavior) && droneTerminalBehavior.serverMultiShopController)
                         {
                             droneTerminalBehavior.serverMultiShopController.SetCloseOnTerminalPurchase(targetPurchase, false);
                         }

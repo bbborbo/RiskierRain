@@ -71,7 +71,7 @@ namespace SwanSongExtended.Items
             "See you soon... Coo.";
 
         public override ItemTier Tier => ItemTier.Tier1;
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.OnStageBeginEffect };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.OnStageBeginEffect, ItemTag.FoodRelated };
 
         public override GameObject ItemModel => Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/AttackSpeedAndMoveSpeed/PickupCoffee.prefab").WaitForCompletion();
 

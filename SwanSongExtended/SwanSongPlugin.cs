@@ -167,7 +167,7 @@ namespace SwanSongExtended
             expansionDefSS2.nameToken = expansionToken + "_NAME";
             expansionDefSS2.descriptionToken = expansionToken + "_DESCRIPTION";
             expansionDefSS2.iconSprite = mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/texIconExpansionSwanSong.png");
-            expansionDefSS2.disabledIconSprite = Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common_MiscIcons.texUnlockIconSmall_png).WaitForCompletion();
+            expansionDefSS2.disabledIconSprite = Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common_MiscIcons.texUnlockIcon_png).WaitForCompletion();
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
             Content.AddExpansionDef(expansionDefSS2);

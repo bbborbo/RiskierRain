@@ -332,19 +332,19 @@ namespace SwanSongExtended.Storms
                     AddCharacterTargetedStrikes();
                 }
 
-                float timeOfImpact = float.PositiveInfinity;
-                if (Run.instance)
-                    timeOfImpact = Run.instance.time - meteorImpactDelay;
-                float timeOfTelegraph = timeOfImpact - meteorTravelEffectDuration;
-                for (int j = this.meteorsToDetonate.Count - 1; j >= 0; j--)
-                {
-                    MeteorStormController.Meteor meteor = this.meteorsToDetonate[j];
-                    if (meteor.startTime < timeOfImpact)
-                    {
-                        this.meteorsToDetonate.RemoveAt(j);
-                        this.DetonateMeteor(meteor);
-                    }
-                }
+                //float timeOfImpact = float.PositiveInfinity;
+                //if (Run.instance)
+                //    timeOfImpact = Run.instance.time - meteorImpactDelay;
+                //float timeOfTelegraph = timeOfImpact - meteorTravelEffectDuration;
+                //for (int j = this.meteorsToDetonate.Count - 1; j >= 0; j--)
+                //{
+                //    MeteorStormController.Meteor meteor = this.meteorsToDetonate[j];
+                //    if (meteor.startTime < timeOfImpact)
+                //    {
+                //        this.meteorsToDetonate.RemoveAt(j);
+                //        this.DetonateMeteor(meteor);
+                //    }
+                //}
             }
 
             private void AddCharacterTargetedStrikes()
@@ -365,6 +365,7 @@ namespace SwanSongExtended.Storms
                         }
                         else
                         {
+                            SpawnMeteor(nextMeteor);
                             this.meteorsToDetonate.Add(nextMeteor);
                             EffectManager.SpawnEffect(meteorWarningEffectPrefab, new EffectData
                             {
@@ -426,13 +427,49 @@ namespace SwanSongExtended.Storms
 
                         if (GetMeteorViable(meteor))
                         {
-                            this.meteorsToDetonate.Add(meteor);
-                            EffectManager.SpawnEffect(meteorWarningEffectPrefab, new EffectData
-                            {
-                                origin = meteor.impactPosition,
-                                scale = meteorBlastRadius
-                            }, true);
+                            SpawnMeteor(meteor);
                         }
+                    }
+                }
+            }
+
+            private void SpawnMeteor(MeteorStormController.Meteor meteor)
+            {
+                //this.meteorsToDetonate.Add(meteor);
+                //EffectManager.SpawnEffect(meteorWarningEffectPrefab, new EffectData
+                //{
+                //    origin = meteor.impactPosition,
+                //    scale = meteorBlastRadius
+                //}, true);
+
+                if (!NetworkServer.active)
+                    return;
+                GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(
+                    LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/GenericDelayBlast"),
+                    meteor.impactPosition, Quaternion.identity);
+                gameObject2.transform.localScale = Vector3.one * meteorBlastRadius;
+                DelayBlast component = gameObject2.GetComponent<DelayBlast>();
+                int level = 1;
+                if (Run.instance)
+                    level = Run.instance.ambientLevelFloor;
+                if (component)
+                {
+                    component.position = meteor.impactPosition;
+                    component.baseDamage = meteorBlastDamageCoefficient * (1 + meteorBlastDamageScalarPerLevel * level);//multiplies by ambient level. if this is unsatisfactory change later
+                    component.baseForce = meteorBlastForce;
+                    component.attacker = gameObject;
+                    component.radius = meteorBlastRadius;
+                    component.crit = false;
+                    component.procCoefficient = 0f;
+                    component.maxTimer = meteorImpactDelay;
+                    component.falloffModel = meteorFalloffModel;
+                    component.explosionEffect = meteorImpactEffectPrefab;
+                    component.delayEffect = meteorWarningEffectPrefab;
+                    component.damageType = DamageType.Generic;
+                    TeamFilter component2 = gameObject2.GetComponent<TeamFilter>();
+                    if (component2)
+                    {
+                        component2.teamIndex = TeamIndex.Monster;
                     }
                 }
             }
@@ -444,9 +481,10 @@ namespace SwanSongExtended.Storms
                 if (!nextMeteor.valid)
                     return false;
 
-                Vector3 impactPosition = (Vector3)nextMeteor.GetType().GetField("impactPosition", 
-                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public
-                    ).GetValue(nextMeteor);
+                Vector3 impactPosition = nextMeteor.impactPosition;
+                    //(Vector3)nextMeteor.GetType().GetField("impactPosition", 
+                    //System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public
+                    //).GetValue(nextMeteor);
                 if (ShelterUtilsModule.IsPositionSheltered(impactPosition, meteorBlastRadius))
                     return false;
                 //if (!Physics.Raycast(impactPosition + Vector3.up * 0.1f, Vector3.down, out RaycastHit hit, 3f, LayerIndex.world.mask))

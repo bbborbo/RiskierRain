@@ -37,17 +37,20 @@ namespace SwanSongExtended.Storms
         public const float drizzleStormWarningMinutes = 3;
         public const float rainstormStormDelayMinutes = 7;
         public const float rainstormStormWarningMinutes = 2;
-        public const float monsoonStormDelayMinutes = 3.5f;
+        public const float monsoonStormDelayMinutes = 4f;
         public const float monsoonStormWarningMinutes = 1f;
+        public const float stormMaxRandomDelayMinutes = 0.5f;
+        public const float firstStageStormDelayMinutes = 1f;
         public const float stormStrengthIncreaseTimerSeconds = 90;
-        public const float stormStrengthIncreasePerDifficulty = 0.2f;
+        public const float stormStrengthIncreasePerDifficulty = 0.15f;
         public const float stormStrengthIncreaseBase = 0.1f;
 
         //meteors:
-        public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion();
-        public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikeImpact.prefab").WaitForCompletion();
-        public static float waveMinInterval = 0.6f;
-        public static float waveMaxInterval = 0.9f;
+        public static GameObject meteorDelayBlastPrefab;
+        public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikePredictionEffect_prefab).WaitForCompletion();
+        public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikeImpact_prefab).WaitForCompletion();
+        public static float waveMinInterval = 0.7f;
+        public static float waveMaxInterval = 1.0f;
         public static float waveMissChance = 0.6f;
         public static float meteorTargetEnemyChance = 15f;
         public static float meteorTravelEffectDuration = 0f;
@@ -56,7 +59,7 @@ namespace SwanSongExtended.Storms
         public static float meteorBlastDamageScalarPerLevel = 0.5f;
         public static float meteorBlastRadius = 10;
         public static float meteorBlastForce = 0;
-        public static float shelterPerimeterStrikeGap = 15;
+        public static float shelterPerimeterStrikeGap = 20;
         public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
         public static ModdedDamageType stormDamageType;
 
@@ -68,46 +71,62 @@ namespace SwanSongExtended.Storms
             stormDamageType = ReserveDamageType();
             CreateStormEliteTiers();
             CreateStormsRunBehaviorPrefab();
-            LanguageAPI.Add(stormShelterObjectiveToken, "Seek <style=cDeath>shelter <sprite name=\"TP\" tint=1></style> from the Storm");
+            LanguageAPI.Add(stormShelterObjectiveToken, "Seek <style=cDeath>shelter <sprite name=\"TP\" tint=1></style> from the Storm!");
             LanguageAPI.Add(wishboneObjectiveToken, "Collect <style=cIsDamage>Wishbones</style>");
 
             //On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
             //On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
-            meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Meteor/MeteorStrikePredictionEffect.prefab").WaitForCompletion().InstantiateClone("StormStrikePredictionEffect");
-            meteorWarningEffectPrefab.transform.localScale =  new Vector3(meteorBlastRadius * 0.85f, meteorBlastRadius * 5, meteorBlastRadius * 0.85f);
-            DestroyOnTimer DOT = meteorWarningEffectPrefab.GetComponent<DestroyOnTimer>();
-            if (DOT)
-            {
-                DOT.duration = meteorImpactDelay + 0.5f;
-            }
-            Transform indicator = meteorWarningEffectPrefab.transform.Find("GroundSlamIndicator");
-            if (indicator)
-            {
-                AnimateShaderAlpha asa = indicator.GetComponent<AnimateShaderAlpha>();
-                if (asa)
-                {
-                    asa.timeMax = meteorImpactDelay + 0.1f;
-                }
-                MeshRenderer meshRenderer = indicator.GetComponent<MeshRenderer>();
-                if (meshRenderer)
-                {
-                    Material mat = UnityEngine.Object.Instantiate(meshRenderer.material);
-                    mat.name = "matStormStrikeImpactIndicator";
-                    meshRenderer.material = mat;
-                    mat.SetFloat("_Boost", 0.64f);
-                    mat.SetFloat("_AlphaBoost", 4.29f);
-                    mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampArtifactShellSoft.png").WaitForCompletion());
-                    mat.SetColor("_TintColor", Color.white);
-                }
-            }
-            Content.CreateAndAddEffectDef(meteorWarningEffectPrefab);
-
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.GenericDelayBlast_prefab, CreateMeteorDelayBlast);
+            
             LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "Meteor Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
+        }
+
+        private static void CreateMeteorDelayBlast(GameObject delayBlastPrefab)
+        {
+            meteorDelayBlastPrefab = delayBlastPrefab.InstantiateClone("StormStrikeDelayBlastProjectile", true);
+
+            if(meteorDelayBlastPrefab.TryGetComponent(out NetworkIdentity netId))
+            {
+                netId.localPlayerAuthority = true;
+            }
+
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikePredictionEffect_prefab, (predictionEffect) =>
+            {
+                meteorWarningEffectPrefab = predictionEffect.InstantiateClone("StormStrikePredictionEffect");
+                meteorWarningEffectPrefab.transform.localScale = new Vector3(meteorBlastRadius * 0.85f, meteorBlastRadius * 5, meteorBlastRadius * 0.85f);
+                DestroyOnTimer DOT = meteorWarningEffectPrefab.GetComponent<DestroyOnTimer>();
+                if (DOT)
+                {
+                    DOT.duration = meteorImpactDelay + 1f;
+                }
+                Transform indicator = meteorWarningEffectPrefab.transform.Find("GroundSlamIndicator");
+                if (indicator)
+                {
+                    AnimateShaderAlpha asa = indicator.GetComponent<AnimateShaderAlpha>();
+                    if (asa)
+                    {
+                        asa.timeMax = meteorImpactDelay + 0.1f;
+                    }
+                    MeshRenderer meshRenderer = indicator.GetComponent<MeshRenderer>();
+                    if (meshRenderer)
+                    {
+                        Material mat = UnityEngine.Object.Instantiate(meshRenderer.material);
+                        mat.name = "matStormStrikeImpactIndicator";
+                        meshRenderer.material = mat;
+                        mat.SetFloat("_Boost", 0.64f);
+                        mat.SetFloat("_AlphaBoost", 4.29f);
+                        mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampArtifactShellSoft.png").WaitForCompletion());
+                        mat.SetColor("_TintColor", Color.white);
+                    }
+                }
+
+                Content.CreateAndAddEffectDef(meteorWarningEffectPrefab);
+            });
         }
 
         private static void AddDifficultyStats()

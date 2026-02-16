@@ -36,7 +36,7 @@ namespace RiskierRain
         int awuAdaptiveArmorCount = 1;
 
         static float costExponent = 1.00f;
-        static float goldRewardMultiplierGlobal = 0.4f;
+        static float goldRewardMultiplierGlobal = 0.35f;
         static float expRewardMultiplierGlobal = 0.4f;
         static float compensationForStartingLevel = 1.0f;
 

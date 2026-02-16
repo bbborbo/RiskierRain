@@ -150,7 +150,7 @@ namespace SwanSongExtended.Items
         {
             get
             {
-                if (!_EggWeightedSelection)
+                if (_EggWeightedSelection == null)
                     _EggWeightedSelection = GenerateWeightedSelection();
                 return _EggWeightedSelection;
             }

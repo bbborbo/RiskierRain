@@ -52,6 +52,7 @@ namespace SwanSongExtended
                 serverTag: "",
                 countsAsHardMode: true
                 );
+            difficultyDefExtinction.iconSprite = SwanSongPlugin.mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/texIconDifficultyHardest.png");
 
             difficultyIndexExtinction = DifficultyAPI.AddDifficulty(difficultyDefExtinction);
 

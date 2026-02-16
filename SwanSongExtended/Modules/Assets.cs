@@ -27,6 +27,9 @@ namespace SwanSongExtended.Modules
     public static class CommonAssets
     {
         private static AssetBundle _mainAssetBundle;
+        /// <summary>
+        /// itmightbebad
+        /// </summary>
         public static AssetBundle mainAssetBundle
         {
             get
@@ -41,6 +44,9 @@ namespace SwanSongExtended.Modules
             }
         }
         private static AssetBundle _orangeAssetBundle;
+        /// <summary>
+        /// orangecontent
+        /// </summary>
         public static AssetBundle orangeAssetBundle
         {
             get

@@ -80,8 +80,30 @@ namespace SwanSongExtended.Items
         {
             Stage.onServerStageBegin += GenerateEggRNG;
             GlobalEventManager.onCharacterDeathGlobal += EggOnAnyDeath;
-            On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
+            GlobalEventManager.OnInteractionsGlobal += EggOnInteraction;
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
+        }
+
+        private void EggOnInteraction(Interactor interactor, IInteractable interactable, GameObject interactableObject)
+        {
+            if (!interactableObject.InteractableIsPermittedForSpawn(false))
+                return;
+
+            if (!interactor.gameObject.TryGetComponent(out CharacterBody interactorBody))
+                return;
+
+            int eggCount = Util.GetItemCountForTeam(interactorBody.teamComponent.teamIndex, this.ItemsDef.itemIndex, true, false);
+            if (eggCount <= 0)
+                return;
+
+            float luck = 0;
+            if (interactorBody.master != null)
+                luck = interactorBody.master.luck;
+
+            if (Util.CheckRoll(eggOnKillChance, luck)) //1/100
+            {
+                EggReward(interactableObject.transform);
+            }
         }
 
         private void GenerateEggRNG(Stage obj)
@@ -112,24 +134,6 @@ namespace SwanSongExtended.Items
             if (itemCount > 0)
             {
                 args.baseHealthAdd += eggHealth * itemCount;
-            }
-        }
-
-        private void EggOnPurchase(On.RoR2.GlobalEventManager.orig_OnInteractionBegin orig, GlobalEventManager self, Interactor interactor, IInteractable interactable, GameObject interactableObject)
-        {
-            orig(self, interactor, interactable, interactableObject);
-
-            CharacterBody interactorBody = interactor.gameObject?.GetComponent<CharacterBody>();
-            if (interactorBody == null)
-                return;
-
-            int eggCount = Util.GetItemCountForTeam(interactorBody.teamComponent.teamIndex, this.ItemsDef.itemIndex, true, false);
-            if (eggCount <= 0)
-                return;
-
-            if (Util.CheckRoll(eggOnKillChance, interactorBody.master?.luck ?? 0)) //1/100
-            {
-                EggReward(interactableObject.transform);
             }
         }
 

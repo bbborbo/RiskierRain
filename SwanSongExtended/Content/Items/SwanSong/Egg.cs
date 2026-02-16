@@ -30,7 +30,7 @@ namespace SwanSongExtended.Items
         public static int eggHealth = 5;
         public static float eggOnKillChance = 4;
         public static float eggOnInteractChance = 4;
-        private Xoroshiro128Plus rng;
+        private Xoroshiro128Plus eggRng;
 
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
@@ -78,9 +78,16 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
+            Stage.onServerStageBegin += GenerateEggRNG;
             GlobalEventManager.onCharacterDeathGlobal += EggOnAnyDeath;
             On.RoR2.GlobalEventManager.OnInteractionBegin += EggOnPurchase;//includes uhhhhhh the uh yea. (item pickups)
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
+        }
+
+        private void GenerateEggRNG(Stage obj)
+        {
+            if(Run.instance)
+                eggRng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
         }
 
         private void EggOnAnyDeath(DamageReport damageReport)
@@ -92,7 +99,7 @@ namespace SwanSongExtended.Items
             if (eggCount <= 0)
                 return;
 
-            if (Util.CheckRoll(eggOnKillChance, damageReport.attackerMaster?.luck ?? 0)) //1/100
+            if (Util.CheckRoll(eggOnKillChance, damageReport.attackerMaster))
             {
                 CharacterBody victim = damageReport.victimBody;
                 EggReward(victim.transform);
@@ -128,7 +135,7 @@ namespace SwanSongExtended.Items
 
         public void EggReward(Transform dropletOrigin)
         {
-            UniquePickup pickupIndex = EggWeightedSelection.GeneratePickup(new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong));
+            UniquePickup pickupIndex = EggWeightedSelection.GeneratePickup(eggRng);
 
             PickupDropletController.CreatePickupDroplet(pickupIndex, 
                 dropletOrigin.position + (dropletOrigin.up * 3f), 
@@ -143,7 +150,7 @@ namespace SwanSongExtended.Items
         {
             get
             {
-                if (_EggWeightedSelection)
+                if (!_EggWeightedSelection)
                     _EggWeightedSelection = GenerateWeightedSelection();
                 return _EggWeightedSelection;
             }
@@ -163,14 +170,14 @@ namespace SwanSongExtended.Items
                     pickupDef = Egg.instance.ItemsDef,
                     pickupWeight = 1f
                 }
-                );
+            );
             pickupDefEntries.Add(
                 new ExplicitPickupDropTable.PickupDefEntry
                 {
                     pickupDef = GoldenEgg.instance.ItemsDef,
                     pickupWeight = 0.1f
                 }
-                );
+            );
             dropTable.pickupEntries = pickupDefEntries.ToArray();
 
             return dropTable;

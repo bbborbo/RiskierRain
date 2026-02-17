@@ -40,20 +40,6 @@ namespace SwanSongExtended.Modules
                 _mainAssetBundle = value;
             }
         }
-        private static AssetBundle _orangeAssetBundle;
-        public static AssetBundle orangeAssetBundle
-        {
-            get
-            {
-                if (_orangeAssetBundle == null)
-                    _orangeAssetBundle = Assets.LoadAssetBundle("orangecontent");
-                return _orangeAssetBundle;
-            }
-            set
-            {
-                _orangeAssetBundle = value;
-            }
-        }
         private static AssetBundle _retierAssetBundle;
         public static AssetBundle retierAssetBundle
         {

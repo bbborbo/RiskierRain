@@ -64,7 +64,6 @@ namespace SwanSongExtended
     {
         GameObject meatballNapalmPool => CommonAssets.meatballNapalmPool;
 
-
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SwanSongExtended";
@@ -78,7 +77,6 @@ namespace SwanSongExtended
 
         public static SwanSongPlugin instance;
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
-        public static AssetBundle orangeAssetBundle => CommonAssets.orangeAssetBundle;
         public static AssetBundle retierAssetBundle => CommonAssets.retierAssetBundle;
 
         public static ExpansionDef expansionDefSS2;
@@ -128,19 +126,16 @@ namespace SwanSongExtended
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
             Modules.EliteModule.Init();
-            Modules.AllyCaps.Init();
             Modules.Spawnlists.Init();
             Storms.StormsCore.Init();
 
+            Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
+
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
 
-            InitializeChangesPreContent();
             InitializeContent();
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
-
-            Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
-            Modules.Materials.SwapShadersFromMaterialsInBundle(orangeAssetBundle);
 
             Modules.Config.Save();
             // this has to be last
@@ -201,15 +196,6 @@ namespace SwanSongExtended
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
             BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
-        }
-
-        private void InitializeChangesPreContent()
-        {
-            if (GetConfigBool(true, "Reworks : Commencement"))
-            {
-                MakePillarsFun();
-                LunarExplodersDuringBrother();
-            }
         }
         private void InitializeChanges()
         {
@@ -364,10 +350,10 @@ namespace SwanSongExtended
             if (assetBundle == null)
                 assetBundle = SwanSongPlugin.mainAssetBundle;
 
-            if (SwanSongPlugin.mainAssetBundle && !string.IsNullOrWhiteSpace(path))
+            if (assetBundle && !string.IsNullOrWhiteSpace(path))
             {
-                if (SwanSongPlugin.mainAssetBundle.Contains(path))
-                    return SwanSongPlugin.mainAssetBundle.LoadAsset<T>(path);
+                if (assetBundle.Contains(path))
+                    return assetBundle.LoadAsset<T>(path);
             }
             return null;
         }

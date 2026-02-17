@@ -12,7 +12,6 @@ namespace SwanSongExtended.Items
     {
         public override bool lockEnabled => true;
         public override string ConfigName => "";
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
         public override string ItemName => "HealthUp";
 
         public override string ItemLangTokenName => "HEALTHUP";

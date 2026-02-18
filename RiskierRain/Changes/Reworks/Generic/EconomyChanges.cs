@@ -24,6 +24,7 @@ using System.Reflection;
 using Stage = RoR2.Stage;
 using RainrotSharedUtils.Shelters;
 using RainrotSharedUtils.Difficulties;
+using static FabricatorStandalone.FabricatorPlugin;
 
 namespace RiskierRain
 {
@@ -537,42 +538,20 @@ namespace RiskierRain
         }
         #endregion
 
-        #region roulette chest rework
-
-        BasicPickupDropTable doubleChestDropTable = Addressables.LoadAssetAsync<BasicPickupDropTable>("RoR2/Base/CasinoChest/dtCasinoChest.asset").WaitForCompletion();
-        InteractableSpawnCard doubleChestSpawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>("RoR2/Base/CasinoChest/iscCasinoChest.asset").WaitForCompletion();
-        public DirectorCard doubleChestDirectorCard;//MOVE THIS SOMEWHERE BETTER LATER :3
+        #region roulette chest secrets
         public void DoubleChestHook()
         {
-            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CasinoChest.CasinoChest_prefab, (casinoChest) =>
-            {
-                if (casinoChest.TryGetComponent(out PurchaseInteraction purchaseInteraction))
-                {
-                    purchaseInteraction.saleStarCompatible = false;
-                }
-                if (casinoChest.TryGetComponent(out RouletteChestController rouletteChestController))
-                {
-                    rouletteChestController.dropCount = 2;
-                }
-            });
-            ChangeDoubleChestDropTable();
-            BuildDoubleChestDirectorCard();
-            AddDoubleChestToStage1();
-            AddDoubleChestSecrets();
-
-            On.RoR2.RouletteChestController.Cycling.OnEnter += DoubleChestOnInteract;
-            On.RoR2.RouletteChestController.GetPickupForTime += DoubleChestScrap;
-            On.RoR2.RouletteChestController.EjectPickupServer += DoubleChestDoubleLoot;            
+            AddDoubleChestSecrets();         
         }
         private void AddDoubleChestSecrets()
         {
             //titanic plains 1
-            Secrets.SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(-109, -100, 42));//doublechest
-            Secrets.SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(133, -100, 29), 0.4f);//big chest maybe
-            Secrets.SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(183, -92, -144));//doublechest //bonus mob
+            Secrets.SpawnSecret("golemplains", fabricatorCommonSpawnCard, new Vector3(-109, -100, 42));//doublechest
+            Secrets.SpawnSecret("golemplains", fabricatorCommonSpawnCard, new Vector3(133, -100, 29), 0.4f);//big chest maybe
+            Secrets.SpawnSecret("golemplains", fabricatorCommonSpawnCard, new Vector3(183, -92, -144));//doublechest //bonus mob
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(139, -119, 194));//doublechest queatet
             //SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(64, -115, -264));//lunar pod? very stupid
-            Secrets.SpawnSecret("golemplains", doubleChestSpawnCard, new Vector3(100, -155, -342), 0.4f);//doublechest, make chance based
+            Secrets.SpawnSecret("golemplains", fabricatorCommonSpawnCard, new Vector3(100, -155, -342), 0.4f);//doublechest, make chance based
 
             Vector3[] quartetSpots = new Vector3[5];
             quartetSpots[0] = new Vector3(139, -119, 194);
@@ -580,46 +559,46 @@ namespace RiskierRain
             quartetSpots[2] = new Vector3(152, -112, -222);
             quartetSpots[3] = new Vector3(120, -112, -209);
             quartetSpots[4] = new Vector3(89, -116, -192);
-            Secrets.SpawnSemiRandom("golemplains", doubleChestSpawnCard, quartetSpots);
+            Secrets.SpawnSemiRandom("golemplains", fabricatorCommonSpawnCard, quartetSpots);
 
             //titanic plains 2
-            Secrets.SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-33, 61, -57));//doublechest make this one a semirandom later
-            Secrets.SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-77, 54, -102));//doublechest this too
-            Secrets.SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(-214, 42, -29), 0.8f);//doublechest
-            Secrets.SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(141, 60, -4), 0.4f);//doublechest
-            Secrets.SpawnSecret("golemplains2", doubleChestSpawnCard, new Vector3(151, 14, -230));//doublechest
+            Secrets.SpawnSecret("golemplains2", fabricatorCommonSpawnCard, new Vector3(-33, 61, -57));//doublechest make this one a semirandom later
+            Secrets.SpawnSecret("golemplains2", fabricatorCommonSpawnCard, new Vector3(-77, 54, -102));//doublechest this too
+            Secrets.SpawnSecret("golemplains2", fabricatorCommonSpawnCard, new Vector3(-214, 42, -29), 0.8f);//doublechest
+            Secrets.SpawnSecret("golemplains2", fabricatorCommonSpawnCard, new Vector3(141, 60, -4), 0.4f);//doublechest
+            Secrets.SpawnSecret("golemplains2", fabricatorCommonSpawnCard, new Vector3(151, 14, -230));//doublechest
 
             //blackbeach 1
-            Secrets.SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-23, -175, -387));//doublechest
-            Secrets.SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(93, -125, -299));//doublechest
-            Secrets.SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(31, -213, -120));//doublechest floor issue
-            Secrets.SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-288, -16, -181), 0.3f);//doublechest
-            Secrets.SpawnSecret("blackbeach", doubleChestSpawnCard, new Vector3(-337, -199, -230), 0.5f);//doublechest
+            Secrets.SpawnSecret("blackbeach", fabricatorCommonSpawnCard, new Vector3(-23, -175, -387));//doublechest
+            Secrets.SpawnSecret("blackbeach", fabricatorCommonSpawnCard, new Vector3(93, -125, -299));//doublechest
+            Secrets.SpawnSecret("blackbeach", fabricatorCommonSpawnCard, new Vector3(31, -213, -120));//doublechest floor issue
+            Secrets.SpawnSecret("blackbeach", fabricatorCommonSpawnCard, new Vector3(-288, -16, -181), 0.3f);//doublechest
+            Secrets.SpawnSecret("blackbeach", fabricatorCommonSpawnCard, new Vector3(-337, -199, -230), 0.5f);//doublechest
 
             //blackbeach 2
-            Secrets.SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-101, 28, 11), 0.8f);//doublechest floor issue
-            Secrets.SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(-134, 47, -103), 0.4f);//doublechest
-            Secrets.SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(12, 88, -126));//doublechest
-            Secrets.SpawnSecret("blackbeach2", doubleChestSpawnCard, new Vector3(117, 65, 151));//doublechest floor issue
+            Secrets.SpawnSecret("blackbeach2", fabricatorCommonSpawnCard, new Vector3(-101, 28, 11), 0.8f);//doublechest floor issue
+            Secrets.SpawnSecret("blackbeach2", fabricatorCommonSpawnCard, new Vector3(-134, 47, -103), 0.4f);//doublechest
+            Secrets.SpawnSecret("blackbeach2", fabricatorCommonSpawnCard, new Vector3(12, 88, -126));//doublechest
+            Secrets.SpawnSecret("blackbeach2", fabricatorCommonSpawnCard, new Vector3(117, 65, 151));//doublechest floor issue
 
             //snowyforest
-            Secrets.SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-252, 22, 57), 0.5f);//doublechest
-            Secrets.SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(24, 67, 2));//doublechest
-            Secrets.SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(-34, 70, -193));//doublechest
-            Secrets.SpawnSecret("snowyforest", doubleChestSpawnCard, new Vector3(38, 42, -27), 0.5f);//doublechest
+            Secrets.SpawnSecret("snowyforest", fabricatorCommonSpawnCard, new Vector3(-252, 22, 57), 0.5f);//doublechest
+            Secrets.SpawnSecret("snowyforest", fabricatorCommonSpawnCard, new Vector3(24, 67, 2));//doublechest
+            Secrets.SpawnSecret("snowyforest", fabricatorCommonSpawnCard, new Vector3(-34, 70, -193));//doublechest
+            Secrets.SpawnSecret("snowyforest", fabricatorCommonSpawnCard, new Vector3(38, 42, -27), 0.5f);//doublechest
 
             Vector3[] snowyForestSpots = new Vector3[3];
             snowyForestSpots[0] = new Vector3(136, 53, 191);
             snowyForestSpots[1] = new Vector3(92, 41, -32);
             snowyForestSpots[2] = new Vector3(110, 79, 19);
-            Secrets.SpawnSemiRandom("snowyforest", doubleChestSpawnCard, snowyForestSpots);
+            Secrets.SpawnSemiRandom("snowyforest", fabricatorCommonSpawnCard, snowyForestSpots);
 
             //ancientloft
-            Secrets.SpawnSecret("ancientloft", doubleChestSpawnCard, new Vector3(165, 62, -31), 0.8f); //doublechest
+            Secrets.SpawnSecret("ancientloft", fabricatorCommonSpawnCard, new Vector3(165, 62, -31), 0.8f); //doublechest
 
             //wispgraveyard
             //SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(46, 29, -62), 0.8f);
-            Secrets.SpawnSecret("wispgraveyard", doubleChestSpawnCard, new Vector3(-22, 59, 286));//didnt spawn idk why
+            Secrets.SpawnSecret("wispgraveyard", fabricatorCommonSpawnCard, new Vector3(-22, 59, 286));//didnt spawn idk why
 
             //Vector3[] wispGraveyardSpots = new Vector3[4];
             //wispGraveyardSpots[0] = new Vector3(-412, 6, -20);
@@ -629,15 +608,15 @@ namespace RiskierRain
             //SpawnSemiRandom("wispgraveyard", doubleChestSpawnCard, wispGraveyardSpots);
 
             //frozenwall
-            Secrets.SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(87, 82, -250), 0.5f);
-            Secrets.SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-104, 35, 49));
+            Secrets.SpawnSecret("frozenwall", fabricatorCommonSpawnCard, new Vector3(87, 82, -250), 0.5f);
+            Secrets.SpawnSecret("frozenwall", fabricatorCommonSpawnCard, new Vector3(-104, 35, 49));
             //SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(-139, 50, 7)); idk :3
             //SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(0, 34, 5));
-            Secrets.SpawnSecret("frozenwall", doubleChestSpawnCard, new Vector3(196, 25, 32));//DOESNT ALWAYS SPAWN
+            Secrets.SpawnSecret("frozenwall", fabricatorCommonSpawnCard, new Vector3(196, 25, 32));//DOESNT ALWAYS SPAWN
 
 
             //sulfurpools
-            Secrets.SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(11, -19, 37));
+            Secrets.SpawnSecret("sulfurpools", fabricatorCommonSpawnCard, new Vector3(11, -19, 37));
             //SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(9, -7, -51), 0.5f);
             //SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(-155, 27, 46), 0.5f);
             //SpawnSecret("sulfurpools", doubleChestSpawnCard, new Vector3(176, 28, 45), 0.5f);
@@ -645,90 +624,6 @@ namespace RiskierRain
 
 
         }
-        private void BuildDoubleChestDirectorCard()
-        {
-            doubleChestDirectorCard = DirectorCards.BuildDirectorCard(doubleChestSpawnCard, doubleChestWeight, 0);
-        }
-
-        private void AddDoubleChestToStage1()
-        {
-            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.TitanicPlains);
-            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.DistantRoost);
-            DirectorAPI.Helpers.AddNewInteractableToStage(doubleChestDirectorCard, DirectorAPI.InteractableCategory.Chests, DirectorAPI.Stage.SiphonedForest);
-        }
-
-        private void DoubleChestDoubleLoot(On.RoR2.RouletteChestController.orig_EjectPickupServer orig, RouletteChestController self, UniquePickup pickup)
-        {
-            if (pickup.Equals(UniquePickup.none))
-            {
-                return;
-            }
-            Vector3 forward = self.ejectionTransform.rotation * self.localEjectionVelocity;
-            float maxYawSpread = 60;
-            float yawPerProjectile = (maxYawSpread * 2) / (self.dropCount + 1);
-            for(int i = 0; i < self.dropCount; i++)
-            {
-                float currentYaw = (self.dropCount == 1) ? 0 : (yawPerProjectile * (i + 1)) - maxYawSpread;
-                Vector3 forward2 = (self.dropCount == 1) ? forward : Util.ApplySpread(forward, 0, 0, 1f, 1f, currentYaw, 0);
-
-                PickupDropletController.CreatePickupDroplet(pickup, self.ejectionTransform.position, forward2 + new Vector3(2,0,0), false, false);
-            }
-        }
-
-        private UniquePickup DoubleChestScrap(On.RoR2.RouletteChestController.orig_GetPickupForTime orig, RouletteChestController self, Run.FixedTimeStamp time)
-        {
-            float threshHold = 5;
-            bool isFirstItem;
-
-            isFirstItem = (threshHold > (self.bonusTime));
-
-            if (!isFirstItem)
-            {
-                return new UniquePickup(PickupCatalog.FindPickupIndex(RoR2Content.Items.ScrapWhite.itemIndex));
-            }
-            self.bonusTime += 0.01f;
-            return orig(self, time);
-        }
-
-        private void ChangeDoubleChestDropTable()
-        {
-            if (doubleChestDropTable == null)
-            {
-                Debug.Log("droptable null uhhh");
-                return;
-            }
-            doubleChestDropTable.tier1Weight = 1;
-            doubleChestDropTable.tier2Weight = 0;
-            doubleChestDropTable.tier3Weight = 0;
-            doubleChestDropTable.equipmentWeight = 0;
-        }
-
-        private void DoubleChestOnInteract(On.RoR2.RouletteChestController.Cycling.orig_OnEnter orig, RoR2.RouletteChestController.Cycling self)
-        {
-            RouletteChestController chestController = self.gameObject.GetComponent<RouletteChestController>();
-            //chestController.dropTable = RoR2.MultiShopController.drop
-            chestController.maxEntries = 2;
-            chestController.bonusTime = 3;
-
-            orig(self);
-            
-            if (chestController == null)
-            {
-                Debug.Log("auuuuuh fuck :3");
-                return;
-            }
-            PurchaseInteraction purchaseInteraction = chestController.purchaseInteraction;
-            if (purchaseInteraction == null)
-            {
-                Debug.Log("purchase interaction null 3:");
-                return;
-            }
-            purchaseInteraction.costType = CostTypeIndex.Money;
-            purchaseInteraction.cost = Run.instance.GetDifficultyScaledCost(casinoChestTypeCost, RoR2.Stage.instance.entryDifficultyCoefficient);
-            purchaseInteraction.saleStarCompatible = false;
-        }
-
-
         #endregion
 
         #region hacking criteria

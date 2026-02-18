@@ -47,6 +47,7 @@ namespace SwanSongExtended
     [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.RiskOfBrainrot.NewMoon", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]

@@ -487,7 +487,7 @@ namespace RiskierRain
             // fireworks
             if (GetConfigBool(true, "Fireworks"))
             {
-                this.fireworkProjectilePrefab.GetComponent<ProjectileController>().procCoefficient = 0; //0.33f
+                this.fireworkProjectilePrefab.GetComponent<ProjectileController>().procCoefficient = 0.2f; //0.33f
             }
 
             // ceremonial dagger

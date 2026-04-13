@@ -16,8 +16,6 @@ namespace SwanSongExtended.Equipment
 {
     class BrokenZapinator : EquipmentBase
     {
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
-
         #region config
         public override string ConfigName => "Equipment : Zapinator";
         #endregion

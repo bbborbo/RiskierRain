@@ -21,7 +21,6 @@ namespace SwanSongExtended.Skills
             return Items.VoidLaserTurbine.GetSolenoidConfig();
         }
         public static GameObject tracerLaser;
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
 
         [AutoConfig("Damage Coefficient", 32f)]
         public static float damageCoefficient = 32f;

@@ -39,8 +39,6 @@ namespace SwanSongExtended.Equipment
 
         public override string ConfigName => "Equipment : Quick Start (Stillborn Prayer)";
 
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
-
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return null;

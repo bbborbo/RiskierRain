@@ -78,5 +78,9 @@
     <ProjectReference Include="..\MoreStats\MoreStats.csproj" />
     <ProjectReference Include="..\SwanSongExtended\SwanSongExtended.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Modules\Core\" />
+  </ItemGroup>
 
 </Project>

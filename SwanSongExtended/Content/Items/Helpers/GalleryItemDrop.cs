@@ -12,7 +12,6 @@ namespace SwanSongExtended.Items
     {
         public override bool forcePrerequisites => true;
         public override string ConfigName => "";
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
         public override string ItemName => "Gallery Item Drop";
 
         public override string ItemLangTokenName => "GALLERY_ITEM_DROP";

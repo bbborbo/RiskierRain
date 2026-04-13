@@ -27,6 +27,8 @@ namespace SwanSongExtended.Skills
 
     public abstract class SkillBase : SharedBase
     {
+        public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
+
         public static string Token = SwanSongPlugin.DEVELOPER_PREFIX + "SKILL";
         public abstract string SkillName { get; }
         public abstract string SkillDescription { get; }

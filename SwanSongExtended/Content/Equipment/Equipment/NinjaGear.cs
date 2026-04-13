@@ -16,7 +16,6 @@ namespace SwanSongExtended.Equipment
 {
     class NinjaGear : EquipmentBase<NinjaGear>
     {
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
         static GameObject novaEffectPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
 
         #region config

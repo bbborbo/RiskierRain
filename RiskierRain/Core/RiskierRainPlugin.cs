@@ -47,6 +47,7 @@ namespace RiskierRain
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(FabricatorStandalone.FabricatorPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SwanSongExtended.SwanSongPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SurvivorTweaks.SurvivorTweaksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(FruityElites.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -68,7 +69,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.3.9";
+        public const string version = "1.3.38";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -379,10 +380,10 @@ namespace RiskierRain
             }
 
             //bottled chaos
-            if (GetConfigBool(true, "Bottled Chaos"))
-            {
-                BuffBottledChaos();
-            }
+            //if (GetConfigBool(true, "Bottled Chaos"))
+            //{
+            //    BuffBottledChaos();
+            //}
             if (GetConfigBool(true, "Sale Star"))
             {
                 SaleStarChanges();

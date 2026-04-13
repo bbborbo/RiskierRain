@@ -543,13 +543,13 @@ namespace RiskierRain
         #endregion
 
         #region fuel cell
-        public const float fuelCellCooldownMultiplier = 0.67f;
+        public const float fuelCellCooldownMultiplier = 1f; //no cdr!
         public static string fuelCellEquipCdr = Tools.ConvertDecimal(1 - fuelCellCooldownMultiplier);
-        public static int fuelCellStock = 2;
+        public static int fuelCellStock = 1;
         void ReworkFuelCell()
         {
-            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_EquipmentMagazine.EquipmentMagazine_asset, ItemTier.Tier3, FixFuelCellIcon);
-            RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_EquipmentMagazineVoid.EquipmentMagazineVoid_asset, ItemTier.VoidTier3);
+            //RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_EquipmentMagazine.EquipmentMagazine_asset, ItemTier.Tier3, FixFuelCellIcon);
+            //RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_EquipmentMagazineVoid.EquipmentMagazineVoid_asset, ItemTier.VoidTier3);
             void FixFuelCellIcon(ItemDef itemDef)
             {
                 Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Fuel_Cell.png");
@@ -562,9 +562,7 @@ namespace RiskierRain
             IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;
 
             LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_DESC",
-                $"Hold {fuelCellStock} <style=cIsUtility>additional equipment charges</style> <style=cStack>(+{fuelCellStock} per stack)</style>. " +
-                $"<style=cIsUtility>Reduce equipment cooldown</style> by " +
-                $"<style=cIsUtility>{fuelCellEquipCdr}</style> <style=cStack>(+{fuelCellEquipCdr} per stack)</style>.");
+                $"Hold {fuelCellStock} <style=cIsUtility>additional equipment charges</style> <style=cStack>(+{fuelCellStock} per stack)</style>.");
         }
 
 

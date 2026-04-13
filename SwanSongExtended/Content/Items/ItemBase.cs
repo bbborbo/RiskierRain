@@ -25,7 +25,7 @@ namespace SwanSongExtended.Items
 
     public abstract class ItemBase : SharedBase
     {
-        public override AssetBundle assetBundle => SwanSongPlugin.orangeAssetBundle;
+        public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
         public override string ConfigName => "Items : " + ItemName;
 
 

@@ -100,7 +100,6 @@ namespace SurvivorTweaks
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
-            Modules.AllyCaps.Init();
 
             InitializeContent();
 

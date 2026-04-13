@@ -69,7 +69,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.3.9";
+        public const string version = "1.3.38";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -380,10 +380,10 @@ namespace RiskierRain
             }
 
             //bottled chaos
-            if (GetConfigBool(true, "Bottled Chaos"))
-            {
-                BuffBottledChaos();
-            }
+            //if (GetConfigBool(true, "Bottled Chaos"))
+            //{
+            //    BuffBottledChaos();
+            //}
             if (GetConfigBool(true, "Sale Star"))
             {
                 SaleStarChanges();

@@ -24,7 +24,7 @@ namespace SwanSongExtended.Items
         public static int bouncesBase = 1;
         public static int bouncesStack = 1;
         public static int freeCrit = 5;
-        public static float firstBounceDamageBase = 0.8f;
+        public static float firstBounceDamageBase = 0.6f;
         public static float firstBounceDamageStack = 0.2f;
         public static float lastBounceDamageCoefficient = 0.4f;
         public static float procCoefficientPerBounce = 0.35f;

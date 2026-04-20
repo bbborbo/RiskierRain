@@ -158,7 +158,7 @@ namespace SwanSongExtended.Items
             if(itemTags != null && itemTags.Length > 0)
             {
                 itemDef.tags = itemTags;
-                if (canBeTemporary)
+                if (canBeTemporary && tier != ItemTier.Lunar)
                 {
                     int i = itemDef.tags.Length;
                     ArrayUtils.ArrayAppend(ref itemDef.tags, ref i, ItemTag.CanBeTemporary);

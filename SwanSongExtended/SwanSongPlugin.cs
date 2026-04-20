@@ -201,10 +201,10 @@ namespace SwanSongExtended
         private void InitializeChanges()
         {
             BurnReworks();
-            //if (GetConfigBool(true, "Reworks : Aegis"))
-            //{
-            //    ReworkAegis();
-            //}
+            if (GetConfigBool(true, "Reworks : Aegis"))
+            {
+                ReworkAegis();
+            }
             if (GetConfigBool(true, "Reworks : Razorwire"))
             {
                 RazorwireRework();

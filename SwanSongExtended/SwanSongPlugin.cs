@@ -5,11 +5,8 @@ using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using BepInEx;
-using SwanSongExtended.Equipment;
-using SwanSongExtended.Items;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Skills;
-using SwanSongExtended.Survivors;
 using R2API;
 using R2API.Utils;
 using UnityEngine;
@@ -17,14 +14,11 @@ using RoR2.ExpansionManagement;
 using System.Runtime.CompilerServices;
 using RoR2;
 using MissileRework;
-using SwanSongExtended.Interactables;
-using SwanSongExtended.Elites;
-using SwanSongExtended.Artifacts;
-using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using SwanSongExtended.Changes;
+
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -33,20 +27,17 @@ using SwanSongExtended.Changes;
 #pragma warning disable 
 namespace SwanSongExtended
 {
+    [BepInIncompatibility("com.RiskOfBrainrot.SwanSongExtended")]
     [BepInDependency(R2API.LanguageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.PrefabAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]//yes
     [BepInDependency(R2API.DirectorAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(R2API.EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.ProcTypeAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BetterSoulCost.SoulCostPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.RiskOfBrainrot.NewMoon", BepInDependency.DependencyFlags.SoftDependency)]
@@ -68,8 +59,8 @@ namespace SwanSongExtended
         GameObject meatballNapalmPool => CommonAssets.meatballNapalmPool;
 
         public const string guid = "com." + teamName + "." + modName;
-        public const string teamName = "RiskOfBrainrot";
-        public const string modName = "SwanSongExtended";
+        public const string teamName = "duckduckgreyduck";
+        public const string modName = "SpareChange";
         public const string version = "0.1.0";
         public const string expansionName = "Swan Song";
         public const string expansionName2 = "Secrets of the Scug";
@@ -125,15 +116,13 @@ namespace SwanSongExtended
             Modules.Config.Init();
             Log.Init(Logger);
 
-            CreateExpansionDef();
-            CreateDifficultyDef();
+            //CreateExpansionDef();
+            //CreateDifficultyDef();
             RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
-            Modules.EliteModule.Init();
             Modules.Spawnlists.Init();
-            Storms.StormsCore.Init();
 
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
 
@@ -194,19 +183,7 @@ namespace SwanSongExtended
             ///scavengers
             BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
 
-            BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
-
-            BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
-
-            BeginInitializing<EliteEquipmentBase>(allTypes, "SwanSongElites.txt");
-
-            BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
-
-            BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
-
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
-
-            BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
         }
         private void InitializeChanges()
         {
@@ -274,7 +251,6 @@ namespace SwanSongExtended
             //List<DirectorCard> directorCards = new List<DirectorCard>();
             //directorCards.Add(doubleChestDirectorCard);
             //Secrets.AddSecrets(directorCards);
-            Secrets.AddSecrets();
         }
 
         #region content initialization
@@ -479,4 +455,17 @@ namespace SwanSongExtended
         }
         #endregion
     }
+}
+
+namespace SwanSongExtended.Items
+{
+
+}
+namespace SwanSongExtended.Artifacts
+{
+
+}
+namespace SwanSongExtended.Elites
+{
+
 }

@@ -113,7 +113,11 @@ namespace SwanSongExtended.Changes
 
         public void SetSunDuration(int stack)
         {
-            sunDuration = ItemBase.GetStackValue(TpSunula.sunDurationBase, TpSunula.sunDurationStack, stack);
+            sunDuration = GetStackValue(TpSunula.sunDurationBase, TpSunula.sunDurationStack, stack);
+        }
+        public static float GetStackValue(float baseValue, float stackValue, int itemCount)
+        {
+            return baseValue + stackValue * (itemCount - 1);
         }
         public void CreateBeamEffect(Transform parent)
         {

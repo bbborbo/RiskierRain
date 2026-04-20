@@ -18,38 +18,6 @@
     <None Include="Changes\Reworks\RegenScrapRework.cs" />
     <None Include="Changes\Reworks\ResDiscDework.cs" />
     <None Include="Changes\Reworks\SquidPolypRework.cs" />
-    <None Include="Content\Equipment\Reworks\GuillotineEquipment.cs" />
-    <None Include="Content\Interactables\Interactables\CurseStatue.cs" />
-    <None Include="Content\Interactables\Interactables\FakeShrine.cs" />
-    <None Include="Content\Interactables\QuestInteractables\EnergyCrystalAltar.cs" />
-    <None Include="Content\Interactables\QuestInteractables\FlameAltar.cs" />
-    <None Include="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
-    <None Include="Content\Interactables\QuestInteractables\SpineAltar.cs" />
-    <None Include="Content\Interactables\QuestInteractables\SpineCharger.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\Boomerang.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\Peashooter.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\RainbowWave.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\ScugShaker.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\ShellShield.cs" />
-    <None Include="Content\Items\SecretsOfTheScug\VoidScug.cs" />
-    <None Include="Content\Items\Reworks\ChimeraScrap.cs" />
-    <None Include="Content\Items\Reworks\ChocolateCoin.cs" />
-    <None Include="Content\Items\Reworks\Elixir2.cs" />
-    <None Include="Content\Items\Reworks\LunarHealthDegen.cs" />
-    <None Include="Content\Items\Reworks\Mocha2.cs" />
-    <None Include="Content\Items\Reworks\RejuvRack.cs" />
-    <None Include="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
-    <None Include="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
-    <None Include="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
-    <None Include="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
-    <None Include="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
-    <None Include="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <None Include="Content\TwistedScavengers\BoboScav.cs" />
-    <None Include="Content\TwistedScavengers\CunningScav.cs" />
-    <None Include="Content\TwistedScavengers\GreedyScav.cs" />
-    <None Include="Content\TwistedScavengers\SadistScav.cs" />
-    <None Include="Content\TwistedScavengers\SpeedScav.cs" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -96,38 +64,6 @@
     <Compile Remove="Changes\Reworks\RegenScrapRework.cs" />
     <Compile Remove="Changes\Reworks\ResDiscDework.cs" />
     <Compile Remove="Changes\Reworks\SquidPolypRework.cs" />
-    <Compile Remove="Content\Equipment\Reworks\GuillotineEquipment.cs" />
-    <Compile Remove="Content\Interactables\Interactables\CurseStatue.cs" />
-    <Compile Remove="Content\Interactables\Interactables\FakeShrine.cs" />
-    <Compile Remove="Content\Interactables\QuestInteractables\EnergyCrystalAltar.cs" />
-    <Compile Remove="Content\Interactables\QuestInteractables\FlameAltar.cs" />
-    <Compile Remove="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
-    <Compile Remove="Content\Interactables\QuestInteractables\SpineAltar.cs" />
-    <Compile Remove="Content\Interactables\QuestInteractables\SpineCharger.cs" />
-    <Compile Remove="Content\Items\Reworks\ChimeraScrap.cs" />
-    <Compile Remove="Content\Items\Reworks\ChocolateCoin.cs" />
-    <Compile Remove="Content\Items\Reworks\Elixir2.cs" />
-    <Compile Remove="Content\Items\Reworks\LunarHealthDegen.cs" />
-    <Compile Remove="Content\Items\Reworks\Mocha2.cs" />
-    <Compile Remove="Content\Items\Reworks\RejuvRack.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\Boomerang.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\Peashooter.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\RainbowWave.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\ScugShaker.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\ShellShield.cs" />
-    <Compile Remove="Content\Items\SecretsOfTheScug\VoidScug.cs" />
-    <Compile Remove="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
-    <Compile Remove="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
-    <Compile Remove="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
-    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
-    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
-    <Compile Remove="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <Compile Remove="Content\TwistedScavengers\BoboScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\CunningScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\GreedyScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\SadistScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\SpeedScav.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -153,8 +89,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Content\Items\Vanilla\SOTS\" />
     <Folder Include="Content\Orbs\" />
+    <Folder Include="Content\Skills\Misc\" />
   </ItemGroup>
 
 </Project>

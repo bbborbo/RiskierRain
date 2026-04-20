@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using R2API;
-using SwanSongExtended.Items;
 using RoR2;
 using System;
 using System.Collections;
@@ -12,7 +11,6 @@ using UnityEngine.Networking;
 using static MoreStats.StatHooks;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
-using SwanSongExtended.Artifacts;
 using static SwanSongExtended.Modules.Language.Styling;
 using RoR2.Items;
 

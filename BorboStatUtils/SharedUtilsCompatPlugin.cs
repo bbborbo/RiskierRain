@@ -64,9 +64,9 @@ namespace RainrotSharedUtils.Compat
             legendaryStats.ambientLevelCap = int.MaxValue;
             legendaryStats.tier2EliteStage = 3;
             legendaryStats.tier1AndHalfEliteStage = 1;
-            legendaryStats.delayFirstStorm_ForSwanSong = false;
-            legendaryStats.desiredStormTime_ForSwanSong = 3f;
-            legendaryStats.desiredStormWarningTime_ForSwanSong = 0.5f;
+            legendaryStats.delayFirstStorm_ForSwanSong = true;
+            legendaryStats.desiredStormTime_ForSwanSong = 4f;
+            legendaryStats.desiredStormWarningTime_ForSwanSong = 1f;
             legendaryStats.stormIntensifyStrength_ForSwanSong = 0.7f;
             DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = legendaryStats;
         }

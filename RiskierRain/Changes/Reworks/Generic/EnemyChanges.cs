@@ -22,7 +22,6 @@ namespace RiskierRain
     partial class RiskierRainPlugin : BaseUnityPlugin
     {
         #region vagrant
-        float genesisLoopBlastDamageCoefficient = 30; //60
         float vagrantBaseHealth = 1600; //2100
         GameObject vagrantPrefab;
         void VagrantChanges()
@@ -37,12 +36,6 @@ namespace RiskierRain
 
         private void FixJellyNuke()
         {
-            EntityStates.VagrantNovaItem.DetonateState.blastProcCoefficient = 0.3f;
-            EntityStates.VagrantNovaItem.DetonateState.blastDamageCoefficient = genesisLoopBlastDamageCoefficient;
-            LanguageAPI.Add("ITEM_NOVAONLOWHEALTH_DESC",
-                $"Falling below <style=cIsHealth>25% health</style> causes you to explode, " +
-                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(genesisLoopBlastDamageCoefficient)} base damage</style>. " +
-                $"Recharges every <style=cIsUtility>30 / (2 <style=cStack>+1 per stack</style>) seconds</style>.");
 
             On.EntityStates.VagrantMonster.ChargeMegaNova.OnEnter += (orig, self) =>
             {
@@ -52,11 +45,6 @@ namespace RiskierRain
                 {
                     self.duration = 2;
                 }
-            };
-            On.EntityStates.VagrantNovaItem.ChargeState.OnEnter += (orig, self) =>
-            {
-                orig(self);
-                self.duration = 3;
             };
         }
         #endregion
@@ -291,7 +279,6 @@ namespace RiskierRain
             void BodyStats(CharacterBody body)
             {
                 body.baseAttackSpeed = templarBaseAttackSpeed;
-                body.baseAttackSpeed *= 1 + kitSlowAspdReduction;
                 body.baseDamage = templarBaseDamage;
                 body.levelDamage = body.baseDamage * 0.2f;
             }
@@ -318,7 +305,6 @@ namespace RiskierRain
             void BodyStats(CharacterBody body)
             {
                 body.baseAttackSpeed = chimeraWispBaseAttackSpeed;
-                body.baseAttackSpeed *= 1 + kitSlowAspdReduction;
                 body.baseDamage = chimeraWispBaseDamage;
                 body.levelDamage = body.baseDamage * 0.2f;
             }

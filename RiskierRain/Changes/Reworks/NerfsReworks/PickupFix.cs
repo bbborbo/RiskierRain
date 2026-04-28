@@ -10,13 +10,11 @@ namespace RiskierRain
 {
     internal partial class RiskierRainPlugin : BaseUnityPlugin
     {
-        GameObject healPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/HealPack");
-        float toothDuration = 15; //5
+        static GameObject healPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/HealPack");
+        static GameObject ammoPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/AmmoPack");
+        static GameObject moneyPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/BonusMoneyPack");
 
-        GameObject ammoPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/AmmoPack");
-        GameObject moneyPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/BonusMoneyPack");
-
-        public void FixPickupStats()
+        public static void FixPickupStats()
         {
             BuffPickupRange(healPack);
             BuffPickupRange(ammoPack);
@@ -25,13 +23,7 @@ namespace RiskierRain
             On.RoR2.GravitatePickup.OnTriggerEnter += ChangeGravitateTargetBehavior;
         }
 
-        private void MonsterToothDurationBuff()
-        {
-            healPack.GetComponent<DestroyOnTimer>().duration = toothDuration;
-            healPack.GetComponent<BeginRapidlyActivatingAndDeactivating>().delayBeforeBeginningBlinking = (toothDuration - 2f);
-        }
-
-        private void ChangeGravitateTargetBehavior(On.RoR2.GravitatePickup.orig_OnTriggerEnter orig, GravitatePickup self, Collider other)
+        private static void ChangeGravitateTargetBehavior(On.RoR2.GravitatePickup.orig_OnTriggerEnter orig, GravitatePickup self, Collider other)
         {
             if (NetworkServer.active && TeamComponent.GetObjectTeam(other.gameObject) == self.teamFilter.teamIndex)
             {
@@ -65,7 +57,7 @@ namespace RiskierRain
             }
         }
 
-        void BuffPickupRange(GameObject pack)
+        public static void BuffPickupRange(GameObject pack)
         {
             GravitatePickup gravPickup = pack.GetComponentInChildren<GravitatePickup>();
             if(gravPickup != null)

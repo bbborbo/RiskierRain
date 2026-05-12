@@ -69,7 +69,7 @@ namespace RiskierRain.Changes
 
 		#region nkuhana
 		public static float opinionDamageMultiplier = 3.5f; //2.5f
-		public static float opinionForceMultiplier = 25f; //0f
+		public static float opinionForceMultiplier = 10f; //0f
 		public static float opinionSlowDuration = 3f; //0f
 		public static float opinionProcCoeff = 0.75f; //0.2f
 		public static void ChangeNkuhana()
@@ -101,7 +101,7 @@ namespace RiskierRain.Changes
 		#endregion
 
 		#region little disciple
-		public static float discipleForceMultiplier = 15f; //0f
+		public static float discipleForceMultiplier = 5f; //0f
 		public static float discipleSlowDuration = 3f; //0f
 		public static float discipleProcCoeff = 0.4f; //1.0f
 		public static void ChangeDisciple()

@@ -78,4 +78,8 @@
     <ProjectReference Include="..\SwanSongExtended\SwanSongExtended.csproj" />
     <ProjectReference Include="..\MoreStats\MoreStats.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Changes\Reworks\NerfsReworks\" />
+  </ItemGroup>
 </Project>

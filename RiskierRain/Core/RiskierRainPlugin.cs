@@ -48,7 +48,6 @@ namespace RiskierRain
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(FabricatorStandalone.FabricatorPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SwanSongExtended.SwanSongPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SurvivorTweaks.SurvivorTweaksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(FruityElites.EliteReworksPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -145,8 +144,19 @@ namespace RiskierRain
             EquipmentChanges.Initialize();
             DifficultyChanges.Initialize();
             EnemyChanges.Initialize();
-            EconomyChanges.Initialize();
             InteractableChanges.Initialize();
+
+
+            LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
+            // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
+
+            LanguageAPI.Add("DIFFICULTY_NORMAL_DESCRIPTION", rainstormDesc + "</style>");
+
+            LanguageAPI.Add("DIFFICULTY_HARD_DESCRIPTION", monsoonDesc + "</style>");
+
+            #region old stuff :]
+            #region enemies
+            #endregion
 
             ///summary
             ///- nerfs healing
@@ -178,9 +188,6 @@ namespace RiskierRain
             // EQUIPMENT: old guillotine
             // ENEMIES: 
 
-            // misc
-
-            //this.MakeMinionsInheritOnKillEffects();
 
             //scav could have royal cap? cunning
             #endregion
@@ -211,257 +218,6 @@ namespace RiskierRain
             // EQUIPMENT: gold bomb? lol
             // ENEMIES: 
 
-            // vagrant jellynuke
-            if (GetConfigBool(true, "Jellynuke"))
-            {
-                this.FixJellyNuke();
-            }
-
-            // enemy blacklist
-            if (GetConfigBool(true, "Enemy Blacklist"))
-            {
-                this.ChangeEquipmentBlacklists();
-                this.HealingItemBlacklist();
-            }
-
-            //soul shrine
-            if (GetConfigBool(true, "Shrine of Shaping"))
-            {
-                ReworkSoulShrine();
-            }
-            RiskierRainPlugin.RemoveEquipmentAsync(RoR2_Base_Gateway.Gateway_asset);
-            // jade elephant
-            if (GetConfigBool(true, "Jade Elephant"))
-            {
-                JadeElephantChanges();
-            }
-            // enigma artifact
-            if (GetConfigBool(true, "Enigma Artifact"))
-            {
-                this.ChangeEnigmaBlacklists();
-            }
-
-            // stuns
-            if (GetConfigBool(true, "Stun"))
-            {
-                this.ChangeCapacitor();
-            }
-
-            // the backup
-            if (GetConfigBool(true, "The Backup Equipment"))
-            {
-                LoadEquipDef(nameof(RoR2Content.Equipment.DroneBackup)).cooldown = 60;
-            }
-
-            //fuel array
-            if (GetConfigBool(true, "Fuel Array Activates Equipment Effects"))
-            {
-                FuelArrayFunnyBuff();
-            }
-
-            //goobo jr
-            if (GetConfigBool(true, "Goobo Jr."))
-            {
-                GooboJrChanges();
-            }
-
-            //fuel array
-            if (GetConfigBool(true, "Spawn Slot Minions (i.e. Xi Construct) Inherit Elite Affix"))
-            {
-                MakeSpawnSlotSpawnsInheritEliteAffix();
-            }
-
-            // ocular hud
-            if (GetConfigBool(true, "Critical Strike"))
-            {
-                OcularHudBuff();
-            }
-
-            // meteorite
-            if (GetConfigBool(true, "Glowing Meteorite"))
-            {
-                this.FixMeteorFalloff();
-            }
-            //enemies use equipment
-            MakeEnemiesuseEquipment();
-            //spawnlists
-            ChangeSpawnlists();
-            //double chest
-            DoubleChestHook();
-
-            //ambient level
-            if (GetConfigBool(true, "Difficulty: Difficulty Scaling Changes"))
-            {
-                DifficultyUtilsModule.EnableAll();
-                ChangeDifficultyCoefficientCalculation();
-                FreezeTimeScalingOnFinalLevels();
-                //VoidFieldsStageType(); //related to ambient difficulty boost
-            }
-            //void fields time cost
-            if (GetConfigBool(true, "Difficulty: Void Fields Time Cost"))
-            {
-                //VoidFieldsTimeCost();
-            }
-
-            //monsoon stat boost
-            if (GetConfigBool(true, "Difficulty: Monsoon Stat Booster"))
-            {
-                MonsoonStatBoost();
-            }
-
-            //eclipse changes
-            if (GetConfigBool(true, "Difficulty: Eclipse Changes"))
-            {
-                EclipseChanges();
-            }
-
-            //eclipse changes
-            if (GetConfigBool(true, "Difficulty: Director Changes"))
-            {
-                ChangeDirectorStats();
-            }
-
-            //newt shrine
-            if (GetConfigBool(true, "Lunar: Newt Shrine"))
-            {
-                //NerfBazaarStuff();
-            }
-
-            //gold gain and chest scaling
-            if (GetConfigBool(true, "Economy: Gold Gain and Chest Scaling"))
-            {
-                FixMoneyScaling();
-            }
-
-            //stage interactable credits
-            if (GetConfigBool(true, "Economy: Stage Interactable Credits"))
-            {
-                DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits;
-            }
-
-            //stage monster credits
-            if (GetConfigBool(true, "Economy: Stage Monster Credits"))
-            {
-                DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
-            }
-
-            //printer
-            if (GetConfigBool(true, "Economy: Printers and Scrappers"))
-            {
-                //DirectorAPI.InteractableActions += PrinterOccurrenceHook;
-                //DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
-                DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook;
-            }
-
-            //equipment barrels and shops
-            if (GetConfigBool(true, "Economy: Equipment Barrel/Shop"))
-            {
-                DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
-            }
-
-            //equipment barrels and shops
-            if (GetConfigBool(true, "Economy: Lunar Pod"))
-            {
-                DirectorAPI.InteractableActions += LunarPodOccurrenceHook;
-            }
-
-            //misc orange stuff i fucking guess
-            if (GetConfigBool(true, "Economy: Gold Shrine"))
-            {
-                GoldShrineRework();
-            }
-
-            //blood shrine
-            if (GetConfigBool(true, "Economy: Blood Shrine"))
-            {
-                BloodShrineRewardRework();
-            }
-            
-            //void cradle
-            if (GetConfigBool(true, "Economy: Crowdfunder Funny Money"))
-            {
-                CrowdfunderFunny();
-            }
-
-            //void cradle
-            if (GetConfigBool(true, "Economy: Gold/Legendary Chest Hacking Blacklist"))
-            {
-                ChangeHackingCriteria();
-            }
-
-            //wandering vagrant
-            if (GetConfigBool(true, "Enemy: Wandering Vagrant"))
-            {
-                VagrantChanges();
-            }
-
-            //blind pest
-            if (GetConfigBool(true, "Enemy: Blind Pest"))
-            {
-                PestChanges();
-            }
-
-            //beetle queen
-            if (GetConfigBool(true, "Enemy: Beetle Queen"))
-            {
-                QueenChanges();
-            }
-
-            //void reaver
-            if (GetConfigBool(true, "Enemy: Void Reaver"))
-            {
-                VoidReaverChanges();
-            }
-
-            //void barnacle
-            if (GetConfigBool(true, "Enemy: Void Barnacle"))
-            {
-                BarnacleChanges();
-            }
-
-            //templar
-            if (GetConfigBool(true, "Enemy: Templar"))
-            {
-                NerfTemplar();
-            }
-
-            //chimera wisp
-            if (GetConfigBool(true, "Enemy: Chimera Wisp"))
-            {
-                NerfChimeraWisp();
-            }
-
-            //gup
-            if (GetConfigBool(true, "Enemy: Gup"))
-            {
-                GupChanges();
-            }
-
-            //solus scorcher
-            if (GetConfigBool(true, "Enemy: Solus Scorcher"))
-            {
-                ChangeSolusScorcher();
-            }
-
-            //solus prospector
-            if (GetConfigBool(true, "Enemy: Solus Prospector"))
-            {
-                ChangeSolusProspector();
-            }
-
-            //halcyonite shrine
-            if (GetConfigBool(true, "Economy: Halcyonite Shrine"))
-            {
-                ChangeHalcyoniteShrineGoldRequirements();
-            }
-
-            LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
-            // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
-
-            LanguageAPI.Add("DIFFICULTY_NORMAL_DESCRIPTION", rainstormDesc + "</style>");
-
-            LanguageAPI.Add("DIFFICULTY_HARD_DESCRIPTION", monsoonDesc + "</style>");
-
             //this.DoSadistScavenger();
             #endregion
 
@@ -486,6 +242,7 @@ namespace RiskierRain
             // EQUIPMENT: 
             // ENEMIES: 
 
+            #endregion
             #endregion
         }
 

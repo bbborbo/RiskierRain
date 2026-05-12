@@ -299,6 +299,10 @@ namespace RiskierRain.Changes
         public static float warbannerSpeedStack = 0.15f; //00.3f
         public static void ChangeWarbanner()
         {
+            LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_WardOnLevel.bdWarbanner_asset, (buffDef) =>
+            {
+                buffDef.isHidden = true;
+            });
             IL.RoR2.Items.WardOnLevelManager.OnCharacterLevelUp += WarbannerRadiusStacking;
             IL.RoR2.CharacterBody.RecalculateStats += WarbannerStatsScaleWithStacks;
             GetStatCoefficients += WarbannerBonusStats;

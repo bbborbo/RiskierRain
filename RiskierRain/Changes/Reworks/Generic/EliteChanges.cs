@@ -23,6 +23,6 @@ namespace RiskierRain
         public static int Tier2EliteMinimumStageMonsoon = 4;
         public static int Tier2EliteMinimumStageEclipse = 4;
 
-        static string Tier2EliteName = "Rare";
+        public static string Tier2EliteName = "Rare";
     }
 }

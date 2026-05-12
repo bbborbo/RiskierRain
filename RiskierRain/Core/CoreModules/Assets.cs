@@ -142,7 +142,7 @@ namespace RiskierRain.CoreModules
             int buffCount = sender.GetBuffCount(soulShrineLuckBuff);
             if (buffCount > 0)
             {
-                args.luckAdd += buffCount * RiskierRainPlugin.soulShrineLuckIncrease;
+                args.luckAdd += buffCount * RiskierRain.Changes.InteractableChanges.soulShrineLuckIncrease;
             }
         }
 

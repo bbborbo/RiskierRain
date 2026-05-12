@@ -47,6 +47,7 @@ namespace SwanSongExtended
     [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(FabricatorStandalone.FabricatorPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.RiskOfBrainrot.NewMoon", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
@@ -89,14 +90,15 @@ namespace SwanSongExtended
 
         #region mods loaded
         public static bool ModLoaded(string modGuid) { return modGuid != "" && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
-        public static bool iabMissilesLoaded => ModLoaded("com.HouseOfFruits.IAmBecomeMissiles");
+        public static bool iabMissilesLoaded => ModLoaded("com.RiskOfBrainrot.IAmBecomeMissiles");
         public static bool isAELoaded => ModLoaded("com.Borbo.ArtificerExtended");
-        public static bool is2R4RLoaded => ModLoaded("com.HouseOfFruits.RiskierRain");
+        public static bool is2R4RLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
         public static bool isHBULoaded => ModLoaded("com.Borbo.HuntressBuffULTIMATE");
         public static bool isScepterLoaded => ModLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => ModLoaded("com.johnedwa.RTAutoSprintEx");
         public static bool acridLungeLoaded => ModLoaded("Withor.AcridBiteLunge");
         public static bool ucrLoaded => ModLoaded("HIFU.UltimateCustomRun");
+        public static bool fabricatorsLoaded => ModLoaded(FabricatorStandalone.FabricatorPlugin.guid);
 
         public static bool IsMissileArtifactEnabled()
         {

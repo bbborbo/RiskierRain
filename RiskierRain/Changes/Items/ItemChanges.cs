@@ -125,6 +125,127 @@ namespace RiskierRain.Changes
             ChangeWarbanner();
             //ChangeBottledChaos();
             #endregion
+
+            #region misc
+            RemoveAspdScalingOnCooldownsForever();
+            FixPickupStats();
+            //MakeMinionsInheritOnKillEffects();
+            #endregion
         }
+
+
+        #region minion on kill
+        public static void MakeMinionsInheritOnKillEffects()
+        {
+            On.RoR2.Inventory.GetItemCountEffective_ItemIndex += GetItemCountEffectiveInheritOnKills;
+        }
+        public static int GetItemCountEffectiveInheritOnKills(On.RoR2.Inventory.orig_GetItemCountEffective_ItemIndex orig, Inventory self, ItemIndex itemIndex)
+        {
+            int itemCount = orig(self, itemIndex);
+            if (ItemCatalog.GetItemDef(itemIndex).ContainsTag(ItemTag.OnKillEffect) && itemCount == 0)
+            {
+                CharacterMaster master = self.GetComponent<CharacterMaster>();
+                if (master != null)
+                {
+                    MinionOwnership mo = master.minionOwnership;
+                    CharacterMaster ownerMaster = mo.ownerMaster;
+                    if (ownerMaster)
+                    {
+                        int masterItemCount = ownerMaster.inventory.GetItemCountEffective(itemIndex);
+                        itemCount = masterItemCount;
+                    }
+                }
+            }
+            return itemCount;
+        }
+        #endregion
+        #region pickup droplets
+        static GameObject healPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/HealPack");
+        static GameObject ammoPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/AmmoPack");
+        static GameObject moneyPack = LegacyResourcesAPI.Load<GameObject>("prefabs/networkedobjects/BonusMoneyPack");
+
+        public static void FixPickupStats()
+        {
+            BuffPickupRange(healPack);
+            BuffPickupRange(ammoPack);
+            BuffPickupRange(moneyPack);
+
+            On.RoR2.GravitatePickup.OnTriggerEnter += ChangeGravitateTargetBehavior;
+        }
+
+        private static void ChangeGravitateTargetBehavior(On.RoR2.GravitatePickup.orig_OnTriggerEnter orig, GravitatePickup self, Collider other)
+        {
+            if (NetworkServer.active && TeamComponent.GetObjectTeam(other.gameObject) == self.teamFilter.teamIndex)
+            {
+                if (self.gravitateTarget)
+                {
+                    if (other.gameObject.transform == self.gravitateTarget)
+                        return;
+
+                    HealthComponent targetHealthComponent = self.gravitateTarget.GetComponent<HealthComponent>();
+                    if (targetHealthComponent && targetHealthComponent.body.isPlayerControlled)
+                        return;
+                }
+
+                HealthComponent component = other.gameObject.GetComponent<HealthComponent>();
+                if (component != null && (self.gravitateAtFullHealth || component.health < component.fullHealth))
+                {
+                    if (component.body.isPlayerControlled)
+                    {
+                        self.gravitateTarget = other.gameObject.transform;
+                        return;
+                    }
+                }
+
+                if (!self.gravitateTarget)
+                {
+                    if (self.gravitateAtFullHealth)
+                    {
+                        self.gravitateTarget = other.gameObject.transform;
+                    }
+                }
+            }
+        }
+
+        public static void BuffPickupRange(GameObject pack)
+        {
+            GravitatePickup gravPickup = pack.GetComponentInChildren<GravitatePickup>();
+            if (gravPickup != null)
+            {
+                Collider gravitateTrigger = gravPickup.gameObject.GetComponent<Collider>();
+                if (gravitateTrigger.isTrigger)
+                {
+                    gravitateTrigger.transform.localScale *= 2.5f;
+                }
+            }
+            else
+            {
+                Debug.Log($"GameObject {pack.name} has no GravitatePickup component!");
+            }
+        }
+        #endregion
+        #region attack speed affected cooldowns
+        public static void RemoveAspdScalingOnCooldownsForever()
+        {
+            IL.RoR2.GenericSkill.RunRecharge += FuckAspdScalingOnCooldowns;
+            IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
+
+            void FuckAspdScalingOnCooldowns(ILContext il)
+            {
+                ILCursor c = new ILCursor(il);
+
+                bool ilFound = c.TryGotoNext(MoveType.After,
+                    x => x.MatchLdfld<RoR2.Skills.SkillDef>(nameof(RoR2.Skills.SkillDef.attackSpeedBuffsRestockSpeed))
+                    );
+                if (!ilFound)
+                {
+                    DebugBreakpoint(nameof(FuckAspdScalingOnCooldowns));
+                    return;
+                }
+                c.Emit(Mono.Cecil.Cil.OpCodes.Pop);
+                c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
+            }
+        }
+        #endregion
     }
 }

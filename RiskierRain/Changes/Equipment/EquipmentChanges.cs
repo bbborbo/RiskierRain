@@ -40,6 +40,9 @@ namespace RiskierRain.Changes
             ChangeEnigmaBlacklists();
             //kinda want to remove this but it needs a replacement
             ChangeEquipmentBlacklists();
+
+            //ChangeShower();
+            //ChangeTincture();
         }
 
         #region jade elephant
@@ -357,6 +360,44 @@ namespace RiskierRain.Changes
             }
 
             orig(self, newEquipmentIndex, isRemovingEquipment);
+        }
+        #endregion
+        #region helfire
+        private static void ChangeTincture()
+        {
+            On.RoR2.HealthComponent.TakeDamageProcess += MakeTinctureIgnoreArmor;
+        }
+
+        private static void MakeTinctureIgnoreArmor(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            if (damageInfo.dotIndex.HasFlag(DotController.DotIndex.Helfire))
+            {
+                damageInfo.damageType |= DamageType.BypassArmor;
+            }
+            orig(self, damageInfo);
+        }
+        #endregion
+
+
+
+        #region blast shower
+        private static int blastShowerBuffCount = 3; //0
+        private static void ChangeShower()
+        {
+            On.RoR2.EquipmentSlot.FireCleanse += BlastShowerProtectionBuffs;
+        }
+
+        private static bool BlastShowerProtectionBuffs(On.RoR2.EquipmentSlot.orig_FireCleanse orig, EquipmentSlot self)
+        {
+            if (orig(self))
+            {
+                for (int i = 0; i < blastShowerBuffCount; i++)
+                {
+                    self.characterBody.AddBuff(DLC1Content.Buffs.ImmuneToDebuffReady);
+                }
+                return true;
+            }
+            return false;
         }
         #endregion
     }

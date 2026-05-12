@@ -140,6 +140,9 @@
     <Reference Include="Decalicious">
       <HintPath>libs\Decalicious.dll</HintPath>
     </Reference>
+    <Reference Include="FabricatorStandalone">
+      <HintPath>libs\FabricatorStandalone.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

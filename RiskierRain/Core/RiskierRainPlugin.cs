@@ -26,6 +26,7 @@ using RainrotSharedUtils.Difficulties;
 using static MoreStats.StatHooks;
 using MoreStats;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using RiskierRain.Changes;
 //using RiskierRain.Changes.Reworks.NerfsReworks.SpawnlistChanges; //idk if this is a good way of doing
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -112,30 +113,6 @@ namespace RiskierRain
             InitializeEverything();
 
             On.RoR2.CharacterBody.RemoveBuff_BuffDef += Gah;
-            #region rework pending / priority removal
-            //RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
-            RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
-
-            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
-            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
-           //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
-            RiskierRainPlugin.RetierItemAsync(RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset); //ghors
-            RiskierRainPlugin.RetierItemAsync(RoR2_Base_DeathMark.DeathMark_asset); //guess faggot
-            RiskierRainPlugin.RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
-
-            RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
-            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset); //scorpion
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_DroneWeapons.DroneWeapons_asset); //sdp
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BarrageOnBoss.BarrageOnBoss_asset); //war bonds
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BoostAllStats.BoostAllStats_asset); //growth nectar
-
-
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfSpeedDoubleHealth.HalfSpeedDoubleHealth_asset); //
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfAttackSpeedHalfCooldowns.HalfAttackSpeedHalfCooldowns_asset); //
-
-            //RiskierRainPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AutoCastEquipment/AutoCastEquipment.asset").WaitForCompletion());
-            #endregion
 
             //RoR2Application.onLoad += InitializeEverything;
 
@@ -163,32 +140,24 @@ namespace RiskierRain
 
         private void InitializeEverything()
         {
-            IL.RoR2.Orbs.DevilOrb.OnArrival += BuffDevilOrb;
+            GeneralChanges.Initialize();
+            ItemChanges.Initialize();
+            EquipmentChanges.Initialize();
+            DifficultyChanges.Initialize();
+            EnemyChanges.Initialize();
+            InteractableChanges.Initialize();
 
-            // removes one-shot protection (OSP)
-            Hook hookTuah = new Hook(
-              typeof(CharacterBody).GetMethod("get_hasOneShotProtection", (BindingFlags)(-1)),
-              typeof(RiskierRainPlugin).GetMethod(nameof(ReflectOnThatThang), (BindingFlags)(-1))
-            );
 
-            IL.RoR2.GenericSkill.RunRecharge += FuckAspdScalingOnCooldowns;
-            IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
+            LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
+            // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
 
-            void FuckAspdScalingOnCooldowns(ILContext il)
-            {
-                ILCursor c = new ILCursor(il);
+            LanguageAPI.Add("DIFFICULTY_NORMAL_DESCRIPTION", rainstormDesc + "</style>");
 
-                bool ilFound = c.TryGotoNext(MoveType.After,
-                    x => x.MatchLdfld<RoR2.Skills.SkillDef>(nameof(RoR2.Skills.SkillDef.attackSpeedBuffsRestockSpeed))
-                    );
-                if (!ilFound)
-                {
-                    DebugBreakpoint(nameof(FuckAspdScalingOnCooldowns));
-                    return;
-                }
-                c.Emit(Mono.Cecil.Cil.OpCodes.Pop);
-                c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
-            }
+            LanguageAPI.Add("DIFFICULTY_HARD_DESCRIPTION", monsoonDesc + "</style>");
+
+            #region old stuff :]
+            #region enemies
+            #endregion
 
             ///summary
             ///- nerfs healing
@@ -205,75 +174,7 @@ namespace RiskierRain
             // EQUIPMENT: tesla coil
             // ENEMIES: Bobo the Unbreakable (defense scav)
 
-            // healing
-            MedkitNerf();
-            MonsterToothNerf();
-            ReworkWeepingFungus();
-            BuffBungus();
 
-            // mobility
-            GoatHoofNerf();
-            EnergyDrinkNerf();
-            FaradayNerf();
-
-            // defense
-            TeddyChanges();
-
-            // barrier
-            if (GetConfigBool(true, "Barrier Decay Rate"))
-            {
-                BaseStats.BarrierDecayStaticMaxHealthTime = 30f;// BarrierDecayRateStatic.Value; //30f
-                BaseStats.BarrierHighDecayFactor = 5f;// BarrierDecayHighFactor.Value; //3f
-                BaseStats.BarrierLowDecayFactor = 0.33f;// BarrierDecayLowFactor.Value; //0.5f
-            }
-            // scythe
-            if (GetConfigBool(true, "Harvesters Scythe"))
-            {
-                ScytheNerf();
-            }
-
-            // nkuhana D+H
-            if (GetConfigBool(true, "(D+H) NKuhanas Opinion"))
-            {
-                this.BuffNkuhana();
-            }
-
-            // droplet general
-            if (GetConfigBool(true, "Droplet General"))
-            {
-                this.FixPickupStats();
-            }
-
-            // monster tooth
-            if (GetConfigBool(true, "Monster Tooth"))
-            {
-                MonsterToothDurationBuff();
-            }
-            //infusion
-            if (false)//GetConfigBool(true, "Infusion"))
-            {
-                this.FuckingFixInfusion();
-            }
-
-            // jade elephant
-            if (GetConfigBool(true, "Jade Elephant"))
-            {
-                JadeElephantChanges();
-            }
-
-            AdjustVanillaDefense();
-
-            knurlFreeArmor = FreeArmorConfig("Knurl", knurlFreeArmor);
-            bucklerFreeArmor = FreeArmorConfig("Rose Buckler", bucklerFreeArmor);
-            rapFreeArmor = FreeArmorConfig("Repulsion Armor Plating", rapFreeArmor);
-            int FreeArmorConfig(string name, int defaultValue)
-            {
-                return CustomConfigFile.Bind<int>("Packet",
-                    name + " Armor Packet",
-                    defaultValue,
-                    "Set how much additional armor this item gives. Vanilla 0."
-                    ).Value;
-            }
             #endregion
 
             ///summary
@@ -288,155 +189,6 @@ namespace RiskierRain
             // EQUIPMENT: old guillotine
             // ENEMIES: 
 
-            // misc
-            RiskierRainPlugin.RemoveEquipmentAsync(RoR2_Base_Gateway.Gateway_asset);
-
-            // shattering justics
-            if (GetConfigBool(true, "Shattering Justice"))
-            {
-                this.BuffJustice();
-            }
-
-            // jellynuke
-            if (GetConfigBool(true, "Jellynuke"))
-            {
-                this.FixJellyNuke();
-            }
-
-            // shatterspleen, INT
-            if (GetConfigBool(true, "Shatterspleen"))
-            {
-                //this.ReworkShatterspleen();
-            }
-
-            // enemy blacklist
-            if (GetConfigBool(true, "Enemy Blacklist"))
-            {
-                this.ChangeEquipmentBlacklists();
-                this.HealingItemBlacklist();
-            }
-
-            // enigma artifact
-            if (GetConfigBool(true, "Enigma Artifact"))
-            {
-                this.ChangeEnigmaBlacklists();
-            }
-
-            // stuns
-            if (GetConfigBool(true, "Stun"))
-            {
-                this.StunChanges();
-            }
-
-            // the backup
-            if (GetConfigBool(true, "The Backup Equipment"))
-            {
-                LoadEquipDef(nameof(RoR2Content.Equipment.DroneBackup)).cooldown = 60;
-            }
-
-            this.BuffSlows();
-
-            tarSlowAspdReduction = SlowAspdConfig("Tar", tarSlowAspdReduction); 
-            kitSlowAspdReduction = SlowAspdConfig("Kit", kitSlowAspdReduction); 
-            chronoSlowAspdReduction = SlowAspdConfig("Chronobauble", chronoSlowAspdReduction);
-            chillSlowAspdReduction = SlowAspdConfig("Chill", chillSlowAspdReduction);
-            float SlowAspdConfig(string name, float defaultValue)
-            {
-                return CustomConfigFile.Bind<float>("Packet",
-                    name + " Slow Attack Speed Packet",
-                    defaultValue,
-                    "Set how much this debuff slows attack speed, expressed as a decimal. Vanilla 0."
-                    ).Value;
-            }
-
-            //lepton daisy ADD CONFIG
-            if (GetConfigBool(true, "Lepton Daisy"))
-            {
-                BuffDaisy();
-            }
-
-            //fuel array
-            if (GetConfigBool(true, "Fuel Array Activates Equipment Effects"))
-            {
-                FuelArrayFunnyBuff();
-            }
-
-            //fuel array
-            if (GetConfigBool(true, "Spawn Slot Minions (i.e. Xi Construct) Inherit Elite Affix"))
-            {
-                MakeSpawnSlotSpawnsInheritEliteAffix();
-            }
-
-            //goobo jr
-            if (GetConfigBool(true, "Goobo Jr."))
-            {
-                GooboJrChanges();
-            }
-
-            //fuel cell
-            if (GetConfigBool(true, "Fuel Cell"))
-            {
-                ReworkFuelCell();
-            }
-
-            //bottled chaos
-            //if (GetConfigBool(true, "Bottled Chaos"))
-            //{
-            //    BuffBottledChaos();
-            //}
-            if (GetConfigBool(true, "Sale Star"))
-            {
-                SaleStarChanges();
-            }
-            if (GetConfigBool(true, "Chance Doll"))
-            {
-                ChanceDollChanges();
-            }
-            if (GetConfigBool(true, "Warped Echo"))
-            {
-                WarpedEchoChanges();
-            }
-            if (GetConfigBool(true, "Elusive Antlers"))
-            {
-                ElusiveAntlersChanges();
-            }
-            if (GetConfigBool(true, "Luminous Shot"))
-            {
-                LuminousShotBuff();
-            }
-            if (GetConfigBool(true, "Eclipse Lite"))
-            {
-                EclipseLiteChanges();
-            }
-            if (GetConfigBool(true, "Topaz Brooch"))
-            {
-                TopazBroochBuff();
-            }
-            if(GetConfigBool(true, "Artifact of Sacrifice/Sonorous Whispers"))
-            {
-                DoSacrificeDropLimit();
-            }
-            if (GetConfigBool(true, "Box of Dynamite"))
-            {
-                BoxOfDynamiteBuff();
-            }
-            if (GetConfigBool(true, "Warbanner"))
-            {
-                WarbannerBuff();
-            }
-
-            if (GetConfigBool(true, "Command/Potential Armor"))
-            {
-                On.RoR2.UI.PickupPickerPanel.Awake += CommandOrPotentialArmor;
-                void CommandOrPotentialArmor(On.RoR2.UI.PickupPickerPanel.orig_Awake orig, RoR2.UI.PickupPickerPanel self)
-                {
-                    RoR2.LocalUser user = RoR2.LocalUserManager.GetFirstLocalUser();
-                    RoR2.CharacterBody body = user.cachedBody;
-                    body.AddTimedBuffAuthority(RoR2.RoR2Content.Buffs.Immune.buffIndex, 4);
-                    orig(self);
-                };
-            }
-            //this.MakeMinionsInheritOnKillEffects();
 
             //scav could have royal cap? cunning
             #endregion
@@ -451,134 +203,6 @@ namespace RiskierRain
             // EQUIPMENT: Broken Zapinator 
             // ENEMIES: 
 
-            // damage
-            this.NerfBands();
-
-            if(GetConfigBool(true, "Ignition Tank"))
-            {
-                GetMoreStatCoefficients += (sender, args) =>
-                {
-                    if ((sender.inventory?.GetItemCountEffective(DLC1Content.Items.StrengthenBurn) ?? 0) > 0)
-                        args.burnChanceOnHit += 10;
-                };
-            }
-
-            // crits
-            if (GetConfigBool(true, "Critical Strike"))
-            {
-                this.NerfCritGlasses();
-                OcularHudBuff();
-            }
-
-            // death mark fix :)
-            if (GetConfigBool(true, "Death Mark Fix"))
-            {
-                DeathMarkFix();
-            }
-
-            // molten perforator
-            if (GetConfigBool(true, "Molten Perforator"))
-            {
-                CreateMeatballNapalm();
-                ProjectileImpactExplosion meatballPIE = meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
-                this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().blastProcCoefficient = 0f; //0.7
-                this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().childrenCount = 1; //0
-                this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().childrenProjectilePrefab = meatballNapalmPool; //null
-                this.meatballProjectilePrefab.GetComponent<ProjectileImpactExplosion>().fireChildren = true; //false
-            }
-
-            // shatterspleen, dmg
-            if (GetConfigBool(true, "(DMG) Shatterspleen"))
-            {
-                this.spleenPrefab.GetComponent<RoR2.DelayBlast>().procCoefficient = 0f;
-            }
-
-            // fireworks
-            if (GetConfigBool(true, "Fireworks"))
-            {
-                this.fireworkProjectilePrefab.GetComponent<ProjectileController>().procCoefficient = 0; //0.33f
-            }
-
-            // ceremonial dagger
-            if (GetConfigBool(true, "Ceremonial Dagger"))
-            {
-                CeremonialDaggerNerfs();
-            }
-
-            // willowisp
-            if (GetConfigBool(true, "Will-o-the-Wisp"))
-            {
-                WillowispNerfs();
-            }
-
-            // voidsent flame
-            if (GetConfigBool(true, "Voidsent Flame"))
-            {
-                VoidsentNerfs();
-            }
-
-            // gasoline
-            if (GetConfigBool(true, "Gasoline"))
-            {
-                GasolineChanges();
-            }
-
-            // meteorite
-            if (GetConfigBool(true, "Glowing Meteorite"))
-            {
-                this.FixMeteorFalloff();
-            }
-
-            // warcry
-            if (GetConfigBool(true, "Warcry Buff"))
-            {
-                this.EditWarCry();
-            }
-
-
-            On.RoR2.Orbs.DevilOrb.Begin += NerfDevilOrb;
-
-            // nkuhanas opinion, DMG
-            if (GetConfigBool(true, "(DMG) Nukuhanas Opinion"))
-            {
-                opinionDevilorbProc = 0;
-            }
-
-            // little disciple
-            if (GetConfigBool(true, "Little Disciple"))
-            {
-                discipleDevilorbProc = 0;
-            }
-
-            // polylute
-            if (GetConfigBool(true, "Polylute Nerf"))
-            {
-                this.ReworkPolylute();
-            }
-
-            // shuriken
-            if (GetConfigBool(true, "Shuriken Rework"))
-            {
-                this.ReworkShuriken();
-            }
-
-            // lost seers lenses
-            if (GetConfigBool(true, "Lost Seers Lenses Fix"))
-            {
-                LostSeersFix();
-            }
-
-            // sticky bomb
-            if (GetConfigBool(true, "Sticky Bomb Rework"))
-            {
-                //ReworkStickyBomb();
-            }
-
-            //soul shrine
-            if (GetConfigBool(true, "Shrine of Shaping"))
-            {
-                ReworkSoulShrine();
-            }
             //this.DoSadistScavenger();
             #endregion
 
@@ -594,192 +218,6 @@ namespace RiskierRain
             // ITEMS: scalpel, coin gun, greedy ring
             // EQUIPMENT: gold bomb? lol
             // ENEMIES: 
-
-            //enemies use equipment
-            MakeEnemiesuseEquipment();
-            //spawnlists
-            ChangeSpawnlists();
-            //double chest
-            DoubleChestHook();
-
-            //ambient level
-            if (GetConfigBool(true, "Difficulty: Difficulty Scaling Changes"))
-            {
-                DifficultyUtilsModule.EnableAll();
-                ChangeDifficultyCoefficientCalculation();
-                FreezeTimeScalingOnFinalLevels();
-                //VoidFieldsStageType(); //related to ambient difficulty boost
-            }
-            //void fields time cost
-            if (GetConfigBool(true, "Difficulty: Void Fields Time Cost"))
-            {
-                //VoidFieldsTimeCost();
-            }
-
-            //monsoon stat boost
-            if (GetConfigBool(true, "Difficulty: Monsoon Stat Booster"))
-            {
-                MonsoonStatBoost();
-            }
-
-            //eclipse changes
-            if (GetConfigBool(true, "Difficulty: Eclipse Changes"))
-            {
-                EclipseChanges();
-            }
-
-            //eclipse changes
-            if (GetConfigBool(true, "Difficulty: Director Changes"))
-            {
-                ChangeDirectorStats();
-            }
-
-            //pity charge
-            if (GetConfigBool(true, "Difficulty: pity charge"))
-            {
-                AddPityCharge();
-            }
-
-            //newt shrine
-            if (GetConfigBool(true, "Lunar: Newt Shrine"))
-            {
-                //NerfBazaarStuff();
-            }
-
-            //gold gain and chest scaling
-            if (GetConfigBool(true, "Economy: Gold Gain and Chest Scaling"))
-            {
-                FixMoneyScaling();
-            }
-
-            //stage interactable credits
-            if (GetConfigBool(true, "Economy: Stage Interactable Credits"))
-            {
-                DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits;
-            }
-
-            //stage monster credits
-            if (GetConfigBool(true, "Economy: Stage Monster Credits"))
-            {
-                DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
-            }
-
-            //printer
-            if (GetConfigBool(true, "Economy: Printers and Scrappers"))
-            {
-                //DirectorAPI.InteractableActions += PrinterOccurrenceHook;
-                //DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
-                DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook;
-            }
-
-            //equipment barrels and shops
-            if (GetConfigBool(true, "Economy: Equipment Barrel/Shop"))
-            {
-                DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook;
-            }
-
-            //equipment barrels and shops
-            if (GetConfigBool(true, "Economy: Lunar Pod"))
-            {
-                DirectorAPI.InteractableActions += LunarPodOccurrenceHook;
-            }
-
-            //misc orange stuff i fucking guess
-            if (GetConfigBool(true, "Economy: Gold Shrine"))
-            {
-                GoldShrineRework();
-            }
-
-            //blood shrine
-            if (GetConfigBool(true, "Economy: Blood Shrine"))
-            {
-                BloodShrineRewardRework();
-            }
-            
-            //void cradle
-            if (GetConfigBool(true, "Economy: Crowdfunder Funny Money"))
-            {
-                CrowdfunderFunny();
-            }
-
-            //void cradle
-            if (GetConfigBool(true, "Economy: Gold/Legendary Chest Hacking Blacklist"))
-            {
-                ChangeHackingCriteria();
-            }
-
-            //wandering vagrant
-            if (GetConfigBool(true, "Enemy: Wandering Vagrant"))
-            {
-                VagrantChanges();
-            }
-
-            //blind pest
-            if (GetConfigBool(true, "Enemy: Blind Pest"))
-            {
-                PestChanges();
-            }
-
-            //beetle queen
-            if (GetConfigBool(true, "Enemy: Beetle Queen"))
-            {
-                QueenChanges();
-            }
-
-            //void reaver
-            if (GetConfigBool(true, "Enemy: Void Reaver"))
-            {
-                VoidReaverChanges();
-            }
-
-            //void barnacle
-            if (GetConfigBool(true, "Enemy: Void Barnacle"))
-            {
-                BarnacleChanges();
-            }
-
-            //templar
-            if (GetConfigBool(true, "Enemy: Templar"))
-            {
-                NerfTemplar();
-            }
-
-            //chimera wisp
-            if (GetConfigBool(true, "Enemy: Chimera Wisp"))
-            {
-                NerfChimeraWisp();
-            }
-
-            //gup
-            if (GetConfigBool(true, "Enemy: Gup"))
-            {
-                GupChanges();
-            }
-
-            //solus scorcher
-            if (GetConfigBool(true, "Enemy: Solus Scorcher"))
-            {
-                ChangeSolusScorcher();
-            }
-
-            //solus prospector
-            if (GetConfigBool(true, "Enemy: Solus Prospector"))
-            {
-                ChangeSolusProspector();
-            }
-
-            //halcyonite shrine
-            if (GetConfigBool(true, "Economy: Halcyonite Shrine"))
-            {
-                ChangeHalcyoniteShrineGoldRequirements();
-            }
-
-            LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
-            // " + $"\n>Most Bosses have <style=cIsHealing>reduced skill sets</style>
-
-            LanguageAPI.Add("DIFFICULTY_NORMAL_DESCRIPTION", rainstormDesc + "</style>");
-
-            LanguageAPI.Add("DIFFICULTY_HARD_DESCRIPTION", monsoonDesc + "</style>");
 
             //this.DoSadistScavenger();
             #endregion
@@ -806,13 +244,8 @@ namespace RiskierRain
             // ENEMIES: 
 
             #endregion
+            #endregion
         }
-
-        public static bool ReflectOnThatThang(orig_getHasOneShotProtection orig, CharacterBody self)
-        {
-            return false;
-        }
-        public delegate bool orig_getHasOneShotProtection(CharacterBody self);
 
         #region modify items and equips
 
@@ -892,25 +325,25 @@ namespace RiskierRain
             }
         }
 
-        static ItemDef LoadItemDef(string name)
+        public static ItemDef LoadItemDef(string name)
         {
             ItemDef itemDef = LegacyResourcesAPI.Load<ItemDef>("ItemDefs/" + name);
             return itemDef;
         }
-        static EquipmentDef LoadEquipDef(string name)
+        public static EquipmentDef LoadEquipDef(string name)
         {
             EquipmentDef equipDef = LegacyResourcesAPI.Load<EquipmentDef>("EquipmentDefs/" + name);
             return equipDef;
         }
-        static BuffDef LoadBuffDef(string name)
+        public static BuffDef LoadBuffDef(string name)
         {
             BuffDef buffDef = LegacyResourcesAPI.Load<BuffDef>("BuffDefs/" + name);
             return buffDef;
         }
         #endregion
 
-        GameObject meatballNapalmPool;
-        private void CreateMeatballNapalm()
+        public static GameObject meatballNapalmPool;
+        public static void CreateMeatballNapalm()
         {
             meatballNapalmPool = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/beetlequeenacid").InstantiateClone("NapalmFire", true);
 

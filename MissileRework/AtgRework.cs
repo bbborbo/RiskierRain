@@ -139,6 +139,7 @@ namespace MissileRework
             //int missilesPerOverspill = missilesPerOverspillBase + missilesPerOverspillStack * (missileItemCount - 1);
             //int totalMissilesToFire = overspillCount * missilesPerOverspill;
 
+
             FireProjectileInfo newMissile = new FireProjectileInfo
             {
                 projectilePrefab = GlobalEventManager.CommonAssets.missilePrefab,
@@ -193,7 +194,9 @@ namespace MissileRework
                     missileSpread += (missileSpreadMax - missileSpread) * missileSpreadFraction;
 
                     //ProjectileManager.instance.FireProjectile(missile);
-                    MissileUtils.FireMissile(body.corePosition, body, missile.procChainMask, missile.target, 
+                    //if (!missile.target)
+                    //    missile.target = null;
+                    MissileUtils.FireMissile(body.corePosition, body, missile.procChainMask, null,// missile.target, 
                         missile.damage, missile.crit, missile.projectilePrefab, DamageColorIndex.Item, 
                         Vector3.up + UnityEngine.Random.insideUnitSphere * missileSpread, 200f, true);
 

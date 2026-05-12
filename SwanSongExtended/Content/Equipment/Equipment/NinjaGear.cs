@@ -42,7 +42,7 @@ namespace SwanSongExtended.Equipment
 
         public override string EquipmentLangTokenName => "NINJAGEAR";
 
-        public override string EquipmentPickupDesc => "Have a chance to dodge incoming attacks. Activate to dash and drop smoke bombs.";
+        public override string EquipmentPickupDesc => "Have a chance to dodge incoming attacks. Activate to dash and drop a smoke bomb.";
 
         public override string EquipmentFullDescription => $"Activate to {UtilityColor($"dash forward {dashVelocityHorizontal}m")}" +
             (dodgeChance > 0 ? $", and gain a {HealingColor($"{dodgeChance}% chance")} to {HealingColor("dodge")} incoming attacks. " : ". ") +

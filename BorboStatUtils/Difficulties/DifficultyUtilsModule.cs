@@ -87,7 +87,10 @@ namespace RainrotSharedUtils.Difficulties
                 _boostTeleporterContrast = value;
             }
         }
-
+        /// <summary>
+        /// Sets these to true:
+        /// UseDifficultyStats, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost
+        /// </summary>
         public static void EnableAll()
         {
             UseDifficultyStats = true;

@@ -21,7 +21,7 @@ namespace RiskierRain.Changes.Components
             if (itemCountGained <= 0)
                 return;
 
-            int itemsToTax = Mathf.CeilToInt((float)itemCountGained * RiskierRainPlugin.eclipseItemTaxPercent);//RiskierRainPlugin.eclipseItemTaxCount;//
+            int itemsToTax = Mathf.CeilToInt((float)itemCountGained * RiskierRain.Changes.DifficultyChanges.eclipseItemTaxPercent);//RiskierRainPlugin.eclipseItemTaxCount;//
             for (int i = 0; i < itemsToTax; i++)
             {
                 if (master.inventory.TryTransformRandomItem(new Inventory.TryTransformRandomItemArgs

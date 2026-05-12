@@ -36,6 +36,12 @@ namespace RiskierRain.Changes
         public static float hardTeleParticleRadius = 0.4f;
         public static float eclipseTeleParticleRadius = 0.4f;
         public static float defaultTeleParticleRadius = 0.9f;
+
+        public static int Tier2EliteMinimumStageDefault = 6;
+        public static int Tier2EliteMinimumStageDrizzle = 11;
+        public static int Tier2EliteMinimumStageRainstorm = 6;
+        public static int Tier2EliteMinimumStageMonsoon = 4;
+        public static int Tier2EliteMinimumStageEclipse = 4;
         public static void AddDifficultyStats()
         {
             for (int i = (int)DifficultyIndex.Easy; i < (int)DifficultyIndex.Count; i++)

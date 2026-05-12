@@ -20,6 +20,7 @@ namespace RiskierRain.Changes
 {
     public static partial class DifficultyChanges
     {
+        public static string Tier2EliteName = "Rare";
         internal static float GetAmbientLevelBoost()
         {
             return DifficultyUtilsModule.GetAmbientLevelBoost();

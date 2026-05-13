@@ -23,9 +23,8 @@ namespace SwanSongExtended.Items
         public override string ConfigName => "Items : Chocolate Coin";
         GameObject chocolate;
         float gravRadius = 4f;
-        int fruitChanceBase = 9;
         int goldBase = 1;
-        int goldStack = 2;
+        int goldStack = 1;
         float healFraction = 0.00f;
         float healFlatBase = 5f;
         float healFlatStack = 5f;
@@ -35,14 +34,16 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "CHOCYCOIN";
 
-        public override string ItemPickupDesc => "Chance on hit to spawn a chocolate coin for gold and healing.";
+        public override string ItemPickupDesc => "Enemies drop a treat for gold and healing. Recharges over time.";
 
-        public override string ItemFullDescription => 
-            $"On hit, gain a {UtilityColor($"{fruitChanceBase}% chance")} " +
-            $"to drop a chocolate coin that heals for " +
+        public override string ItemFullDescription =>
+            $"On hit, " +
+            $"drop a chocolate coin that heals for " +
             $"{HealingColor(healFlatBase.ToString() + " health")} {StackText($"+{healFlatStack}")} " +
             $"plus {UtilityColor(goldBase.ToString() + " gold")} {StackText($"+{goldStack}")}. " +
-            $"{UtilityColor("Scales over time")}.";
+            $"{UtilityColor("Scales over time")}. " +
+            $"{UtilityColor("recharges after 5 seconds.")}";
+            
 
         public override string ItemLore => "don't eat the wrapping!";
 
@@ -68,8 +69,19 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetHitBehavior += ChocolateCoinOnHit;
+            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
-
+        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
+        {
+            orig(self);
+            if (NetworkServer.active)
+            {
+                if (self.master)
+                {
+                    ChocolateCoinBehavior ringBehavior = self.AddItemBehavior<ChocolateCoinBehavior>(GetCount(self));
+                }
+            }
+        }
         private void CreateChocolate()
         {
             chocolate = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Tooth/HealPack.prefab").WaitForCompletion().InstantiateClone("Chocolate", true);
@@ -139,42 +151,6 @@ namespace SwanSongExtended.Items
                     mat.SetColor("_TintColor", color);
                 }
             }
-
-            /*Transform core = chocolate.transform.Find("Core");
-            if (core)
-            {
-                Log.Error("uuuu");
-                ParticleSystemRenderer psr = core.GetComponent<ParticleSystemRenderer>();
-                if (psr)
-                {
-                    Log.Error("asdjjsdfjsd");
-                    Material mat = UnityEngine.Object.Instantiate(psr.material);
-                    mat.name = "matChocolateTrail";
-                    mat.DisableKeyword("VERTEXCOLOR");
-                    mat.SetFloat("_VertexColorOn", 0);
-                    mat.SetColor("_TintColor", new Color32(62, 37, 0, 255));
-                    psr.material = mat;
-                }
-            }
-            else
-            {
-                Log.Error("No Core Glow");
-            }
-            Transform pulseGlow = chocolate.transform.Find("PulseGlow");
-            if (pulseGlow)
-            {
-                ParticleSystemRenderer psr = pulseGlow.GetComponent<ParticleSystemRenderer>();
-                if (psr)
-                {
-                    Material mat = UnityEngine.Object.Instantiate(psr.material);
-                    mat.name = "matChocolateGlow";
-                    mat.DisableKeyword("VERTEXCOLOR");
-                    mat.SetFloat("_VertexColorOn", 0);
-                    mat.SetColor("_TintColor", new Color32(79, 46, 0, 255));
-                    psr.material = mat;
-                }
-            }*/
-
             Content.AddNetworkedObjectPrefab(chocolate);
         }
 
@@ -188,29 +164,62 @@ namespace SwanSongExtended.Items
             {
                 return;
             }
-
-            float procChance = fruitChanceBase * damageInfo.procCoefficient;// Util.ConvertAmplificationPercentageIntoReductionPercentage(fruitChanceBase * itemCount * damageInfo.procCoefficient);
-            if(Util.CheckRoll(procChance, attackerBody.master))
+            ChocolateCoinBehavior itemBehavior = attackerBody.gameObject.GetComponent<ChocolateCoinBehavior>();
+            if (itemBehavior == null)
             {
-                GameObject chocolateInstance = UnityEngine.Object.Instantiate<GameObject>(chocolate, damageInfo.position + UnityEngine.Random.insideUnitSphere * victimBody.radius * 0.5f, UnityEngine.Random.rotation); //stolen from chef which was stolen from rex lmao
-                TeamFilter chocolateInstanceTeamFilter = chocolateInstance.GetComponent<TeamFilter>();
-                if (chocolateInstanceTeamFilter)
-                {
-                    chocolateInstanceTeamFilter.teamIndex = attackerBody.teamComponent.teamIndex;
-                }
-                HealthPickup chocolatePickup = chocolateInstance.GetComponentInChildren<HealthPickup>();
-                if (chocolatePickup)
-                {
-                    chocolatePickup.fractionalHealing = healFraction;
-                    chocolatePickup.flatHealing = healFlatBase + healFlatStack * (itemCount - 1);
-                }
-                MoneyPickup chocolateGold = chocolateInstance.GetComponent<MoneyPickup>();
-                if (chocolateGold)
-                {
-                    int baseGold = goldBase + goldStack * (itemCount - 1);
-                    chocolateGold.baseGoldReward = baseGold * Mathf.RoundToInt(attackerBody.level);
-                }
-                NetworkServer.Spawn(chocolateInstance);
+                return;
+            }
+            if (!itemBehavior.IsReady())
+            {
+                return;
+            }
+            itemBehavior.ResetCooldown();
+            GameObject chocolateInstance = UnityEngine.Object.Instantiate<GameObject>(chocolate, damageInfo.position + UnityEngine.Random.insideUnitSphere * victimBody.radius * 0.5f, UnityEngine.Random.rotation); //stolen from chef which was stolen from rex lmao
+            TeamFilter chocolateInstanceTeamFilter = chocolateInstance.GetComponent<TeamFilter>();
+            if (chocolateInstanceTeamFilter)
+            {
+                chocolateInstanceTeamFilter.teamIndex = attackerBody.teamComponent.teamIndex;
+            }
+            HealthPickup chocolatePickup = chocolateInstance.GetComponentInChildren<HealthPickup>();
+            if (chocolatePickup)
+            {
+                chocolatePickup.fractionalHealing = healFraction;
+                chocolatePickup.flatHealing = healFlatBase + healFlatStack * (itemCount - 1);
+            }
+            MoneyPickup chocolateGold = chocolateInstance.GetComponent<MoneyPickup>();
+            if (chocolateGold)
+            {
+                int baseGold = goldBase + goldStack * (itemCount - 1);
+                chocolateGold.baseGoldReward = baseGold * Mathf.RoundToInt(attackerBody.level);
+            }
+            NetworkServer.Spawn(chocolateInstance);
+            
+        }
+    }
+    public class ChocolateCoinBehavior : CharacterBody.ItemBehavior
+    {
+        float coinCooldown = 5;
+        float timer = 0;
+        bool chocolateReady = true;
+        
+        public bool IsReady()
+        {
+            return chocolateReady;
+        }
+        public void ResetCooldown()
+        {
+            timer = coinCooldown;
+            chocolateReady = false;
+        }
+        private void FixedUpdate()
+        {
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+            }
+            else
+            {
+                chocolateReady = true;
             }
         }
     }

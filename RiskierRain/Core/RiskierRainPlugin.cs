@@ -139,12 +139,12 @@ namespace RiskierRain
 
         private void InitializeEverything()
         {
-            GeneralChanges.Initialize();
             ItemChanges.Initialize();
             EquipmentChanges.Initialize();
             DifficultyChanges.Initialize();
             EnemyChanges.Initialize();
             InteractableChanges.Initialize();
+            DoSacrificeDropLimit();
 
 
             LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");

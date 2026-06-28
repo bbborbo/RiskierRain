@@ -38,7 +38,7 @@ namespace RiskierRain.Changes
             ChangeGup();
             ChangeSolusScorcher();
             ChangeSolusProspector();
-            //ChangeLesserWisp();
+            ChangeLesserWisp();
         }
 
         #region enemy use equip
@@ -365,7 +365,7 @@ namespace RiskierRain.Changes
         #endregion
 
         #region wisp
-        static float wispBaseDamage = 1.5f; //3.5f
+        static float wispBaseDamage = 2.0f; //3.5f
         static void ChangeLesserWisp()
         {
             Tools.LoadCharacterBodyAsync(RoR2_Base_Wisp.WispBody_prefab, BodyStats);

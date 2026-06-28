@@ -69,7 +69,7 @@ namespace RiskierRain.Changes
 
 		#region nkuhana
 		public static float opinionDamageMultiplier = 3.5f; //2.5f
-		public static float opinionForceMultiplier = 10f; //0f
+		public static float opinionForceMultiplier = 2f; //0f
 		public static float opinionSlowDuration = 3f; //0f
 		public static float opinionProcCoeff = 0.75f; //0.2f
 		public static void ChangeNkuhana()

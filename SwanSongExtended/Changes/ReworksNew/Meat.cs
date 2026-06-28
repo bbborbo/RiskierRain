@@ -16,10 +16,10 @@ namespace SwanSongExtended.Changes
         public override string ItemName => "Fresh Meat";
 
         public override string ItemPickupDesc =>
-            "Regenerate health after killing an enemy.";
+            "Gain flat HP. Regenerate health after killing an enemy.";
 
         public override string ItemFullDesc =>
-            "Increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
+            "Gain 25<style=cStack>(+25s per stack)</style> health. Increases <style=cIsHealing>base health regeneration</style> by <style=cIsHealing>+2 hp/s</style> " +
             "for <style=cIsUtility>3s</style> <style=cStack>(+3s per stack)</style> after killing an enemy.";
 
         public override void Init()
@@ -30,7 +30,7 @@ namespace SwanSongExtended.Changes
         public override void Hooks()
         {
             GetStatCoefficients += LetMeatActuallyStack;
-            IL.RoR2.CharacterBody.RecalculateStats += RemoveMeatHealth;
+            //IL.RoR2.CharacterBody.RecalculateStats += RemoveMeatHealth; :3
             GlobalEventManager.onCharacterDeathGlobal += MeatRegen;
         }
 

@@ -172,6 +172,7 @@ namespace SwanSongExtended.Changes
             if (chocolateGold)
             {
                 chocolateGold.baseGoldReward = Run.instance.GetDifficultyScaledCost(goldBase + goldStack * (itemCount - 1), Stage.instance.entryDifficultyCoefficient);
+                chocolateGold.shouldScale = false;
             }
             NetworkServer.Spawn(chocolateInstance);
         }

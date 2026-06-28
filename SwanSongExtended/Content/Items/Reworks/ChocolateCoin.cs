@@ -189,8 +189,8 @@ namespace SwanSongExtended.Items
             MoneyPickup chocolateGold = chocolateInstance.GetComponent<MoneyPickup>();
             if (chocolateGold)
             {
-                int baseGold = goldBase + goldStack * (itemCount - 1);
-                chocolateGold.baseGoldReward = baseGold * Mathf.RoundToInt(attackerBody.level);
+                chocolateGold.baseGoldReward = goldBase + goldStack * (itemCount - 1);
+                chocolateGold.shouldScale = true;
             }
             NetworkServer.Spawn(chocolateInstance);
             

@@ -27,6 +27,9 @@ namespace SwanSongExtended.Modules
     public static class CommonAssets
     {
         private static AssetBundle _mainAssetBundle;
+        /// <summary>
+        /// itmightbebad
+        /// </summary>
         public static AssetBundle mainAssetBundle
         {
             get
@@ -62,136 +65,12 @@ namespace SwanSongExtended.Modules
         public static void Init()
         {
             CreateMeatballNapalmPool();
-            CreateSquidBlasterBall();
 
             AddTrophyHunterDebuffs();
-            AddCombatTelescopeCritChance();
-
-            AddMaskHauntAssets();
-            AddHarpoonAssets();
-            AddRazorwireAssets();
-            AddBrittleCrownAssets();
-            AddGestureAssets();
-        }
-
-        public static BuffDef gestureQueueEquipBreak;
-        private static void AddGestureAssets()
-        {
-            gestureQueueEquipBreak = Content.CreateAndAddBuff(
-                "bdGestureBreakPending",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(),
-                Color.cyan, false, false);
-            gestureQueueEquipBreak.isHidden = true;
-        }
-
-        public static BuffDef brittleCrownCursePurchase;
-        private static void AddBrittleCrownAssets()
-        {
-            brittleCrownCursePurchase = Content.CreateAndAddBuff(
-                "bdBrittleCrownCursePurchase", 
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion(), 
-                Color.cyan, true, false);
         }
 
         public static string executeKeywordToken = "DUCK_EXECUTION_KEYWORD";
 
-        #region razorwire
-        public static BuffDef razorChargeBuff;
-        private static void AddRazorwireAssets()
-        {
-            razorChargeBuff = Content.CreateAndAddBuff(
-                "bdRazorChargeBuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(), //replace me
-                Color.white,
-                true,
-                false);
-            razorChargeBuff.isCooldown = true;
-        }
-        #endregion
-
-        #region happiest mask
-        public static BuffDef hauntDebuff;
-        public static GameObject hauntEffectPrefab;
-        private static void AddMaskHauntAssets()
-        {
-            hauntDebuff = Content.CreateAndAddBuff(
-                "bdHappiestMaskHauntDebuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(), //replace me
-                new Color(0.9f, 0.7f, 1.0f),
-                false,
-                true);
-            hauntDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-
-            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            hauntEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HauntVisualEffect");
-        }
-        #endregion
-
-        #region hunters harpoon
-        public static BuffDef harpoonDebuff;
-        public static GameObject harpoonEffectPrefab;
-        private static void AddHarpoonAssets()
-        {
-            harpoonDebuff = Content.CreateAndAddBuff(
-                "bdHarpoonTargetDebuff",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
-                new Color(0.9f, 0.7f, 0.1f),
-                true,
-                true);
-            harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-
-            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
-        }
-        #endregion
-
-        public static GameObject squidBlasterBall;
-        public static GameObject squidBlasterBallGhost;
-        private static void CreateSquidBlasterBall()
-        {
-            squidBlasterBall = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Toolbot/ToolbotGrenadeLauncherProjectile.prefab").WaitForCompletion().InstantiateClone("MiredUrnTarball", true);
-            squidBlasterBallGhost = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballGhost.prefab").WaitForCompletion().InstantiateClone("SquidBlasterBallGhost", false);//if this doesnt work and you have to do it the other way:RoR2/Base/Vulture/WindbladeProjectileGhost.prefab
-
-            ProjectileController pc = squidBlasterBall.GetComponent<ProjectileController>();
-            if (pc)
-            {
-                pc.ghostPrefab = squidBlasterBallGhost;
-
-            }
-            else
-            {
-                Log.Error("squid projectile conrroller rip");
-            }
-            ProjectileSteerTowardTarget pstt = squidBlasterBall.GetComponent<ProjectileSteerTowardTarget>(); //no homing
-            if (pstt)
-            {
-                UnityEngine.Object.Destroy(pstt);
-            }
-            ProjectileDirectionalTargetFinder pdtf = squidBlasterBall.GetComponent<ProjectileDirectionalTargetFinder>();
-            if (pdtf)
-            {
-                pdtf.ignoreAir = false;
-            }
-            //ProjectileCharacterController pcc = squidBlasterBall.GetComponent<ProjectileCharacterController>();
-            //if (pcc)
-            //{
-            //    pcc.
-            //}
-            //CharacterController cc = squidBlasterBall.GetComponent<CharacterController>();
-            //if (cc)
-            //{
-            //    UnityEngine.Object.Destroy(cc);
-            //}
-            ProjectileImpactExplosion pie = squidBlasterBall.GetComponent<ProjectileImpactExplosion>();
-            if (pie)
-            {
-                pie.lifetime = 1;
-                pie.impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ClayBoss/TarballExplosion.prefab").WaitForCompletion();
-            }
-
-
-            R2API.ContentAddition.AddProjectile(squidBlasterBall);
-        }
 
         public static float survivorExecuteThreshold = 0.15f;
         public static float banditExecutionThreshold = 0.1f;
@@ -207,17 +86,6 @@ namespace SwanSongExtended.Modules
                 false,
                 true);
             bossHunterDebuffWithScalpel.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-        }
-
-        public static BuffDef combatTelescopeCritChance;
-        private static void AddCombatTelescopeCritChance()
-        {
-            combatTelescopeCritChance = Content.CreateAndAddBuff(
-                "bdCombatTelescopeCrit",
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
-                Color.red,
-                false,
-                false);
         }
 
         public static GameObject meatballNapalmPool;
@@ -1510,6 +1378,21 @@ namespace SwanSongExtended.Modules
         {
 
             ContentPacks.survivorDefs.Add(survivorDef);
+        }
+        internal static void AddVoidItemRelationship(ItemDef itemToCorrupt, ItemDef itemThatCorrupts)
+        {
+            var provider = ScriptableObject.CreateInstance<ItemRelationshipProvider>();
+            provider.name = $"{itemThatCorrupts.name}{itemToCorrupt.name}Relationship"; 
+            provider.relationshipType = Addressables.LoadAssetAsync<ItemRelationshipType>("RoR2/DLC1/Common/ContagiousItem.asset").WaitForCompletion();
+
+            provider.relationships = new ItemDef.Pair[] {
+                new ItemDef.Pair
+                {
+                    itemDef1 = itemToCorrupt,
+                    itemDef2 = itemThatCorrupts
+                }
+            };
+            ContentPacks.itemRelationships.Add(provider);
         }
         internal static void AddItemDef(ItemDef itemDef)
         {

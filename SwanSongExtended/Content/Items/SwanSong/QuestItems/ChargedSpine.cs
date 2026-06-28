@@ -8,6 +8,8 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using static SwanSongExtended.Modules.Language.Styling;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -47,7 +49,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += ChargedSpineTakeDamage;
             GetStatCoefficients += ChargedSpineStats;
         }
 
@@ -64,31 +65,41 @@ namespace SwanSongExtended.Items
                 }
             }
         }
+    }
 
-        private void ChargedSpineTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+    public class SpineBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => ChargedSpine.instance.ItemsDef;
+        bool hadShield = false;
+        void Start()
         {
-            if (!self)
-            {
-                orig(self, damageInfo);
-                return;
-            }
-            bool hadShieldBefore = HasShield(self);
-            CharacterBody body = self.body;
-            int spineItemCount = GetCount(body);
-
-            orig(self, damageInfo);
-
-            if (hadShieldBefore && !HasShield(self) && self.alive)
-            {
-                if (spineItemCount > 0)
-                {
-                    body.AddTimedBuff(RoR2Content.Buffs.HealingDisabled, baseDuration + stackDuration * (spineItemCount - 1));
-                }
-            }
+            body?.healthComponent?.AddOnTakeDamageServerReceiver(this);
+            hadShield = HasShield();
         }
-        public static bool HasShield(HealthComponent hc)
+        void OnDestroy()
         {
-            return hc.shield > 1;
+            body?.healthComponent?.RemoveOnTakeDamageServerReceiver(this);
+        }
+        void FixedUpdate()
+        {
+            hadShield = HasShield();
+        }
+
+        bool HasShield()
+        {
+            return (body.healthComponent?.shield ?? 0) > 0;
+        }
+
+        public void OnTakeDamageServer(DamageReport damageReport)
+        {
+            if (!hadShield || HasShield() || !body.healthComponent.alive)
+                return;
+
+            if (stack > 0)
+            {
+                body.AddTimedBuff(RoR2Content.Buffs.HealingDisabled, ChargedSpine.baseDuration + ChargedSpine.stackDuration * (stack - 1));
+            }
         }
     }
 }

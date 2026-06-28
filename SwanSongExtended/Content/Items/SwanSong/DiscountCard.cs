@@ -33,6 +33,7 @@ namespace SwanSongExtended.Items
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.InteractableRelated, ItemTag.AIBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlDiscountCard");
+        public override bool CanBeTemporary => false;
 
         public override Sprite ItemIcon => LoadItemIcon("texIconDiscountCard");
 

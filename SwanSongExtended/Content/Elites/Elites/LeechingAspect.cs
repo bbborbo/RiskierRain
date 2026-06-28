@@ -20,7 +20,7 @@ namespace SwanSongExtended.Elites
 {
     class LeechingAspect : EliteEquipmentBase<LeechingAspect>
     {
-        public override bool lockEnabled => true;
+        public override bool forcePrerequisites => true;
         public override bool isEnabled => false;
         public override string ConfigName => "Elites : " + EliteModifier;
 

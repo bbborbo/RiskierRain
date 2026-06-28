@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using On.RoR2.Items;
 using HarmonyLib;
 using EntityStates.Bandit2;
 using UnityEngine.AddressableAssets;
@@ -16,11 +15,18 @@ using JumpRework;
 using static MoreStats.StatHooks;
 using static MoreStats.OnJump;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class BottleFart : ItemBase<BottleFart>
     {
+        public override int loadOrder => 1;
+        public override bool GetPrerequisites()
+        {
+            return BottleCloud.GetBottleCloudConfig();
+        }
         public override string ConfigName => "Items : Fart In A Jar";
         static GameObject fartZone;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
@@ -70,11 +76,14 @@ namespace SwanSongExtended.Items
             CreateProjectile();
             base.Init();
         }
+        public override void PostInit()
+        {
+            base.PostInit();
+            AddVoidItemRelationship(BottleCloud.instance.ItemsDef);
+        }
         public override void Hooks()
         {
             GetMoreStatCoefficients += FartJumpCount;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
 
         private void FartJumpCount(CharacterBody sender, MoreStatHookEventArgs args)
@@ -83,29 +92,6 @@ namespace SwanSongExtended.Items
             {
                 args.jumpCountAdd += 1;
             }
-        }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    FartBottleBehavior ringBehavior = self.AddItemBehavior<FartBottleBehavior>(GetCount(self));
-                }
-            }
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = BottleCloud.instance.ItemsDef, //consumes cloud in a bottle
-                itemDef2 = BottleFart.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            orig();
         }
         
         private void CreateProjectile()
@@ -148,8 +134,10 @@ namespace SwanSongExtended.Items
         }
     }
 
-    public class FartBottleBehavior : CharacterBody.ItemBehavior
+    public class FartBottleBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => BottleFart.instance.ItemsDef;
         public static float cooldownDuration = 5;
         public static float cooldownReductionPerStack = 0.2f;
         float cooldownTimer = 0;

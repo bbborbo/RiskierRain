@@ -10,10 +10,12 @@ using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using static MoreStats.StatHooks;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
-    class CobaltShield : ItemBase
+    class CobaltShield : ItemBase<CobaltShield>
     {
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
         public override string ConfigName => "Items : Cobalt Shield";
@@ -64,7 +66,6 @@ namespace SwanSongExtended.Items
         {
             GetMoreStatCoefficients += CobaltBarrierGen;
             GetStatCoefficients += CobaltArmorBuff;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
             On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
         }
@@ -123,18 +124,12 @@ namespace SwanSongExtended.Items
 
             orig(self, force, alwaysApply, disableAirControlUntilCollision);
         }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                self.AddItemBehavior<ShieldItemBehavior>(GetCount(self));
-            }
-        }
     }
-    public class ShieldItemBehavior : CharacterBody.ItemBehavior
+    public class ShieldItemBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => CobaltShield.instance.ItemsDef;
+
         private void FixedUpdate()
         {
             if (NetworkServer.active)

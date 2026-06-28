@@ -24,6 +24,7 @@ using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using SwanSongExtended.Changes;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -38,6 +39,7 @@ namespace SwanSongExtended
     [BepInDependency(R2API.ItemAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.EliteAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.ProcTypeAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
@@ -60,7 +62,7 @@ namespace SwanSongExtended
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
 
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DotAPI))]
+    [R2APISubmoduleDependency(nameof(LanguageAPI), nameof(PrefabAPI), nameof(RecalculateStatsAPI), nameof(DotAPI), nameof(DifficultyAPI))]
     [BepInPlugin(guid, modName, version)]
     public partial class SwanSongPlugin : BaseUnityPlugin
     {
@@ -83,6 +85,8 @@ namespace SwanSongExtended
 
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;
+
+        internal static event Action onSwanSongLoaded;
 
         #region asset paths
         public const string iconsPath = "";
@@ -124,6 +128,7 @@ namespace SwanSongExtended
             Log.Init(Logger);
 
             CreateExpansionDef();
+            CreateDifficultyDef();
             RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();
@@ -140,7 +145,10 @@ namespace SwanSongExtended
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
 
+            onSwanSongLoaded.Invoke();
+
             Modules.Config.Save();
+
             // this has to be last
             new Modules.ContentPacks().Initialize();
 
@@ -156,8 +164,8 @@ namespace SwanSongExtended
             expansionDefSS2 = ScriptableObject.CreateInstance<ExpansionDef>();
             expansionDefSS2.nameToken = expansionToken + "_NAME";
             expansionDefSS2.descriptionToken = expansionToken + "_DESCRIPTION";
-            expansionDefSS2.iconSprite = null;
-            expansionDefSS2.disabledIconSprite = null;
+            expansionDefSS2.iconSprite = mainAssetBundle.LoadAsset<Sprite>("Assets/Textures/Icons/texIconExpansionSwanSong.png");
+            expansionDefSS2.disabledIconSprite = Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common_MiscIcons.texUnlockIcon_png).WaitForCompletion();
             LanguageAPI.Add(expansionToken + "_NAME", expansionName);
             LanguageAPI.Add(expansionToken + "_DESCRIPTION", $"Adds content from the '{expansionName}' expansion to the game.");
             Content.AddExpansionDef(expansionDefSS2);
@@ -186,6 +194,8 @@ namespace SwanSongExtended
             ///elites
             ///artifacts
             ///scavengers
+            BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
+
             BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
 
             BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
@@ -202,10 +212,10 @@ namespace SwanSongExtended
         }
         private void InitializeChanges()
         {
-            BurnReworks();
-            if (GetConfigBool(true, "Reworks : Aegis"))
+            /*BurnReworks();
+            if (GetConfigBool(true, "Reworks : Executive Card"))
             {
-                ReworkAegis();
+                ExecutiveCardChanges();
             }
             if (GetConfigBool(true, "Reworks : Razorwire"))
             {
@@ -231,10 +241,6 @@ namespace SwanSongExtended
             if (GetConfigBool(true, "Reworks : Squid Polyp"))
             {
                 SquolypRework();
-            }
-            if(GetConfigBool(true, "Reworks : Executive Card"))
-            {
-                ExecutiveCardChanges();
             }
             if (GetConfigBool(true, "Reworks : Leeching Seed"))
             {
@@ -263,7 +269,7 @@ namespace SwanSongExtended
             if (GetConfigBool(true, "Reworks : Prayer Beads"))
             {
                 PrayerBeadsRework();
-            }
+            }*/
             //interactables bc they need to load after items:
             //InitializeInteractables();
             //need to do this after interactablestuff
@@ -290,13 +296,16 @@ namespace SwanSongExtended
             if (objTypesOfBaseType.Count() <= 0)
                 return;
 
+            IEnumerable<SharedBase> objsOfBaseType = 
+                objTypesOfBaseType
+                    .Select((objType) => (T)System.Activator.CreateInstance(objType))
+                    .OrderBy((sharedBase) => sharedBase.loadOrder);
+
             Log.Debug(Log.Combine(baseType.Name) + "Initializing");
 
-            foreach (var objType in objTypesOfBaseType)
+            foreach (SharedBase obj in objsOfBaseType)
             {
-                string s = Log.Combine(baseType.Name, objType.Name);
-                Log.Debug(s);
-                T obj = (T)System.Activator.CreateInstance(objType);
+                string s = Log.Combine(baseType.Name, obj.ConfigName);
                 if (ValidateBaseType(obj as SharedBase))
                 {
                     Log.Debug(s + "Validated");
@@ -312,9 +321,10 @@ namespace SwanSongExtended
         bool ValidateBaseType(SharedBase obj)
         {
             bool enabled = obj.isEnabled;
-            if (obj.lockEnabled)
-                return enabled;
-            return obj.Bind(enabled, "Should This Content Be Enabled");
+            if (obj.forcePrerequisites)
+                return enabled && obj.GetPrerequisites();
+
+            return obj.Bind(enabled, "Should This Content Be Enabled") && obj.GetPrerequisites();
         }
         void InitializeBaseType(SharedBase obj)
         {
@@ -322,7 +332,7 @@ namespace SwanSongExtended
         }
         #endregion
 
-        private bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")
+        public static bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")
         {
             return ConfigManager.DualBindToConfig<bool>(packetTitle, Modules.Config.MyConfig, "Should This Content Be Enabled", defaultValue, desc);
             //if (desc != "")

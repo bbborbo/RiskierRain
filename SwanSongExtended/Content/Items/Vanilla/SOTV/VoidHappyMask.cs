@@ -46,21 +46,29 @@ namespace SwanSongExtended.Items
             return null;
         }
 
+        public override void Init()
+        {
+            base.Init();
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_GhostOnKill.GhostOnKill_asset);
+        }
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += CreateVoidInfestors;
+            GlobalEventManager.onCharacterDeathGlobal += SpawnVoidInfestors;
         }
 
-        private void CreateVoidInfestors(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        private void SpawnVoidInfestors(DamageReport damageReport)
         {
-            if(damageReport.attackerBody != null && damageReport.attackerMaster != null && damageReport.victimTeamIndex != TeamIndex.Void)
+            if (damageReport.attackerBody != null && damageReport.attackerMaster != null && damageReport.victimTeamIndex != TeamIndex.Void)
             {
                 int maskCount = GetCount(damageReport.attackerBody);//inventory.GetItemCountEffective(RoR2Content.Items.GhostOnKill);
                 if (maskCount > 0 && Util.CheckRoll(procChance, damageReport.attackerMaster))
                 {
                     int infestorCount = baseInfestors + stackInfestors * (maskCount - 1);
-                    for(int i = 0; i < infestorCount; i++)
+                    for (int i = 0; i < infestorCount; i++)
                     {
                         ScriptedCombatEncounter.SpawnInfo spawnInfo = new ScriptedCombatEncounter.SpawnInfo();
                         spawnInfo.explicitSpawnPosition = damageReport.victimBody.transform;
@@ -69,7 +77,6 @@ namespace SwanSongExtended.Items
                     }
                 }
             }
-            orig(self, damageReport);
         }
         private void Spawn(ref ScriptedCombatEncounter.SpawnInfo spawnInfo)
         {
@@ -85,17 +92,6 @@ namespace SwanSongExtended.Items
             directorSpawnRequest.ignoreTeamMemberLimit = true;
             directorSpawnRequest.teamIndexOverride = TeamIndex.Void;
             DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.GhostOnKill, //consumes lepton daisy
-                itemDef2 = VoidHappyMask.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            orig();
         }
     }
 }

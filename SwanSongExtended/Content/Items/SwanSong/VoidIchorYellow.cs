@@ -14,6 +14,11 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorYellow : ItemBase<VoidIchorYellow>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Interactables.VoidHusk.GetIchorConfig();
+        }
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         float regenBase = 0.8f;
         float regenStack = 0.8f;
@@ -41,32 +46,26 @@ namespace SwanSongExtended.Items
             return null;
         }
 
+        public override void Init()
+        {
+            base.Init();
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+            AddVoidItemRelationship(ItemsDef, VoidIchorRed.instance.ItemsDef);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Syringe.Syringe_asset);
+        }
         public override void Hooks()
         {
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
             RecalculateStatsAPI.GetStatCoefficients += IchorRegenBoost;
+            SwanSongPlugin.onSwanSongLoaded += () => AddVoidItemRelationship(VoidIchorViolet.instance.ItemsDef);
         }
 
         private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
             args.baseRegenAdd += regenBase + (regenStack * (itemCount - 1)) * (1 + sender.level * 0.2f);
-        }
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Syringe, //consumes syringe
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            ItemDef.Pair rockPaperScissors = new ItemDef.Pair()
-            {
-                itemDef1 = VoidIchorViolet.instance.ItemsDef, //:3
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(rockPaperScissors);
-            orig();
         }
     }
 }

@@ -119,7 +119,7 @@ You know?";
                 {
                     args.baseShieldAdd += sender.maxHealth * shieldPercentBase;//(shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
 
-                    if (Fuse.HasShield(hc))
+                    if (hc.shield > 0)
                     {
                         args.attackSpeedMultAdd += aspdIncrease * itemCount;
                     }

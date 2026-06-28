@@ -12,64 +12,90 @@ using UnityEngine.Networking;
 using static MoreStats.OnHit;
 using static MoreStats.StatHooks;
 using static SwanSongExtended.Modules.Language.Styling;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class RandomBarrierTarget : ItemBase<RandomBarrierTarget>
     {
-        public override bool isEnabled => false; 
+        public static BuffDef harpoonDebuff;
+        public static GameObject harpoonEffectPrefab;
+        public override bool isEnabled => true; 
 
-        public static float harpoonBarrierBase = 6;
-        public static float harpoonBarrierStack = 6;
+        public static float harpoonBarrierBase = 10;
+        public static float harpoonBarrierStack = 10;
         public static float harpoonTargetTime = 15;
         public static float harpoonDecayReduction = 0.2f;
 
         public static Material harpoonTargetMaterial;
 
-        public override string ItemName => "Borbo\u2019s Arrowhead";
+        public override string ItemName => "Crystal Ball";
 
         public override string ItemLangTokenName => "RANDOMBARRIERTARGET";
 
         public override string ItemPickupDesc => "Target a nearby enemy, gaining barrier on hit.";
 
-        public override string ItemFullDescription => $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>." +
+        public override string ItemFullDescription => $"Reduce barrier decay by <style=cIsHealing>-{ConvertDecimal(harpoonDecayReduction)}</style>. " +
                 $"Once every <style=cIsDamage>{harpoonTargetTime}</style> seconds, <style=cIsDamage>target</style> a random enemy. " +
                 $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
                 $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style>.";
 
-        public override string ItemLore => "Not to be confused with Hunter's Harpoon!";
+        public override string ItemLore =>
+@"Order: Crystal Ball
+Tracking Number: 66***********
+Estimated Delivery: 5/6/2056
+Shipping Method:  Return
+Shipping Address: Arcane Suppliers Inc., The Floating Citadel, Neptune
+Shipping Details:
+
+I ordered this Omen Globe from you guys, and oh my god, I am NEVER buying anything from this place again. This is a total fucking scam. 
+
+I tried for HOURS, for this ball to show me ANYTHING, and never once was I granted a moment of divine clairvoyance. 
+
+And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS Inc. Don't fucking tell me I'm not enlightened enough. 
+
+Your crystal, or should I say plastic, ball cost me more than my entire life savings. I demand my money back, or you will face DIRE consequences. ";
 
         public override ItemTier Tier => ItemTier.Tier2;
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlRandomBarrierTarget");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconRandomBarrierTarget");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
-            throw new NotImplementedException();
+            return new ItemDisplayRuleDict();
         }
 
+        public override void Init()
+        {
+            harpoonDebuff = Content.CreateAndAddBuff(
+                "bdHarpoonTargetDebuff",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
+                new Color(0.9f, 0.7f, 0.1f),
+                true,
+                true);
+            harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+
+            GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
+            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
+            base.Init();
+        }
         public override void Hooks()
         {
             harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
 
-            //IL.RoR2.GlobalEventManager.OnCharacterDeath += RevokeHarpoonRights;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddHarpoonBehavior;
-            GetHitBehavior += HarpoonOnHit;
             GetMoreStatCoefficients += HarpoonDecay;
         }
 
         private void HarpoonDecay(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            if (sender.inventory && sender.inventory)
-            {
-                int count = GetCount(sender);
-                if (count > 0)
-                    args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
-            }
+            int count = GetCount(sender);
+            if (count > 0)
+                args.barrierDecayRatePercentIncreaseMult *= 1 - harpoonDecayReduction;
         }
 
         public static Material CreateMatRecolor(Color32 blueEquivalent)
@@ -80,28 +106,6 @@ namespace SwanSongExtended.Items
             mat.SetInt("_Cull", 1);
 
             return mat;
-        }
-
-        private void HarpoonOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
-        {
-            Inventory inv = attackerBody.inventory;
-            HealthComponent hc = attackerBody.healthComponent;
-            if (inv != null && hc != null && victimBody != null && victimBody.HasBuff(CommonAssets.harpoonDebuff))
-            {
-                int harpoonCount = inv.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-                if (harpoonCount > 0)
-                {
-                    float barrierGrant = harpoonBarrierBase + harpoonBarrierStack * (harpoonCount - 1);
-                    hc.AddBarrierAuthority(barrierGrant * damageInfo.procCoefficient);
-                }
-            }
-        }
-
-        private void AddHarpoonBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            int maskCount = self.inventory.GetItemCountEffective(DLC1Content.Items.MoveSpeedOnKill);
-            self.AddItemBehavior<RandomBarrierTargetBehavior>(maskCount);
         }
 
         private void RevokeHarpoonRights(ILContext il)
@@ -116,14 +120,28 @@ namespace SwanSongExtended.Items
             c.Emit(OpCodes.Ldc_I4, 0);
         }
     }
-    public class RandomBarrierTargetBehavior : RoR2.CharacterBody.ItemBehavior
+    public class RandomBarrierTargetBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = true)]
+        private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
         public static float baseHauntRadius = 35;
         public static float hauntRetryTime = 1;
         float hauntStopwatch = 0;
         void Start()
         {
             hauntStopwatch = RandomBarrierTarget.harpoonTargetTime;
+        }
+
+        public void OnDamageDealtServer(DamageReport damageReport)
+        {
+            if (!damageReport.victimBody.HasBuff(RandomBarrierTarget.harpoonDebuff))
+                return;
+
+            if (stack > 0)
+            {
+                float barrierGrant = RandomBarrierTarget.harpoonBarrierBase + RandomBarrierTarget.harpoonBarrierStack * (stack - 1);
+                body.healthComponent.AddBarrierAuthority(barrierGrant * damageReport.damageInfo.procCoefficient);
+            }
         }
         private void FixedUpdate()
         {
@@ -172,7 +190,7 @@ namespace SwanSongExtended.Items
         {
             for (int n = 0; n < stack; n++)
             {
-                enemyBody.AddTimedBuffAuthority(CommonAssets.harpoonDebuff.buffIndex, RandomBarrierTarget.harpoonTargetTime);
+                enemyBody.AddTimedBuffAuthority(RandomBarrierTarget.harpoonDebuff.buffIndex, RandomBarrierTarget.harpoonTargetTime);
             }
 
             //thanks hifu <3

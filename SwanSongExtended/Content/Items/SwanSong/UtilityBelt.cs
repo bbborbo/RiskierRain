@@ -7,6 +7,8 @@ using System.Text;
 using UnityEngine;
 using RoR2.Skills;
 using RoR2.ExpansionManagement;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -47,17 +49,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnSkillActivated += UtilityBeltBarrierGrant;
-        }
-
-        private void UtilityBeltBarrierGrant(On.RoR2.CharacterBody.orig_OnSkillActivated orig, CharacterBody self, GenericSkill skill)
-        {
-            orig(self, skill);
-
-            if (skill == self.skillLocator.utility)
-            {
-                UtilityBelt.GiveUtilityBarrier(self, skill.baseRechargeInterval);
-            }
         }
 
         public static void GiveUtilityBarrier(CharacterBody body, GenericSkill skill)
@@ -80,6 +71,32 @@ namespace SwanSongExtended.Items
                     // int adjustedBarrier = (int)(barrier * Mathf.Pow(baseCooldown / 2f, 0.75f));
                     body.healthComponent.AddBarrier(body.healthComponent.fullCombinedHealth * scaledBarrierFraction);
                 }
+            }
+        }
+    }
+
+    public class UtilityKnifeBehavior : BaseItemBodyBehavior
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => UtilityBelt.instance.ItemsDef;
+
+        void Start()
+        {
+            body.onSkillActivatedServer += OnSkillActivated;
+        }
+        void OnDestroy()
+        {
+            body.onSkillActivatedServer -= OnSkillActivated;
+        }
+        private void OnSkillActivated(GenericSkill skill)
+        {
+            if (skill.baseRechargeInterval > 0 && skill.rechargeStock > 0 && skill == body.skillLocator.utility)
+            {
+                float effectiveCooldown = skill.baseRechargeInterval;
+                if (skill.rechargeStock > 1)
+                    effectiveCooldown /= skill.rechargeStock;
+
+                UtilityBelt.GiveUtilityBarrier(body, effectiveCooldown);
             }
         }
     }

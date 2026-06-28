@@ -15,6 +15,11 @@ namespace SwanSongExtended.Interactables
 {
     class EggPile : InteractableBase<EggPile>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Egg.GetEggConfig();
+        }
 
         [AutoConfig("Hideable Eggs Per Player", 3)]
         public static int eggsPerPlayer = 3;

@@ -2,6 +2,22 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include="Changes\Reworks\AegisRework.cs" />
+    <None Include="Changes\Reworks\BrittleCrownRework.cs" />
+    <None Include="Changes\Reworks\ExeCardRework.cs" />
+    <None Include="Changes\Reworks\FocusedConvergenceRework.cs" />
+    <None Include="Changes\Reworks\GestureRework.cs" />
+    <None Include="Changes\Reworks\HappiestMaskRework.cs" />
+    <None Include="Changes\Reworks\HarpoonRework.cs" />
+    <None Include="Changes\Reworks\LaserScopeRework.cs" />
+    <None Include="Changes\Reworks\LeechingSeedRework.cs" />
+    <None Include="Changes\Reworks\MeatRework.cs" />
+    <None Include="Changes\Reworks\PlanulaRework.cs" />
+    <None Include="Changes\Reworks\PrayerBeadsRework.cs" />
+    <None Include="Changes\Reworks\RazorwireRework.cs" />
+    <None Include="Changes\Reworks\RegenScrapRework.cs" />
+    <None Include="Changes\Reworks\ResDiscDework.cs" />
+    <None Include="Changes\Reworks\SquidPolypRework.cs" />
     <None Include="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <None Include="Content\Interactables\Interactables\CurseStatue.cs" />
     <None Include="Content\Interactables\Interactables\FakeShrine.cs" />
@@ -17,9 +33,18 @@
     <None Include="Content\Items\SecretsOfTheScug\ScugShaker.cs" />
     <None Include="Content\Items\SecretsOfTheScug\ShellShield.cs" />
     <None Include="Content\Items\SecretsOfTheScug\VoidScug.cs" />
+    <None Include="Content\Items\Reworks\ChimeraScrap.cs" />
+    <None Include="Content\Items\Reworks\ChocolateCoin.cs" />
+    <None Include="Content\Items\Reworks\Elixir2.cs" />
+    <None Include="Content\Items\Reworks\LunarHealthDegen.cs" />
+    <None Include="Content\Items\Reworks\Mocha2.cs" />
+    <None Include="Content\Items\Reworks\RejuvRack.cs" />
     <None Include="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
     <None Include="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
     <None Include="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
+    <None Include="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
     <None Include="Content\TwistedScavengers\BoboScav.cs" />
     <None Include="Content\TwistedScavengers\CunningScav.cs" />
     <None Include="Content\TwistedScavengers\GreedyScav.cs" />
@@ -55,6 +80,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Changes\Reworks\AegisRework.cs" />
+    <Compile Remove="Changes\Reworks\BrittleCrownRework.cs" />
+    <Compile Remove="Changes\Reworks\ExeCardRework.cs" />
+    <Compile Remove="Changes\Reworks\FocusedConvergenceRework.cs" />
+    <Compile Remove="Changes\Reworks\GestureRework.cs" />
+    <Compile Remove="Changes\Reworks\HappiestMaskRework.cs" />
+    <Compile Remove="Changes\Reworks\HarpoonRework.cs" />
+    <Compile Remove="Changes\Reworks\LaserScopeRework.cs" />
+    <Compile Remove="Changes\Reworks\LeechingSeedRework.cs" />
+    <Compile Remove="Changes\Reworks\MeatRework.cs" />
+    <Compile Remove="Changes\Reworks\PlanulaRework.cs" />
+    <Compile Remove="Changes\Reworks\PrayerBeadsRework.cs" />
+    <Compile Remove="Changes\Reworks\RazorwireRework.cs" />
+    <Compile Remove="Changes\Reworks\RegenScrapRework.cs" />
+    <Compile Remove="Changes\Reworks\ResDiscDework.cs" />
+    <Compile Remove="Changes\Reworks\SquidPolypRework.cs" />
     <Compile Remove="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <Compile Remove="Content\Interactables\Interactables\CurseStatue.cs" />
     <Compile Remove="Content\Interactables\Interactables\FakeShrine.cs" />
@@ -63,6 +104,12 @@
     <Compile Remove="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\SpineCharger.cs" />
+    <Compile Remove="Content\Items\Reworks\ChimeraScrap.cs" />
+    <Compile Remove="Content\Items\Reworks\ChocolateCoin.cs" />
+    <Compile Remove="Content\Items\Reworks\Elixir2.cs" />
+    <Compile Remove="Content\Items\Reworks\LunarHealthDegen.cs" />
+    <Compile Remove="Content\Items\Reworks\Mocha2.cs" />
+    <Compile Remove="Content\Items\Reworks\RejuvRack.cs" />
     <Compile Remove="Content\Items\SecretsOfTheScug\Boomerang.cs" />
     <Compile Remove="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
     <Compile Remove="Content\Items\SecretsOfTheScug\Peashooter.cs" />
@@ -73,6 +120,9 @@
     <Compile Remove="Content\Items\SwanSong\QuestItems\EnergyCrystal.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\FlameOrb.cs" />
     <Compile Remove="Content\Items\SwanSong\QuestItems\MalachiteSpine.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
+    <Compile Remove="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
     <Compile Remove="Content\TwistedScavengers\BoboScav.cs" />
     <Compile Remove="Content\TwistedScavengers\CunningScav.cs" />
     <Compile Remove="Content\TwistedScavengers\GreedyScav.cs" />

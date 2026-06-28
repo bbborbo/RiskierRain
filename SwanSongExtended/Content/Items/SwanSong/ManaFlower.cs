@@ -55,7 +55,6 @@ Nature is so magical :)";
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.RecalculateStats += ManaFlowerCdr;
             GetStatCoefficients += ManaFlowerAspd;
         }
 
@@ -67,24 +66,11 @@ Nature is so magical :)";
                 float aspdBoost = cdrAmtBase + cdrAmtStack * (itemCount - 1);
 
                 args.attackSpeedMultAdd += aspdBoost;
-            }
-        }
 
-        private void ManaFlowerCdr(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            int itemCount = GetCount(self);
-            if (itemCount > 0)
-            {
-                //float cdrBoost = 1 / (1 + aspdBoostBase + aspdBoostStack * (mochaCount - 1));
+
                 float cdrBoost = (1 - cdrAmtBase) * Mathf.Pow(1 - cdrAmtStack, itemCount - 1);
-
-                SkillLocator skillLocator = self.skillLocator;
-                if (skillLocator != null)
-                {
-                    Tools.ApplyCooldownScale(skillLocator.primary, cdrBoost);
-                    Tools.ApplyCooldownScale(skillLocator.secondary, cdrBoost);
-                }
+                args.primarySkill.cooldownMultiplier *= cdrBoost;
+                args.secondarySkill.cooldownMultiplier *= cdrBoost;
             }
         }
     }

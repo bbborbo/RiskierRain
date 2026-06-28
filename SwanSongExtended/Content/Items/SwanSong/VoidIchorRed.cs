@@ -14,6 +14,11 @@ namespace SwanSongExtended.Items
 {
     class VoidIchorRed : ItemBase<VoidIchorRed>
     {
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return Interactables.VoidHusk.GetIchorConfig();
+        }
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         int critBase = 5;
         int critStack = 5;
@@ -43,11 +48,20 @@ namespace SwanSongExtended.Items
         {
             return null;
         }
+        public override void Init()
+        {
+            base.Init();
+        }
 
         public override void Hooks()
         {
             RecalculateStatsAPI.GetStatCoefficients += RedIchorStats;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+            AddVoidItemRelationship(VoidIchorYellow.instance.ItemsDef);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorPlate.ArmorPlate_asset);
         }
 
         private void RedIchorStats(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
@@ -55,23 +69,6 @@ namespace SwanSongExtended.Items
             int itemCount = GetCount(sender);
             args.critAdd += critBase + critStack * (itemCount - 1);
             args.attackSpeedMultAdd += attackSpeedBase + attackSpeedStack * (itemCount - 1);
-        }
-
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
-        {
-            ItemDef.Pair transformation = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.ArmorPlate, //consumes RAP
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
-            ItemDef.Pair rockPaperScissors = new ItemDef.Pair()
-            {
-                itemDef1 = VoidIchorYellow.instance.ItemsDef, //:3
-                itemDef2 = instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(rockPaperScissors);
-            orig();
         }
     }
 }

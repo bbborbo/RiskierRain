@@ -13,11 +13,23 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using SwanSongExtended.Modules;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class VoidLaserTurbine : ItemBase<VoidLaserTurbine>
     {
+        public static bool GetSolenoidConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Items : Super Solenoid Engine");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return VoidLaserTurbine.GetSolenoidConfig();
+        }
         public static BuffDef turbineChargeBuff;
         public static BuffDef turbineReadyBuff;
         public static float secondsOfChargeRequired = 90;
@@ -56,21 +68,8 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.Items.ContagiousItemManager.Init += CreateTransformation;
         }
 
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    VoidTurbineBehavior ringBehavior = self.AddItemBehavior<VoidTurbineBehavior>(GetCount(self));
-                }
-            }
-        }
         public override void Init()
         {
             turbineChargeBuff = Content.CreateAndAddBuff(
@@ -88,27 +87,17 @@ namespace SwanSongExtended.Items
                 );
             base.Init();
         }
-        private void CreateTransformation(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        public override void PostInit()
         {
-            ItemDef.Pair transformation1 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.Behemoth, //consumes brilliant behemoth
-                itemDef2 = VoidLaserTurbine.instance.ItemsDef
-            };
-            ItemDef.Pair transformation2 = new ItemDef.Pair()
-            {
-                itemDef1 = RoR2Content.Items.LaserTurbine, //consumes resonance disc
-                itemDef2 = VoidLaserTurbine.instance.ItemsDef
-            };
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] 
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation1);
-            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] 
-                = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation2);
-            orig();
+            base.PostInit();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Behemoth.Behemoth_asset);
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_LaserTurbine.LaserTurbine_asset);
         }
     }
-    public class VoidTurbineBehavior : CharacterBody.ItemBehavior
+    public class VoidTurbineBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => VoidLaserTurbine.instance.ItemsDef;
         GenericSkill primarySkill;
         GenericSkill overriddenSkill;
         SkillDef primaryOverride => VoidLaserTurbineSkill.instance.SkillDef;

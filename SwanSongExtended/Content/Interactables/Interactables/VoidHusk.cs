@@ -15,6 +15,16 @@ namespace SwanSongExtended.Interactables
 {
     class VoidHusk : InteractableBase<VoidHusk>
     {
+        public static bool GetIchorConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Ichor Suite", "Enables the Ichor Husk and all three Void Ichor items");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return VoidHusk.GetIchorConfig();
+        }
         #region abstract
         public override string InteractableName => "Fractured Husk";
 
@@ -95,26 +105,6 @@ namespace SwanSongExtended.Interactables
         public override void Init()
         {
             base.Init();
-        }
-
-        private void VoidHuskBehavior(On.RoR2.PurchaseInteraction.orig_OnInteractionBegin orig, PurchaseInteraction self, Interactor activator)
-        {
-            orig(self, activator);
-            if (self.displayNameToken == "2R4R_INTERACTABLE_" + this.InteractableLangToken + "_NAME")
-            {
-                HuskReward(self.gameObject);
-                GameObject.Destroy(self.gameObject);
-            }
-        }
-        
-        private void HuskReward(GameObject gameObject)
-        {
-            PickupIndex pickupIndex = PickupIndex.none;
-            GenerateWeightedSelection();
-            this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
-            pickupIndex = PickupDropTable.GenerateDropFromWeightedSelection(rng, weightedSelection);
-            dropletOrigin = gameObject.transform;
-            PickupDropletController.CreatePickupDroplet(pickupIndex, dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), dropletOrigin.forward * 3f + dropletOrigin.up * 5f);
         }
         private ExplicitPickupDropTable GenerateWeightedSelection()
         {

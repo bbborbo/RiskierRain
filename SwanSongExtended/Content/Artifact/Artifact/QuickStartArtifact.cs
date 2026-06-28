@@ -12,6 +12,16 @@ namespace SwanSongExtended.Artifacts
 {
     class QuickStartArtifact : ArtifactBase<QuickStartArtifact>
     {
+        public static bool GetQuickStartConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Artifacts : the Stillborn");//instance.Bind(true, "Should This Content Be Enabled");
+        }
+
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return QuickStartArtifact.GetQuickStartConfig();
+        }
         #region config
 
         [AutoConfig("Wish Pickup Index", "0 is Common, 1 is Uncommon, 2 is Rare", 1)]

@@ -65,8 +65,6 @@ Thank you for always sending us gifts. I made some of them into this flower crow
         {
             GetMoreStatCoefficients += FlowerCrownRecharge;
             GetStatCoefficients += FlowerCrownStats;
-            //On.RoR2.CharacterBody.FixedUpdate += BatteryDelayReduction;
-            //IL.RoR2.HealthComponent.ServerFixedUpdate += BatteryRechargeIncrease;
         }
 
         private void FlowerCrownRecharge(CharacterBody sender, MoreStatHookEventArgs args)
@@ -87,7 +85,7 @@ Thank you for always sending us gifts. I made some of them into this flower crow
                 {
                     args.baseShieldAdd += sender.maxHealth * shieldPercentBase;//(shieldPercentBase + (shieldPercentStack * (itemCount - 1)));
 
-                    if (Fuse.HasShield(hc))
+                    if (hc.shield > 0)
                     {
                         args.armorAdd += armorIncreaseBase + armorIncreaseStack * (itemCount - 1);
                     }

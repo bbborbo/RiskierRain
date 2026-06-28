@@ -95,7 +95,6 @@ namespace SwanSongExtended.Items
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, DLC1Content.Equipment.LunarPortalOnUse);
             On.RoR2.GenericSkill.CalculateFinalRechargeInterval += EnableCooldownAddition; //move this
             On.RoR2.CharacterBody.OnSkillActivated += FireShards;
-            On.RoR2.CharacterBody.RecalculateStats += IncreaseCDs;
             RecalculateStatsAPI.GetStatCoefficients += IncreaseCooldowns;
         }
 
@@ -132,21 +131,6 @@ namespace SwanSongExtended.Items
                 return 0;
 
             return Mathf.Max(0.5f, calculatedRechargeInterval);
-        }
-
-        private void IncreaseCDs(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-            SkillLocator skillLocator = self.skillLocator;
-            if(skillLocator != null)
-            {
-                GenericSkill primary = skillLocator.primary;
-                if(primary != null)
-                {
-                    //float calculatedCooldown = primary.recha
-                    //if(primary.cooldownRemaining)
-                }
-            }
         }
 
         private void FireShards(On.RoR2.CharacterBody.orig_OnSkillActivated orig, RoR2.CharacterBody self, RoR2.GenericSkill skill)

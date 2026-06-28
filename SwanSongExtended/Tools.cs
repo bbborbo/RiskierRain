@@ -9,8 +9,56 @@ using UnityEngine.Events;
 
 namespace SwanSongExtended
 {
-    public static class PersistentListeners
+    public static class Extensions
     {
+        /// <summary>
+        /// if true, this interactable can trigger fireworks, squolyps, and your custom on-interaction effect
+        /// </summary>
+        /// <param name="disallowPickups">set to false to allow non-duplicated items to trigger your thing</param>
+        /// <returns></returns>
+        public static bool InteractableIsPermittedForSpawn(this GameObject interactableObject, bool disallowPickups = true)
+        {
+            if (interactableObject == null)
+                return false;
+
+            if (interactableObject.TryGetComponent(out InteractionProcFilter interactionProcFilter))
+            {
+                return interactionProcFilter.shouldAllowOnInteractionBeginProc;
+            }
+            if (interactableObject.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+            {
+                return purchaseInteraction.disableSpawnOnInteraction == false;
+            }
+            if (interactableObject.TryGetComponent(out DelusionChestController delusionController))
+            {
+                if (interactableObject.TryGetComponent(out PickupPickerController pickupPickerController) && pickupPickerController.enabled)
+                {
+                    return false;
+                }
+                return true;
+            }
+            if ((bool)interactableObject.TryGetComponent(out GenericPickupController pickupController))
+            {
+                return disallowPickups || pickupController.Duplicated;
+            }
+            if ((bool)interactableObject.GetComponent<VehicleSeat>())
+            {
+                return false;
+            }
+            if ((bool)interactableObject.GetComponent<NetworkUIPromptController>())
+            {
+                return false;
+            }
+            if (interactableObject.TryGetComponent(out PowerPedestal powerPedestal))
+            {
+                return powerPedestal.CanTriggerFireworks;
+            }
+            if (interactableObject.TryGetComponent(out AccessCodesNodeController accessNodeController))
+            {
+                return accessNodeController.CheckInteractionOrder();
+            }
+            return true;
+        }
         public static GameObject FixItemModel(this GameObject prefab)
         {
             if (prefab == null)
@@ -42,6 +90,10 @@ namespace SwanSongExtended
             parameters.cameraPositionTransform = c;
 
             return prefab;
+        }
+        public static string AsPercent(this float d)
+        {
+            return (d * 100f).ToString() + "%";
         }
         public static void AddPersistentListener(this HoldoutZoneController.HoldoutZoneControllerChargedUnityEvent unityEvent, UnityAction<HoldoutZoneController> action)
         {

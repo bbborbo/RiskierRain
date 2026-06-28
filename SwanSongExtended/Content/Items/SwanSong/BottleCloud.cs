@@ -13,11 +13,23 @@ using static MoreStats.StatHooks;
 using static MoreStats.OnJump;
 using SwanSongExtended.Modules;
 using UnityEngine.AddressableAssets;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class BottleCloud : ItemBase<BottleCloud>
     {
+        public static bool GetBottleCloudConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Items : Cloud In A Bottle", "Also enables Quarantined Contaminant"); 
+            //instance.Bind(true, "Should This Content Be Enabled", "Also enables Quarantined Contaminant");
+        }
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return BottleCloud.GetBottleCloudConfig();
+        }
         public override string ConfigName => "Items : Cloud In A Bottle";
         public static float verticalBonusOnCloudJump = 0.15f;
         static GameObject novaEffectPrefab = null;// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
@@ -65,7 +77,6 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetMoreStatCoefficients += CloudJumpStat;
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
         }
 
         private void CloudJumpStat(CharacterBody sender, MoreStatHookEventArgs args)
@@ -73,18 +84,6 @@ namespace SwanSongExtended.Items
             if (GetCount(sender) > 0)
             {
                 args.jumpCountAdd += 1;
-            }
-        }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    CloudBottleBehavior ringBehavior = self.AddItemBehavior<CloudBottleBehavior>(GetCount(self));
-                }
             }
         }
 
@@ -121,8 +120,11 @@ namespace SwanSongExtended.Items
         }
     }
 
-    public class CloudBottleBehavior : CharacterBody.ItemBehavior
+    public class CloudBottleBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => BottleCloud.instance.ItemsDef;
+
         public static float cooldownDuration = 16;
         public static float cooldownReductionPerStack = 0.25f;
         float cooldownTimer = 0;
@@ -192,7 +194,7 @@ namespace SwanSongExtended.Items
         private void ResetCooldown()
         {
             cooldownTimer = cooldownDuration * Mathf.Pow(1 - cooldownReductionPerStack, stack - 1);
-            if (NetworkServer.active && body.HasBuff(BottleCloud.cloudReadyBuff))
+            if (body.HasBuff(BottleCloud.cloudReadyBuff))
                 body.RemoveBuff(BottleCloud.cloudReadyBuff);
         }
 
@@ -204,7 +206,7 @@ namespace SwanSongExtended.Items
                 return;
             }
 
-            if (NetworkServer.active && !body.HasBuff(BottleCloud.cloudReadyBuff))
+            if (!body.HasBuff(BottleCloud.cloudReadyBuff))
                 body.AddBuff(BottleCloud.cloudReadyBuff);
         }
     }

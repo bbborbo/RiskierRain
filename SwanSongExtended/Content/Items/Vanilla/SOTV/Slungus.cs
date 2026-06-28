@@ -12,6 +12,8 @@ using RoR2.Projectile;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 using RainrotSharedUtils.Shelters;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
@@ -91,7 +93,6 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
             R2API.RecalculateStatsAPI.GetStatCoefficients += SlungusDamage;
             On.RoR2.HealthComponent.TakeDamageProcess += RemoveSlungusBuff;
         }
@@ -141,20 +142,13 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
                 args.moveSpeedMultAdd += movespeedIncreaseBase + movespeedIncreaseStack * (slungusCount - 1);
             }
         }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                self.AddItemBehavior<SlungusItemBehavior>(GetCount(self));
-            }
-        }
-
     }
 
-    public class SlungusItemBehavior : CharacterBody.ItemBehavior
+    public class SlungusItemBehavior : BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Slungus.instance.ItemsDef;
+
         public static float slungusBuffReapplicationTime = 1;
         float buffTimer = 0;
         public GameObject slungusFieldInstance;
@@ -167,19 +161,16 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
         } 
         private void FixedUpdate()
         {
-            if (NetworkServer.active)
-            {
-                float notMovingStopwatch = this.body.notMovingStopwatch;
+            float notMovingStopwatch = this.body.notMovingStopwatch;
 
-                if (stack > 0 && notMovingStopwatch >= Slungus.slungusWaitTime)
-                {
-                    EnableSlungus();
-                    return;
-                }
-                else
-                {
-                    DisableSlungus();
-                }
+            if (stack > 0 && notMovingStopwatch >= Slungus.slungusWaitTime)
+            {
+                EnableSlungus();
+                return;
+            }
+            else
+            {
+                DisableSlungus();
             }
         }
 

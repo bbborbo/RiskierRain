@@ -6,15 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
-    class Permafrost : ItemBase
+    class Permafrost : ItemBase<Permafrost>
     {
-        float freezeChancePerPercentBase = 1;
-        float freezeChancePerPercentStack = 2;
-        float freezeDamageHealthFraction = 0.05f;
-        float freezeProcCoefficient = 0.75f;
+        public static float freezeChancePerPercentBase = 1;
+        public static float freezeChancePerPercentStack = 2;
+        public static float freezeDamageHealthFraction = 0.05f;
+        public static float freezeProcCoefficient = 0.75f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Permafrost";
@@ -48,50 +50,49 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.HealthComponent.TakeDamageProcess += PermafrostBehavior;
         }
+    }
 
-        private void PermafrostBehavior(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, RoR2.HealthComponent self, RoR2.DamageInfo damageInfo)
+    public class PermafrostBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Permafrost.instance.ItemsDef;
+
+        public void OnDamageDealtServer(DamageReport damageReport)
         {
-            orig(self, damageInfo);
+            DamageInfo damageInfo = damageReport.damageInfo;
+            HealthComponent victimHealthComponent = damageReport.victimBody?.healthComponent;
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if (victimHealthComponent == null || !victimHealthComponent.alive || attackerBody == null || damageInfo.procCoefficient == 0)
+                return;
 
             bool isFreeze = (damageInfo.damageType & DamageType.Freeze2s) > DamageType.Generic;
-            bool isPermafrost = isFreeze && damageInfo.procCoefficient == freezeProcCoefficient;
-            if (self && self.alive && damageInfo.attacker != null && !isPermafrost)
+            bool isPermafrost = isFreeze && damageInfo.procCoefficient == Permafrost.freezeProcCoefficient;
+            if (isFreeze)
+                return;
+
+
+            float victimMaxHealth = victimHealthComponent.fullCombinedHealth;
+            float attackEndDamage = damageInfo.damage;
+
+            float maxHealthFractionDealt = (attackEndDamage / victimMaxHealth) * 100;
+            float endFreezeChance = Permafrost.freezeChancePerPercentBase + Permafrost.freezeChancePerPercentStack * stack;
+
+            if (Util.CheckRoll(maxHealthFractionDealt * endFreezeChance * damageInfo.procCoefficient, attackerBody.master))
             {
-                CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-
-                if (attackerBody != null && damageInfo.procCoefficient > 0)
+                DamageInfo freezeHit = new DamageInfo()
                 {
-                    CharacterMaster attackerMaster = attackerBody.master;
-                    int permafrostCount = GetCount(attackerBody);
-                    if (permafrostCount > 0)
-                    {
-                        float victimMaxHealth = self.fullCombinedHealth;
-                        float attackEndDamage = damageInfo.damage;
+                    attacker = damageInfo.attacker,
+                    crit = damageInfo.crit,
+                    damage = victimMaxHealth * Permafrost.freezeDamageHealthFraction,
+                    damageType = DamageType.Freeze2s,
+                    force = Vector3.zero,
+                    position = victimHealthComponent.transform.position,
+                    procChainMask = damageInfo.procChainMask,
+                    procCoefficient = Permafrost.freezeProcCoefficient
+                };
 
-                        float maxHealthFractionDealt = (attackEndDamage / victimMaxHealth) * 100;
-                        float endFreezeChance = freezeChancePerPercentBase + freezeChancePerPercentStack * permafrostCount;
-
-                        if (Util.CheckRoll(maxHealthFractionDealt * endFreezeChance * damageInfo.procCoefficient, attackerBody.master))
-                        {
-                            DamageInfo freezeHit = new DamageInfo()
-                            {
-                                attacker = damageInfo.attacker,
-                                crit = damageInfo.crit,
-                                damage = victimMaxHealth * freezeDamageHealthFraction,
-                                damageType = DamageType.Freeze2s,
-                                force = Vector3.zero,
-                                position = self.transform.position,
-                                procChainMask = damageInfo.procChainMask,
-                                procCoefficient = freezeProcCoefficient
-                            };
-
-                            self.TakeDamage(freezeHit);
-                            GlobalEventManager.instance.OnHitEnemy(freezeHit, self.gameObject);
-                        }
-                    }
-                }
+                victimHealthComponent.TakeDamage(freezeHit);
             }
         }
     }

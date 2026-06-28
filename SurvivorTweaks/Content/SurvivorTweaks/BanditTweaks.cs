@@ -157,9 +157,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void BanditCloakBuff(CharacterBody sender, StatHookEventArgs args)
         {
-            if(sender.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
+            if (sender.bodyIndex == BodyCatalog.FindBodyIndex("Bandit2Body"))
             {
-                if(sender.HasBuff(RoR2Content.Buffs.Cloak))
+                if (sender.HasBuff(RoR2Content.Buffs.Cloak))
                     args.attackSpeedMultAdd += stealthAspdBonus;
 
                 int baseTokenCount = sender.GetBuffCount(banditSkullBuff);
@@ -190,7 +190,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void BanditTweaksTakeDamage(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
         {
             CharacterBody attackerBody = null;
-            if(damageInfo.attacker)
+            if (damageInfo.attacker)
                 attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
 
             if (damageInfo.dotIndex == DotController.DotIndex.SuperBleed)
@@ -251,7 +251,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             shotgun.interruptPriority = InterruptPriority.PrioritySkill;
             shotgun.baseRechargeInterval = reloadBaseDuration;
             //shotgun.mustKeyPress = false;
-            LanguageAPI.Add("BANDIT2_PRIMARY_DESCRIPTION", 
+            LanguageAPI.Add("BANDIT2_PRIMARY_DESCRIPTION",
                 $"Fire a shotgun burst for <style=cIsDamage>5x{shotgunDamageCoeff.AsPercent()} damage</style>. " +
                 $"Tap to fire faster. Can hold up to 4 shells.");
 
@@ -260,7 +260,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             rifle.interruptPriority = InterruptPriority.PrioritySkill;
             rifle.baseRechargeInterval = reloadBaseDuration;
             //rifle.mustKeyPress = false;
-            LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION", 
+            LanguageAPI.Add("BANDIT2_PRIMARY_ALT_DESCRIPTION",
                 $"Fire a rifle blast for <style=cIsDamage>{rifleDamageCoeff.AsPercent()} damage</style>. " +
                 $"Tap to fire faster. Can hold up to 4 bullets.");
         }
@@ -299,7 +299,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             if (self is Bandit2FireRifle || self is FireShotgun2)
             {
-                if(self is Bandit2FireRifle)
+                if (self is Bandit2FireRifle)
                 {
                     self.spreadBloomValue = rifleSpreadBloom;
                     self.damageCoefficient = rifleDamageCoeff;
@@ -316,7 +316,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void RifleFixedUpdate(On.EntityStates.GenericBulletBaseState.orig_FixedUpdate orig, GenericBulletBaseState self)
         {
-            if(self is Bandit2FirePrimaryBase state && self.skillLocator && self.skillLocator.primary)
+            if (self is Bandit2FirePrimaryBase state && self.skillLocator && self.skillLocator.primary)
             {
                 //if the primary skill is released, exit early
                 //otherwise, if the skill is held for long enough, fire again
@@ -406,7 +406,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void ReleaseSmokeBombState(On.EntityStates.Bandit2.StealthMode.orig_OnExit orig, EntityStates.Bandit2.StealthMode self)
         {
             orig(self);
-            if(self.skillLocator && self.skillLocator.utility)
+            if (self.skillLocator && self.skillLocator.utility)
             {
                 self.skillLocator.utility.SetBlockedCooldownSkillState(false);
             }
@@ -458,7 +458,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"Fire a revolver shot for <style=cIsDamage>{desperadoDamage.AsPercent()} damage</style>. " +
                 $"Kills grant <style=cIsDamage>stacking tokens</style> for " +
                 $"<style=cIsDamage>{(desperadoDamagePerToken + desperadoAttackSpeedPerToken).AsPercent()}</style> more Desperado damage.");
-            LanguageAPI.Add(tokenKeyword, KeywordText("Desperado Tokens", 
+            LanguageAPI.Add(tokenKeyword, KeywordText("Desperado Tokens",
                 $"Each token held increases Bandit's <style=cIsDamage>attack speed</style> by " +
                 $"<style=cIsDamage>+{desperadoAttackSpeedPerToken.AsPercent()}</style>, and increases the damage of <style=cIsUtility>Desperado</style> " +
                 $"by an additional <style=cIsDamage>+{desperadoDamagePerToken.AsPercent()} TOTAL damage</style>. " +
@@ -468,7 +468,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void BanditHipFire(On.EntityStates.EntityState.orig_ModifyNextState orig, EntityState self, EntityState nextState)
         {
             orig(self, nextState);
-            if(self is BaseFireSidearmRevolverState && nextState is BasePrepSidearmRevolverState prepState)
+            if (self is BaseFireSidearmRevolverState && nextState is BasePrepSidearmRevolverState prepState)
             {
                 prepState.baseDuration = 0f;
             }
@@ -481,7 +481,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private InterruptPriority RevolverInterruptPriority(On.EntityStates.Bandit2.Weapon.BaseSidearmState.orig_GetMinimumInterruptPriority orig, BaseSidearmState self)
         {
-            if(self is BasePrepSidearmRevolverState || self is BaseFireSidearmRevolverState)
+            if (self is BasePrepSidearmRevolverState || self is BaseFireSidearmRevolverState)
             {
                 if (self is BaseFireSidearmRevolverState)
                 {
@@ -543,9 +543,9 @@ namespace SurvivorTweaks.SurvivorTweaks
                 //prevents the skill from firing until the input is released
                 if (self.inputBank.skill4.down)
                 {
-                    if(fixedAge > self.duration)
+                    if (fixedAge > self.duration)
                     {
-                        if(self.duration > 0)
+                        if (self.duration > 0)
                         {
                             self.duration = 0;
 
@@ -621,7 +621,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             if (self.master == null || !NetworkServer.active)
                 return;
 
-            if(!self.master.TryGetComponent(out MasterDesperadoTokenTracker tracker))
+            if (!self.master.TryGetComponent(out MasterDesperadoTokenTracker tracker))
             {
                 tracker = self.master.gameObject.AddComponent<MasterDesperadoTokenTracker>();
                 tracker.master = self.master;

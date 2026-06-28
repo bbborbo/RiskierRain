@@ -10,6 +10,9 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static MoreStats.OnHit;
+using RoR2.Items;
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
+
 namespace SwanSongExtended.Items
 {
     class CritRetaliate : ItemBase<CritRetaliate>
@@ -20,8 +23,8 @@ namespace SwanSongExtended.Items
         [AutoConfig("Critical Strike Chance Bonus", 100)]
         public static float critChanceBonus = 100;
         public static float critChancePerBuff => critChanceBonus / buffTotal;
-        [AutoConfig("Total Buffs", 10)]
-        public static int buffTotal = 10;
+        [AutoConfig("Total Buffs", 20)]
+        public static int buffTotal = 20;
         [AutoConfig("Base Duration Of Buffs", 6f)]
         public static float buffDurationBase = 6f;
         [AutoConfig("Stack Duration Of Buffs", 4f)]
@@ -65,53 +68,6 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetStatCoefficients += WatchCritChance;
-            On.RoR2.GlobalEventManager.ProcessHitEnemy += DoCritRetaliateBuff;
-            //GetHitBehavior += WatchGetHit;
-        }
-
-        private void DoCritRetaliateBuff(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
-        {
-            if (damageInfo.damage > 0 && !damageInfo.rejected && victim.TryGetComponent(out CharacterBody victimBody))
-            {
-                Inventory inv = victimBody.inventory;
-                if (inv)
-                {
-                    int itemCount = GetCount(victimBody);
-                    if (itemCount > 0)
-                    {
-                        victimBody.ClearTimedBuffs(watchCritBuff);
-                        float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
-                        for (int i = 0; i < buffTotal; i++)
-                        {
-                            victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)buffTotal);
-                        }
-                        //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
-                    }
-                }
-            }
-            orig(self, damageInfo, victim);
-        }
-
-        private void WatchGetHit(CharacterBody body, DamageInfo damageInfo, CharacterBody victimBody)
-        {
-            if (damageInfo.procCoefficient > 0 && damageInfo.damage > 0 && !damageInfo.rejected)
-            {
-                Inventory inv = victimBody.inventory;
-                if (inv)
-                {
-                    int itemCount = GetCount(victimBody);
-                    if (itemCount > 0)
-                    {
-                        victimBody.ClearTimedBuffs(watchCritBuff);
-                        float duration = buffDurationStack * (itemCount - 1) + buffDurationBase;
-                        for (int i = 0; i < buffTotal; i++)
-                        {
-                            victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)buffTotal);
-                        }
-                        //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
-                    }
-                }
-            }
         }
 
         private void WatchCritChance(CharacterBody sender, StatHookEventArgs args)
@@ -121,6 +77,35 @@ namespace SwanSongExtended.Items
 
             if (GetCount(sender) > 0)
                 args.critAdd += 2;
+        }
+    }
+    public class DestroyerEmblemBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => CritRetaliate.instance.ItemsDef;
+
+        void Start()
+        {
+            body?.healthComponent?.AddOnTakeDamageServerReceiver(this);
+        }
+        void OnDestroy()
+        {
+            body?.healthComponent?.RemoveOnTakeDamageServerReceiver(this);
+        }
+
+        public void OnTakeDamageServer(DamageReport damageReport)
+        {
+            CharacterBody victimBody = damageReport.victimBody;
+            if (victimBody == null)
+                return;
+
+            victimBody.ClearTimedBuffs(CritRetaliate.watchCritBuff);
+            float duration = CritRetaliate.buffDurationStack * (stack - 1) + CritRetaliate.buffDurationBase;
+            for (int i = 0; i < CritRetaliate.buffTotal; i++)
+            {
+                victimBody.AddTimedBuffAuthority(CritRetaliate.watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)CritRetaliate.buffTotal);
+            }
+            //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
         }
     }
 }

@@ -14,6 +14,15 @@ namespace SwanSongExtended.Items
 {
     class DisposableScalpel : ItemBase<DisposableScalpel>
     {
+        public static bool GetScalpelConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Items : Scalpel", "Also enables Gamma Knife");
+        }
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return DisposableScalpel.GetScalpelConfig();
+        }
         public static ItemDef brokenItemDef;
         public override string ConfigName => "Items : Scalpel";
         public static int bonusDropChance = 50;

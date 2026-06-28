@@ -14,7 +14,9 @@ using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Artifacts;
 using static SwanSongExtended.Modules.Language.Styling;
+using RoR2.Items;
 
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 namespace SwanSongExtended.Items
 {
     class LunarHealthDegen : ItemBase<LunarHealthDegen>
@@ -89,9 +91,6 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
-            On.RoR2.CharacterBody.RecalculateStats += AddBuffStats;
-
             BodyCatalog.availability.onAvailable += () => CloneVanillaDisplayRules(instance.ItemsDef, RoR2Content.Items.RepeatHeal);
             GetMoreStatCoefficients += ElegyLuck;
             GetStatCoefficients += ElegyStats;
@@ -128,27 +127,13 @@ namespace SwanSongExtended.Items
                 args.luckAdd += luckBase + luckStack * (GetCount(sender) - 1);
             }
         }
-
-        private void AddBuffStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            orig(self);
-        }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.healthComponent != null)
-                {
-                    self.AddItemBehavior<LunarHealthDegenBehavior>(GetCount(self));
-                }
-            }
-        }
     }
 
-    public class LunarHealthDegenBehavior: CharacterBody.ItemBehavior
+    public class LunarHealthDegenBehavior: BaseItemBodyBehavior
     {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => LunarHealthDegen.instance.ItemsDef;
+
         HealthComponent healthComponent;
         BuffIndex luckUpBuffIndex = LunarHealthDegen.lunarRotBuff.buffIndex;
         BuffIndex barrierCooldownBuffIndex = LunarHealthDegen.lunarRotBarrierCooldown.buffIndex;
@@ -166,8 +151,6 @@ namespace SwanSongExtended.Items
 
         private void FixedUpdate()
         {
-            if (!NetworkServer.active)
-                return;
             float missingHealthFraction = 1 - ((healthComponent.health + healthComponent.shield) / healthComponent.fullCombinedHealth);
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (maxBuffCount));
             while (newBuffCount > buffCount && buffCount < maxBuffCount)
@@ -180,21 +163,12 @@ namespace SwanSongExtended.Items
                     body.AddTimedBuff(barrierCooldownBuffIndex, barrierCoolDown);
                 }
             }
-            while (newBuffCount < buffCount && buffCount > 0)
-            {
-                this.body.RemoveBuff(luckUpBuffIndex);
-                buffCount--;
-            }//FIX THIS ITS WEIRD
+            //NUCLEAR SAFE - this code does not run on clients
+            this.body.SetBuffCount(luckUpBuffIndex, newBuffCount);
         }
         void OnDestroy()
         {
-            if (!NetworkServer.active)
-                return;
-            while (buffCount > 0)
-            {
-                this.body.RemoveBuff(luckUpBuffIndex);
-                buffCount--;
-            }
+            this.body.SetBuffCount(luckUpBuffIndex, 0);
         }
     }
 }

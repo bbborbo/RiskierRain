@@ -10,6 +10,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
 using static SwanSongExtended.Modules.Language.Styling;
 using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using UnityEngine.Networking;
 
 namespace SwanSongExtended.Items
 {
@@ -70,14 +71,96 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
-            RoR2.Stage.onServerStageBegin += PhotographPrinterSpawn;
+            //On.RoR2.SceneDirector.PopulateScene += SceneDirector_PopulateScene;
+            RoR2.Stage.onStageStartGlobal += PhotographPrinterSpawn;
+            //RoR2.SceneDirector.onPostPopulateSceneServer += PhotographForcedPrinter;
             On.RoR2.Items.MultiShopCardUtils.OnNonMoneyPurchase += PhotographOnNonMoneyPurchase;
             GetStatCoefficients += PhotographCritBonus;
         }
 
-        private void PhotographPrinterSpawn(Stage currentStage)
+        private void PhotographForcedPrinter(SceneDirector self)
         {
             if (!Run.instance)
+                return;
+
+            SceneDef currentScene = Stage.instance.sceneDef;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.UntimedStage
+                || currentScene.sceneType == SceneType.Junk)
+                return;
+
+            int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, instance.ItemsDef.itemIndex, true, true);
+            if (itemCount <= 0)
+                return;
+
+            Xoroshiro128Plus rng = Run.instance.stageRng;
+            DirectorPlacementRule placementRule = new DirectorPlacementRule
+            {
+                placementMode =
+                    SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh
+                        ? DirectorPlacementRule.PlacementMode.RandomNormalized
+                        : DirectorPlacementRule.PlacementMode.Random
+            };
+
+            string path = printerSpawncardPaths.Evaluate(rng.nextNormalizedFloat);
+            Log.Debug("Photograph spawning printer: " + path);
+            InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(path).WaitForCompletion();
+            DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
+
+            GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            //if (pillarObject)
+            //{
+            //    createdPillarObjects.Add(pillarObject);
+            //    pillarTypeSpawnCount[pillarIndex]++;
+            //}
+        }
+
+        private void SceneDirector_PopulateScene(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
+        {
+            orig(self);
+
+            if (!Run.instance)
+                return;
+
+            SceneDef currentScene = Stage.instance.sceneDef;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.UntimedStage
+                || currentScene.sceneType == SceneType.Junk)
+                return;
+
+            int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, instance.ItemsDef.itemIndex, true, true);
+            if (itemCount <= 0)
+                return;
+
+            Xoroshiro128Plus rng = Run.instance.stageRng;
+            DirectorPlacementRule placementRule = new DirectorPlacementRule
+            {
+                placementMode =
+                    SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh
+                        ? DirectorPlacementRule.PlacementMode.RandomNormalized
+                        : DirectorPlacementRule.PlacementMode.Random
+            };
+
+            string path = printerSpawncardPaths.Evaluate(rng.nextNormalizedFloat);
+            Log.Debug("Photograph spawning printer: " + path);
+            InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(path).WaitForCompletion();
+            DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
+
+            GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            //if (pillarObject)
+            //{
+            //    createdPillarObjects.Add(pillarObject);
+            //    pillarTypeSpawnCount[pillarIndex]++;
+            //}
+        }
+
+        private void PhotographPrinterSpawn(Stage currentStage)
+        {
+            if (!Run.instance || !NetworkServer.active)
                 return;
 
             SceneDef currentScene = currentStage.sceneDef;

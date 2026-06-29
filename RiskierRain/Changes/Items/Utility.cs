@@ -33,7 +33,7 @@ namespace RiskierRain.Changes
                 dropTable.bossWeight = 0.05f;//0.01f
             });
             IL.RoR2.ShrineChanceBehavior.AddShrineStack += ChanceDollActivationChance;
-            Stage.onServerStageBegin += ChanceDollShrineSpawn;
+            Stage.onStageStartGlobal += ChanceDollShrineSpawn;
 
             LanguageAPI.Add("ITEM_EXTRASHRINEITEM_PICKUP", "Gain a chance for higher rarity items from Shrines of Chance.");
             LanguageAPI.Add("ITEM_EXTRASHRINEITEM_DESC",
@@ -81,7 +81,7 @@ namespace RiskierRain.Changes
 
         private static void ChanceDollShrineSpawn(Stage currentStage)
         {
-            if (!Run.instance)
+            if (!Run.instance || !NetworkServer.active)
                 return;
 
             SceneDef currentScene = currentStage.sceneDef;

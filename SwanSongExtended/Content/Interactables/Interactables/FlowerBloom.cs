@@ -10,6 +10,7 @@ using SwanSongExtended.Modules;
 using SwanSongExtended.Components;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using static SwanSongExtended.Modules.Language.Styling;
 
 namespace SwanSongExtended.Interactables
 {
@@ -21,7 +22,7 @@ namespace SwanSongExtended.Interactables
             return ManaFlower.GetBloomConfig();
         }
 
-
+        public static bool broadcastDoubleBloom = true;
         public static float bloomChance = 15;
         public static float bloomDoubleChance = 30;
         public static int bloomCtMin = 2;
@@ -111,7 +112,11 @@ namespace SwanSongExtended.Interactables
             }
 
             if (this.rng.RangeInt(0, 100) < bloomDoubleChance)
+            {
                 eggsToHide += bloomCtDouble;
+                if(broadcastDoubleBloom)
+                    Chat.ServerAttemptBroadcastChat(UtilityColor("The air smells particularly floral...!"));
+            }
 
             for (int j = 0; j < eggsToHide; j++)
             {

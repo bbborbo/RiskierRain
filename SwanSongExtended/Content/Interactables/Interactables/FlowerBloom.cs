@@ -96,8 +96,8 @@ namespace SwanSongExtended.Interactables
         private void HideEggs(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
         {
             orig(self);
-            //if (Run.instance.stageClearCount <= 0)
-            //    return;
+            if (Run.instance.stageClearCount <= 0)
+                return;
 
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
             if (this.rng.RangeInt(0, 100) >= bloomChance)

@@ -11,9 +11,20 @@ using RoR2.ExpansionManagement;
 
 namespace SwanSongExtended.Items
 {
-    class ManaFlower : ItemBase
+    class ManaFlower : ItemBase<ManaFlower>
     {
+        public static bool GetBloomConfig()
+        {
+            return SwanSongPlugin.GetConfigBool(true, "Natures Gift", "Enables Natures Gift and Blooms");
+        }
+        public override bool forcePrerequisites => true;
+        public override bool GetPrerequisites()
+        {
+            return ManaFlower.GetBloomConfig();
+        }
         public override string ConfigName => "Items : Natures Gift";
+        public static float aspdAmtBase = 0.08f;
+        public static float aspdAmtStack = 0.08f;
         public static float cdrAmtBase = 0.08f;
         public static float cdrAmtStack = 0.08f;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
@@ -21,11 +32,11 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "BORBOMANAFLOWER";
 
-        public override string ItemPickupDesc => "It's pretty, oh so pretty...";
+        public override string ItemPickupDesc => "Slightly increase attack speed and reduce Primary and Secondary cooldowns.";
 
         public override string ItemFullDescription => $"Increases <style=cIsDamage>attack speed</style> " +
-            $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmtBase)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(cdrAmtStack)} per stack)</style>, " +
+            $"by <style=cIsUtility>{Tools.ConvertDecimal(aspdAmtBase)}</style> " +
+            $"<style=cStack>(+{Tools.ConvertDecimal(aspdAmtStack)} per stack)</style>, " +
             $"and reduces <style=cIsUtility>Primary and Secondary skill cooldowns</style> " +
             $"by <style=cIsUtility>{Tools.ConvertDecimal(cdrAmtBase)}</style> " +
             $"<style=cStack>(+{Tools.ConvertDecimal(cdrAmtStack)} per stack)</style>.";
@@ -63,7 +74,7 @@ Nature is so magical :)";
             int itemCount = GetCount(sender);
             if(itemCount > 0)
             {
-                float aspdBoost = cdrAmtBase + cdrAmtStack * (itemCount - 1);
+                float aspdBoost = aspdAmtBase + aspdAmtStack * (itemCount - 1);
 
                 args.attackSpeedMultAdd += aspdBoost;
 

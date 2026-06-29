@@ -63,7 +63,6 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
-            Log.Error("Egg Cant Hide Eggpiles Because Eggpile Not Implemented !!");
         }
         public override void PostInit()
         {

@@ -65,7 +65,24 @@ namespace SwanSongExtended.Changes
         public override void Hooks()
         {
             GetHitBehavior += ChocolateCoinOnHit;
+            IL.RoR2.HealthComponent.TakeDamageProcess += RemoveVanillaPennyFunctionality;
         }
+
+        private void RemoveVanillaPennyFunctionality(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<HealthComponent.ItemCounts>(nameof(HealthComponent.ItemCounts.goldOnHurt)));
+            if (!b)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveVanillaPennyFunctionality));
+                return;
+            }
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Ldc_I4_0);
+        }
+
         private void CreateChocolate()
         {
             chocolate = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Tooth/HealPack.prefab").WaitForCompletion().InstantiateClone("Chocolate", true);

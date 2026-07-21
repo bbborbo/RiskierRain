@@ -83,7 +83,7 @@ namespace JumpRework
         private int jumpCount = 0;
         private bool IsThisJumpUrnJump(CharacterMotor sender, JumpSynergyInfo info)
         {
-            if (IsBaseJump(sender))
+            if (IsBaseJump(sender, true) && !info.isConditionalJump)
                 return false;
             jumpCount++;
 

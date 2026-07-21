@@ -31,7 +31,7 @@ namespace MoreStats
             int baseJumpCount = body.baseJumpCount;
             int timesJumped = motor.jumpCount;
 
-            if (timesJumped > baseJumpCount)
+            if (timesJumped >= baseJumpCount)
                 return true;
             return false;
         }
@@ -45,7 +45,7 @@ namespace MoreStats
             if (mustBeGrounded)
                 return timesJumped == 0;
 
-            if (timesJumped <= baseJumpCount)
+            if (timesJumped < baseJumpCount)
                 return true;
             return false;
         }
@@ -56,7 +56,7 @@ namespace MoreStats
             int baseJumpCount = body.baseJumpCount;
             int timesJumped = motor.jumpCount;
 
-            if (timesJumped >= maxJumpCount)
+            if (timesJumped >= maxJumpCount - 1)
                 return true;
             return false;
         }
@@ -124,6 +124,8 @@ namespace MoreStats
         private static float verticalBonus = 0;
         private static float horizontalBonus = 0;
         private static bool didConditionalJump = false;
+        private static bool jumpInputReceived = false;
+        private static bool ignoredRequirements = false;
         private static void InsertConditionalJumps(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -152,6 +154,20 @@ namespace MoreStats
             c.Index++;
             c.EmitDelegate<Func<float, float>>((vBonusIn) => AddJumpBonus(vBonusIn, verticalBonus));
 
+            c.GotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<GenericCharacterMain>(nameof(GenericCharacterMain.ApplyJumpVelocity))
+                );
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Action<GenericCharacterMain>>((self) =>
+            {
+                OnJumpEvent?.Invoke(self.characterMotor,
+                    new JumpSynergyInfo(
+                        isConditionalJump: didConditionalJump,
+                        didJumpIgnoreRequirements: ignoredRequirements
+                        )
+                    );
+            });
+
             float AddJumpBonus(float bonusIn, float bonusBonus)
             {
                 return bonusIn + bonusBonus;
@@ -167,7 +183,9 @@ namespace MoreStats
                 verticalBonus = 0;
                 horizontalBonus = 0;
                 didConditionalJump = false;
-                if (self.jumpInputReceived == false || self.hasCharacterMotor == false || (self.characterMotor.jumpCount <= 0) || !NetworkServer.active)
+                jumpInputReceived = self.jumpInputReceived;
+                ignoredRequirements = ignoreRequirements;
+                if (jumpInputReceived == false || self.hasCharacterMotor == false || (self.characterMotor.jumpCount <= 0) || !NetworkServer.active)
                     return;
 
                 if (GetConditionalJump(self, ignoreRequirements))
@@ -188,17 +206,10 @@ namespace MoreStats
                 return;
             }
             c.Emit(OpCodes.Ldarg_0);
-            c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Func<bool, GenericCharacterMain, bool, bool>>((canJump, characterMain, ignoreRequirements) =>
+            c.EmitDelegate<Func<bool, GenericCharacterMain, bool>>((canJump, characterMain) =>
             {
-                if (canJump || didConditionalJump)
+                if (jumpInputReceived && (canJump || didConditionalJump))
                 {
-                    OnJumpEvent?.Invoke(characterMain.characterMotor,
-                        new JumpSynergyInfo(
-                            isConditionalJump: didConditionalJump,
-                            didJumpIgnoreRequirements: ignoreRequirements
-                            )
-                        );
                     return true;
                 }
                 return false;

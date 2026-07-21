@@ -114,16 +114,28 @@ namespace BossDropRework
                 5,
                 "Most attacks default to 1. Recommended to install ProcPatcher");
 
-            bossHunterDebuff = ScriptableObject.CreateInstance<BuffDef>();
+            NoBossDropsBuff = ScriptableObject.CreateInstance<BuffDef>();
 
-            bossHunterDebuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
-            bossHunterDebuff.canStack = false;
-            bossHunterDebuff.isDebuff = true;
-            bossHunterDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
-            bossHunterDebuff.name = "TrophyHunterDebuff";
-            bossHunterDebuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
+            NoBossDropsBuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
+            NoBossDropsBuff.canStack = false;
+            NoBossDropsBuff.isDebuff = false;
+            NoBossDropsBuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+            NoBossDropsBuff.name = "TrophyHunterDebuff";
+            NoBossDropsBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
+            NoBossDropsBuff.isHidden = true;
 
-            R2API.ContentAddition.AddBuffDef(bossHunterDebuff);
+            R2API.ContentAddition.AddBuffDef(NoBossDropsBuff);
+            YesBossDropsBuff = ScriptableObject.CreateInstance<BuffDef>();
+
+            YesBossDropsBuff.buffColor = new Color(0.2f, 0.9f, 0.8f, 1);
+            YesBossDropsBuff.canStack = false;
+            YesBossDropsBuff.isDebuff = false;
+            YesBossDropsBuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
+            YesBossDropsBuff.name = "TrophyHunterDebuff";
+            YesBossDropsBuff.iconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/LunarSkillReplacements/texBuffLunarDetonatorIcon.tif").WaitForCompletion();
+            YesBossDropsBuff.isHidden = true;
+
+            R2API.ContentAddition.AddBuffDef(YesBossDropsBuff);
 
             BossesDropBossItems();
 
@@ -166,6 +178,22 @@ namespace BossDropRework
             return dropChance;
         }
 
+        public static bool GetBossDropFilter(CharacterBody victimBody)
+        {
+            if (victimBody == null)
+                return false;
+
+            if (victimBody.HasBuff(NoBossDropsBuff))
+                return false;
+
+            BodyIndex enemyBodyIndex = victimBody.bodyIndex;
+
+            if (enemyBodyIndex == BodyCatalog.FindBodyIndex("TitanGoldBody") && !ForceDropsFromAurelionite.Value)
+                return false;
+
+            return true;
+        }
+
         public void BossesDropTrophies(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
         {
             orig(self, damageReport);
@@ -176,12 +204,9 @@ namespace BossDropRework
             CharacterBody attackerBody = damageReport.attackerBody;
             CharacterBody enemyBody = damageReport.victimBody;
 
-            if (attackerBody == null || enemyBody == null)
+            if (attackerBody == null)
                 return;
-
-            BodyIndex enemyBodyIndex = enemyBody.bodyIndex;
-
-            if (enemyBodyIndex == BodyCatalog.FindBodyIndex("TitanGoldBody") && !ForceDropsFromAurelionite.Value)
+            if (GetBossDropFilter(enemyBody) == false)
                 return;
 
             if (enemyBody.healthComponent.alive)
@@ -196,12 +221,18 @@ namespace BossDropRework
             ItemDef itemToDrop = null;
 
             int players = Run.instance.participatingPlayerCount;
+            DropItem(attackerBody, enemyBody, killerMaster);
+        }
 
+        internal static void DropItem(CharacterBody attackerBody, CharacterBody enemyBody, CharacterMaster killerMaster, float dropChanceOverride = -1)
+        {
             PickupDropTable dropTable;
             float dropChance = GetBaseBossItemDropChanceFromBody(enemyBody, out dropTable);
-            if(dropChance > 0 && dropTable != null)
+            if (dropChanceOverride != 0)
+                dropChance = dropChanceOverride;
+            if (dropChance > 0 && dropTable != null)
             {
-                if(InvokeModifyBossItemDropChance(enemyBody, attackerBody, ref dropChance) > 0)
+                if (InvokeModifyBossItemDropChance(enemyBody, attackerBody, ref dropChance) > 0)
                 {
 
                     if (Util.CheckRoll(dropChance, killerMaster)) //&& drop != PickupCatalog.FindPickupIndex("VoidCoin"))

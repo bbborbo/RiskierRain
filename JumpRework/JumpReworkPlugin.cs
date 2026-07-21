@@ -158,7 +158,7 @@ namespace JumpRework
             UrnBallInterval = CustomConfigFile.Bind<int>(
                 "Mired Urn",
                 "Mired Urn Ball Interval",
-                3,
+                2,
                 "Mired Urn fires a tar ball on every Nth air jump, based on this interval.");
             UrnBallDamageCoefficient = CustomConfigFile.Bind<float>(
                 "Mired Urn",

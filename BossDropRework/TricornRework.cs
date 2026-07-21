@@ -1,42 +1,46 @@
 ﻿using BepInEx;
 using R2API;
 using RoR2;
+using RoR2.Audio;
 using RoR2.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace BossDropRework
 {
     public partial class BossDropReworkPlugin : BaseUnityPlugin
     {
-        public static BuffDef bossHunterDebuff;
+        public static BuffDef NoBossDropsBuff;
+        public static BuffDef YesBossDropsBuff;
 
-        int tricornDebuffDuration = 999;
-        bool reworkTricorn = true;
+        public static float trophyHunterMaxHealthDamage => trophyHunterCurseCount / (100f + trophyHunterCurseCount);
+        public static int trophyHunterCurseCount = 33;
+        public static int trophyHunterDebuffDuration = 999;
+        public static bool reworkTricorn = true;
 
         void TricornRework()
         {
             On.RoR2.EquipmentSlot.FireBossHunter += FireTricornFix;
             ModifyBossItemDropChance += TricornDropChance;
 
-            LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_PICKUP", "Cripple a large monster and claim its <style=cIsDamage>trophy</style> after it dies. Consumed on use.");
+            LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_PICKUP", "Cripple a large monster and claim its <style=cIsDamage>trophy</style>. Consumed on use.");
             LanguageAPI.Add("EQUIPMENT_BOSSHUNTER_DESC", 
-                $"Targets any enemy capable of dropping a <style=cIsDamage>trophy item</style>, " +
-                $"dealing <style=cIsDamage>{TricornDamageCoefficient.Value * 100}% damage</style>, " +
-                $"then <style=cIsUtility>Crippling and Hemorrhaging</style> it " +
-                $"for <style=cIsUtility>{tricornDebuffDuration}</style> seconds. " +
-                $"When the enemy dies, it has a 100% chance to drop its <style=cIsDamage>trophy</style>. " +
-                $"Equipment is <style=cIsUtility>consumed</style> on use.");
+                $"Targets any enemy capable of dropping a <style=cIsDamage>trophy item</style>. " +
+                $"Blast it for <style=cIsDamage>{Mathf.CeilToInt(trophyHunterMaxHealthDamage * 100)}% max health</style>, " +
+                $"instantly severing its <style=cIsDamage>trophy item</style>, and Crippling and Hemorrhaging it " +
+                $"for <style=cIsUtility>{trophyHunterDebuffDuration}</style> seconds."
+                );
             //"<style=cIsDamage>Execute</style> any enemy capable of spawning a <style=cIsDamage>unique reward</style>,
             //and it will drop that <style=cIsDamage>item</style>. Equipment is <style=cIsUtility>consumed</style> on use.");
         }
 
         private void TricornDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
         {
-            if (victim.HasBuff(bossHunterDebuff) && dropChance != 0)
+            if (victim.HasBuff(NoBossDropsBuff) && dropChance != 0)
             {
                 dropChance = 100;
             }
@@ -77,7 +81,6 @@ namespace BossDropRework
                             bool shouldFire = true; 
                             if(GetTricornFireAndBreak(attackerBody, enemyBody, ref shouldFire))
                             {
-                                enemyBody.AddBuff(bossHunterDebuff);
                                 destroyTricorn = true;
                             }
                             /*bool hasScalpel = (self.characterBody.inventory.GetItemCountEffective(DisposableScalpel.instance.ItemsDef) > 0);
@@ -89,19 +92,28 @@ namespace BossDropRework
 
                             if (reworkTricorn)
                             {
-                                DamageInfo damageInfo = new DamageInfo();
-                                damageInfo.attacker = self.gameObject;
-                                damageInfo.force = normalized * 1500f;
-                                damageInfo.damage = attackerBody.damage * TricornDamageCoefficient.Value;
-                                damageInfo.procCoefficient = TricornProcCoefficient.Value;
-                                enemyHealthComponent.TakeDamage(damageInfo);
+                                //DamageInfo damageInfo = new DamageInfo();
+                                //damageInfo.attacker = self.gameObject;
+                                //damageInfo.force = normalized * 1500f;
+                                //damageInfo.damage = attackerBody.damage * TricornDamageCoefficient.Value;
+                                //damageInfo.procCoefficient = TricornProcCoefficient.Value;
+                                //enemyHealthComponent.TakeDamage(damageInfo);
 
-                                enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, tricornDebuffDuration);
-                                DotController.InflictDot(enemyHealthComponent.gameObject, damageInfo.attacker, hurtBox,
-                                    DotController.DotIndex.SuperBleed, tricornDebuffDuration, 1f);
+                                DropItem(attackerBody, enemyBody, attackerBody.master, 100);
+
+                                enemyBody.AddBuff(NoBossDropsBuff);
+                                for (int i = 0; i < trophyHunterCurseCount; i++)
+                                {
+                                    enemyBody.AddBuff(RoR2Content.Buffs.PermanentCurse);
+                                }
+                                enemyBody.AddTimedBuffAuthority(RoR2Content.Buffs.Cripple.buffIndex, trophyHunterDebuffDuration);
+                                DotController.InflictDot(enemyHealthComponent.gameObject, attackerBody.gameObject, hurtBox,
+                                    DotController.DotIndex.SuperBleed, trophyHunterDebuffDuration, 1f);
+                                FakeEnemyDeath(enemyBody);
                             }
                             else
                             {
+                                enemyBody.AddBuff(YesBossDropsBuff);
                                 enemyBody.master.TrueKill(base.gameObject, null, default(DamageTypeCombo));
                             }
                         }
@@ -199,6 +211,99 @@ namespace BossDropRework
 
             }
             return false;
+        }
+
+        private void FakeEnemyDeath(CharacterBody enemyBody)
+        {
+            //death ak event
+            if (enemyBody.TryGetComponent(out CharacterDeathBehavior deathBehavior))
+            {
+                if (deathBehavior.deathAkEvent != null)
+                {
+                    deathBehavior.deathAkEvent.Post(deathBehavior.gameObject);
+                }
+            }
+            //death sound
+            SfxLocator sfxLocator = enemyBody.sfxLocator;
+            Transform cachedModelTransform = enemyBody.modelLocator.modelBaseTransform;
+            if (sfxLocator && sfxLocator.deathSound != "" && cachedModelTransform != null)
+            {
+                PointSoundManager.EmitSoundLocal(
+                    sfxLocator.deathSound,
+                    cachedModelTransform.gameObject ? cachedModelTransform.gameObject.transform.position : base.gameObject.transform.position
+                    );
+            }
+
+            //death gibs
+            GameObject deathEffectPrefab = GetDeathEffectPrefab(enemyBody);
+            if (deathEffectPrefab == null)
+                return;
+            if (!EffectManager.ShouldUsePooledEffect(deathEffectPrefab))
+            {
+                EffectManager.SimpleEffect(deathEffectPrefab, enemyBody.transform.position, enemyBody.transform.rotation, false);
+                return;
+            }
+            EffectManager.GetAndActivatePooledEffect(deathEffectPrefab, enemyBody.transform.position, enemyBody.transform.rotation);
+        }
+
+        private GameObject GetDeathEffectPrefab(CharacterBody enemyBody)
+        {
+            string path = "";
+            switch (enemyBody.baseNameToken)
+            {
+                case "TITAN_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Titan.TitanDeathEffect_prefab;
+                    break;
+                case "TITANGOLD_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Titan.TitanGoldDeathEffect_prefab;
+                    break;
+                case "BEETLEQUEEN_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleQueen.BeetleQueenDeathImpact_prefab;
+                    break;
+                case "CLAYBOSS_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.ClayBossDeath_prefab;
+                    break;
+                case "GRANDPARENT_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Grandparent.GrandparentDeathEffect_prefab;
+                    break;
+                case "GRAVEKEEPER_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Gravekeeper.GravekeeperDeathImpact_prefab;
+                    break;
+                case "IMPBOSS_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ImpBoss.ImpBossDeathEffect_prefab;
+                    break;
+                case "MAGMAWORM_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MagmaWorm.MagmaWormDeath_prefab;
+                    break;
+                case "ELECTRICWORM_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MagmaWorm.MagmaWormDeath_prefab;
+                    break;
+                case "SCAV_BODY_NAME":
+                    path = "";
+                    break;
+                case "ROBOBALLBOSS_BODY_NAME":
+                case "SUPERROBOBALLBOSS_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_RoboBallBoss.OmniExplosionVFXRoboBallBossDeath_prefab;
+                    break;
+                case "VAGRANT_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Vagrant.VagrantDeathExplosion_prefab;
+                    break;
+                case "MEGACONSTRUCT_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_MajorAndMinorConstruct.MajorConstructDeathEffect_prefab;
+                    break;
+                case "VOIDMEGACRAB_BODY_NAME":
+                    path = "";// RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidMegaCrab.VoidMegaCrabDeathExplosion_prefab;
+                    break;
+                case "SOLUSAMALGAMATOR_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_SolusAmalgamator.SolusAmalgamatorExplosionVFXDeath_prefab;
+                    break;
+                case "VULTUREHUNTER_BODY_NAME":
+                    path = RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_VultureHunter.VultureHunterSkyDeath_prefab;
+                    break;
+            }
+            if (string.IsNullOrEmpty(path))
+                return null;
+            return Addressables.LoadAssetAsync<GameObject>(path).WaitForCompletion();
         }
     }
 }

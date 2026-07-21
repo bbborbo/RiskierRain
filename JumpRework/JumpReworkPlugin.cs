@@ -57,7 +57,7 @@ namespace JumpRework
         public static ConfigEntry<float> HeadstomperBoostStrengthFirst { get; set; }
         public static ConfigEntry<float> HeadstomperBoostStrengthLast { get; set; }
 
-        public static ConfigEntry<float> UrnBallChance { get; set; }
+        public static ConfigEntry<int> UrnBallInterval { get; set; }
         public static ConfigEntry<float> UrnBallDamageCoefficient { get; set; }
         #endregion
         public static bool IsMissileArtifactEnabled()
@@ -155,11 +155,11 @@ namespace JumpRework
                 "Only applies if the Super Jump is configured to be last");
             #endregion
             #region urn
-            UrnBallChance = CustomConfigFile.Bind<float>(
+            UrnBallInterval = CustomConfigFile.Bind<int>(
                 "Mired Urn",
-                "Mired Urn Ball Chance",
-                0.25f,
-                "Stacks identically, approaches 100%");
+                "Mired Urn Ball Interval",
+                3,
+                "Mired Urn fires a tar ball on every Nth air jump, based on this interval.");
             UrnBallDamageCoefficient = CustomConfigFile.Bind<float>(
                 "Mired Urn",
                 "Urn Ball Damage Coefficient",
@@ -175,7 +175,7 @@ namespace JumpRework
             {
                 IL.EntityStates.GenericCharacterMain.ProcessJump_bool += DoubleJumpStrengthNerf;
             }
-            if (ReworkFeather.Value)
+            if (false)//ReworkFeather.Value)
             {
                 BaseStats.FeatherJumpCountBase = FeatherJumpCount.Value;
                 BaseStats.FeatherJumpCountStack = 0;

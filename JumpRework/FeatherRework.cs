@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static MoreStats.OnJump;
+using static MoreStats.JumpAPI;
 
 namespace JumpRework
 {
@@ -20,6 +20,7 @@ namespace JumpRework
         float featherStackDuration = 0.5f;
         private void FeatherRework()
         {
+            return;
             OnJumpEvent += FeatherOnJump;
             //On.RoR2.GlobalEventManager.OnCharacterHitGroundServer += FeatherOnLandServer;
             //GetStatCoefficients += FeatherDamageBoost;
@@ -30,13 +31,14 @@ namespace JumpRework
                 $"fading over <style=cIsUtility>{featherBaseDuration}</style> <style=cStack>(+{featherStackDuration} per stack)</style> seconds.");
         }
 
-        private void FeatherOnJump(CharacterMotor motor, CharacterBody body, ref float verticalBonus)
+        private void FeatherOnJump(CharacterMotor motor, JumpSynergyInfo synergyInfo)
         {
+            CharacterBody body = motor.body;
             Inventory inv = body.inventory;
             if (inv)
             {
                 int count = inv.GetItemCountEffective(RoR2Content.Items.Feather);
-                if (count > 0 && IsDoubleJump(motor, body))
+                if (count > 0 && IsDoubleJump(motor))
                 {
                     int increments = 5;
                     float totalDuration = featherBaseDuration + (float)(count - 1) * featherStackDuration;

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
-using static MoreStats.OnJump;
+using static MoreStats.JumpAPI;
 
 namespace JumpRework
 {
@@ -43,7 +43,7 @@ namespace JumpRework
                     CharacterMotor motor = self.bodyMotor;
                     if (motor)
                     {
-                        shouldSuperJump = IsLastJump(motor, self.body);
+                        shouldSuperJump = IsLastJump(motor);
                     }
                 }
 

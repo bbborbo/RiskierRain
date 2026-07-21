@@ -26,7 +26,7 @@ namespace MoreStats
         {
             StatHooks.Init();
             OnHit.Init();
-            OnJump.Init();
+            JumpAPI.Init();
         }
         public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
         {

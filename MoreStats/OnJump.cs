@@ -169,16 +169,12 @@ namespace MoreStats
                 didConditionalJump = false;
                 if (self.jumpInputReceived == false || self.hasCharacterMotor == false || (self.characterMotor.jumpCount <= 0) || !NetworkServer.active)
                     return;
-                if (self.characterBody.isPlayerControlled)
-                    Debug.Log(self.characterMotor.jumpCount);
 
                 if (GetConditionalJump(self, ignoreRequirements))
                 {
                     didConditionalJump = true;
                     //self.characterMotor.jumpCount--;
                 }
-                if (self.characterBody.isPlayerControlled)
-                    Debug.Log(didConditionalJump);
             });
 
             bool b1 = c.TryGotoNext(MoveType.After,
@@ -197,8 +193,6 @@ namespace MoreStats
             {
                 if (canJump || didConditionalJump)
                 {
-                    if(characterMain.characterBody.isPlayerControlled)
-                        Debug.Log("did jump");
                     OnJumpEvent?.Invoke(characterMain.characterMotor,
                         new JumpSynergyInfo(
                             isConditionalJump: didConditionalJump,
@@ -219,17 +213,12 @@ namespace MoreStats
                 MoreStatsPlugin.DebugBreakpoint(nameof(InsertConditionalJumpProc), 2);
                 return;
             }
-            c.Emit(OpCodes.Ldarg_0);
-            c.EmitDelegate<Func<int,GenericCharacterMain, int>>((jumpCountToAdd, self) =>
+            c.EmitDelegate<Func<int,int>>((jumpCountToAdd) =>
             {
                 if (didConditionalJump)
                 {
-                    if (self.characterBody.isPlayerControlled)
-                        Debug.Log("aaaa");
                     return 0;
                 }
-                if (self.characterBody.isPlayerControlled)
-                    Debug.Log("uuuu");
                 return jumpCountToAdd; //which would be 1 but idk dont wanna mess with it
             });
         }

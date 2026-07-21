@@ -13,7 +13,7 @@ namespace BossDropRework
         public static ExplicitPickupDropTable hordeDropTable;
         void WakeOfVulturesRework()
         {
-            ItemDef wakeItemDef = Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/HeadHunter/HeadHunter.asset").WaitForCompletion();
+            ItemDef wakeItemDef = Addressables.LoadAssetAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_HeadHunter.HeadHunter_asset).WaitForCompletion();
             wakeItemDef.tier = ItemTier.Boss;
             wakeItemDef.deprecatedTier = ItemTier.Boss;
 
@@ -22,7 +22,17 @@ namespace BossDropRework
 
             hordeDropTable = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
             hordeDropTable.canDropBeReplaced = true;
-            hordeDropTable.pickupEntries = new ExplicitPickupDropTable.PickupDefEntry[] { pickupEntry };
+
+            List<ExplicitPickupDropTable.PickupDefEntry> pickupDefEntries = new List<ExplicitPickupDropTable.PickupDefEntry>();
+            pickupDefEntries.Add(
+                new ExplicitPickupDropTable.PickupDefEntry
+                {
+                    pickupDef = wakeItemDef,
+                    pickupWeight = 1f
+                }
+            );
+            hordeDropTable.pickupEntries = pickupDefEntries.ToArray();
+
 
             //On.RoR2.DeathRewards.Awake += SetDropTableForHordesOfMany;
             //On.RoR2.TeleporterInteraction.Awake += SetBossDirectorDropTable;

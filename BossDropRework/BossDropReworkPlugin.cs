@@ -234,7 +234,6 @@ namespace BossDropRework
             {
                 if (InvokeModifyBossItemDropChance(enemyBody, attackerBody, ref dropChance) > 0)
                 {
-
                     if (Util.CheckRoll(dropChance, killerMaster)) //&& drop != PickupCatalog.FindPickupIndex("VoidCoin"))
                     {
                         UniquePickup drop = dropTable.GeneratePickup(Run.instance.bossRewardRng);

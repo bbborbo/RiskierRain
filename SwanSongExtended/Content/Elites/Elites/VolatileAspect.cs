@@ -107,7 +107,7 @@ namespace SwanSongExtended.Elites
                         position = spawnPosition,
                         rotation = Util.QuaternionSafeLookRotation(Vector3.up),
                         owner = victimBody.gameObject,
-                        damage = (1 + 0.3f * victimBody.level) * volatileLandmineDamage,
+                        damage = volatileLandmineDamage * Tools.GetAmbientLevelScalar(0.2f),
                         force = volatileMortarForce,
                         crit = Util.CheckRoll(victimBody.crit, victimBody.master)
                     });
@@ -125,7 +125,7 @@ namespace SwanSongExtended.Elites
                                 position = spawnPosition,
                                 rotation = Util.QuaternionSafeLookRotation(dir),
                                 owner = victimBody.gameObject,
-                                damage = (1 + 0.3f * victimBody.level) * volatileLandmineDamage,
+                                damage = volatileLandmineDamage * Tools.GetAmbientLevelScalar(0.2f),
                                 force = volatileMortarForce,
                                 crit = Util.CheckRoll(victimBody.crit, victimBody.master)
                             });
@@ -456,7 +456,7 @@ namespace SwanSongExtended.Elites
                                 position = body.corePosition,
                                 rotation = Util.QuaternionSafeLookRotation(fireDirection),
                                 owner = body.gameObject,
-                                damage = (1 + 0.3f * body.level) * mortarDamageCoefficient,
+                                damage = mortarDamageCoefficient * Tools.GetAmbientLevelScalar(0.2f),
                                 force = 0f,
                                 crit = Util.CheckRoll(body.crit, body.master),
                                 damageColorIndex = DamageColorIndex.Default,

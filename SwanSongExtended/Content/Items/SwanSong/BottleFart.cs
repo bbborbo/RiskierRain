@@ -226,32 +226,32 @@ namespace SwanSongExtended.Items
 
         void OnEnable()
         {
-            this.body.AddBuff(BottleCloud.cloudReadyBuff);
+            this.body.AddBuff(BottleFart.fartReadyBuff);
         }
         void OnDisable()
         {
-            if (body.HasBuff(BottleCloud.cloudNotReadyBuff))
+            if (body.HasBuff(BottleFart.fartNotReadyBuff))
             {
-                body.ClearTimedBuffs(BottleCloud.cloudNotReadyBuff);
+                body.ClearTimedBuffs(BottleFart.fartNotReadyBuff);
             }
-            if (body.HasBuff(BottleCloud.cloudReadyBuff))
+            if (body.HasBuff(BottleFart.fartReadyBuff))
             {
-                body.RemoveBuff(BottleCloud.cloudReadyBuff);
+                body.RemoveBuff(BottleFart.fartReadyBuff);
             }
         }
         private void FixedUpdate()
         {
-            bool isBuffed = this.body.HasBuff(BottleCloud.cloudReadyBuff);
-            bool isDebuffed = this.body.HasBuff(BottleCloud.cloudNotReadyBuff);
+            bool isBuffed = this.body.HasBuff(BottleFart.fartReadyBuff);
+            bool isDebuffed = this.body.HasBuff(BottleFart.fartNotReadyBuff);
             bool isNeither = !isBuffed && !isDebuffed;
             if (isNeither)
             {
-                this.body.AddBuff(BottleCloud.cloudReadyBuff);
+                this.body.AddBuff(BottleFart.fartReadyBuff);
             }
             bool isBoth = isBuffed && isDebuffed;
             if (isBoth)
             {
-                this.body.RemoveBuff(BottleCloud.cloudReadyBuff);
+                this.body.RemoveBuff(BottleFart.fartNotReadyBuff);
             }
         }
     }

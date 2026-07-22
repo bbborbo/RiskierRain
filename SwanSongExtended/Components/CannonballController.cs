@@ -81,7 +81,7 @@ namespace SwanSongExtended.Components
 			SurgingAspect.FireRingAuthority(bouncePosition, transform.forward, delayBlast.attacker, delayBlast.baseDamage, delayBlast.crit);
 
 			this.bounces++;
-			if (this.bounces >= SpiteBombController.maxBounces)
+			if (this.bounces >= CannonballController.maxBounces)
 			{
 				this.OnFinalBounce();
 				return;
@@ -205,7 +205,7 @@ namespace SwanSongExtended.Components
 		[SyncVar]
 		private float _initialVelocityY;
 
-		private static readonly int maxBounces = 2;
+		private static readonly int maxBounces = 1;
 
 		private Vector3 startPosition;
 

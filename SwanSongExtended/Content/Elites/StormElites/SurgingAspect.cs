@@ -33,10 +33,12 @@ namespace SwanSongExtended.Elites
 
         public static GameObject waveProjectilePrefab;
         public static GameObject cannonballProjectilePrefab;
-        public static float waveProjectileSpeed = 15f;
-        public static float waveProjectileCount = 6f;
-        public static float waveProjectileDamageCoefficient = 0.5f;
-        public static float waveProjectileForce = 100f;
+        public static float waveProjectileSpeed = 20f; //60f
+        public static float waveProjectileDuration = 2.5f; //3f
+        public static float waveProjectileCount = 5f; //12f
+        public static float waveProjectileBaseDamage = 10f;
+        public static float waveProjectileProcCoefficient = 2.0f;
+        public static float waveProjectileForce = 400f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
@@ -45,14 +47,14 @@ namespace SwanSongExtended.Elites
         public static float teleportDistanceFromTargetMin = 10;
         public static float teleportDistanceFromTarget = 30;
         public static float teleportDistanceFromTargetPerSize = 0;
-        public static float teleportDelay = 0.8f;
-        public static float teleportWaveDelay = 0.2f;
+        public static float teleportDelay = 0.7f;
+        public static float teleportWaveDelay = 0.3f;
         public static float teleportEffectDuration = 1.0f;
-        public static float teleportStaggerDuration = 4f;
+        public static float teleportStaggerDuration = 3.33f;
 
         public static int surgingEmpoweredArmor = 300;
         public static float surgingEmpoweredMoveSpeed = 0.8f;
-        public static float surgingEmpoweredAtkSpeed = 0.8f;
+        public static float surgingEmpoweredAtkSpeed = 0.5f;
 
         public override float EliteDamageModifier => 0;
         public override float EliteHealthModifier => 0;
@@ -152,7 +154,13 @@ namespace SwanSongExtended.Elites
             if(waveProjectilePrefab.TryGetComponent(out ProjectileCharacterController projectileCharacterController))
             {
                 projectileCharacterController.velocity = waveProjectileSpeed; //60
-                projectileCharacterController.lifetime = 2; //3
+                projectileCharacterController.lifetime = waveProjectileDuration; //3
+            }
+
+            if(waveProjectilePrefab.TryGetComponent(out ProjectileOverlapAttack overlap))
+            {
+                overlap.overlapProcCoefficient = waveProjectileProcCoefficient;
+                overlap.forceVector = Vector3.up * waveProjectileForce;
             }
 
             Modules.Content.AddProjectilePrefab(waveProjectilePrefab);
@@ -284,7 +292,7 @@ namespace SwanSongExtended.Elites
                 component.bouncePosition = raycastOrigin;
                 component.initialVelocityY = UnityEngine.Random.Range(5f, 25f);
                 delayBlast.position = spawnPosition;
-                delayBlast.baseDamage = 10 * (1 + 0.2f * level);
+                delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f);
                 delayBlast.baseForce = 2300f;
                 delayBlast.attacker = victimBody.gameObject;
                 delayBlast.radius = BombArtifactManager.bombBlastRadius;
@@ -371,10 +379,10 @@ namespace SwanSongExtended.Elites
                     SurgingAspect.waveProjectilePrefab,
                     position, Util.QuaternionSafeLookRotation(dir),
                     attacker,
-                    baseDamage * waveProjectileDamageCoefficient,
-                    waveProjectileForce,
-                    isCrit, 
-                    DamageColorIndex.Default, null, -1f);
+                    waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f),
+                    0,
+                    isCrit,
+                    DamageColorIndex.Default, null, -1f) ;
             }
         }
     }
@@ -524,6 +532,13 @@ namespace SwanSongExtended.Elites
                 return;
             }
 
+            if (body.HasBuff(Storms.StormsCore.StormEliteWeak) || body.healthComponent.isInFrozenState)
+            {
+                this.QuickCooldown(targetSearchCooldown);
+                foundLocation = false;
+                return;
+            }
+
             if (foundLocation)
             {
                 float delta = Time.time - teleportStaggerTimestamp;
@@ -540,12 +555,14 @@ namespace SwanSongExtended.Elites
                 }
             }
 
-            if (baseAI.currentEnemy == null || baseAI.currentEnemy.gameObject == null)
+            baseAI.ForceAcquireNearestEnemyIfNoCurrentEnemy();
+            if (baseAI.currentEnemy.gameObject == null)
             {
                 this.QuickCooldown(targetSearchCooldown);
                 return;
             }
-            if(TryPickNextTpLocation(baseAI.currentEnemy.characterBody.footPosition, out Vector3 loc))
+
+            if (TryPickNextTpLocation(baseAI.currentEnemy.characterBody.footPosition, out Vector3 loc))
             {
                 SetTeleportLocation(loc);
                 this.QuickCooldown(0.3f);
@@ -612,6 +629,10 @@ namespace SwanSongExtended.Elites
                 origin = teleportLocation
             }, true);
 
+            if(body.healthComponent.TryGetComponent(out SetStateOnHurt ssoh))
+            {
+                ssoh.OverrideStun(1f);
+            }
             QuickCooldown(SurgingAspect.teleportWaveDelay);
             nextStep = new Action(StepFireWaveProjectile);
         }

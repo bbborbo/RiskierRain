@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using RoR2;
 using UnityEngine.Events;
+using SwanSongExtended.Elites;
 
 namespace SwanSongExtended
 {
@@ -91,9 +92,31 @@ namespace SwanSongExtended
 
             return prefab;
         }
+        public static bool IsStormElite(this CharacterBody body)
+        {
+            //go my hardcoded bullshit
+            if (SurgingAspect.instance != null && body.HasBuff(SurgingAspect.instance.EliteBuffDef))
+                return true;
+            if (WhirlwindAspect.instance != null && body.HasBuff(WhirlwindAspect.instance.EliteBuffDef))
+                return true;
+            if (DeuteriumAspect.instance != null && body.HasBuff(DeuteriumAspect.instance.EliteBuffDef))
+                return true;
+            return false;
+        }
         public static string AsPercent(this float d)
         {
             return (d * 100f).ToString() + "%";
+        }
+        public static void AddPersistentListener(this CombatDirector.OnSpawnedServer unityEvent, UnityAction<GameObject> action)
+        {
+            unityEvent.m_PersistentCalls.AddListener(new PersistentCall
+            {
+                m_Target = action.Target as UnityEngine.Object,
+                m_TargetAssemblyTypeName = UnityEventTools.TidyAssemblyTypeName(action.Method.DeclaringType.AssemblyQualifiedName),
+                m_MethodName = action.Method.Name,
+                m_CallState = UnityEventCallState.RuntimeOnly,
+                m_Mode = PersistentListenerMode.EventDefined,
+            });
         }
         public static void AddPersistentListener(this HoldoutZoneController.HoldoutZoneControllerChargedUnityEvent unityEvent, UnityAction<HoldoutZoneController> action)
         {

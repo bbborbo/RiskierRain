@@ -225,8 +225,7 @@ namespace SwanSongExtended.Storms
 
             public void EnableDirector()
             {
-                //temporarily disabled until storm elites are implemented
-                if (true)//stormController.combatDirector == null)
+                if (stormController.combatDirector == null)
                 {
                     Debug.LogError("StormController: Combat Director null!");
                     return;
@@ -234,7 +233,11 @@ namespace SwanSongExtended.Storms
 
                 if (!NetworkServer.active)
                     return;
+                if (stormController.combatDirector.enabled)
+                    return;
                 stormController.combatDirector.enabled = true;
+                stormController.combatDirector.monsterCredit += StormsCore.stormDirectorCreditStimulus;
+                stormController.combatDirector.monsterSpawnTimer = 0;
             }
             public float GetStormIntensityIncrement()
             {
@@ -321,7 +324,7 @@ namespace SwanSongExtended.Storms
                             CharacterBody.readOnlyInstancesList
                                 .Where(body => /*!ShelterUtilsModule.IsBodySheltered(body) &&*/
                                 (body.teamComponent.teamIndex == TeamIndex.Player && !body.isFlying)
-                                || IsCharacterStormElite(body) || Util.CheckRoll(meteorTargetEnemyChance))
+                                || body.IsStormElite() || Util.CheckRoll(meteorTargetEnemyChance))
                                 .ToArray<CharacterBody>(),
                             TeleporterInteraction.instance ? TeleporterInteraction.instance.transform.position : base.transform.position);
                     item.hitChance = 1 - waveMissChance;

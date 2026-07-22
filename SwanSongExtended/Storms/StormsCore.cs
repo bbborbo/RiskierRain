@@ -27,11 +27,9 @@ namespace SwanSongExtended.Storms
         public static GameObject StormsControllerPrefab;
         public static EliteTierDef StormEliteT1;
         public static EliteTierDef StormEliteT2;
-        public static bool IsCharacterStormElite(CharacterBody body)
-        {
-            return false;
-        }
-
+        public static BuffDef StormEliteWeak;
+        public static float stormDirectorCreditStimulus = 35f;
+        public static float stormDirectorCreditGainMultiplier = 0.4f;
 
         public const float drizzleStormDelayMinutes = 10;
         public const float drizzleStormWarningMinutes = 3;
@@ -84,6 +82,18 @@ namespace SwanSongExtended.Storms
             LanguageAPI.Add($"OBJECTIVE_FIRE_2R4R", "Fire Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
+
+            StormEliteWeak = Content.CreateAndAddBuff(
+                "bdStormEliteWeak",
+                null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffCloakIcon_tif).WaitForCompletion(),
+                Color.gray,
+                canStack: false,
+                isDebuff: false
+                );
+            SwanSongPlugin.LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.bdCloak_asset, (bd) =>
+            {
+                StormEliteWeak.iconSprite = bd.iconSprite;
+            });
         }
 
         private static void CreateMeteorDelayBlast(GameObject delayBlastPrefab)
@@ -199,7 +209,7 @@ namespace SwanSongExtended.Storms
             StormEliteT1.canSelectWithoutAvailableEliteDef = false;
             StormEliteT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormRunBehavior.instance && StormRunBehavior.instance.hasBegunStorm);
             StormEliteT1.eliteTypes = new EliteDef[0];
-            //EliteAPI.AddCustomEliteTier(StormT1);
+            EliteAPI.AddCustomEliteTier(StormEliteT1);
 
             StormEliteT2 = new EliteTierDef();
             StormEliteT2.costMultiplier = 2;
@@ -232,15 +242,18 @@ namespace SwanSongExtended.Storms
             {
                 if (component is CombatDirector cd && directorInstanceFound == false)
                 {
-                    cd.creditMultiplier = 0.5f;
+                    cd.creditMultiplier = stormDirectorCreditGainMultiplier;
+                    cd.eliteBias = 0;
+                    cd.maximumNumberToSpawnBeforeSkipping = 3;
                     cd.expRewardCoefficient = 1f;
-                    cd.goldRewardCoefficient = 1f;
-                    cd.minRerollSpawnInterval = 15f;
-                    cd.maxRerollSpawnInterval = 25f;
+                    cd.goldRewardCoefficient = 0f;
                     cd.teamIndex = TeamIndex.Monster;
+                    //duration between monster waves
+                    cd.minRerollSpawnInterval = 17.5f;
+                    cd.maxRerollSpawnInterval = 22.5f;
 
                     directorInstanceFound = true;
-                    cd.onSpawnedServer.AddListener(OnStormDirectorSpawnServer);
+                    cd.onSpawnedServer.AddPersistentListener(OnStormDirectorSpawnServer);
                 }
                 else
                 {
@@ -264,16 +277,15 @@ namespace SwanSongExtended.Storms
 
             void OnStormDirectorSpawnServer(GameObject masterObject)
             {
-                EliteDef eliteDef = WhirlwindAspect.instance.EliteDef;
-                if (Util.CheckRoll(50))
-                    eliteDef = SurgingAspect.instance.EliteDef;
+                EliteDef eliteDef = SurgingAspect.instance.EliteDef;
+                //if (Util.CheckRoll(50))
+                //    eliteDef = WhirlwindAspect.instance.EliteDef;
 
                 EquipmentIndex equipmentIndex = EquipmentIndex.None;
-                if (eliteDef != null)
-                {
-                    EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
-                    equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
-                }
+                if (eliteDef == null)
+                    return;
+                EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
+                equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
 
                 CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
                 GameObject bodyObject = component.GetBodyObject();
@@ -287,7 +299,7 @@ namespace SwanSongExtended.Storms
                 if (equipmentIndex != EquipmentIndex.None)
                 {
                     Log.Warning("Spawning Storm Elite: " + eliteDef.name);
-                    component.inventory.SetEquipmentIndex(equipmentIndex);
+                    component.inventory.SetEquipmentIndex(equipmentIndex, false);
                 }
             }
         }

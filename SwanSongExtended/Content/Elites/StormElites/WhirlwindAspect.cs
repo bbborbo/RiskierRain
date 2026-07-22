@@ -27,7 +27,7 @@ namespace SwanSongExtended.Elites
 
         public override string EliteEquipmentName => "Twisted Stare";
 
-        public override string EliteEquipmentPickupDesc => "Become an aspect of sundering wind.";
+        public override string EliteEquipmentPickupDesc => "Become an aspect of squall.";
 
         public override string EliteEquipmentFullDescription => "";
 

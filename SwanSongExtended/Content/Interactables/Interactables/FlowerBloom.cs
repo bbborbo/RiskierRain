@@ -103,7 +103,7 @@ namespace SwanSongExtended.Interactables
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
             if (this.rng.RangeInt(0, 100) >= bloomChance)
                 return;
-            Log.Debug("Blooming!");
+            Log.Debug("Jarona!");
             
             int eggsToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) - bloomCtPerAdditionalPlayer;
             foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)

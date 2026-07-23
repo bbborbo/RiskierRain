@@ -17,6 +17,7 @@ using RoR2.CharacterAI;
 using RoR2.Navigation;
 using SwanSongExtended.Components;
 using RoR2.Artifacts;
+using static R2API.DamageAPI;
 
 namespace SwanSongExtended.Elites
 {
@@ -26,6 +27,7 @@ namespace SwanSongExtended.Elites
         public override string ConfigName => "Elites : Storm : " + EliteModifier;
         #endregion
 
+        public static ModdedDamageType riptideDamageType;
         public static BuffDef riptideDebuff;
         public static int riptideArmorPenalty = 20;
         public static float riptideMovementPenalty = 1f;
@@ -108,6 +110,8 @@ namespace SwanSongExtended.Elites
         {
             base.Init();
 
+            riptideDamageType = ReserveDamageType();
+
             riptideDebuff = Modules.Content.CreateAndAddBuff(
                 "bdFloodEliteRiptide",
                 null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffSlow50Icon_tif).WaitForCompletion(),
@@ -135,6 +139,7 @@ namespace SwanSongExtended.Elites
             if(waveProjectilePrefab.TryGetComponent(out ProjectileDamage pd))
             {
                 pd.damageType = new DamageTypeCombo();
+                pd.damageType.AddModdedDamageType(riptideDamageType);
             }
 
             if(waveProjectilePrefab.TryGetComponent(out ProjectileController pc))
@@ -354,7 +359,7 @@ namespace SwanSongExtended.Elites
         {
             if (!NetworkServer.active)
                 return;
-            if (attackerBody.HasBuff(EliteBuffDef))
+            if (attackerBody.HasBuff(EliteBuffDef) || damageInfo.HasModdedDamageType(riptideDamageType))
             {
                 victimBody.AddTimedBuff(riptideDebuff, riptideDuration * damageInfo.procCoefficient);
             }

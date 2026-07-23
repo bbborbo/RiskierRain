@@ -259,11 +259,13 @@ namespace RiskierRain.Changes
         public static int bigCategoryChestTypeCost = 50; //60
         public static int casinoChestTypeCost = 30; //50; cost is incurred twice
         public static int chanceShrineTypeCost = 15; //17
-        public static int goldChestTypeCost = 200; //400
+        public static int goldChestTypeCost = 250; //400
         public static int bigDroneTypeCost = 160; //250
+        static float costExponent = 1.00f;
 
         private static void ChestRebalance()
         {
+            On.RoR2.Run.GetDifficultyScaledCost_int_float += ChangeScaledCost;
             if (smallChest != null)
             {
                 LanguageAPI.Add("CHEST1_NAME", $"{discountChestPrefix} Chest");
@@ -315,6 +317,37 @@ namespace RiskierRain.Changes
                 chanceShrineSandy.cost = chanceShrineTypeCost;
                 chanceShrineSnowy.cost = chanceShrineTypeCost;
             }
+        }
+
+        private static int ChangeScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int_float orig, RoR2.Run self, int baseCost, float difficultyCoefficient)
+        {
+            //this is hardcoded for force spawned interactables like the gold chest on abyssal
+            //not gonna do it for the large chest on verdant falls though because $50 is a common price :/
+            //im just cool with the modded collateral from these two ig
+            //2r4r is no stranger to a little bit of collateral
+            switch (baseCost)
+            {
+                //tc-280 drone
+                case 350:
+                    baseCost = InteractableChanges.bigDroneTypeCost;
+                    break;
+                //the gold chest on stage 4
+                case 400:
+                    baseCost = InteractableChanges.goldChestTypeCost;
+                    break;
+            }
+
+            float costMultiplierExponential = Mathf.Pow(difficultyCoefficient, costExponent);
+            float costMultiplierLinear = (difficultyCoefficient * 2.5f - 1.5f); //arbitrary, unused
+
+            float endMultiplier = costMultiplierExponential;
+            if (costMultiplierLinear < costMultiplierExponential)
+            {
+                //endMultiplier = costMultiplierLinear;
+                //Debug.Log("Using Liner multiplier!");
+            }
+
+            return (int)((float)baseCost * endMultiplier);
         }
         #endregion
     }

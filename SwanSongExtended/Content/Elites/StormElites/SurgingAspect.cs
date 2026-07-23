@@ -44,6 +44,7 @@ namespace SwanSongExtended.Elites
         /// uses hull classification instead of body size
         /// </summary>
         public static int cannonballBouncesPerSize = 1;
+        public static float cannonballInitialVelocity = 15f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
@@ -315,7 +316,7 @@ namespace SwanSongExtended.Elites
                 DelayBlast delayBlast = cannonball.delayBlast;
                 TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
                 cannonball.bouncePosition = bouncePosition;
-                cannonball.initialVelocityY = UnityEngine.Random.Range(5f, 25f);
+                cannonball.initialVelocityY = cannonballInitialVelocity;
                 delayBlast.position = spawnPosition;
                 delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f);
                 delayBlast.baseForce = 2300f;

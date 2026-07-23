@@ -252,6 +252,8 @@ namespace RiskierRain.Changes
             IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
             IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;
 
+            LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_PICKUP",
+                $"Hold an additional equipment charge.");
             LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_DESC",
                 $"Hold {fuelCellStock} <style=cIsUtility>additional equipment charges</style> <style=cStack>(+{fuelCellStock} per stack)</style>.");
         }
@@ -400,6 +402,18 @@ namespace RiskierRain.Changes
             if (chaosCount > 0)
                 scale *= Mathf.Pow(chaosCooldownMultiplier, chaosCount);
             return scale;
+        }
+        #endregion
+
+        #region chronobauble
+        public static void ChangeChronobauble()
+        {
+            //On.RoR2.GlobalEventManager.OnHitEnemy += ChronobaubleChain
+        }
+
+        private static void ChronobaubleChain(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

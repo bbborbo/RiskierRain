@@ -123,6 +123,7 @@ namespace RiskierRain.Changes
             #region utility
             ChangeFuelCell();
             ChangeWarbanner();
+            ChangeChronobauble();
             //ChangeBottledChaos();
             #endregion
 

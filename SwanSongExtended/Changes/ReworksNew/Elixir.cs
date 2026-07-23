@@ -18,6 +18,7 @@ namespace SwanSongExtended.Changes
 {
     public class Elixir : ReworkBase<Elixir>
     {
+        public override bool isEnabled => false;
         public static ItemDef brokenItemDef;
         public static BuffDef brewActiveBuff;
 

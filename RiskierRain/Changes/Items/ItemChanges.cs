@@ -39,6 +39,7 @@ namespace RiskierRain.Changes
             #region rework pending / priority removal
             //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
             RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
+            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HealingPotion.HealingPotion_asset);//elixir
 
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
             //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon

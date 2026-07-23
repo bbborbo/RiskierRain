@@ -48,7 +48,7 @@ namespace SwanSongExtended.Storms
         public static GameObject meteorWarningEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikePredictionEffect_prefab).WaitForCompletion();
         public static GameObject meteorImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikeImpact_prefab).WaitForCompletion();
         public static float waveMinInterval = 0.8f;
-        public static float waveMaxInterval = 1.1f;
+        public static float waveMaxInterval = 1.2f;
         public static float waveMissChance = 0.6f;
         public static float meteorTargetEnemyChance = 15f;
         public static float meteorTravelEffectDuration = 0f;

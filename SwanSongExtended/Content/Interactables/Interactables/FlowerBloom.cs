@@ -24,7 +24,7 @@ namespace SwanSongExtended.Interactables
 
         public static bool broadcastDoubleBloom = true;
         public static float bloomChance = 15;
-        public static float bloomDoubleChance = 30;
+        public static float bloomSuperChance = 30;
         public static int bloomCtMin = 2;
         public static int bloomCtMax = 4;
         public static int bloomCtSuper = 3;
@@ -103,7 +103,6 @@ namespace SwanSongExtended.Interactables
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
             if (this.rng.RangeInt(0, 100) >= bloomChance)
                 return;
-            Log.Debug("Jarona!");
             
             int flowersToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) - bloomCtPerAdditionalPlayer;
             foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
@@ -111,20 +110,22 @@ namespace SwanSongExtended.Interactables
                 flowersToHide += bloomCtPerAdditionalPlayer;
             }
 
-            if (this.rng.RangeInt(0, 100) < bloomDoubleChance)
+            if (this.rng.RangeInt(0, 100) < bloomSuperChance)
             {
                 flowersToHide += bloomCtSuper;
                 if(broadcastDoubleBloom)
                     Chat.ServerAttemptBroadcastChat(UtilityColor("The air smells particularly floral...!"));
             }
 
-            for (int j = 0; j < flowersToHide; j++)
+            int j;
+            for (j = 0; j < flowersToHide; j++)
             {
                 DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(FlowerBloom.instance.customInteractable.spawnCard, new DirectorPlacementRule
                 {
                     placementMode = DirectorPlacementRule.PlacementMode.Random
                 }, rng));
             }
+            Log.Debug("Jarona! " + j);
         }
 
         public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)

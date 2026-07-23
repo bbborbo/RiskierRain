@@ -46,7 +46,7 @@ namespace SwanSongExtended.Elites
         /// uses hull classification instead of body size
         /// </summary>
         public static int cannonballBouncesPerSize = 1;
-        public static float cannonballInitialVelocity = 15f;
+        public static float cannonballInitialVelocity = 25f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;

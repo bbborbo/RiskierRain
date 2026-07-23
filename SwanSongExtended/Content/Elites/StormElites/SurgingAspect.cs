@@ -246,7 +246,7 @@ namespace SwanSongExtended.Elites
             if(cannonballProjectilePrefab.TryGetComponent(out SpiteBombController bombController))
             {
                 CannonballController cannonball = cannonballProjectilePrefab.AddComponent<CannonballController>();
-                cannonball.bounce = bombController.bounce;
+                cannonball.bounce = cannonballInitialVelocity;
                 HG.ArrayUtils.CloneTo(bombController.bounceSoundStrings, ref cannonball.bounceSoundStrings);
                 cannonball.minimumBounceVelocity = bombController.minimumBounceVelocity;
                 cannonball.radius = bombController.radius;

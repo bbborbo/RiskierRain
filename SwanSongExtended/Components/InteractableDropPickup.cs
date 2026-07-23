@@ -16,6 +16,7 @@ namespace SwanSongExtended.Components
         public Transform dropletOrigin;
         public bool canActivate = true;
         public bool canBeReplaced = true;
+        public bool forceDisallowRecycle = false;
         void Start()
         {
             if(dropletOrigin == null)
@@ -39,7 +40,7 @@ namespace SwanSongExtended.Components
             PickupDropletController.CreatePickupDroplet(pickup, 
                 dropletOrigin.position + (dropletOrigin.forward * 3f) + (Vector3.up * 3f), 
                 dropletOrigin.forward * 3f + Vector3.up * 5f, 
-                false);
+                false, forceDisallowRecycle);
             if (destroyOnUse)
             {
                 canActivate = false;

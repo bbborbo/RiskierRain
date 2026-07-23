@@ -27,7 +27,7 @@ namespace SwanSongExtended.Interactables
         public static float bloomDoubleChance = 30;
         public static int bloomCtMin = 2;
         public static int bloomCtMax = 4;
-        public static int bloomCtDouble = 3;
+        public static int bloomCtSuper = 3;
         public static int bloomCtPerAdditionalPlayer = 2;
 
         public override string InteractableName => "Oh...?";
@@ -105,20 +105,20 @@ namespace SwanSongExtended.Interactables
                 return;
             Log.Debug("Jarona!");
             
-            int eggsToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) - bloomCtPerAdditionalPlayer;
+            int flowersToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) - bloomCtPerAdditionalPlayer;
             foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
             {
-                eggsToHide += bloomCtPerAdditionalPlayer;
+                flowersToHide += bloomCtPerAdditionalPlayer;
             }
 
             if (this.rng.RangeInt(0, 100) < bloomDoubleChance)
             {
-                eggsToHide += bloomCtDouble;
+                flowersToHide += bloomCtSuper;
                 if(broadcastDoubleBloom)
                     Chat.ServerAttemptBroadcastChat(UtilityColor("The air smells particularly floral...!"));
             }
 
-            for (int j = 0; j < eggsToHide; j++)
+            for (int j = 0; j < flowersToHide; j++)
             {
                 DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(FlowerBloom.instance.customInteractable.spawnCard, new DirectorPlacementRule
                 {
@@ -132,6 +132,7 @@ namespace SwanSongExtended.Interactables
             InteractableDropPickup idi = interaction.gameObject.AddComponent<InteractableDropPickup>();
             idi.dropTable = GenerateWeightedSelection();
             idi.destroyOnUse = true;
+            idi.forceDisallowRecycle = true;
             return idi.OnInteractionBegin;
         }
         private ExplicitPickupDropTable GenerateWeightedSelection()

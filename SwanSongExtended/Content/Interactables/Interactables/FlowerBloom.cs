@@ -60,8 +60,8 @@ namespace SwanSongExtended.Interactables
         public override SimpleInteractableData InteractableData => new SimpleInteractableData
             (
                 unavailableDuringTeleporter: false,
-                sacrificeWeightScalar: 1,
-                maxSpawnsPerStage: 3
+                sacrificeWeightScalar: 0,
+                maxSpawnsPerStage: 0
             );
 
         public override string[] validScenes => new string[]
@@ -110,9 +110,11 @@ namespace SwanSongExtended.Interactables
                 flowersToHide += bloomCtPerAdditionalPlayer;
             }
 
+            bool b = false;
             if (this.rng.RangeInt(0, 100) < bloomSuperChance)
             {
                 flowersToHide += bloomCtSuper;
+                b = true;
                 if(broadcastDoubleBloom)
                     Chat.ServerAttemptBroadcastChat(UtilityColor("The air smells particularly floral...!"));
             }
@@ -125,7 +127,7 @@ namespace SwanSongExtended.Interactables
                     placementMode = DirectorPlacementRule.PlacementMode.Random
                 }, rng));
             }
-            Log.Debug("Jarona! " + j);
+            Log.Debug("Jarona! " + j + b);
         }
 
         public override UnityAction<Interactor> GetInteractionAction(PurchaseInteraction interaction)

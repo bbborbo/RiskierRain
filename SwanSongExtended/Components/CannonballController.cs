@@ -46,21 +46,15 @@ namespace SwanSongExtended.Components
 
 		private void Start()
 		{
-			this.startPosition = this.transform.position;
-			float time = Trajectory.CalculateFlightDuration(this.startPosition.y, this.bouncePosition.y, this.initialVelocityY);
-			Vector3 a = this.bouncePosition - this.startPosition;
-			a.y = 0f;
-			float magnitude = a.magnitude;
-			float d = Trajectory.CalculateGroundSpeed(time, magnitude);
-			this.velocity = a / magnitude * d * SurgingAspect.cannonballGravityCoefficient;
-			this.velocity.y = this.initialVelocityY * SurgingAspect.cannonballGravityCoefficient;
+			this.startPosition = transform.position;
+			this.velocity = new Vector3(0, this.initialVelocityY * SurgingAspect.cannonballGravityCoefficient, 0);
 		}
 
 		private void FixedUpdate()
 		{
 			float fixedDeltaTime = Time.fixedDeltaTime;
 			this.velocity.y = this.velocity.y + fixedDeltaTime * Physics.gravity.y * SurgingAspect.cannonballGravityCoefficient;
-			Vector3 vector = this.transform.position;
+			Vector3 vector = transform.position;
 			vector += this.velocity * fixedDeltaTime;
 			if (vector.y < this.bouncePosition.y + this.radius)
 			{
@@ -81,7 +75,7 @@ namespace SwanSongExtended.Components
 			SurgingAspect.FireRingAuthority(bouncePosition, transform.forward, delayBlast.attacker, delayBlast.baseDamage, delayBlast.crit);
 
 			this.bounces++;
-			if (this.bounces >= CannonballController.maxBounces)
+			if (this.bounces >= maxBounces)
 			{
 				this.OnFinalBounce();
 				return;
@@ -197,7 +191,7 @@ namespace SwanSongExtended.Components
 
 		private new Transform transform;
 
-		private Rigidbody rb;
+		internal Rigidbody rb;
 
 		[SyncVar]
 		private Vector3 _bouncePosition;
@@ -205,9 +199,9 @@ namespace SwanSongExtended.Components
 		[SyncVar]
 		private float _initialVelocityY;
 
-		private static readonly int maxBounces = 1;
+		public int maxBounces = 1;
 
-		private Vector3 startPosition;
+		internal Vector3 startPosition;
 
 		private Vector3 velocity;
 

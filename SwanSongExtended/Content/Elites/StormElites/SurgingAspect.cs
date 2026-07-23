@@ -33,12 +33,17 @@ namespace SwanSongExtended.Elites
 
         public static GameObject waveProjectilePrefab;
         public static GameObject cannonballProjectilePrefab;
-        public static float waveProjectileSpeed = 20f; //60f
-        public static float waveProjectileDuration = 2.5f; //3f
+        public static float waveProjectileSpeed = 30f; //60f
+        public static float waveProjectileDuration = 1.5f; //3f
         public static float waveProjectileCount = 5f; //12f
         public static float waveProjectileBaseDamage = 10f;
         public static float waveProjectileProcCoefficient = 2.0f;
         public static float waveProjectileForce = 400f;
+        public static int cannonballBouncesMin = 1;
+        /// <summary>
+        /// uses hull classification instead of body size
+        /// </summary>
+        public static int cannonballBouncesPerSize = 1;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
@@ -123,6 +128,7 @@ namespace SwanSongExtended.Elites
 
         private void CreateWaveProjectile(GameObject baseWaveProjectile)
         {
+            Vector3 size = new Vector3(20f, 2.0f, 1.0f);//30f, 4.5f, 1.0f
             waveProjectilePrefab = baseWaveProjectile.InstantiateClone("FloodWaveProjectile", true);
 
             if(waveProjectilePrefab.TryGetComponent(out ProjectileDamage pd))
@@ -141,15 +147,23 @@ namespace SwanSongExtended.Elites
                     //lunar spikes/corruption
                     sizeParent.GetChild(0).gameObject.SetActive(false);
                     //dust
-                    sizeParent.GetChild(0).gameObject.SetActive(false);
+                    sizeParent.GetChild(1).gameObject.SetActive(false);
                     //debris, off by default
-                    sizeParent.GetChild(0).gameObject.SetActive(false);
+                    sizeParent.GetChild(2).gameObject.SetActive(false);
                     //water
-                    sizeParent.GetChild(0).gameObject.SetActive(true);
+                    sizeParent.GetChild(3).gameObject.SetActive(true);
+
+                    Transform hitbox = waveGhost.transform.GetChild(1);
+                    hitbox.localScale = size;
+
+                    pc.ghostPrefab = waveGhost;
 
                     //no need to register ghost prefab ig
                 });
             }
+
+            Transform hitbox = waveProjectilePrefab.transform.GetChild(0);
+            hitbox.localScale = size; 
 
             if(waveProjectilePrefab.TryGetComponent(out ProjectileCharacterController projectileCharacterController))
             {
@@ -227,7 +241,7 @@ namespace SwanSongExtended.Elites
             {
                 CannonballController cannonball = cannonballProjectilePrefab.AddComponent<CannonballController>();
                 cannonball.bounce = bombController.bounce;
-                cannonball.bounceSoundStrings = bombController.bounceSoundStrings;
+                HG.ArrayUtils.CloneTo(bombController.bounceSoundStrings, ref cannonball.bounceSoundStrings);
                 cannonball.minimumBounceVelocity = bombController.minimumBounceVelocity;
                 cannonball.radius = bombController.radius;
 
@@ -240,6 +254,11 @@ namespace SwanSongExtended.Elites
 
                 UnityEngine.Object.Destroy(bombController);
             }
+
+            //if(cannonballProjectilePrefab.TryGetComponent(out Rigidbody rb))
+            //{
+            //    rb.isKinematic = false;
+            //}
 
             Modules.Content.AddNetworkedObjectPrefab(cannonballProjectilePrefab);
         }
@@ -266,6 +285,9 @@ namespace SwanSongExtended.Elites
 
         private void FireCannonballProjectile(CharacterBody victimBody, CharacterBody attackerBody)
         {
+            if (victimBody.healthComponent.globalDeathEventChanceCoefficient < 1)
+                return;
+
             Vector3 spawnPosition = victimBody.corePosition;
             Ray ray = new Ray(spawnPosition + new Vector3(0f, BombArtifactManager.maxBombStepUpDistance, 0f), Vector3.down);
             float maxDistance = BombArtifactManager.maxBombStepUpDistance + BombArtifactManager.maxBombFallDistance;
@@ -278,19 +300,22 @@ namespace SwanSongExtended.Elites
                 {
                     spawnPosition.y = groundY + 4f;
                 }
-                Vector3 raycastOrigin = ray.origin;
-                raycastOrigin.y = groundY;
+                Vector3 bouncePosition = ray.origin;
+                bouncePosition.y = groundY;
 
                 int level = 0;
                 if (Run.instance != null)
                     level = Run.instance.ambientLevelFloor;
 
                 GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(cannonballProjectilePrefab, spawnPosition, UnityEngine.Random.rotation);
-                CannonballController component = gameObject.GetComponent<CannonballController>();
-                DelayBlast delayBlast = component.delayBlast;
+                CannonballController cannonball = gameObject.GetComponent<CannonballController>();
+                cannonball.maxBounces = cannonballBouncesMin + (int)victimBody.hullClassification * cannonballBouncesPerSize;
+                cannonball.startPosition = spawnPosition;
+                cannonball.rb.MovePosition(spawnPosition);
+                DelayBlast delayBlast = cannonball.delayBlast;
                 TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
-                component.bouncePosition = raycastOrigin;
-                component.initialVelocityY = UnityEngine.Random.Range(5f, 25f);
+                cannonball.bouncePosition = bouncePosition;
+                cannonball.initialVelocityY = UnityEngine.Random.Range(5f, 25f);
                 delayBlast.position = spawnPosition;
                 delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f);
                 delayBlast.baseForce = 2300f;
@@ -526,9 +551,9 @@ namespace SwanSongExtended.Elites
 
         void StepIdentifyNextLocation()
         {
-            if (isPlayer || baseAI == null)
+            if (isPlayer || baseAI == null || body.healthComponent.globalDeathEventChanceCoefficient < 1)
             {
-                QuickCooldown(10);
+                QuickCooldown(float.PositiveInfinity);
                 return;
             }
 
@@ -562,7 +587,7 @@ namespace SwanSongExtended.Elites
                 return;
             }
 
-            if (TryPickNextTpLocation(baseAI.currentEnemy.characterBody.footPosition, out Vector3 loc))
+            if (TryPickNextTpLocation(baseAI.currentEnemy.characterBody.footPosition, out Vector3 loc) && !IsPositionSheltered(loc))
             {
                 SetTeleportLocation(loc);
                 this.QuickCooldown(0.3f);
@@ -614,6 +639,14 @@ namespace SwanSongExtended.Elites
 
         void StepTeleportToLocation()
         {
+            if (body.healthComponent.isInFrozenState)
+            {
+                this.QuickCooldown(targetSearchCooldown);
+                nextStep = new Action(StepIdentifyNextLocation);
+                foundLocation = false;
+                return;
+            }
+
             Vector3 currentPosition = body.corePosition;
             EffectManager.SpawnEffect(SurgingAspect.teleportEffect, new EffectData
             {
@@ -631,7 +664,7 @@ namespace SwanSongExtended.Elites
 
             if(body.healthComponent.TryGetComponent(out SetStateOnHurt ssoh))
             {
-                ssoh.OverrideStun(1f);
+                ssoh.OverrideStun(2f);
             }
             QuickCooldown(SurgingAspect.teleportWaveDelay);
             nextStep = new Action(StepFireWaveProjectile);

@@ -104,11 +104,7 @@ namespace SwanSongExtended.Interactables
             if (this.rng.RangeInt(0, 100) >= bloomChance)
                 return;
             
-            int flowersToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) - bloomCtPerAdditionalPlayer;
-            foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
-            {
-                flowersToHide += bloomCtPerAdditionalPlayer;
-            }
+            int flowersToHide = this.rng.RangeInt(bloomCtMin, bloomCtMax+1) + (PlayerCharacterMasterController.instances.Count *( bloomCtPerAdditionalPlayer - 1));
 
             bool b = false;
             if (this.rng.RangeInt(0, 100) < bloomSuperChance)

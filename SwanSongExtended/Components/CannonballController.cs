@@ -49,7 +49,7 @@ namespace SwanSongExtended.Components
 			this.startPosition = transform.position;
 			this.velocity = new Vector3(0, this.initialVelocityY * SurgingAspect.cannonballGravityCoefficient, 0);
 			this.meshVisuals[0].SetActive(false);
-			this.meshVisuals[maxBounces - 1].SetActive(true);
+			this.meshVisuals[Mathf.Clamp(3 - maxBounces,0,2)].SetActive(true);
 		}
 
 		private void FixedUpdate()
@@ -82,8 +82,7 @@ namespace SwanSongExtended.Components
 				this.OnFinalBounce();
 				return;
 			}
-			//if maxBounces is 3 and it just bounced, this will set 1 to true
-			this.meshVisuals[maxBounces - (this.bounces + 1)].SetActive(true);
+			this.meshVisuals[Mathf.Clamp(3 - maxBounces + bounces, 0, 2)].SetActive(true);
 		}
 
 		private void OnFinalBounce()

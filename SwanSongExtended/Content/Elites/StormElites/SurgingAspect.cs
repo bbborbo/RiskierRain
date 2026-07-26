@@ -76,7 +76,7 @@ namespace SwanSongExtended.Elites
 
         public override string EliteModifier => "Surging";
 
-        public override string EliteEquipmentName => "Tantalizing Feast";
+        public override string EliteEquipmentName => "A Dormant Force";
 
         public override string EliteEquipmentPickupDesc => "Become an aspect of flood.";
 

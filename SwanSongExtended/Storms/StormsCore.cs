@@ -193,12 +193,6 @@ namespace SwanSongExtended.Storms
             }
         }
 
-        {
-            orig(self);
-            if (StormRunBehavior.holdoutZones.Contains(self))
-                StormRunBehavior.holdoutZones.Remove(self);
-        }
-
         private static void CreateStormEliteTiers()
         {
             StormEliteT1 = new EliteTierDef();

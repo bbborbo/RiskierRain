@@ -24,7 +24,10 @@ namespace SwanSongExtended
         public static DifficultyIndex difficultyIndexExtinction;
         public static string extinctionName = "Extinction";
         public static string extinctionDescBase =
-            $"The air is heavy with grief. This inhospitable wasteland will not spare you. Only for the determined and truly masochistic. " +
+            //$"The air is heavy with grief. This inhospitable wasteland will not spare you. Only for the determined and truly masochistic. " +
+            $"The planet is alive and writhing with unspeakable hatred for what has been done to it. " +
+            $"You, the subject of its fury, will be torn asunder and be made unrecognizable. " +
+            $"\nOnly for the determined and truly masochistic. " +
             $"<style=cStack>\n\n>Player Health Regeneration: <style=cArtifact>-40%</style></style> " +
             $"<style=cStack>\n>Difficulty Scaling: <style=cArtifact>+100%</style>";
         public static string extinctionDescStartingDifficulty =
@@ -32,7 +35,7 @@ namespace SwanSongExtended
         public static string extinctionDescExtra =
             $"\n>Rare Elites: <style=cArtifact>Stage 4</style>" +
             $"\n>Teleporter Visuals: <style=cArtifact>OFF</style>" +
-            $"\n>Enemies gain <style=cArtifact>unique scaling</style>" +
+            $"\n>Enemies gain <style=cArtifact>enhanced scaling</style>" +
             $"\n>Enemies gain <style=cArtifact>tripled projectiles</style></style>";
         public static string extinctionDesc =
             extinctionDescBase + extinctionDescStartingDifficulty + extinctionDescExtra;

@@ -99,7 +99,7 @@ namespace RiskierRain.Changes
         #region monsoon-exclusive
         public static void AddMonsoonScalingStats()
         {
-            monsoonDesc += $"\n>Enemies gain <style=cIsHealth>unique scaling</style></style>";
+            monsoonDesc += $"\n>Enemies gain <style=cIsHealth>enhanced scaling</style></style>";
 
             GetStatCoefficients += MonsoonPlusStatBuffs2;
         }

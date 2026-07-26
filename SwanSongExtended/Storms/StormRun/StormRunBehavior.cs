@@ -16,8 +16,6 @@ namespace SwanSongExtended.Storms
     /// </summary>
     public class StormRunBehavior : MonoBehaviour
     {
-        public static List<HoldoutZoneController> holdoutZones = new List<HoldoutZoneController>();
-
         public static StormRunBehavior instance;
         public StormController stormControllerInstance;
         public StormType stormType { get; private set; } = StormType.None;

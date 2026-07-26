@@ -25,12 +25,16 @@ namespace SwanSongExtended.Storms
         public const string wishboneObjectiveToken = "OBJECTIVE_WISHBONE";
         public static GameObject StormsRunBehaviorPrefab;
         public static GameObject StormsControllerPrefab;
+        public const string esmStormName = "StormMain";
+
+        //storm combat:
         public static EliteTierDef StormEliteT1;
         public static EliteTierDef StormEliteT2;
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
         public static float stormDirectorCreditGainMultiplier = 0.4f;
 
+        //storm scheduling:
         public const float drizzleStormDelayMinutes = 10;
         public const float drizzleStormWarningMinutes = 3;
         public const float rainstormStormDelayMinutes = 7;
@@ -189,13 +193,6 @@ namespace SwanSongExtended.Storms
             }
         }
 
-        private static void RegisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnEnable orig, HoldoutZoneController self)
-        {
-            orig(self);
-            if (!StormRunBehavior.holdoutZones.Contains(self))
-                StormRunBehavior.holdoutZones.Add(self);
-        }
-        private static void UnregisterHoldoutZone(On.RoR2.HoldoutZoneController.orig_OnDisable orig, HoldoutZoneController self)
         {
             orig(self);
             if (StormRunBehavior.holdoutZones.Contains(self))
@@ -226,6 +223,7 @@ namespace SwanSongExtended.Storms
 
         private static void CreateStormsRunBehaviorPrefab()
         {
+            //storm run behavior prefab is instantiated by the game automatically during the run as long as the expansion is enabled
             StormsRunBehaviorPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Common/DLC1RunBehavior.prefab").WaitForCompletion().InstantiateClone("2R4RExpansionRunBehavior", true);
 
             ExpansionRequirementComponent erc = StormsRunBehaviorPrefab.GetComponent<ExpansionRequirementComponent>();
@@ -235,6 +233,7 @@ namespace SwanSongExtended.Storms
 
             SwanSongPlugin.expansionDefSS2.runBehaviorPrefab = StormsRunBehaviorPrefab;
 
+            //storm controller prefab is instantiated by the run behavior prefab only on stages that have storms
             StormsControllerPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion().InstantiateClone("2R4RStormController", true);
             MonoBehaviour[] components = StormsControllerPrefab.GetComponentsInChildren<MonoBehaviour>();
             bool directorInstanceFound = false;
@@ -261,10 +260,12 @@ namespace SwanSongExtended.Storms
                 }
             }
 
-            EntityStateMachine esm = StormsControllerPrefab.AddComponent<EntityStateMachine>();
-            esm.initialStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
-            esm.mainStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
             StormsControllerPrefab.AddComponent<StormController>();
+            EntityStateMachine esmStorm = StormsControllerPrefab.AddComponent<EntityStateMachine>();
+            esmStorm.customName = esmStormName;
+            esmStorm.initialStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
+            esmStorm.mainStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
+
             StormsControllerPrefab.AddComponent<NetworkIdentity>();
             StormsControllerPrefab.AddComponent<NetworkStateMachine>().stateMachines = new EntityStateMachine[] { esm };
 

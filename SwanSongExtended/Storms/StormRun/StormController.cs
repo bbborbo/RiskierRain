@@ -47,17 +47,17 @@ namespace SwanSongExtended.Storms
                 return this.mainStateMachine.state as StormController.BaseStormState;
             }
         }
-        protected List<HoldoutZoneController> holdoutZones => StormRunBehavior.holdoutZones;
         internal float stormDelayTime = 0;
         internal float stormWarningTime = 0;
         bool shelterObjectiveActive = false;
+        bool bossHealthBarActive = false;
 
 
         public void Awake()
         {
             combatDirector = GetComponent<CombatDirector>();
             combatDirector.enabled = false;
-            mainStateMachine = GetComponent<EntityStateMachine>();
+            mainStateMachine = EntityStateMachine.FindByCustomName(this.gameObject, StormsCore.esmStormName);//GetComponent<EntityStateMachine>();
         }
         void OnDestroy()
         {
@@ -66,18 +66,15 @@ namespace SwanSongExtended.Storms
 
         public void SetShelterObjective(bool enable)
         {
-            if (enable)
+            if (enable != shelterObjectiveActive)
             {
-                if (!shelterObjectiveActive)
+                if (enable)
                 {
                     Log.Debug("Enabling storm shelter objective");
                     ObjectivePanelController.collectObjectiveSources += this.OnCollectObjectiveSources;
                     shelterObjectiveActive = true;
                 }
-            }
-            else
-            {
-                if (shelterObjectiveActive)
+                else
                 {
                     Log.Debug("Disabling storm shelter objective");
                     ObjectivePanelController.collectObjectiveSources -= this.OnCollectObjectiveSources;
@@ -181,7 +178,13 @@ namespace SwanSongExtended.Storms
 
         internal abstract class BaseStormState : BaseState
         {
+            /// <summary>
+            /// Run Delta Time is used in place of Time.fixedDeltaTime to account for time skips and time freezes in the storm cycle
+            /// </summary>
             float runDeltaTimeThisFrame = 0;
+            /// <summary>
+            /// cached value of the last frame's run timestamp. used to calculate runDeltaTime
+            /// </summary>
             float runTimeStamp = float.NegativeInfinity;
             public abstract StormState stormState { get; }
             private protected StormType stormType => StormRunBehavior.instance.stormType;
@@ -195,6 +198,9 @@ namespace SwanSongExtended.Storms
                 this.stormController = base.GetComponent<StormController>();
             }
 
+            /// <summary>
+            /// Run Delta Time is used in place of Time.fixedDeltaTime to account for time skips and time freezes in the storm cycle
+            /// </summary>
             public float GetRunDeltaTime()
             {
                 return runDeltaTimeThisFrame;

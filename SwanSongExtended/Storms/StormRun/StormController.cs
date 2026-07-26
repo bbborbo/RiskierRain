@@ -58,7 +58,25 @@ namespace SwanSongExtended.Storms
             combatDirector = GetComponent<CombatDirector>();
             combatDirector.enabled = false;
             mainStateMachine = EntityStateMachine.FindByCustomName(this.gameObject, StormsCore.esmStormName);//GetComponent<EntityStateMachine>();
+
+            BossGroup.onBossGroupStartServer += CheckForBossHealthBar;
+            BossGroup.onBossGroupDefeatedServer += CheckForBossHealthBar;
         }
+
+        private void CheckForBossHealthBar(BossGroup group)
+        {
+            List<BossGroup> instancesList = InstanceTracker.GetInstancesList<BossGroup>();
+            for (int i = 0; i < instancesList.Count; i++)
+            {
+                if (instancesList[i].shouldDisplayHealthBarOnHud == true)
+                {
+                    bossHealthBarActive = true;
+                    return;
+                }
+            }
+            bossHealthBarActive = false;
+        }
+
         void OnDestroy()
         {
             SetShelterObjective(false);
@@ -605,7 +623,7 @@ namespace SwanSongExtended.Storms
                 }
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
-                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null);
+                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null && stormController.bossHealthBarActive == false);
                 }
                 SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
             }

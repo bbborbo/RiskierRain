@@ -44,13 +44,15 @@ namespace SwanSongExtended.Storms
             if (currentScene.sceneAddress == SceneCatalog.GetSceneDefFromSceneName("conduitcanyon").sceneAddress) return false;
             return true;
         }
-        public bool hasBegunStorm
+        public static bool hasBegunStorm
         {
             get
             {
-                if (stormControllerInstance == null)
+                if (instance == null)
                     return false;
-                if (stormControllerInstance.stormState >= StormController.StormState.Active)
+                if (instance.stormControllerInstance == null)
+                    return false;
+                if (instance.stormControllerInstance.stormState >= StormController.StormState.Active)
                     return true;
                 return false;
             }

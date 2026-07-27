@@ -198,14 +198,14 @@ namespace SwanSongExtended.Storms
             StormEliteT1 = new EliteTierDef();
             StormEliteT1.costMultiplier = 2;
             StormEliteT1.canSelectWithoutAvailableEliteDef = false;
-            StormEliteT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormRunBehavior.instance && StormRunBehavior.instance.hasBegunStorm);
+            StormEliteT1.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormRunBehavior.instance && StormRunBehavior.hasBegunStorm);
             StormEliteT1.eliteTypes = new EliteDef[0];
             EliteAPI.AddCustomEliteTier(StormEliteT1);
 
             StormEliteT2 = new EliteTierDef();
             StormEliteT2.costMultiplier = 2;
             StormEliteT2.canSelectWithoutAvailableEliteDef = false;
-            StormEliteT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormRunBehavior.instance && StormRunBehavior.instance.hasBegunStorm &&
+            StormEliteT2.isAvailable = ((SpawnCard.EliteRules rules) => rules == SpawnCard.EliteRules.Default && StormRunBehavior.instance && StormRunBehavior.hasBegunStorm &&
                     !SwanSongPlugin.is2R4RLoaded ? (Run.instance.loopClearCount > 0) :
                     ((Run.instance.stageClearCount >= 10 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty <= DifficultyIndex.Easy)
                     || (Run.instance.stageClearCount >= 5 && rules == SpawnCard.EliteRules.Default && Run.instance.selectedDifficulty == DifficultyIndex.Normal)

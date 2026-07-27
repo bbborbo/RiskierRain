@@ -213,7 +213,7 @@ namespace SwanSongExtended.Items
             if (damageInfo.attacker && damageInfo.attacker == self.gameObject)
                 return;
             int count = GetCount(self.body);
-            if (count > 0 && (StormRunBehavior.instance?.hasBegunStorm == true || !self.alive))
+            if (count > 0 && (StormRunBehavior.hasBegunStorm == true || !self.alive))
             {
                 BreakWishbones(self.body, count);
             }

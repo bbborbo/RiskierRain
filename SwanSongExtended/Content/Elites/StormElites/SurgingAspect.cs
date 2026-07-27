@@ -18,6 +18,7 @@ using RoR2.Navigation;
 using SwanSongExtended.Components;
 using RoR2.Artifacts;
 using static R2API.DamageAPI;
+using System.Collections.ObjectModel;
 
 namespace SwanSongExtended.Elites
 {
@@ -420,6 +421,9 @@ namespace SwanSongExtended.Elites
 
     public class AffixFloodBehavior : BaseStormEliteBehavior
     {
+        private static List<AffixFloodBehavior> instancesList = new List<AffixFloodBehavior>();
+        public static ReadOnlyCollection<AffixFloodBehavior> readOnlyInstancesList = new ReadOnlyCollection<AffixFloodBehavior>(AffixFloodBehavior.instancesList);
+
         public void TryTeleport(Vector3 loc)
         {
             SetTeleportLocation(loc);
@@ -513,6 +517,8 @@ namespace SwanSongExtended.Elites
 
         void OnEnable()
         {
+            instancesList.Add(this);
+
             this.cooldownTimer = 10f;
             this.nextStep = new Action(StepIdentifyNextLocation);
 
@@ -528,7 +534,12 @@ namespace SwanSongExtended.Elites
 
         void OnDisable()
         {
-            if(!hasAuthority && body != null)
+            if (instancesList.Contains(this))
+            {
+                instancesList.Remove(this);
+            }
+
+            if (!hasAuthority && body != null)
             {
                 body.OnNetworkItemBehaviorUpdate -= OnNetworkItemUpdate;
             }

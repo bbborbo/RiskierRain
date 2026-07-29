@@ -68,7 +68,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.VoidTier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlBottleFart");
 

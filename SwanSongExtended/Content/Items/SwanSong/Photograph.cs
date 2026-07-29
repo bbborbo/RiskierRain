@@ -41,7 +41,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.DevotionBlacklist, ItemTag.InteractableRelated };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.DevotionBlacklist, ItemTag.InteractableRelated, ItemTag.AIBlacklist };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlPhotograph");
 

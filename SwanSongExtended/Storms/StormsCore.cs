@@ -254,11 +254,11 @@ namespace SwanSongExtended.Storms
                 }
             }
 
-            StormsControllerPrefab.AddComponent<StormController>();
             EntityStateMachine esmStorm = StormsControllerPrefab.AddComponent<EntityStateMachine>();
             esmStorm.customName = esmStormName;
             esmStorm.initialStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
             esmStorm.mainStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
+            StormsControllerPrefab.AddComponent<StormController>();
 
             StormsControllerPrefab.AddComponent<NetworkIdentity>();
             StormsControllerPrefab.AddComponent<NetworkStateMachine>().stateMachines = new EntityStateMachine[] { esm };

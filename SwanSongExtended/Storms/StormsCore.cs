@@ -283,14 +283,14 @@ namespace SwanSongExtended.Storms
                 equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
 
                 CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
-                GameObject bodyObject = component.GetBodyObject();
-                if (bodyObject)
-                {
-                    foreach (EntityStateMachine entityStateMachine in bodyObject.GetComponents<EntityStateMachine>())
-                    {
-                        entityStateMachine.initialStateType = entityStateMachine.mainStateType;
-                    }
-                }
+                //GameObject bodyObject = component.GetBodyObject();
+                //if (bodyObject)
+                //{
+                //    foreach (EntityStateMachine entityStateMachine in bodyObject.GetComponents<EntityStateMachine>())
+                //    {
+                //        entityStateMachine.initialStateType = entityStateMachine.mainStateType;
+                //    }
+                //}
                 if (equipmentIndex != EquipmentIndex.None)
                 {
                     Log.Warning("Spawning Storm Elite: " + eliteDef.name);

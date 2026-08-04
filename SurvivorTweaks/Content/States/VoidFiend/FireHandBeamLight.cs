@@ -30,7 +30,8 @@ namespace SurvivorTweaks.States.VoidFiend
 		public float baseDurationLight = 0.8f; //0.6f
 		public float baseDurationHeavy = 1.1f; //0.6f
 		public string attackSoundString = "Play_voidman_m1_shoot";
-		public float recoilAmplitude = 3.5f; //1
+		public float recoilAmplitudeLight = 2f; //1
+		public float recoilAmplitudeHeavy = 3.5f; //1
 		public float spreadBloomValue = 0.2f; //0.2f
 		public float maxSpread = 3; //3
 		public static string muzzle = "MuzzleHandBeam";
@@ -59,7 +60,8 @@ namespace SurvivorTweaks.States.VoidFiend
 			//Ray aimRay = base.GetAimRay();
 			CalcBeamPath(out Ray aimRay, out Vector3 beamEnd);//
 			base.PlayAnimation(this.animationLayerName, this.animationStateName, this.animationPlaybackRateParam, this.duration, 0f);
-			base.AddRecoil(-1f * this.recoilAmplitude, -2f * this.recoilAmplitude, -0.5f * this.recoilAmplitude, 0.5f * this.recoilAmplitude);
+			float recoilAmplitude = isHeavyAttack ? recoilAmplitudeHeavy : recoilAmplitudeLight;
+			base.AddRecoil(-1f * recoilAmplitude, -2f * recoilAmplitude, -0.5f * recoilAmplitude, 0.5f * recoilAmplitude);
 			base.StartAimMode(aimRay, 2f, false);
 			Util.PlaySound(this.attackSoundString, base.gameObject);
 			if (this.muzzleflashEffectPrefab)

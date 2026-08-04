@@ -26,13 +26,14 @@ namespace SwanSongExtended.Storms
         public static GameObject StormsRunBehaviorPrefab;
         public static GameObject StormsControllerPrefab;
         public const string esmStormName = "StormMain";
+        public const string esmCycloneName = "Cyclone";
 
         //storm combat:
         public static EliteTierDef StormEliteT1;
         public static EliteTierDef StormEliteT2;
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
-        public static float stormDirectorCreditGainMultiplier = 0.4f;
+        public static float stormDirectorCreditGainMultiplier = 0.6f;
 
         //storm scheduling:
         public const float drizzleStormDelayMinutes = 10;
@@ -65,6 +66,21 @@ namespace SwanSongExtended.Storms
         public static BlastAttack.FalloffModel meteorFalloffModel = BlastAttack.FalloffModel.None;
         public static ModdedDamageType stormDamageType;
 
+        //cyclones:
+        public static BuffDef CycloneProtection;
+        public static BuffDef CycloneLeader;
+        public static GameObject cycloneWardPrefab;
+        public static Material cycloneMaterial;
+        public static bool isCycloneShelter = true;
+        public static float cycloneRadius = 20f;
+        public static float cycloneDuration = 999f;
+        public static float squallReelectionInterval = 1f;
+        public static float squallReelectionRallyTimeLoss = 0.5f;
+        public static float squallRallyTimeMin = 3f;
+        public static float squallRallyTimeMax = 7f;
+        public static float squallRallyContributorThreshold = 5f;
+        public static float squallFireDurationMin = 5f;
+        public static float squallFireDurationBonus = 3f;
 
         public static void Init()
         {
@@ -80,6 +96,7 @@ namespace SwanSongExtended.Storms
             //On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.GenericDelayBlast_prefab, CreateMeteorDelayBlast);
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_RandomDamageZone.DamageZoneWard_prefab, CreateCycloneWard);
             
             LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "Meteor Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
@@ -87,6 +104,27 @@ namespace SwanSongExtended.Storms
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
 
+
+            CycloneLeader = Content.CreateAndAddBuff(
+                "bdCycloneLeader",
+                null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffCloakIcon_tif).WaitForCompletion(),
+                Color.gray,
+                canStack: false,
+                isDebuff: false,
+                isHidden: true
+                );
+            CycloneProtection = Content.CreateAndAddBuff(
+                "bdCycloneProtection",
+                null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffCloakIcon_tif).WaitForCompletion(),
+                Color.gray,
+                canStack: false,
+                isDebuff: false,
+                isHidden: true
+                );
+            SwanSongPlugin.LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.bdSmallArmorBoost_asset, (bd) =>
+            {
+                CycloneProtection.iconSprite = bd.iconSprite;
+            });
             StormEliteWeak = Content.CreateAndAddBuff(
                 "bdStormEliteWeak",
                 null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffCloakIcon_tif).WaitForCompletion(),
@@ -97,6 +135,89 @@ namespace SwanSongExtended.Storms
             SwanSongPlugin.LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.bdCloak_asset, (bd) =>
             {
                 StormEliteWeak.iconSprite = bd.iconSprite;
+            });
+        }
+
+        private static void CreateCycloneWard(GameObject damageZoneWard)
+        {
+            cycloneWardPrefab = damageZoneWard.InstantiateClone("StormCycloneWard", true);
+            Content.AddNetworkedObjectPrefab(cycloneWardPrefab);
+
+            VerticalTubeZone tubeZone = cycloneWardPrefab.AddComponent<VerticalTubeZone>();
+            tubeZone.radius = cycloneRadius;
+            tubeZone.indicatorSmoothTime = 1.0f;
+            if (isCycloneShelter)
+            {
+                ShelterProviderBehavior shelterProvider = cycloneWardPrefab.AddComponent<ShelterProviderBehavior>();
+                shelterProvider.fallbackRadius = cycloneRadius;
+                shelterProvider.zoneBehavior = tubeZone;
+            }
+
+            if (cycloneWardPrefab.TryGetComponent(out BuffWard buffWard))
+            {
+                buffWard.radius = cycloneRadius;
+                buffWard.buffDef = CycloneProtection;
+                buffWard.interval = 0.5f;
+                buffWard.buffDuration = 0.6f;
+                buffWard.expireDuration = cycloneDuration;
+                buffWard.shape = BuffWard.BuffWardShape.VerticalTube;
+                buffWard.requireGrounded = false;
+                buffWard.animateRadius = false;
+                tubeZone.rangeIndicator = buffWard.rangeIndicator;
+            }
+
+            if(cycloneWardPrefab.TryGetComponent(out Deployable dep))
+            {
+                UnityEngine.Object.Destroy(dep);
+            }
+
+            Transform shrinker = cycloneWardPrefab.transform.GetChild(1);
+            //totem
+            shrinker.GetChild(0).gameObject.SetActive(false);
+            //decal
+            shrinker.GetChild(1).gameObject.SetActive(false);
+
+            Transform indicator = shrinker.GetChild(2);
+            indicator.transform.localScale = Vector3.one * cycloneRadius;
+            //indicator sphere
+            indicator.GetChild(0).gameObject.SetActive(false);
+            //decal_aoe
+            indicator.GetChild(1).gameObject.SetActive(false);
+
+            SwanSongPlugin.LoadAsync<GameObject>(
+            RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets.InfiniteTowerSafeWardAwaitingInteraction_prefab,
+            (itSafeWard) =>
+            {
+                GameObject verticalWard = itSafeWard.transform.Find("Indicator")?.gameObject;
+                GameObject cycloneIndicator = PrefabAPI.InstantiateClone(verticalWard, "CycloneIndicatorPrefab");
+
+                SwanSongPlugin.LoadAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_WardOnLevel.matWarbannerSphereIndicator2_mat, (matWarbanner) =>
+                {
+                    cycloneMaterial = UnityEngine.Object.Instantiate(matWarbanner);
+                    cycloneMaterial.SetColor("_TintColor", new Color32(168, 120, 90, 110)/*(150, 110, 0, 191)*/);
+                    cycloneMaterial.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_conduitcanyon.texCCTreeRamp4_png).WaitForCompletion());
+                    cycloneMaterial.SetTexture("_CloudTex2", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
+                    cycloneMaterial.SetTexture("_Cloud2", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
+                    cycloneMaterial.SetFloat("_Boost", 0.776f); //0.34
+                    cycloneMaterial.SetFloat("_RimPower", 1.206f);
+                    cycloneMaterial.SetFloat("_RimStrength", 0.828f);
+                    cycloneMaterial.SetFloat("_TriplanarOn", 0);
+                    cycloneMaterial.SetInt("_TriplanarOn", 0);
+                    cycloneMaterial.SetFloat("_TriplanarOff", 1);
+                    cycloneMaterial.SetInt("_TriplanarOff", 1);
+
+                    MeshRenderer mr = cycloneIndicator.GetComponentInChildren<MeshRenderer>(includeInactive: false);
+                    if (mr)
+                    {
+                        mr.sharedMaterials = new Material[1] { cycloneMaterial };
+                        mr.material = cycloneMaterial;
+                    }
+                });
+
+                cycloneIndicator.transform.parent = indicator;
+                cycloneIndicator.transform.localPosition = Vector3.zero;
+                cycloneIndicator.transform.rotation = Quaternion.identity;
+                cycloneIndicator.transform.localScale = Vector3.one;
             });
         }
 
@@ -259,9 +380,15 @@ namespace SwanSongExtended.Storms
             esmStorm.initialStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
             esmStorm.mainStateType = new SerializableEntityStateType(typeof(StormController.StormApproach));
             StormsControllerPrefab.AddComponent<StormController>();
+            //hi hiiiii
+            EntityStateMachine esmCyclone = StormsControllerPrefab.AddComponent<EntityStateMachine>();
+            esmCyclone.customName = esmCycloneName;
+            esmCyclone.initialStateType = new SerializableEntityStateType(typeof(CycloneController.PrepareCyclone));
+            esmCyclone.mainStateType = new SerializableEntityStateType(typeof(CycloneController.PrepareCyclone));
+            StormsControllerPrefab.AddComponent<CycloneController>();
 
             StormsControllerPrefab.AddComponent<NetworkIdentity>();
-            StormsControllerPrefab.AddComponent<NetworkStateMachine>().stateMachines = new EntityStateMachine[] { esm };
+            StormsControllerPrefab.AddComponent<NetworkStateMachine>().stateMachines = new EntityStateMachine[] { esmStorm };//, esmCyclone };
 
             Content.AddNetworkedObjectPrefab(StormsRunBehaviorPrefab);
             Content.AddNetworkedObjectPrefab(StormsControllerPrefab);
@@ -269,12 +396,20 @@ namespace SwanSongExtended.Storms
             Content.AddEntityState(typeof(StormController.StormApproach));
             Content.AddEntityState(typeof(StormController.StormWarning));
             Content.AddEntityState(typeof(StormController.StormActive));
+            Content.AddEntityState(typeof(CycloneController.Idle));
+            Content.AddEntityState(typeof(CycloneController.PrepareCyclone));
+            Content.AddEntityState(typeof(CycloneController.ElectLeader));
+            Content.AddEntityState(typeof(CycloneController.PrepareSquall));
+            Content.AddEntityState(typeof(CycloneController.FireSquall));
 
             void OnStormDirectorSpawnServer(GameObject masterObject)
             {
+                int surgingCount = AffixFloodBehavior.readOnlyInstancesList.Count;
+                int howlingCount = AffixSquallBehavior.readOnlyInstancesList.Count;
+
                 EliteDef eliteDef = SurgingAspect.instance.EliteDef;
-                //if (Util.CheckRoll(50))
-                //    eliteDef = WhirlwindAspect.instance.EliteDef;
+                if (surgingCount > 0 && Util.CheckRoll0To1((surgingCount + 1) / (howlingCount + 1)))
+                    eliteDef = WhirlwindAspect.instance.EliteDef;
 
                 EquipmentIndex equipmentIndex = EquipmentIndex.None;
                 if (eliteDef == null)
@@ -293,7 +428,6 @@ namespace SwanSongExtended.Storms
                 //}
                 if (equipmentIndex != EquipmentIndex.None)
                 {
-                    Log.Warning("Spawning Storm Elite: " + eliteDef.name);
                     component.inventory.SetEquipmentIndex(equipmentIndex, false);
                 }
             }

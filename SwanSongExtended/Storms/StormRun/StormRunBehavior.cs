@@ -97,6 +97,12 @@ namespace SwanSongExtended.Storms
             {
                 WishboneCarcass.ScatterWishbones();
             }
+
+            //dumb ass bullshit
+            cycloneMaterial.SetFloat("_TriplanarOn", 0);
+            cycloneMaterial.SetInt("_TriplanarOn", 0);
+            cycloneMaterial.SetFloat("_TriplanarOff", 1);
+            cycloneMaterial.SetInt("_TriplanarOff", 1);
         }
 
         #region hooks

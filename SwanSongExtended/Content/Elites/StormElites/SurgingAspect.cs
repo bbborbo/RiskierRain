@@ -63,7 +63,7 @@ namespace SwanSongExtended.Elites
 
         public static int surgingEmpoweredArmor = 200;
         public static float surgingEmpoweredMoveSpeed = 0.8f;
-        public static float surgingEmpoweredAtkSpeed = 0.5f;
+        public static float surgingEmpoweredAtkSpeed = 0.3f;
 
         public override float EliteDamageModifier => 0;
         public override float EliteHealthModifier => 0;
@@ -94,7 +94,7 @@ namespace SwanSongExtended.Elites
         public override Color EliteBuffColor => Color.cyan;
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
-        public override string EliteRampTextureName { get; set; } = "texRampLeeching";
+        public override string EliteRampTextureName { get; set; } = "texRampSurging";
         //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT1 };
 
         public override bool CanDrop { get; } = false;

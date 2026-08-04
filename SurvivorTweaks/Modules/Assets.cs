@@ -266,6 +266,7 @@ namespace SurvivorTweaks.Modules
                     attackerObject = damageInfo.attacker,
                     victimObject = victimBody.gameObject,
                     totalDamage = new float?(attackerBody.baseDamage * corrosionDamagePerSecond * corrosionDuration * damageInfo.procCoefficient),
+                    duration = corrosionDuration * damageInfo.procCoefficient,
                     damageMultiplier = 1f,
                     dotIndex = corrosionDotIndex,
                     maxStacksFromAttacker = maxStacksFromAttacker

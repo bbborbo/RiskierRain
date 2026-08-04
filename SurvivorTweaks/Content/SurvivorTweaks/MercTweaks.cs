@@ -46,16 +46,19 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Merc.MercBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
 
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseMoveSpeed = moveSpeed;
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMoveSpeed = moveSpeed;
 
-            DoPrimary(primary);
-            DoSecondary(secondary);
-            DoUtility(utility);
-            DoSpecial(special);
+                DoPrimary(primary);
+                DoSecondary(secondary);
+                DoUtility(utility);
+                DoSpecial(special);
+            });
         }
 
         #region primary

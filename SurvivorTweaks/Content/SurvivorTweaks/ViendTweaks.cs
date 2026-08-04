@@ -24,6 +24,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static GameObject viendDelayKnockback;
         static float corruptModeArmor = 100; //100
         public static float baseMaxHealth = 130f;//110
+        public static float baseDamage = 11f;//12f
 
         static float corruptionPerCleanse = 3; //0
         static float minimumCorruptionPerVoidItem = 2; //2
@@ -64,6 +65,8 @@ namespace SurvivorTweaks.SurvivorTweaks
                 CharacterBody body = bodyObject.GetComponent<CharacterBody>();
                 body.baseMaxHealth = baseMaxHealth;
                 body.levelMaxHealth = baseMaxHealth * 0.3f;
+                body.baseDamage = baseDamage;
+                body.levelDamage = baseDamage * 0.2f;
 
                 DoViendPrimary();
             });

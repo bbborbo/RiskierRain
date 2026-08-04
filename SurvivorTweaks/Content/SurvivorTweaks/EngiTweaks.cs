@@ -36,17 +36,20 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             ShelterUtilsModule.UseCustomShelters = true;
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Engi.EngiBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+
+                //primary
+                DoPrimary(primary);
+                //utility
+                DoUtility(utility);
+            });
 
             //secondary
             IL.EntityStates.Engi.Mine.Detonate.Explode += DetonationRadiusBoost;
             On.EntityStates.Engi.Mine.MineArmingWeak.FixedUpdate += ChangeMineArmTime;
-
-            //primary
-            DoPrimary(primary);
-            //utility
-            DoUtility(utility);
         }
 
         private void DoPrimary(SkillFamily primary)

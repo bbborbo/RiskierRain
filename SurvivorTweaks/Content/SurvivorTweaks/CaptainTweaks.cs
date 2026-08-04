@@ -77,8 +77,15 @@ namespace SurvivorTweaks.SurvivorTweaks
             //    SurvivorTweaksPlugin.CustomConfigFile.Bind<bool>("Captain", "Captain Beacon Refresh", true, 
             //    "Set to TRUE to refresh Captain's beacons at the beginning of every teleporter event. Only works if Captain changes are enabled!").Value;
 
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+
+                ChangeVanillaPrimaries(primary);
+                ChangeVanillaSecondaries(secondary);
+                ChangeVanillaUtilities(utility);
+            });
 
             //passive
             LoadAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CaptainDefenseMatrix.CaptainDefenseMatrix_asset, RetierMicrobot);
@@ -103,11 +110,8 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"<style=cIsUtility>Recharge rate scales with attack speed</style>.");
 
             //primary
-            ChangeVanillaPrimaries(primary);
 
             //secondary
-            ChangeVanillaSecondaries(secondary);
-            On.EntityStates.Captain.Weapon.FireTazer.OnEnter += CaptainTazerBuff;
 
             //utility
             On.EntityStates.AimThrowableBase.ModifyProjectile += ModifyDiabloDuration;
@@ -123,7 +127,6 @@ namespace SurvivorTweaks.SurvivorTweaks
                 diabloExplosion.blastAttackerFiltering = AttackerFiltering.AlwaysHit;
             }
 
-            ChangeVanillaUtilities(utility);
 
 
             //special
@@ -464,6 +467,8 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"<style=cIsDamage>Shocking</style>. " +
                 $"Fire a fast tazer that deals <style=cIsDamage>{tazerTotalTargets}x{Tools.ConvertDecimal(tazerDamage)} damage</style>.");
             #endregion
+
+            On.EntityStates.Captain.Weapon.FireTazer.OnEnter += CaptainTazerBuff;
         }
 
         private void CaptainTazerBuff(On.EntityStates.Captain.Weapon.FireTazer.orig_OnEnter orig, FireTazer self)

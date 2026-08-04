@@ -30,20 +30,23 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override string survivorName => "Heretic";
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            //GetBodyObject();
+            //GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Engi.EngiBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
 
-            #region body
-            CharacterBody vanillaHereticBody = bodyObject.GetComponent<CharacterBody>();
-            vanillaHereticBody.baseMaxHealth = 260;
-            vanillaHereticBody.baseRegen = -4;
-            vanillaHereticBody.baseDamage = 16;
-            vanillaHereticBody.baseArmor = 30;
+                CharacterBody vanillaHereticBody = bodyObject.GetComponent<CharacterBody>();
+                vanillaHereticBody.baseMaxHealth = 260;
+                vanillaHereticBody.baseRegen = -4;
+                vanillaHereticBody.baseDamage = 16;
+                vanillaHereticBody.baseArmor = 30;
 
-            vanillaHereticBody.levelMaxHealth = vanillaHereticBody.baseMaxHealth * 0.3f;
-            vanillaHereticBody.levelRegen = vanillaHereticBody.baseRegen * 0.2f;
-            vanillaHereticBody.levelDamage = vanillaHereticBody.baseDamage * 0.2f;
-            #endregion
+                vanillaHereticBody.levelMaxHealth = vanillaHereticBody.baseMaxHealth * 0.3f;
+                vanillaHereticBody.levelRegen = vanillaHereticBody.baseRegen * 0.2f;
+                vanillaHereticBody.levelDamage = vanillaHereticBody.baseDamage * 0.2f;
+            });
 
             #region secondary
             ProjectileDotZone blades = secondaryProjectile.GetComponent<ProjectileDotZone>();

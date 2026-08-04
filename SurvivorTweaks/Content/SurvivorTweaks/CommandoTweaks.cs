@@ -62,17 +62,20 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Commando.CommandoBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+
+                ChangeSecondaries(secondary);
+
+                ChangeUtilities();
+
+                ChangeSpecials();
+            });
 
             On.EntityStates.Commando.CommandoWeapon.FirePistol2.OnEnter += FirePistol2_OnEnter;
             LanguageAPI.Add("COMMANDO_PRIMARY_DESCRIPTION", $"Rapidly shoot an enemy for <style=cIsDamage>{Tools.ConvertDecimal(primaryDamageCoeff)} damage</style>.");
-
-            ChangeSecondaries(secondary);
-
-            ChangeUtilities();
-
-            ChangeSpecials();
         }
 
         private void FirePistol2_OnEnter(On.EntityStates.Commando.CommandoWeapon.FirePistol2.orig_OnEnter orig, FirePistol2 self)

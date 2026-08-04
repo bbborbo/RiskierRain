@@ -46,17 +46,20 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Huntress.HuntressBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
 
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseDamage = baseDamage;
-            body.levelDamage = body.baseDamage * 0.2f;
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseDamage = baseDamage;
+                body.levelDamage = body.baseDamage * 0.2f;
 
-            ChangeVanillaPrimary(primary);
-            ChangeVanillaSecondaries(secondary);
-            ChangeVanillaUtilities(utility);
-            ChangeVanillaSpecials(special);
+                ChangeVanillaPrimary(primary);
+                ChangeVanillaSecondaries(secondary);
+                ChangeVanillaUtilities(utility);
+                ChangeVanillaSpecials(special);
+            });
         }
 
         private void ChangeVanillaPrimary(SkillFamily family)

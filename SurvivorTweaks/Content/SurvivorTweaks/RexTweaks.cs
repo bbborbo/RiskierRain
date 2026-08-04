@@ -32,7 +32,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Treebot.TreebotBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+
+                ChangeVanillaSecondaries(secondary);
+                special.variants[0].skillDef.keywordTokens = new string[1] { SharedUtilsPlugin.executeKeywordToken };
+            });
 
             //primary
             syringeB.GetComponent<ProjectileHealOwnerOnDamageInflicted>().fractionOfDamage = syringeHealFraction;
@@ -42,7 +49,6 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"The last syringe <style=cIsDamage>Weakens</style> and <style=cIsHealing>heals for {Tools.ConvertDecimal(syringeHealFraction)} of damage dealt</style>.");
 
             //secondary
-            ChangeVanillaSecondaries(secondary);
             LanguageAPI.Add("TREEBOT_SECONDARY_DESCRIPTION", 
                 $"<style=cIsHealth>15% HP</style>. " +
                 $"Launch a mortar into the sky for <style=cIsDamage>{Tools.ConvertDecimal(mortarDamageCoeff)} damage</style>.");
@@ -53,7 +59,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             //special
             GetMoreStatCoefficients += HarvestFinisher;
             On.EntityStates.Treebot.TreebotFireFruitSeed.OnEnter += FireFruitEnter;
-            special.variants[0].skillDef.keywordTokens = new string[1] { SharedUtilsPlugin.executeKeywordToken };
             LanguageAPI.Add("TREEBOT_SPECIAL_ALT1_DESCRIPTION",
                 $"<style=cIsHealth>Finisher</style>. Fire a <style=cIsDamage>injection</style> that deals <style=cIsDamage>330% damage</style>. " +
                 $"When killed, injected enemies drop multiple " +

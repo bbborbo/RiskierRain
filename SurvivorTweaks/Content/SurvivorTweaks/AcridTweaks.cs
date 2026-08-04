@@ -63,19 +63,22 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.CrocoBody_prefab, (result) =>
+            {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
 
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseMoveSpeed = 8;//7
-            body.baseDamage = acridBaseDamage; //15
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMoveSpeed = 8;//7
+                body.baseDamage = acridBaseDamage; //15
 
-            ChangePassive();
+                ChangePassive();
 
-            ChangeVanillaPrimary(primary);
-            ChangeVanillaSecondaries(secondary);
-            ChangeVanillaUtilities(utility);
-            ChangeVanillaSpecials(special);
+                ChangeVanillaPrimary(primary);
+                ChangeVanillaSecondaries(secondary);
+                ChangeVanillaUtilities(utility);
+                ChangeVanillaSpecials(special);
+            });
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangePoisonDuration;
             LanguageAPI.Add("KEYWORD_POISON",
@@ -255,6 +258,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             //BaseLeap.blastRadius = leapBlastRadius;
             BaseLeap.minimumY = leapMinY;
+            //On.EntityStates.Croco.BaseLeap
             On.EntityStates.Croco.BaseLeap.DoImpactAuthority += AddLeapBounce;
             On.EntityStates.Croco.Leap.GetBlastDamageType += LeapDamageType;
         }

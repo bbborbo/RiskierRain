@@ -25,16 +25,19 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static string flamethrowerDesc;
         public override void Init()
         {
-            GetBodyObject();
-            GetSkillsFromBodyObject(bodyObject);
-
-            CharacterBody mageBody = bodyObject.GetComponent<CharacterBody>();
-            if (mageBody != null)
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Mage.MageBody_prefab, (result) =>
             {
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+
+                CharacterBody mageBody = bodyObject.GetComponent<CharacterBody>();
                 float mageDamage = 12; //12
                 mageBody.baseDamage = mageDamage;
                 mageBody.levelDamage = mageDamage * 0.2f;
-            }
+
+                SkillDef snapfreeze = utility.variants[0].skillDef;
+                snapfreeze.baseRechargeInterval = 8f;
+            });
 
             #region Hover
 
@@ -76,8 +79,6 @@ namespace SurvivorTweaks.SurvivorTweaks
             #endregion
 
             #region Snapfreeze
-            SkillDef snapfreeze = utility.variants[0].skillDef;
-            snapfreeze.baseRechargeInterval = 8f;
 
             GameObject iceWallPillarPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/MageIcewallPillarProjectile");
             Collider collider = iceWallPillarPrefab.GetComponentInChildren<Collider>();

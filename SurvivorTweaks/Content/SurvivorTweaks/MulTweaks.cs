@@ -16,6 +16,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     class MulTweaks : SurvivorTweakBase<MulTweaks>
     {
         float nailSpreadCoefficient = 1.2f;
+        public static float baseDamage = 12f;
 
         GameObject scrapProjectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile");
         public static bool useScrapGravity = true;
@@ -34,54 +35,60 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
-
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseMoveSpeed = 8;
-            body.acceleration = 25;
-
-            On.EntityStates.Toolbot.BaseNailgunState.FireBullet += FuckTheCorkscrewPattern;
-            On.EntityStates.Toolbot.FireNailgun.OnExit += NewNailgunBurst;
-            On.EntityStates.Toolbot.NailgunSpinDown.GetBaseDuration += FixWinddownDuration;
-            On.EntityStates.Toolbot.NailgunSpinDown.FixedUpdate += RemoveNailgunBurst;
-            ToolbotWeaponSkillDef nailGun = (ToolbotWeaponSkillDef)primary.variants[0].skillDef;
-            AnimationCurve curve = nailGun.crosshairSpreadCurve;
-            nailGun.beginSkillCooldownOnSkillEnd = true;
-
-            ToolbotWeaponSkillDef rebar = (ToolbotWeaponSkillDef)primary.variants[1].skillDef;
-            rebar.crosshairSpreadCurve = curve;
-
-            On.EntityStates.Toolbot.FireGrenadeLauncher.OnEnter += ScrapBuff;
-            ToolbotWeaponSkillDef scrapGun = (ToolbotWeaponSkillDef)primary.variants[2].skillDef;
-            scrapGun.resetCooldownTimerOnUse = false;
-            scrapGun.baseRechargeInterval = scrapCooldown;
-            scrapGun.attackSpeedBuffsRestockSpeed = true;
-
-            //On.EntityStates.Toolbot.FireBuzzsaw.FixedUpdate += SawFixedUpdate;
-            ToolbotWeaponSkillDef saw = (ToolbotWeaponSkillDef)primary.variants[3].skillDef;
-            saw.crosshairSpreadCurve = curve;
-            saw.crosshairPrefab.GetComponent<CrosshairController>().maxSpreadAngle *= 4;
-            saw.canceledFromSprinting = true;
-            saw.beginSkillCooldownOnSkillEnd = true;
-
-            if (useScrapGravity)
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Toolbot.ToolbotBody_prefab, (result) =>
             {
-                ProjectileSimple scrapPs = scrapProjectile.GetComponent<ProjectileSimple>();
-                scrapPs.desiredForwardSpeed = scrapSpeed;
-                Rigidbody scrapRb = scrapProjectile.GetComponent<Rigidbody>();
-                scrapRb.useGravity = true;
-                AntiGravityForce scrapAntiGravity = scrapProjectile.AddComponent<AntiGravityForce>();
-                scrapAntiGravity.rb = scrapRb;
-                scrapAntiGravity.antiGravityCoefficient = 0.3f;
-            }
+                bodyObject = result;
+                GetSkillsFromBodyObject(bodyObject);
+                CharacterBody body = bodyObject.GetComponent<CharacterBody>();
+                body.baseMoveSpeed = 8;
+                body.acceleration = 25;
+                body.baseDamage = baseDamage;
+                body.levelDamage = baseDamage * 0.2f;
 
-            secondary.variants[0].skillDef.canceledFromSprinting = false;
+                On.EntityStates.Toolbot.BaseNailgunState.FireBullet += FuckTheCorkscrewPattern;
+                On.EntityStates.Toolbot.FireNailgun.OnExit += NewNailgunBurst;
+                On.EntityStates.Toolbot.NailgunSpinDown.GetBaseDuration += FixWinddownDuration;
+                On.EntityStates.Toolbot.NailgunSpinDown.FixedUpdate += RemoveNailgunBurst;
+                ToolbotWeaponSkillDef nailGun = (ToolbotWeaponSkillDef)primary.variants[0].skillDef;
+                AnimationCurve curve = nailGun.crosshairSpreadCurve;
+                nailGun.beginSkillCooldownOnSkillEnd = true;
 
-            On.EntityStates.Toolbot.ToolbotStanceSwap.OnEnter += RetoolBuff;
-            SkillDef retool = special.variants[0].skillDef;
-            retool.baseRechargeInterval = retoolDuration * 4;
+                ToolbotWeaponSkillDef rebar = (ToolbotWeaponSkillDef)primary.variants[1].skillDef;
+                rebar.crosshairSpreadCurve = curve;
 
-            On.EntityStates.Toolbot.ToolbotDualWieldBase.OnEnter += PowerModeNerf;
-            On.EntityStates.Toolbot.ToolbotDualWieldBase.OnExit += UndoPowerMode;
+                On.EntityStates.Toolbot.FireGrenadeLauncher.OnEnter += ScrapBuff;
+                ToolbotWeaponSkillDef scrapGun = (ToolbotWeaponSkillDef)primary.variants[2].skillDef;
+                scrapGun.resetCooldownTimerOnUse = false;
+                scrapGun.baseRechargeInterval = scrapCooldown;
+                scrapGun.attackSpeedBuffsRestockSpeed = true;
+
+                //On.EntityStates.Toolbot.FireBuzzsaw.FixedUpdate += SawFixedUpdate;
+                ToolbotWeaponSkillDef saw = (ToolbotWeaponSkillDef)primary.variants[3].skillDef;
+                saw.crosshairSpreadCurve = curve;
+                saw.crosshairPrefab.GetComponent<CrosshairController>().maxSpreadAngle *= 4;
+                saw.canceledFromSprinting = true;
+                saw.beginSkillCooldownOnSkillEnd = true;
+
+                if (useScrapGravity)
+                {
+                    ProjectileSimple scrapPs = scrapProjectile.GetComponent<ProjectileSimple>();
+                    scrapPs.desiredForwardSpeed = scrapSpeed;
+                    Rigidbody scrapRb = scrapProjectile.GetComponent<Rigidbody>();
+                    scrapRb.useGravity = true;
+                    AntiGravityForce scrapAntiGravity = scrapProjectile.AddComponent<AntiGravityForce>();
+                    scrapAntiGravity.rb = scrapRb;
+                    scrapAntiGravity.antiGravityCoefficient = 0.3f;
+                }
+
+                secondary.variants[0].skillDef.canceledFromSprinting = false;
+
+                On.EntityStates.Toolbot.ToolbotStanceSwap.OnEnter += RetoolBuff;
+                SkillDef retool = special.variants[0].skillDef;
+                retool.baseRechargeInterval = retoolDuration * 4;
+
+                On.EntityStates.Toolbot.ToolbotDualWieldBase.OnEnter += PowerModeNerf;
+                On.EntityStates.Toolbot.ToolbotDualWieldBase.OnExit += UndoPowerMode;
+            });
         }
 
 

@@ -18,7 +18,7 @@ namespace SwanSongExtended.States.AI
 	/// </summary>
     public class Converge : BaseAIState
 	{
-		public static float leaderStopDistance = 3f;
+		public static float leaderStopDistance = 5f;
 		public static float followerStrafeDistanceMin = 6f;
 		public static float followerStrafeDistanceMax = StormsCore.cycloneRadius * 0.75f;
 		float unreachableTimestamp = float.PositiveInfinity;
@@ -47,7 +47,7 @@ namespace SwanSongExtended.States.AI
 			{
 				if (sqrDistance <= leaderStopDistance * leaderStopDistance)
 				{
-					movementType = AISkillDriver.MovementType.Stop;
+					movementType = AISkillDriver.MovementType.ChaseMoveTarget;
 				}
 				return cyclonePos;
 			}
@@ -114,8 +114,10 @@ namespace SwanSongExtended.States.AI
 			BroadNavigationSystem.Agent broadNavigationAgent = base.ai.broadNavigationAgent;
 			BroadNavigationSystem.AgentOutput output = broadNavigationAgent.output;
 			BaseAI.Target target = skillDriverEvaluation.target;
+			BaseAI.Target aimTarget = skillDriverEvaluation.aimTarget;
 
 			bool hasTarget = (target != null) ? target.gameObject : null;
+			bool hasAimTarget = (aimTarget != null) ? aimTarget.gameObject : null;
 
 			///b: finally new stuff - force the monster to pathfind inside the cyclone
 			/// ADDITIONALLY, continue to pathfind inside the cyclone until its target ALSO enters the cyclone
@@ -128,8 +130,8 @@ namespace SwanSongExtended.States.AI
 			Vector3? convergeLocation = null;
 			if (this.body.HasBuff(StormsCore.CycloneProtection) == false 
 				|| isLeader
-				|| (hasTarget ? 
-					(target.characterBody.HasBuff(StormsCore.CycloneProtection) == false) 
+				|| (hasAimTarget ? 
+					(aimTarget.characterBody.HasBuff(StormsCore.CycloneProtection) == false) 
 					: false)
 				)
 			{
@@ -284,33 +286,11 @@ namespace SwanSongExtended.States.AI
 					}
 				}
 				this.UpdateBark();
+				ai.UpdateBodyAim(Time.fixedDeltaTime);
 			}
 		}
 
 		#region EVERYTHING WITHIN REGION IS IDENTICAL TO VANILLA CODE FROM combat AND I DO NOT CLAIM OWNERSHIP NOR RESPONSIBILITY OVER
-		public override void OnEnter()
-		{
-			base.OnEnter();
-			this.activeSoundTimer = UnityEngine.Random.Range(3f, 8f);
-			if (base.ai)
-			{
-				this.lastPathUpdate = base.ai.broadNavigationAgent.output.lastPathUpdate;
-				base.ai.broadNavigationAgent.InvalidatePath();
-			}
-			this.fallbackNodeStartAge = float.NegativeInfinity;
-		}
-
-		public override void OnExit()
-		{
-			base.OnExit();
-		}
-
-		protected void UpdateFootPosition()
-		{
-			this.myBodyFootPosition = base.body.temporaryPathfindingFootpositionDoNotUseWillBePatchedOut;
-			BroadNavigationSystem.Agent broadNavigationAgent = this.ai.broadNavigationAgent;
-			broadNavigationAgent.currentPosition = new Vector3?(this.myBodyFootPosition);
-		}
 
 		public override BaseAI.BodyInputs GenerateBodyInputs(in BaseAI.BodyInputs previousBodyInputs)
 		{
@@ -378,9 +358,9 @@ namespace SwanSongExtended.States.AI
 			{
 				this.bodyInputs.pressSprint = this.dominantSkillDriver.shouldSprint;
 				this.bodyInputs.pressActivateEquipment = (this.dominantSkillDriver.shouldFireEquipment && !previousBodyInputs.pressActivateEquipment);
-				int aimType = (int)this.dominantSkillDriver.aimType;
+				AISkillDriver.AimType aimType = this.dominantSkillDriver.aimType;
 				BaseAI.Target aimTarget = base.ai.skillDriverEvaluation.aimTarget;
-				if (aimType == 4)
+				if (aimType == AISkillDriver.AimType.MoveDirection)
 				{
 					base.AimInDirection(ref this.bodyInputs, this.bodyInputs.moveVector);
 				}
@@ -391,6 +371,29 @@ namespace SwanSongExtended.States.AI
 			}
 			base.ModifyInputsForJumpIfNeccessary(ref this.bodyInputs);
 			return this.bodyInputs;
+		}
+		public override void OnEnter()
+		{
+			base.OnEnter();
+			this.activeSoundTimer = UnityEngine.Random.Range(3f, 8f);
+			if (base.ai)
+			{
+				this.lastPathUpdate = base.ai.broadNavigationAgent.output.lastPathUpdate;
+				base.ai.broadNavigationAgent.InvalidatePath();
+			}
+			this.fallbackNodeStartAge = float.NegativeInfinity;
+		}
+
+		public override void OnExit()
+		{
+			base.OnExit();
+		}
+
+		protected void UpdateFootPosition()
+		{
+			this.myBodyFootPosition = base.body.temporaryPathfindingFootpositionDoNotUseWillBePatchedOut;
+			BroadNavigationSystem.Agent broadNavigationAgent = this.ai.broadNavigationAgent;
+			broadNavigationAgent.currentPosition = new Vector3?(this.myBodyFootPosition);
 		}
 
 		protected void UpdateBark()

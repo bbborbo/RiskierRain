@@ -37,14 +37,17 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredMoveSpeed = 0.8f;
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
-        public static float squallDamagePerSecond = 5f;
-        public static float squallDamagePerLevel = 0.3f ;//0.2f
-        public static float squallAimDamping = 1.1f;
+        public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
+        public static float squallDamagePerSecond = 40f;
+        public static float squallDamagePerLevel = 0.3f;//0.2f
+        public static float squallAimDamping = 0.9f;
         public static float squallAimMaxSpeed = 40f;
-        public static float squallBeamRadius = 3f;
-        public static float squallBeamTickFrequency = 4f;
+        public static float squallBeamRadius = 1.5f;
+        public static float squallPreBeamRadius = 0.75f;
+        public static float squallBeamTickFrequency = 8f;
 
         public static GameObject squallBeamVfxPrefab;
+        public static GameObject squallPreBeamVfxPrefab;
         public static GameObject tetherVfxPrefab;
         #endregion
 
@@ -113,7 +116,7 @@ namespace SwanSongExtended.Elites
                     SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.texFSBLunarSpikeRampGrey_png, (tex) =>
                     {
                         mat.SetTexture("_RemapTex", tex);
-                        mat.SetColor("_TintColor", new Color32(215, 159, 100, 192));
+                        mat.SetColor("_TintColor", new Color32(185, 169, 90, 162));
                     });
                     mr1.material = mat;
                 }
@@ -125,14 +128,14 @@ namespace SwanSongExtended.Elites
                     SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.texFSBLunarSpikeRampGrey_png, (tex) =>
                     {
                         mat.SetTexture("_RemapTex", tex);
-                        mat.SetColor("_TintColor", new Color32(64, 64, 64, 255));
+                        mat.SetColor("_TintColor", new Color32(54, 54, 54, 255));
                     });
                     mr2.material = mat;
                 }
             }
 
             Transform lightMiddle = squallBeamVfxPrefab.transform.GetChild(3);
-            if(lightMiddle && lightMiddle.TryGetComponent(out Light light1))
+            if (lightMiddle && lightMiddle.TryGetComponent(out Light light1))
             {
                 light1.color = new Color32(156, 156, 156, 255);
                 light1.range = 30;
@@ -140,7 +143,7 @@ namespace SwanSongExtended.Elites
             }
 
             Transform lightEnd = squallBeamVfxPrefab.transform.GetChild(4);
-            if(lightEnd && lightEnd.TryGetComponent(out Light light2))
+            if (lightEnd && lightEnd.TryGetComponent(out Light light2))
             {
                 light2.color = new Color32(156, 156, 156, 255);
                 light2.range = 30;
@@ -148,7 +151,7 @@ namespace SwanSongExtended.Elites
             }
 
             Transform muzzleRayParticles = squallBeamVfxPrefab.transform.GetChild(6);
-            if(muzzleRayParticles && muzzleRayParticles.TryGetComponent(out ParticleSystemRenderer psr3))
+            if (muzzleRayParticles && muzzleRayParticles.TryGetComponent(out ParticleSystemRenderer psr3))
             {
                 Material mat = UnityEngine.Object.Instantiate(psr3.material);
                 SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampBanditSmokescreen_png, (tex) =>
@@ -157,6 +160,41 @@ namespace SwanSongExtended.Elites
                     mat.SetColor("_TintColor", new Color32(213, 180, 136, 255));
                 });
                 psr3.material = mat;
+            }
+
+            squallPreBeamVfxPrefab = voidlingBeamVfx.InstantiateClone("SquallBeamVfx", false);
+
+            squallPreBeamVfxPrefab.transform.localScale = new Vector3(squallPreBeamRadius, squallPreBeamRadius, 30f);
+
+            TryDestroyChild(squallPreBeamVfxPrefab, 1);
+            TryDestroyChild(squallPreBeamVfxPrefab, 2);
+            TryDestroyChild(squallPreBeamVfxPrefab, 3);
+            TryDestroyChild(squallPreBeamVfxPrefab, 4);
+            TryDestroyChild(squallPreBeamVfxPrefab, 5);
+            TryDestroyChild(squallPreBeamVfxPrefab, 6);
+            Transform meshAdditive1 = squallPreBeamVfxPrefab.transform.GetChild(0);
+            if (meshAdditive1)
+            {
+                Transform meshTransparent1 = meshAdditive1.GetChild(0);
+                if (meshTransparent1.TryGetComponent(out MeshRenderer mr2))
+                {
+                    Material mat = UnityEngine.Object.Instantiate(mr2.material);
+                    SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.texFSBLunarSpikeRampGrey_png, (tex) =>
+                    {
+                        mat.SetTexture("_RemapTex", tex);
+                        mat.SetColor("_TintColor", new Color32(54, 54, 54, 255));
+                    });
+                    mr2.material = mat;
+                }
+                meshTransparent1.transform.SetParent(squallPreBeamVfxPrefab.transform);
+                TryDestroyChild(meshAdditive1.gameObject);
+            }
+
+            void TryDestroyChild(GameObject parent, int? index = null)
+            {
+                Transform t = index == null ? parent.transform : parent.transform.GetChild(index.Value);
+                if (t != null)
+                    t.gameObject.SetActive(false);
             }
         }
 
@@ -194,25 +232,23 @@ namespace SwanSongExtended.Elites
             On.EntityStates.AI.Walker.Combat.FixedUpdate += HowlingConvergeCombat2;
             On.EntityStates.AI.Walker.Wander.FixedUpdate += HowlingConvergeWander2;
             On.EntityStates.AI.Walker.LookBusy.FixedUpdate += HowlingConvergeLookBusy2;
+            //RemoveOspForever();
         }
-
-
 
         #region ai overriding
         private BaseAI.SkillDriverEvaluation LeaderSquallOverride(On.RoR2.CharacterAI.BaseAI.orig_EvaluateSkillDrivers orig, BaseAI self)
         {
-            if (self.body.HasBuff(StormsCore.CycloneLeader))
+            if (self.body != null && self.body.HasBuff(StormsCore.CycloneLeader))
             {
                 if (CycloneController.instance != null
                     && CycloneController.instance.cycloneState >= CycloneController.CycloneState.PreparingSquall
-                    && CycloneController.instance.HowlSquallDriver != null
-                    && self.body.HasBuff(StormsCore.CycloneLeader))
+                    && CycloneController.instance.HowlSquallDriver != null)
                 {
                     self.UpdateTargets();
                     self.customTarget.gameObject = CharacterMaster.instancesList
                         .Where(x => x.teamIndex == TeamIndex.Player && x.GetBody().isPlayerControlled)
                         .OrderByDescending(x => (x.GetBodyObject().transform.position - self.body.corePosition))
-                        .FirstOrDefault().GetBodyObject(); ;
+                        .FirstOrDefault().GetBodyObject();
 
                     return new BaseAI.SkillDriverEvaluation
                     {
@@ -262,11 +298,14 @@ namespace SwanSongExtended.Elites
             //    broadNavigationAgent.InvalidatePath();
             //    (self.ai.broadNavigationSystem as NodeGraphNavigationSystem).UpdateAgent(broadNavigationAgent.handle);
             //}
-            if (IsElite(self.body) && CycloneController.GetShouldConverge())
+            if (IsElite(self.body))
             {
-                BaseAIState nextState = new Converge();
-                self.outer.SetNextState(nextState);
-                return;
+                if (CycloneController.GetShouldConverge())
+                {
+                    BaseAIState nextState = new Converge();
+                    self.outer.SetNextState(nextState);
+                    return;
+                }
             }
             orig(self);
         }
@@ -334,7 +373,22 @@ namespace SwanSongExtended.Elites
             });
         }
         #endregion
+        #region ai overriding 2
+        public static void RemoveOspForever()
+        {
+            // removes one-shot protection (OSP)
+            Hook hookTuah = new Hook(
+              typeof(EntityStates.AI.Walker.Combat).GetMethod("FixedUpdate", (BindingFlags)(-1)),
+              typeof(WhirlwindAspect).GetMethod(nameof(ReflectOnThatThang), (BindingFlags)(-1))
+            );
+        }
 
+        public static void ReflectOnThatThang(orig_aiStateFixedUpdate orig, BaseAIState self)
+        {
+
+        }
+        public delegate bool orig_aiStateFixedUpdate(BaseAIState self);
+        #endregion
         private void CycloneBlock(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
         {
             CharacterBody victimBody = self.body;
@@ -380,6 +434,11 @@ namespace SwanSongExtended.Elites
 
         protected override bool ActivateEquipment(EquipmentSlot slot)
         {
+            if (slot.characterBody && slot.characterBody.TryGetComponent(out AffixSquallBehavior squallBehavior))
+            {
+                squallBehavior.SetSquallTimer(playerSquallDuration);
+                return true;
+            }
             return false;
         }
     }
@@ -394,7 +453,7 @@ namespace SwanSongExtended.Elites
         public static ReadOnlyCollection<AffixSquallBehavior> readOnlyInstancesList = new ReadOnlyCollection<AffixSquallBehavior>(AffixSquallBehavior.instancesList);
         private GameObject affixSquallAttachment;
 
-
+        float squallTimer;
         bool isPlayer;
         bool isPlayerTeam;
         BaseAI baseAI;
@@ -437,17 +496,17 @@ namespace SwanSongExtended.Elites
             }
         }
 
+        private void UpdateBeamTransform()
+        {
+            Ray beamRay = this.GetBeamRay();
+            this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
+        }
+
         bool _isFiring = false;
 
         void OnEnable()
         {
             instancesList.Add(this);
-        }
-
-        private void UpdateBeamTransform()
-        {
-            Ray beamRay = this.GetBeamRay();
-            this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
         }
 
         void OnDisable()
@@ -496,18 +555,26 @@ namespace SwanSongExtended.Elites
         float beamTickTimer = 0f;
         private void DoBeamAttackServer()
         {
+            if (squallTimer > 0)
+            {
+                squallTimer -= Time.fixedDeltaTime;
+                isFiring = squallTimer > 0;
+            }
             if (!isFiring)
             {
-                beamTickTimer = 1f / EntityStates.VoidRaidCrab.SpinBeamAttack.beamTickFrequency;
+                beamTickTimer = 1f / WhirlwindAspect.squallBeamTickFrequency;
                 return;
             }
 
             beamTickTimer -= Time.fixedDeltaTime;
             if (beamTickTimer > 0)
                 return;
-            beamTickTimer += 1f / EntityStates.VoidRaidCrab.SpinBeamAttack.beamTickFrequency;
+            beamTickTimer += 1f / WhirlwindAspect.squallBeamTickFrequency;
 
             Ray beamRay = GetBeamRay();
+            //this is here again because getbeamray has the magical ability to turn off firing :D
+            if (!isFiring)
+                return;
             new BulletAttack
             {
                 muzzleName = "Head",
@@ -538,8 +605,17 @@ namespace SwanSongExtended.Elites
             }.Fire();
         }
 
-        protected Ray GetBeamRay()
+        public Ray GetBeamRay()
         {
+            if(body == null)
+            {
+                if (CycloneController.instance != null && CycloneController.instance.leaderElite == this)
+                {
+                    CycloneController.instance.DemoteCurrentLeader();
+                }
+                isFiring = false;
+                return new Ray(transform.position, transform.forward);
+            }
             if (body.inputBank)
             {
                 return new Ray(body.inputBank.aimOrigin, body.inputBank.aimDirection);
@@ -561,6 +637,13 @@ namespace SwanSongExtended.Elites
                 UnityEngine.Object.Destroy(this.affixSquallAttachment);
                 this.affixSquallAttachment = null;
             }
+        }
+
+        internal void SetSquallTimer(float playerSquallDuration)
+        {
+            if (body.teamComponent.teamIndex != TeamIndex.Player)
+                return;
+            squallTimer = playerSquallDuration;
         }
     }
 }

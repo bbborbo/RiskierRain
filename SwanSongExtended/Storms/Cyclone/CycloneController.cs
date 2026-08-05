@@ -46,6 +46,12 @@ namespace SwanSongExtended.Storms
         }
 
         public AffixSquallBehavior leaderElite { get; private set; }
+        public void DemoteCurrentLeader()
+        {
+            if (leaderElite != null && leaderElite.body.HasBuff(StormsCore.CycloneLeader))
+                leaderElite.body.RemoveBuff(StormsCore.CycloneLeader);
+            leaderElite = null;
+        }
         public GameObject primaryCycloneInstance { get; private set; }
 
         public static bool GetShouldConverge()
@@ -93,7 +99,7 @@ namespace SwanSongExtended.Storms
 
         void Awake()
         {
-            cycloneStateMachine = EntityStateMachine.FindByCustomName(this.gameObject, StormsCore.esmStormName);//GetComponent<EntityStateMachine>();
+            cycloneStateMachine = EntityStateMachine.FindByCustomName(this.gameObject, StormsCore.esmCycloneName);
 
             //HowlChaseDriver = this.gameObject.AddComponent<AISkillDriver>();
             //HowlChaseDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
@@ -102,7 +108,7 @@ namespace SwanSongExtended.Storms
             //HowlChaseDriver.moveTargetType = AISkillDriver.TargetType.Custom;
             HowlSquallDriver = this.gameObject.AddComponent<AISkillDriver>();
             HowlSquallDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            HowlSquallDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            HowlSquallDriver.buttonPressType = AISkillDriver.ButtonPressType.Abstain;
             HowlSquallDriver.movementType = AISkillDriver.MovementType.Stop;
             HowlSquallDriver.moveTargetType = AISkillDriver.TargetType.Custom;
             HowlSquallDriver.activationRequiresAimConfirmation = false;
@@ -115,6 +121,10 @@ namespace SwanSongExtended.Storms
             HowlSquallDriver.maxDistance = float.PositiveInfinity;
             HowlSquallDriver.moveInputScale = 1;
             HowlSquallDriver.shouldFireEquipment = true;
+            HowlSquallDriver.selectionRequiresAimTarget = false;
+            HowlSquallDriver.selectionRequiresOnGround = false;
+            HowlSquallDriver.selectionRequiresTargetLoS = false;
+            HowlSquallDriver.selectionRequiresTargetNonFlier = false;
         }
         void OnEnable()
         {
@@ -143,6 +153,8 @@ namespace SwanSongExtended.Storms
             {
                 targetObject = leaderElite.gameObject;
             }
+            if (targetObject == null)
+                return;
 
             NodeGraph.NodeIndex airNode = airNodes.FindClosestNode(targetObject.transform.position, HullClassification.Golem);
             if (airNodes.GetNodePosition(airNode, out Vector3 airPos))
@@ -187,11 +199,13 @@ namespace SwanSongExtended.Storms
                 DemoteCurrentLeader();
                 candidateElite.body.AddBuff(StormsCore.CycloneLeader);
                 leaderElite = candidateElite;
+                EntityStateMachine esm = EntityStateMachine.FindByCustomName(leaderElite.gameObject, "Body");
+                if (esm != null)
+                    esm.SetNextStateToMain();
             }
             public void DemoteCurrentLeader()
             {
-                if (leaderElite != null && leaderElite.body.HasBuff(StormsCore.CycloneLeader))
-                    leaderElite.body.RemoveBuff(StormsCore.CycloneLeader);
+                instance.DemoteCurrentLeader();
             }
             public static bool IsAnyEliteInCyclone()
             {
@@ -255,8 +269,15 @@ namespace SwanSongExtended.Storms
                 int count = list.Count;
                 if (count <= 0)
                 {
-                    ResetRefreshCountdown();
-                    return;
+                    list = AffixSquallBehavior.readOnlyInstancesList.Where(
+                            x => x.body.teamComponent.teamIndex != TeamIndex.Player
+                        ).ToList();
+                    count = list.Count;
+                    if(count <= 0)
+                    {
+                        ResetRefreshCountdown();
+                        return;
+                    }
                 }
                 //just fucking pick a random one i guess.
                 //this is a stand in for using the cool and awesome density based formula i envisioned
@@ -271,7 +292,7 @@ namespace SwanSongExtended.Storms
                     if (IsPositionSheltered(nodePosition))
                     {
                         List<NodeGraph.NodeIndex> validNodes =
-                            nodeGraph.FindNodesInRange(nodePosition, 0, StormsCore.cycloneRadius * 0.5f, HullMask.Golem);
+                            nodeGraph.FindNodesInRange(nodePosition, 0, StormsCore.cycloneRadius, HullMask.Golem);
                         List<Vector3> validPositions = new List<Vector3>();
                         foreach(NodeGraph.NodeIndex node2 in validNodes)
                         {
@@ -287,12 +308,13 @@ namespace SwanSongExtended.Storms
 
                         nodePosition = validPositions[UnityEngine.Random.Range(0, validPositions.Count - 1)];
                     }
-                    //i dont think this check will be here in the final formula 
-                    if((nodePosition - randomElite.transform.position).sqrMagnitude > StormsCore.cycloneRadius * StormsCore.cycloneRadius)
-                    {
-                        ResetRefreshCountdown();
-                        return;
-                    }
+                    ////i dont think this check will be here in the final formula 
+                    //if(randomElite.body.master.aiComponents[0].broadNavigationAgent.reac
+                    //    (nodePosition - randomElite.transform.position).sqrMagnitude > StormsCore.cycloneRadius * StormsCore.cycloneRadius)
+                    //{
+                    //    ResetRefreshCountdown();
+                    //    return;
+                    //}
 
                     Debug.LogError("Electing leader and placing cyclone");
                     GameObject cycloneInstance = UnityEngine.Object.Instantiate(StormsCore.cycloneWardPrefab, nodePosition, Quaternion.identity);
@@ -403,6 +425,8 @@ namespace SwanSongExtended.Storms
             private CycloneState nextState = CycloneState.PreparingSquall;
             public override CycloneState cycloneState => CycloneState.PreparingSquall;
             public GameObject leaderEliteObject;
+            public GameObject beamVfxInstance;
+            float squallTimeCache = 0;
             public override void OnSerialize(NetworkWriter writer)
             {
                 base.OnSerialize(writer);
@@ -416,19 +440,56 @@ namespace SwanSongExtended.Storms
                     leaderElite = leaderEliteObject.GetComponent<AffixSquallBehavior>();
             }
 
+            public override void OnEnter()
+            {
+                base.OnEnter();
+                squallTimeCache = instance.accumulatedSquallTime;
+                //UpdateTelegraph(true);
+            }
+            public override void OnExit()
+            {
+                base.OnExit();
+                UpdateTelegraph(false);
+            }
+            private void UpdateTelegraph(bool newValue)
+            {
+                if (newValue == true)
+                {
+                    this.beamVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallPreBeamVfxPrefab);
+                    this.beamVfxInstance.transform.SetParent(leaderElite.body.aimOriginTransform, true);
+                    this.UpdateBeamTransform();
+                    RoR2Application.onLateUpdate += this.UpdateBeamTransform;
+                    //Util.PlaySound(EntityStates.VoidRaidCrab.SpinBeamAttack.enterSoundString, base.gameObject);
+                }
+                else
+                {
+                    RoR2Application.onLateUpdate -= this.UpdateBeamTransform;
+                    Destroy(this.beamVfxInstance);
+                    VfxKillBehavior.KillVfxObject(this.beamVfxInstance);
+                    this.beamVfxInstance = null;
+                }
+            }
+
+            private void UpdateBeamTransform()
+            {
+                Ray beamRay = leaderElite.GetBeamRay();
+                this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
+            }
+
             public override void FixedUpdate()
             {
                 base.FixedUpdate();
                 if (!NetworkServer.active)
                     return;
 
-
-                if (leaderElite == null || base.fixedAge > StormsCore.squallRallyTimeMax + 1f)
+                bool reelectionTimePassed = base.fixedAge > 1f;
+                if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime == squallTimeCache))
                 {
                     Log.Debug("PrepareSquall: Entering reelection");
                     outer.SetNextState(GetNextState());
                     return;
                 }
+                UpdateTelegraph(reelectionTimePassed);
 
                 if (GetSquallThresholdMet())
                 {

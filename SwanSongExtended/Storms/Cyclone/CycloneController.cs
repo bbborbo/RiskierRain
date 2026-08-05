@@ -519,7 +519,7 @@ namespace SwanSongExtended.Storms
                     return;
                 }
 
-                float fireDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonus * Tools.CountOverspillTriangular(instance.squallContributorCountHighest);
+                float fireDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill * Tools.CountOverspillTriangular(instance.squallContributorCountHighest);
                 if(base.fixedAge + instance.squallTimeFired >= fireDuration)
                 {
                     Log.Debug("End squall");

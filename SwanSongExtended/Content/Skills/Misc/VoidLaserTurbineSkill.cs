@@ -64,7 +64,8 @@ namespace SwanSongExtended.Skills
             (
                 rechargeStock: 0,
                 dontAllowPastMaxStocks: true,
-                mustKeyPress: true
+                mustKeyPress: true,
+                stockToConsume: 1
             );
 
         public override void Hooks()

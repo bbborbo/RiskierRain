@@ -33,7 +33,7 @@ namespace SwanSongExtended.Storms
         public static EliteTierDef StormEliteT2;
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
-        public static float stormDirectorCreditGainMultiplier = 0.6f;
+        public static float stormDirectorCreditGainMultiplier = 0.5f;
 
         //storm scheduling:
         public const float drizzleStormDelayMinutes = 10;

@@ -96,6 +96,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             soupFire.baseRechargeInterval = soupCooldown;
             soupFire.beginSkillCooldownOnSkillEnd = true;
             soupFire.activationStateMachineName = "Weapon";
+            soupFire.suppressSkillActivation = true;
             LanguageAPI.Add("COMMANDO_SPECIAL_NAME", $"Suppressive Barrage");
             LanguageAPI.Add("COMMANDO_SPECIAL_DESCRIPTION", $"<style=cIsDamage>Stunning</style>. " +
                 $"Take aim at up to <style=cIsDamage>{soupMaxTargets}</style> enemies, " +

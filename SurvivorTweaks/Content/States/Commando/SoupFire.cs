@@ -28,6 +28,7 @@ namespace SurvivorTweaks.States.Commando
 			crit = Util.CheckRoll(this.critStat, base.characterBody.master);
 			shotsTotal = Mathf.CeilToInt(CommandoTweaks.soupBaseShots * this.attackSpeedStat);
 			durationPerShot = SoupFire.baseDuration / shotsTotal;
+			characterBody.OnSkillActivated(activatorSkillSlot);
 			FireAtTarget();
 		}
 

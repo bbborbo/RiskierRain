@@ -36,9 +36,9 @@ namespace SwanSongExtended.Items
         public static BuffDef fartNotReadyBuff;
         public static bool fartReadyBuffHidden = false;
         public static bool fartNotReadyBuffHidden = false;
-        internal static float smokeBombRadius = 9f;
+        internal static float smokeBombRadius = 11f;
         internal static float smokeBombRadiusStack = 0f;
-        static float fartBaseDamageCoefficient = 1f;
+        static float fartBaseDamageCoefficient = 2f;
         static float fartStackDamageCoefficient = 1f;
         static float fartZoneProcCoefficient => (1 / fartZoneResetFrequency) / (3); //3 is the base duration of cripple proc, this makes it the minimum proc coefficient for constant cripple
         static float fartZoneDuration = 4f; //7
@@ -90,7 +90,7 @@ namespace SwanSongExtended.Items
                 Color.grey, true, true);
             fartReadyBuff.isHidden = fartReadyBuffHidden;
             fartNotReadyBuff.isHidden = fartNotReadyBuffHidden;
-            CreateProjectile();
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MiniMushroom.SporeGrenadeProjectileDotZone_prefab, CreateProjectile);
             base.Init();
         }
         public override void PostInit()
@@ -153,12 +153,8 @@ namespace SwanSongExtended.Items
             }
         }
 
-        private void CreateProjectile()
+        private void CreateProjectile(GameObject mushroomGas)
         {
-            GameObject mushroomGas = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/MiniMushroom/SporeGrenadeProjectileDotZone.prefab").WaitForCompletion();
-            if (mushroomGas == null)
-                return;
-
             fartZone = mushroomGas.InstantiateClone("FartJarGas", true);
 
             fartZone.transform.localScale = Vector3.one * smokeBombRadius / 6;
@@ -176,6 +172,15 @@ namespace SwanSongExtended.Items
             ProjectileDamage dmg = fartZone.GetComponent<ProjectileDamage>();
             if(dmg != null)
                 dmg.damageType = DamageType.CrippleOnHit;
+
+            Transform fx = fartZone.transform.GetChild(0);
+            if(fx != null)
+            {
+                Transform hitBox1 = fx.GetChild(1);
+                hitBox1.localScale = new Vector3(1.41f, 1, 1.41f);
+                Transform hitBox2 = fx.GetChild(2);
+                hitBox2.localScale = new Vector3(1.41f, 1, 1.41f);
+            }
         }
 
 

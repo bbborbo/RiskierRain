@@ -31,7 +31,7 @@ namespace SwanSongExtended.Elites
         public static ModdedDamageType riptideDamageType;
         public static BuffDef riptideDebuff;
         public static int riptideArmorPenalty = 20;
-        public static float riptideMovementPenalty = 1f;
+        public static float riptideMovementPenalty = 0.8f;
         public static float riptideDuration = 1f;
 
         public static GameObject waveProjectilePrefab;
@@ -39,9 +39,10 @@ namespace SwanSongExtended.Elites
         public static float waveProjectileSpeed = 30f; //60f
         public static float waveProjectileDuration = 1.5f; //3f
         public static float waveProjectileCount = 5f; //12f
-        public static float waveProjectileBaseDamage = 10f;
+        public static float waveProjectileBaseDamage = 8f;
+        public static float waveProjectileDamageLevel = 0.3f;
         public static float waveProjectileProcCoefficient = 2.0f;
-        public static float waveProjectileForce = 400f;
+        public static float waveProjectileForce = 150f;
         public static int cannonballBouncesMin = 1;
         /// <summary>
         /// uses hull classification instead of body size
@@ -275,22 +276,21 @@ namespace SwanSongExtended.Elites
             GetStatCoefficients += SurgingStats;
             On.RoR2.CharacterBody.AddOrRemoveEliteItemBehavior += AddAffixBehavior;
             MoreStats.OnHit.GetHitBehavior += RiptideOnHit;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += CannonballOnDeath;
+            GlobalEventManager.onCharacterDeathGlobal += FireCannonball;
         }
 
-        private void CannonballOnDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        private void FireCannonball(DamageReport damageReport)
         {
             if (NetworkServer.active)
             {
                 if (damageReport.victimBody.HasBuff(EliteBuffDef))
                 {
-                    FireCannonballProjectile(damageReport.victimBody, damageReport.attackerBody);
+                    FireCannonballProjectile(damageReport.victimBody, damageReport.victimTeamIndex);
                 }
             }
-            orig(self, damageReport);
         }
 
-        private void FireCannonballProjectile(CharacterBody victimBody, CharacterBody attackerBody)
+        private void FireCannonballProjectile(CharacterBody victimBody, TeamIndex team)
         {
             if (victimBody.healthComponent.globalDeathEventChanceCoefficient < 1)
                 return;
@@ -320,11 +320,11 @@ namespace SwanSongExtended.Elites
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
                 DelayBlast delayBlast = cannonball.delayBlast;
-                TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
+                TeamFilter teamFilter = gameObject.GetComponent<TeamFilter>();
                 cannonball.bouncePosition = bouncePosition;
                 cannonball.initialVelocityY = cannonballInitialVelocity;
                 delayBlast.position = spawnPosition;
-                delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f);
+                delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel);
                 delayBlast.baseForce = 2300f;
                 delayBlast.attacker = victimBody.gameObject;
                 delayBlast.radius = BombArtifactManager.bombBlastRadius;
@@ -333,7 +333,8 @@ namespace SwanSongExtended.Elites
                 delayBlast.maxTimer = BombArtifactManager.bombFuseTimeout;
                 delayBlast.timerStagger = 0f;
                 delayBlast.falloffModel = BlastAttack.FalloffModel.Linear;
-                component2.teamIndex = victimBody.teamComponent.teamIndex;
+                delayBlast.teamFilter = teamFilter;
+                teamFilter.teamIndex = team;
                 NetworkServer.Spawn(gameObject);
             }
         }
@@ -411,7 +412,7 @@ namespace SwanSongExtended.Elites
                     SurgingAspect.waveProjectilePrefab,
                     position, Util.QuaternionSafeLookRotation(dir),
                     attacker,
-                    waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(0.2f),
+                    waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel),
                     0,
                     isCrit,
                     DamageColorIndex.Default, null, -1f) ;

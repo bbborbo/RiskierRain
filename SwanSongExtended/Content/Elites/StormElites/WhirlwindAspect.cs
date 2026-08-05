@@ -38,7 +38,7 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
-        public static float squallDamagePerSecond = 40f;
+        public static float squallDamagePerSecond = 25f;
         public static float squallDamagePerLevel = 0.3f;//0.2f
         public static float squallAimDamping = 0.9f;
         public static float squallAimMaxSpeed = 40f;
@@ -620,7 +620,7 @@ namespace SwanSongExtended.Elites
             {
                 return new Ray(body.inputBank.aimOrigin, body.inputBank.aimDirection);
             }
-            return new Ray(body.transform.position, body.transform.forward);
+            return new Ray(transform.position, transform.forward);
         }
 
         private void DoBodyAttachment()

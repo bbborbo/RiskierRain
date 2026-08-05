@@ -47,7 +47,7 @@ namespace SwanSongExtended.States.AI
 			{
 				if (sqrDistance <= leaderStopDistance * leaderStopDistance)
 				{
-					movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+					movementType = AISkillDriver.MovementType.Stop;
 				}
 				return cyclonePos;
 			}

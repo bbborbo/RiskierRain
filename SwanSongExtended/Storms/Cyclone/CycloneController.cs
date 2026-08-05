@@ -269,15 +269,15 @@ namespace SwanSongExtended.Storms
                 int count = list.Count;
                 if (count <= 0)
                 {
-                    list = AffixSquallBehavior.readOnlyInstancesList.Where(
-                            x => x.body.teamComponent.teamIndex != TeamIndex.Player
-                        ).ToList();
-                    count = list.Count;
-                    if(count <= 0)
-                    {
-                        ResetRefreshCountdown();
-                        return;
-                    }
+                    //list = AffixSquallBehavior.readOnlyInstancesList.Where(
+                    //        x => x.body.teamComponent.teamIndex != TeamIndex.Player
+                    //    ).ToList();
+                    //count = list.Count;
+                    //if(count <= 0)
+                    //{
+                    //}
+                    ResetRefreshCountdown();
+                    return;
                 }
                 //just fucking pick a random one i guess.
                 //this is a stand in for using the cool and awesome density based formula i envisioned
@@ -292,7 +292,7 @@ namespace SwanSongExtended.Storms
                     if (IsPositionSheltered(nodePosition))
                     {
                         List<NodeGraph.NodeIndex> validNodes =
-                            nodeGraph.FindNodesInRange(nodePosition, 0, StormsCore.cycloneRadius, HullMask.Golem);
+                            nodeGraph.FindNodesInRange(nodePosition, 0, StormsCore.cycloneRadius * 1.5f, HullMask.Golem);
                         List<Vector3> validPositions = new List<Vector3>();
                         foreach(NodeGraph.NodeIndex node2 in validNodes)
                         {
@@ -410,7 +410,8 @@ namespace SwanSongExtended.Storms
             public override BaseCycloneState GetNextState()
             {
                 //if no cyclone or timed out with no leader
-                if (CycloneController.instance.primaryCycloneInstance == null 
+                if (instance.primaryCycloneInstance == null 
+                    || instance.leaderElite == null
                     || shouldMoveCyclone == true)
                     return new PrepareCyclone();
 
@@ -453,6 +454,8 @@ namespace SwanSongExtended.Storms
             }
             private void UpdateTelegraph(bool newValue)
             {
+                if (newValue == (beamVfxInstance != null))
+                    return;
                 if (newValue == true)
                 {
                     this.beamVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallPreBeamVfxPrefab);

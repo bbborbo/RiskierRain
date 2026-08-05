@@ -38,11 +38,11 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
-        public static float squallDamagePerSecond = 25f;
+        public static float squallDamagePerSecond = 40f;
         public static float squallDamagePerLevel = 0.3f;//0.2f
         public static float squallAimDamping = 0.9f;
         public static float squallAimMaxSpeed = 40f;
-        public static float squallBeamRadius = 1.5f;
+        public static float squallBeamRadius = 1.75f;
         public static float squallPreBeamRadius = 0.75f;
         public static float squallBeamTickFrequency = 8f;
 
@@ -246,7 +246,7 @@ namespace SwanSongExtended.Elites
                 {
                     self.UpdateTargets();
                     self.customTarget.gameObject = CharacterMaster.instancesList
-                        .Where(x => x.teamIndex == TeamIndex.Player && x.GetBody().isPlayerControlled)
+                        .Where(x => x.teamIndex == TeamIndex.Player && x.playerCharacterMasterController != null)
                         .OrderByDescending(x => (x.GetBodyObject().transform.position - self.body.corePosition))
                         .FirstOrDefault().GetBodyObject();
 

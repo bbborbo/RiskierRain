@@ -32,7 +32,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             //GetBodyObject();
             //GetSkillsFromBodyObject(bodyObject);
-            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Engi.EngiBody_prefab, (result) =>
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Heretic.HereticBody_prefab, (result) =>
             {
                 bodyObject = result;
                 GetSkillsFromBodyObject(bodyObject);

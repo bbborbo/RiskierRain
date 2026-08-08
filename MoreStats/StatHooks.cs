@@ -14,15 +14,17 @@ namespace MoreStats
     public class MoreStatCoefficients
     {
         public bool barrierDecayFrozen = false;
-        public float barrierDecayDynamicHalfLife = 0;
         public float barrierGenRate = 0;
         public float barrierDrainRate = 0;
         public float barrierDecayMult = 1;
+        /// <summary>
+        /// DEPRECATED
+        /// </summary>
+        public float barrierDecayDynamicHalfLife = 0;
 
         public float luckFromBody = 0;
         public float luckFromMaster = 0;
         public float burnChance = 0;
-        //public float chillChance = 0;
 
         public bool shieldRechargeReady = true;
         public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
@@ -37,6 +39,30 @@ namespace MoreStats
         public int bodyScrapGreenCount = 0;
         public int bodyScrapRedCount = 0;
         public int bodyScrapYellowCount = 0;
+
+        public int maxHealthGateCount = 0;
+        public float lowestCombinedHealthFraction = 1f;
+        internal float GetNextThresholdHealthFraction()
+        {
+            if (maxHealthGateCount == 0)
+                return -1;
+            int count = maxHealthGateCount + 1;
+            //ensure that the calculated value is always below (not equal to) the lowest health fraction
+            return FloorOrSubAndMult(lowestCombinedHealthFraction, count) / count;
+
+            float FloorOrSubAndMult(float value, float multiplier)
+            {
+                return Mathf.Ceil(value * multiplier) - 1f;
+                float truncated = (int)value;
+                return ((value == truncated) ? value - 1 : truncated) * multiplier;
+            }
+        }
+        internal float GetHealthFractionSize()
+        {
+            if (maxHealthGateCount == 0)
+                return -1;
+            return 1 / (maxHealthGateCount + 1);
+        }
 
         /// <summary>
         /// Does not reset luckFromMaster
@@ -64,6 +90,8 @@ namespace MoreStats
             bodyScrapGreenCount = 0;
             bodyScrapRedCount = 0;
             bodyScrapYellowCount = 0;
+
+            maxHealthGateCount = 0;
         }
     }
 
@@ -86,6 +114,7 @@ namespace MoreStats
             return characterCustomStats.GetOrCreateValue(body);
         }
         public static event MoreStatHookEventHandler GetMoreStatCoefficients;
+        public static event HealthGateTriggeredEventHandler OnBodyHealthGateTriggeredGlobal;
 
         static bool initialized = false;
 
@@ -111,6 +140,13 @@ namespace MoreStats
 
             // Healing
             IL.RoR2.HealthComponent.Heal += ModifyHealing;
+
+            // Health Gating
+            IL.RoR2.HealthComponent.TakeDamageProcess += InsertHealthGates;
+            //IL.RoR2.HealthComponent.GetHealthBarValues += DisplayHealthGates;
+            GlobalEventManager.onServerDamageDealt += RecordHealthFractionServer;
+            GlobalEventManager.onClientDamageNotified += RecordHealthFractionClient;
+            CharacterBody.onBodyStartGlobal += RecordHealthFractionBody;
 
             // Body Scrap Count
             On.RoR2.DrifterTrashToTreasureController.OnInventoryChanged += DrifterUpdateScrapCounts;
@@ -302,7 +338,7 @@ namespace MoreStats
             public float healingPercentIncreaseMult = 1f;
             #endregion
 
-            #region
+            #region scrap
             /// <summary>
             /// This stat is used for calculating stat bonuses from Scrap - NOT used with printers
             /// </summary>
@@ -320,8 +356,34 @@ namespace MoreStats
             /// </summary>
             public int scrapYellowCountAdd = 0;
             #endregion
+
+            #region health gate
+            /// <summary>
+            /// Vanilla sources of execution are mutually exclusive and use the highest threshold rather than adding. Consider this a modded synergy. 
+            /// Expressed out of 1, ie 0.15 is +15% max health execution
+            public int maxHealthGateCount { get; private set; } = 0;
+            /// <summary>
+            /// Mimics vanilla sources of execution, which are mutually exclusive. Uses the highest applicable threshold.
+            /// Expressed out of 1, ie 0.15 is 15% max health execution
+            /// </summary>
+            /// <param name="newThreshold">The execution threshold from your source</param>
+            /// <param name="condition">The condition your source needs to meet for the threshold to apply, i.e if the characterbody has the required buff</param>
+            public int ModifyHealthGateCount(int newCount, bool condition = true)
+            {
+                if (newCount <= 0 || selfExecutionThresholdBase >= 1)
+                    return maxHealthGateCount;
+
+                if (condition && newCount > maxHealthGateCount)
+                {
+                    maxHealthGateCount = newCount;
+                }
+                return maxHealthGateCount;
+            }
+            #endregion
         }
         public delegate void MoreStatHookEventHandler(CharacterBody sender, MoreStatHookEventArgs args);
+
+        public delegate void HealthGateTriggeredEventHandler(CharacterBody sender);
         #endregion
 
         static MoreStatHookEventArgs StatMods;
@@ -372,6 +434,8 @@ namespace MoreStats
 
                 CustomStats.selfExecutionThresholdAdd = StatMods.selfExecutionThresholdAdd;
                 CustomStats.selfExecutionThresholdBase = StatMods.selfExecutionThresholdBase;
+
+                CustomStats.maxHealthGateCount = StatMods.maxHealthGateCount;
             });
 
             ProcessLuck(c);
@@ -699,6 +763,139 @@ namespace MoreStats
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureGreen.buffIndex, stats.bodyScrapGreenCount);
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureRed.buffIndex, stats.bodyScrapRedCount);
             self.body.SetBuffCount(DLC3Content.Buffs.TrashToTreasureYellow.buffIndex, stats.bodyScrapYellowCount);
+        }
+        #endregion
+
+        #region health gating
+        private static void InsertHealthGates(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int localDamageLoc = 10;
+            ILLabel jumpTo = c.DefineLabel();
+            ILLabel branchHere = c.DefineLabel();
+            bool b1 =
+                //get local damage variable location
+                c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<DamageInfo>("damage"),
+                x => x.MatchStloc(out localDamageLoc))
+                //find reference to minHealthPercentage item
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<RoR2.HealthComponent.ItemCounts>(nameof(RoR2.HealthComponent.ItemCounts.minHealthPercentage)))
+                //record next label to jump to
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchBle(out jumpTo)
+                );
+            if (!b1)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(InsertHealthGates), 1);
+                return;
+            }
+
+            //c.GotoLabel(jumpTo, MoveType.Before);
+            c.GotoLabel(jumpTo, MoveType.After);
+            c.Emit(OpCodes.Ldarg_0);
+            c.Emit(OpCodes.Ldloc, localDamageLoc);
+            c.EmitDelegate<Func<HealthComponent, float, float>>((self, damageIn) =>
+            {
+                if (self.itemCounts.minHealthPercentage > 0 || self.body == null)
+                    return damageIn;
+
+                MoreStatCoefficients statCoefficients = GetMoreStatsFromBody(self.body);
+
+                if (statCoefficients.maxHealthGateCount <= 0)
+                    return damageIn;
+
+                float nextThresholdHealthFraction = statCoefficients.GetNextThresholdHealthFraction();
+                if (nextThresholdHealthFraction < statCoefficients.GetHealthFractionSize())
+                    return damageIn;
+
+                float healthAboveNextThreshold = (self.combinedHealth) - (self.fullCombinedHealth * nextThresholdHealthFraction);
+                if (damageIn < healthAboveNextThreshold)
+                    return damageIn;
+
+                RecordBodyLowestHealth(statCoefficients, nextThresholdHealthFraction - 0.01f);
+                if (OnBodyHealthGateTriggeredGlobal != null)
+                {
+                    OnBodyHealthGateTriggeredGlobal.Invoke(self.body);
+                }
+                return healthAboveNextThreshold;
+            });
+            c.Emit(OpCodes.Stloc, localDamageLoc);
+            //c.Index -= 4;
+            //c.MarkLabel(branchHere);
+            //
+            //c.GotoPrev(MoveType.Before,
+            //    x => x.MatchBle(jumpTo)
+            //    );
+            //c.Remove();
+            //c.Emit(OpCodes.Ble_S, branchHere);
+        }
+
+        private static void DisplayHealthGates(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b1 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<RoR2.HealthComponent.HealthBarValues>(nameof(RoR2.HealthComponent.HealthBarValues.ospFraction))
+                );
+            if (!b1)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(DisplayHealthGates));
+                return;
+            }
+            c.Emit(OpCodes.Ldarg_0);
+            c.EmitDelegate<Func<float, HealthComponent, float>>((ospFractionIn, self) =>
+            {
+                float f = GetNewFraction();
+                float GetNewFraction()
+                {
+                    if (self.body == null)
+                        return ospFractionIn;
+
+                    MoreStatCoefficients statCoefficients = GetMoreStatsFromBody(self.body);
+
+                    //haha im tispy idek what i cooked here
+                    float next = statCoefficients.GetNextThresholdHealthFraction();
+                    if (next < statCoefficients.GetHealthFractionSize())
+                        return ospFractionIn;
+
+                    float nextAfterCurse = next * (1f - 1f / self.body.cursePenalty);
+                    if (nextAfterCurse < ospFractionIn)
+                        return ospFractionIn;
+                    return next;
+                }
+                Debug.Log(f);
+                return f;
+            });
+        }
+
+        private static void RecordHealthFractionBody(CharacterBody obj)
+        {
+            RecordBodyLowestHealth(obj);
+        }
+        private static void RecordHealthFractionClient(DamageDealtMessage damageDealtMessage)
+        {
+            if(damageDealtMessage.victim && damageDealtMessage.victim.TryGetComponent(out CharacterBody victimBody))
+            {
+                RecordBodyLowestHealth(victimBody);
+            }
+        }
+        private static void RecordHealthFractionServer(DamageReport damageReport)
+        {
+            RecordBodyLowestHealth(damageReport.victimBody);
+        }
+        private static void RecordBodyLowestHealth(CharacterBody victimBody)
+        {
+            if (victimBody == null)
+                return;
+            RecordBodyLowestHealth(GetMoreStatsFromBody(victimBody), victimBody.healthComponent.combinedHealthFraction);
+        }
+        private static void RecordBodyLowestHealth(MoreStatCoefficients statCoefficients, float healthFraction)
+        {
+            if (statCoefficients == null)
+                return;
+            statCoefficients.lowestCombinedHealthFraction = Mathf.Min(statCoefficients.lowestCombinedHealthFraction, healthFraction);
         }
         #endregion
     }

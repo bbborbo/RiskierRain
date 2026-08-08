@@ -15,6 +15,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.DamageAPI;
 using static RoR2.CombatDirector;
+using static MoreStats.StatHooks;
 
 namespace SwanSongExtended.Storms
 {
@@ -34,6 +35,10 @@ namespace SwanSongExtended.Storms
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
         public static float stormDirectorCreditGainMultiplier = 0.5f;
+        public static int stormEliteHealthGateCountBase = 2;
+        public static int stormEliteHealthGateCountPerSize = 1;
+        public static float stormEliteHealthGateDurationBase = 1.5f;
+        public static float stormEliteHealthGateDurationPerSize = 0.5f;
 
         //storm scheduling:
         public const float drizzleStormDelayMinutes = 10;
@@ -104,6 +109,8 @@ namespace SwanSongExtended.Storms
             LanguageAPI.Add($"OBJECTIVE_COLD_2R4R", "Blizzard Imminent");
             //LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "");
 
+            GetMoreStatCoefficients += StormEliteHealthGates;
+            OnBodyHealthGateTriggeredGlobal += OnStormEliteHealthGateTriggered;
 
             CycloneLeader = Content.CreateAndAddBuff(
                 "bdCycloneLeader",
@@ -136,6 +143,26 @@ namespace SwanSongExtended.Storms
             {
                 StormEliteWeak.iconSprite = bd.iconSprite;
             });
+        }
+
+        private static void OnStormEliteHealthGateTriggered(CharacterBody sender)
+        {
+            if (!NetworkServer.active)
+                return;
+            if (sender.IsStormElite())
+            {
+                sender.AddTimedBuff(RoR2Content.Buffs.Immune, stormEliteHealthGateDurationBase + sender.radius * stormEliteHealthGateDurationPerSize);
+            }
+        }
+
+        private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            int ct = stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius) * stormEliteHealthGateCountPerSize;
+            if (sender.IsStormElite())
+            {
+                Debug.LogError($"Storm {sender.gameObject.name} gate count: " + ct);
+            }
+            args.ModifyHealthGateCount(ct, sender.IsStormElite());
         }
 
         private static void CreateCycloneWard(GameObject damageZoneWard)

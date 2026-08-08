@@ -11,6 +11,7 @@ using UnityEngine.AddressableAssets;
 using static SwanSongExtended.Modules.EliteModule;
 using static R2API.RecalculateStatsAPI;
 using static RainrotSharedUtils.Shelters.ShelterUtilsModule;
+using static MoreStats.StatHooks;
 using System.Collections.ObjectModel;
 using RoR2.CharacterAI;
 using SwanSongExtended.Storms;
@@ -45,6 +46,9 @@ namespace SwanSongExtended.Elites
         public static float squallBeamRadius = 1.75f;
         public static float squallPreBeamRadius = 0.75f;
         public static float squallBeamTickFrequency = 8f;
+
+        public static float missileDamageBase = 10f;
+        public static float missileDamagePerLevel = 0.3f;
 
         public static GameObject squallBeamVfxPrefab;
         public static GameObject squallPreBeamVfxPrefab;
@@ -225,6 +229,7 @@ namespace SwanSongExtended.Elites
         public override void Hooks()
         {
             GetStatCoefficients += HowlingStats;
+            OnBodyHealthGateTriggeredGlobal += HowlingRetaliate;
             On.RoR2.CharacterBody.AddOrRemoveEliteItemBehavior += AddAffixBehavior;
             On.RoR2.HealthComponent.TakeDamage += CycloneBlock;
 
@@ -233,6 +238,20 @@ namespace SwanSongExtended.Elites
             On.EntityStates.AI.Walker.Wander.FixedUpdate += HowlingConvergeWander2;
             On.EntityStates.AI.Walker.LookBusy.FixedUpdate += HowlingConvergeLookBusy2;
             //RemoveOspForever();
+        }
+
+        private void HowlingRetaliate(CharacterBody sender)
+        {
+            if (IsElite(sender))
+            {
+                float missileDamage = missileDamageBase * Tools.GetAmbientLevelScalar(missileDamagePerLevel);
+                MissileUtils.FireMissile(
+                    sender.corePosition, sender, 
+                    default(ProcChainMask), victim: null, 
+                    missileDamage, Util.CheckRoll(sender.crit), 
+                    GlobalEventManager.CommonAssets.missilePrefab, 
+                    DamageColorIndex.Item, addMissileProc: true);
+            }
         }
 
         #region ai overriding

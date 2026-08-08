@@ -316,7 +316,7 @@ namespace SwanSongExtended.Elites
 
                 GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(cannonballProjectilePrefab, spawnPosition, UnityEngine.Random.rotation);
                 CannonballController cannonball = gameObject.GetComponent<CannonballController>();
-                cannonball.maxBounces = cannonballBouncesMin + Mathf.RoundToInt(victimBody.radius) * cannonballBouncesPerSize;
+                cannonball.maxBounces = cannonballBouncesMin + (int)victimBody.radius * (cannonballBouncesPerSize - 1);
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
                 DelayBlast delayBlast = cannonball.delayBlast;
@@ -330,7 +330,7 @@ namespace SwanSongExtended.Elites
                 delayBlast.radius = BombArtifactManager.bombBlastRadius;
                 delayBlast.crit = false;
                 delayBlast.procCoefficient = 0.75f;
-                delayBlast.maxTimer = BombArtifactManager.bombFuseTimeout;
+                delayBlast.maxTimer = BombArtifactManager.bombFuseTimeout / cannonballGravityCoefficient;
                 delayBlast.timerStagger = 0f;
                 delayBlast.falloffModel = BlastAttack.FalloffModel.Linear;
                 delayBlast.teamFilter = teamFilter;

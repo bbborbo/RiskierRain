@@ -158,10 +158,6 @@ namespace SwanSongExtended.Storms
         private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
         {
             int ct = stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius) * stormEliteHealthGateCountPerSize;
-            if (sender.IsStormElite())
-            {
-                Debug.LogError($"Storm {sender.gameObject.name} gate count: " + ct);
-            }
             args.ModifyHealthGateCount(ct, sender.IsStormElite());
         }
 

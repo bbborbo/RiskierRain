@@ -60,6 +60,11 @@ namespace RiskierRain.Changes
               typeof(CharacterBody).GetMethod("get_hasOneShotProtection", (BindingFlags)(-1)),
               typeof(DifficultyChanges).GetMethod(nameof(ReflectOnThatThang), (BindingFlags)(-1))
             );
+            // removes one-shot protection (OSP)
+            Hook hook2ah = new Hook(
+              typeof(CharacterBody).GetMethod("get_oneShotProtectionFraction", (BindingFlags)(-1)),
+              typeof(DifficultyChanges).GetMethod(nameof(ReflectOnThatThang2), (BindingFlags)(-1))
+            );
         }
 
         public static bool ReflectOnThatThang(orig_getHasOneShotProtection orig, CharacterBody self)
@@ -67,6 +72,11 @@ namespace RiskierRain.Changes
             return false;
         }
         public delegate bool orig_getHasOneShotProtection(CharacterBody self);
+        public static System.Single ReflectOnThatThang2(get_oneShotProtectionFraction orig, CharacterBody self)
+        {
+            return 0f;
+        }
+        public delegate System.Single get_oneShotProtectionFraction(CharacterBody self);
         #endregion
         #region potential protection
         public static bool potentialProtectionVisibility = true;

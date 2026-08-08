@@ -79,8 +79,8 @@ namespace SwanSongExtended.Storms
         public static float squallRallyTimeMin = 5f;
         public static float squallRallyTimeMax = 8f;
         public static float squallRallyContributorThreshold = 8f;
-        public static float squallFireDurationMin = 3f;
-        public static float squallFireDurationBonusPerOverspill = 1.5f;
+        public static float squallFireDurationMin = 4f;
+        public static float squallFireDurationBonusPerOverspill = 2f;
 
         public static void Init()
         {

@@ -38,7 +38,7 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
-        public static float squallDamagePerSecond = 40f;
+        public static float squallDamagePerSecond = 50f;
         public static float squallDamagePerLevel = 0.3f;//0.2f
         public static float squallAimDamping = 0.9f;
         public static float squallAimMaxSpeed = 40f;

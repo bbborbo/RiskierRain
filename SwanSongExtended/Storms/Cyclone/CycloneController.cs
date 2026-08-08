@@ -33,6 +33,12 @@ namespace SwanSongExtended.Storms
             }
         }
         public static CycloneController instance;
+        public GameObject beamPreVfxInstance;
+        internal void UpdatePreBeamTransform()
+        {
+            Ray beamRay = leaderElite.GetBeamRay();
+            beamPreVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
+        }
 
         //private CombatDirector combatDirector;
         public EntityStateMachine cycloneStateMachine;
@@ -170,6 +176,7 @@ namespace SwanSongExtended.Storms
 
         internal abstract class BaseCycloneState : BaseState
         {
+            public GameObject beamVfxInstance => instance.beamPreVfxInstance;
             internal AffixSquallBehavior leaderElite
             {
                 get
@@ -190,6 +197,27 @@ namespace SwanSongExtended.Storms
             public override void OnEnter()
             {
                 Debug.LogError(cycloneState.ToString());
+                UpdateTelegraph(false);
+            }
+            internal void UpdateTelegraph(bool newValue)
+            {
+                if (newValue == (instance.beamPreVfxInstance != null))
+                    return;
+                if (newValue == true)
+                {
+                    instance.beamPreVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallPreBeamVfxPrefab);
+                    instance.beamPreVfxInstance.transform.SetParent(leaderElite.body.aimOriginTransform, true);
+                    instance.UpdatePreBeamTransform();
+                    RoR2Application.onLateUpdate += instance.UpdatePreBeamTransform;
+                    //Util.PlaySound(EntityStates.VoidRaidCrab.SpinBeamAttack.enterSoundString, base.gameObject);
+                }
+                else
+                {
+                    RoR2Application.onLateUpdate -= instance.UpdatePreBeamTransform;
+                    Destroy(instance.beamPreVfxInstance);
+                    VfxKillBehavior.KillVfxObject(instance.beamPreVfxInstance);
+                    instance.beamPreVfxInstance = null;
+                }
             }
 
             public void ElectLeader(AffixSquallBehavior candidateElite)
@@ -426,7 +454,6 @@ namespace SwanSongExtended.Storms
             private CycloneState nextState = CycloneState.PreparingSquall;
             public override CycloneState cycloneState => CycloneState.PreparingSquall;
             public GameObject leaderEliteObject;
-            public GameObject beamVfxInstance;
             float squallTimeCache = 0;
             public override void OnSerialize(NetworkWriter writer)
             {
@@ -452,32 +479,7 @@ namespace SwanSongExtended.Storms
                 base.OnExit();
                 UpdateTelegraph(false);
             }
-            private void UpdateTelegraph(bool newValue)
-            {
-                if (newValue == (beamVfxInstance != null))
-                    return;
-                if (newValue == true)
-                {
-                    this.beamVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallPreBeamVfxPrefab);
-                    this.beamVfxInstance.transform.SetParent(leaderElite.body.aimOriginTransform, true);
-                    this.UpdateBeamTransform();
-                    RoR2Application.onLateUpdate += this.UpdateBeamTransform;
-                    //Util.PlaySound(EntityStates.VoidRaidCrab.SpinBeamAttack.enterSoundString, base.gameObject);
-                }
-                else
-                {
-                    RoR2Application.onLateUpdate -= this.UpdateBeamTransform;
-                    Destroy(this.beamVfxInstance);
-                    VfxKillBehavior.KillVfxObject(this.beamVfxInstance);
-                    this.beamVfxInstance = null;
-                }
-            }
 
-            private void UpdateBeamTransform()
-            {
-                Ray beamRay = leaderElite.GetBeamRay();
-                this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
-            }
 
             public override void FixedUpdate()
             {
@@ -489,6 +491,7 @@ namespace SwanSongExtended.Storms
                 if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime == squallTimeCache))
                 {
                     Log.Debug("PrepareSquall: Entering reelection");
+                    UpdateTelegraph(false);
                     outer.SetNextState(GetNextState());
                     return;
                 }
@@ -536,6 +539,7 @@ namespace SwanSongExtended.Storms
             public override BaseCycloneState GetNextState()
             {
                 BaseCycloneState nextState;
+                UpdateTelegraph(false);
                 nextState = new ElectLeader();
                 //add a slight delay to reelect leader if no charge was added, to allow for enemies to enter the cyclone before dispelling
                 if (instance.squallContributorCountCurrent <= 0)

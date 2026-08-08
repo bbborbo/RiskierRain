@@ -92,9 +92,11 @@ namespace SwanSongExtended
 
             return prefab;
         }
+        /// <summary>
+        /// go my hardcoded bullshit!!
+        /// </summary>
         public static bool IsStormElite(this CharacterBody body)
         {
-            //go my hardcoded bullshit
             if (SurgingAspect.instance != null && body.HasBuff(SurgingAspect.instance.EliteBuffDef))
                 return true;
             if (WhirlwindAspect.instance != null && body.HasBuff(WhirlwindAspect.instance.EliteBuffDef))

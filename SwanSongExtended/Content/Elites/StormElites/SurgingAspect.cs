@@ -48,7 +48,7 @@ namespace SwanSongExtended.Elites
         /// uses hull classification instead of body size
         /// </summary>
         public static int cannonballBouncesPerSize = 1;
-        public static float cannonballInitialVelocity = 25f;
+        public static float cannonballInitialVelocity = 50f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
@@ -248,9 +248,9 @@ namespace SwanSongExtended.Elites
             if(cannonballProjectilePrefab.TryGetComponent(out SpiteBombController bombController))
             {
                 CannonballController cannonball = cannonballProjectilePrefab.AddComponent<CannonballController>();
-                cannonball.bounce = cannonballInitialVelocity;
                 HG.ArrayUtils.CloneTo(bombController.bounceSoundStrings, ref cannonball.bounceSoundStrings);
-                cannonball.minimumBounceVelocity = bombController.minimumBounceVelocity;
+                cannonball.initialVelocityY = cannonballInitialVelocity;
+                cannonball.minimumBounceVelocity = cannonballInitialVelocity;
                 cannonball.radius = bombController.radius;
 
                 cannonball.meshVisuals = /*bombController.meshVisuals;*/ new GameObject[3]
@@ -316,7 +316,7 @@ namespace SwanSongExtended.Elites
 
                 GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(cannonballProjectilePrefab, spawnPosition, UnityEngine.Random.rotation);
                 CannonballController cannonball = gameObject.GetComponent<CannonballController>();
-                cannonball.maxBounces = cannonballBouncesMin + (int)victimBody.hullClassification * cannonballBouncesPerSize;
+                cannonball.maxBounces = cannonballBouncesMin + Mathf.RoundToInt(victimBody.radius) * cannonballBouncesPerSize;
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
                 DelayBlast delayBlast = cannonball.delayBlast;

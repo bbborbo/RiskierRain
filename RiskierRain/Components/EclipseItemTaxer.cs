@@ -8,6 +8,7 @@ namespace RiskierRain.Changes.Components
 {
     public class EclipseItemTaxer : MonoBehaviour
     {
+        public static ItemTag blacklistItemTag = ItemTag.IgnoreForDropList;
         public static ItemDef itemTaxResult => RoR2Content.Items.ExtraLifeConsumed;
         public CharacterMaster master;
         public int lastItemCount = 0;
@@ -15,6 +16,13 @@ namespace RiskierRain.Changes.Components
         public void TaxItems()
         {
             int newItemCount = master.inventory.GetTotalItemCount() - master.inventory.GetTotalItemCountOfTier(ItemTier.NoTier);
+            foreach(ItemDef itemDef in ItemCatalog.allItemDefs)
+            {
+                if (itemDef.tier == ItemTier.NoTier || itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(blacklistItemTag) || !itemDef.canRemove)
+                {
+                    newItemCount -= master.inventory.GetItemCount(itemDef);
+                }
+            }
             int itemCountGained = newItemCount - lastItemCount;
             lastItemCount = newItemCount;
 
@@ -45,7 +53,7 @@ namespace RiskierRain.Changes.Components
         public static ItemIndex TransformationFilter(Inventory.TryTransformRandomItemArgs.FilterArgs args)
         {
             ItemDef itemDef = ItemCatalog.GetItemDef(args.itemIndex);
-            if (itemDef.tier != ItemTier.NoTier && itemDef.canRemove)
+            if (itemDef.tier != ItemTier.NoTier && itemDef.canRemove && !itemDef.ContainsTag(ItemTag.ObjectiveRelated) && !itemDef.ContainsTag(blacklistItemTag))
             {
                 return itemTaxResult.itemIndex;
             }

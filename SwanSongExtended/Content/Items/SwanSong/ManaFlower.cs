@@ -53,7 +53,7 @@ Just looking at it fills me with energy.
 Nature is so magical :)";
 
         public override ItemTier Tier => ItemTier.Tier1;
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.BrotherBlacklist };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.BrotherBlacklist, ItemTag.IgnoreForDropList };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlManaFlower");
 

@@ -219,14 +219,14 @@ namespace RiskierRain.Changes
                 if (fastDirector != null)
                 {
                     fastDirector.eliteBias = fastDirectorEliteBias;
-                    fastDirector.eliteBias = fastDirectorCreditMultiplier;
+                    fastDirector.creditMultiplier = fastDirectorCreditMultiplier;
                 }
 
                 CombatDirector slowDirector = directors1[1];
                 if (slowDirector != null)
                 {
                     slowDirector.eliteBias = slowDirectorEliteBias;
-                    slowDirector.eliteBias = slowDirectorCreditMultiplier;
+                    slowDirector.creditMultiplier = slowDirectorCreditMultiplier;
                 }
             }
             On.RoR2.CombatDirector.Awake += AdjustTpDirectors;
@@ -257,6 +257,9 @@ namespace RiskierRain.Changes
             orig(director);
         }
 
+        /// <summary>
+        /// deprecated
+        /// </summary>
         private static void AdjustDirectorsForTeleporter(On.RoR2.TeleporterInteraction.orig_Awake orig, TeleporterInteraction self)
         {
             AdjustTpBossDirector(self.bossDirector);
@@ -264,15 +267,9 @@ namespace RiskierRain.Changes
             AdjustTpMonsterDirector(self.bonusDirector);
             orig(self);
         }
-        static void AdjustTeleporterDirectors(CombatDirector[] directors)
-        {
-            if (directors != null && directors.Length > 0)
-            {
-                foreach (CombatDirector director in directors)
-                {
-                }
-            }
-        }
+        /// <summary>
+        /// deprecated
+        /// </summary>
         static void AdjustTpBossDirector(CombatDirector director)
         {
             director.eliteBias = teleBossEliteBias;
@@ -280,6 +277,9 @@ namespace RiskierRain.Changes
             if (Run.instance.stageClearCount == 0)
                 director.creditMultiplier *= teleBossCreditMultiplierStage1;
         }
+        /// <summary>
+        /// deprecated
+        /// </summary>
         static void AdjustTpMonsterDirector(CombatDirector director)
         {
             director.eliteBias = teleLesserEliteBias;

@@ -259,84 +259,173 @@ namespace RiskierRain.Changes
         public static int bigCategoryChestTypeCost = 50; //60
         public static int casinoChestTypeCost = 30; //50; cost is incurred twice
         public static int chanceShrineTypeCost = 15; //17
-        public static int goldChestTypeCost = 250; //400
-        public static int bigDroneTypeCost = 160; //250
+        public static int goldChestTypeCost = 175; //400
+        public static int commonDroneTypeCost = 15; //35-40 (40)
+        public static int uncommonDroneTypeCost = 40; //60-100 (60)
+        public static int rareDroneTypeCost = 100; //200-350
+        public static int smallDroneShopTypeCost = 25;
+        public static int bigDroneShopTypeCost = 50;
         static float costExponent = 1.00f;
 
         private static void ChestRebalance()
         {
+            On.RoR2.PurchaseInteraction.Awake += CorrectBaseCosts;
             On.RoR2.Run.GetDifficultyScaledCost_int_float += ChangeScaledCost;
-            if (smallChest != null)
+            void ChangeInteractableCost(GameObject interactablePrefab, int newCost)
             {
-                LanguageAPI.Add("CHEST1_NAME", $"{discountChestPrefix} Chest");
-                LanguageAPI.Add("CHEST1_CONTEXT", $"Open discounted chest");
-                smallChest.cost = smallChestTypeCost;
+                if(interactablePrefab.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+                {
+                    purchaseInteraction.cost = newCost;
+                }
+                else if(interactablePrefab.TryGetComponent(out MultiShopController shopController))
+                {
+                    shopController.baseCost = newCost;
+                    shopController.cost = newCost;
+                }
+                else if(interactablePrefab.TryGetComponent(out DroneVendorMultiShopController droneShopController))
+                {
+                    droneShopController.baseCost = newCost;
+                    droneShopController.cost = newCost;
+                }
             }
-            if (smallShop != null)
-            {
-                smallShop.baseCost = smallShopTypeCost;
-            }
-            if (smallCategoryChestDamage != null)
-            {
-                smallCategoryChestDamage.cost = smallCategoryChestTypeCost;
-            }
-            if (smallCategoryChestHealing != null)
-            {
-                smallCategoryChestHealing.cost = smallCategoryChestTypeCost;
-            }
-            if (smallCategoryChestUtility != null)
-            {
-                smallCategoryChestUtility.cost = smallCategoryChestTypeCost;
-            }
+            //small
+            LanguageAPI.Add("CHEST1_NAME", $"{discountChestPrefix} Chest");
+            LanguageAPI.Add("CHEST1_CONTEXT", $"Open discounted chest");
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Chest1.Chest1_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_TripleShop.TripleShop_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallShopTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CategoryChest.CategoryChestDamage_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallCategoryChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CategoryChest.CategoryChestHealing_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallCategoryChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CategoryChest.CategoryChestUtility_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallCategoryChestTypeCost));
 
-            if (bigChest != null)
+            //larfge
+            LanguageAPI.Add("CHEST2_NAME", $"Large {discountChestPrefix} Chest");
+            LanguageAPI.Add("CHEST2_CONTEXT", $"Open discounted large chest");
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Chest2.Chest2_prefab,
+                (prefab) => ChangeInteractableCost(prefab, bigChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_TripleShopLarge.TripleShopLarge_prefab,
+                (prefab) => ChangeInteractableCost(prefab, bigChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CategoryChest2.CategoryChest2Damage_Variant_prefab,
+                (prefab) => ChangeInteractableCost(prefab, bigCategoryChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CategoryChest2.CategoryChest2Healing_Variant_prefab,
+                (prefab) => ChangeInteractableCost(prefab, bigCategoryChestTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CategoryChest2.CategoryChest2Utility_Variant_prefab,
+                (prefab) => ChangeInteractableCost(prefab, bigCategoryChestTypeCost));
+
+            //shrine
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.ShrineChance_prefab,
+                (prefab) => ChangeInteractableCost(prefab, chanceShrineTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSandy_asset,
+                (prefab) => ChangeInteractableCost(prefab, chanceShrineTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineChance.iscShrineChanceSnowy_asset,
+                (prefab) => ChangeInteractableCost(prefab, chanceShrineTypeCost));
+
+            //drone
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.Turret1Broken_prefab,
+                (prefab) => ChangeInteractableCost(prefab, commonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.Drone1Broken_prefab, //gunner
+                (prefab) => ChangeInteractableCost(prefab, commonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.Drone2Broken_prefab, //healing
+                (prefab) => ChangeInteractableCost(prefab, commonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.EmergencyDroneBroken_prefab, 
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.FlameDroneBroken_prefab, 
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.MissileDroneBroken_prefab, 
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Drones.MegaDroneBroken_prefab, 
+                (prefab) => ChangeInteractableCost(prefab, rareDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.HaulerDroneBroken_prefab, //transport drone
+                (prefab) => ChangeInteractableCost(prefab, commonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.JunkDroneBroken_prefab, //junk drone which i am keeping expensive
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.JailerDroneBroken_prefab,
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.CleanupDroneBroken_prefab,
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.RechargeDroneBroken_prefab, //barrier drone
+                (prefab) => ChangeInteractableCost(prefab, uncommonDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.BombardmentDroneBroken_prefab, 
+                (prefab) => ChangeInteractableCost(prefab, rareDroneTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drones.CopycatDroneBroken_prefab, //freeze drone
+                (prefab) => ChangeInteractableCost(prefab, rareDroneTypeCost));
+
+            //RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_TripleDroneShop.TripleDroneShop_prefab, //freeze drone
+            //    (prefab) => ChangeInteractableCost(prefab, smallDroneShopTypeCost));
+            //RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_TripleDroneShop., //freeze drone
+            //    (prefab) => ChangeInteractableCost(prefab, smallDroneShopTypeCost));
+
+            //if (smallChest != null)
+            //{
+            //    smallChest.cost = smallChestTypeCost;
+            //}
+            //if (smallShop != null)
+            //{
+            //    smallShop.baseCost = smallShopTypeCost;
+            //}
+            //if (smallCategoryChestDamage != null)
+            //{
+            //    smallCategoryChestDamage.cost = smallCategoryChestTypeCost;
+            //}
+            //if (smallCategoryChestHealing != null)
+            //{
+            //    smallCategoryChestHealing.cost = smallCategoryChestTypeCost;
+            //}
+            //if (smallCategoryChestUtility != null)
+            //{
+            //    smallCategoryChestUtility.cost = smallCategoryChestTypeCost;
+            //}
+            //if (bigChest != null)
+            //{
+            //    bigChest.cost = bigChestTypeCost;
+            //}
+            //if (bigShop != null)
+            //{
+            //    bigShop.baseCost = bigShopTypeCost;
+            //}
+            //if (bigCategoryChestDamage != null)
+            //{
+            //    bigCategoryChestDamage.cost = bigCategoryChestTypeCost;
+            //}
+            //if (bigCategoryChestHealing != null)
+            //{
+            //    bigCategoryChestHealing.cost = bigCategoryChestTypeCost;
+            //}
+            //if (bigCategoryChestUtility != null)
+            //{
+            //    bigCategoryChestUtility.cost = bigCategoryChestTypeCost;
+            //}
+            //if (chanceShrine != null)
+            //{
+            //    chanceShrine.cost = chanceShrineTypeCost;
+            //    chanceShrineSandy.cost = chanceShrineTypeCost;
+            //    chanceShrineSnowy.cost = chanceShrineTypeCost;
+            //}
+        }
+
+        private static void CorrectBaseCosts(On.RoR2.PurchaseInteraction.orig_Awake orig, PurchaseInteraction self)
+        {
+            switch (self.displayNameToken)
             {
-                LanguageAPI.Add("CHEST2_NAME", $"Large {discountChestPrefix} Chest");
-                LanguageAPI.Add("CHEST2_CONTEXT", $"Open discounted large chest");
-                bigChest.cost = bigChestTypeCost;
+                case "CHEST2_NAME":
+                    self.cost = bigChestTypeCost;
+                    break;
+                case "GOLDCHEST_NAME":
+                    self.cost = goldChestTypeCost;
+                    break;
+                case "DRONE_MEGA_INTERACTABLE_NAME":
+                    self.cost = rareDroneTypeCost;
+                    break;
             }
-            if (bigShop != null)
-            {
-                bigShop.baseCost = bigShopTypeCost;
-            }
-            if (bigCategoryChestDamage != null)
-            {
-                bigCategoryChestDamage.cost = bigCategoryChestTypeCost;
-            }
-            if (bigCategoryChestHealing != null)
-            {
-                bigCategoryChestHealing.cost = bigCategoryChestTypeCost;
-            }
-            if (bigCategoryChestUtility != null)
-            {
-                bigCategoryChestUtility.cost = bigCategoryChestTypeCost;
-            }
-            if (chanceShrine != null)
-            {
-                chanceShrine.cost = chanceShrineTypeCost;
-                chanceShrineSandy.cost = chanceShrineTypeCost;
-                chanceShrineSnowy.cost = chanceShrineTypeCost;
-            }
+            orig(self);
         }
 
         private static int ChangeScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int_float orig, RoR2.Run self, int baseCost, float difficultyCoefficient)
         {
-            //this is hardcoded for force spawned interactables like the gold chest on abyssal
-            //not gonna do it for the large chest on verdant falls though because $50 is a common price :/
-            //im just cool with the modded collateral from these two ig
-            //2r4r is no stranger to a little bit of collateral
-            switch (baseCost)
-            {
-                //tc-280 drone
-                case 350:
-                    baseCost = InteractableChanges.bigDroneTypeCost;
-                    break;
-                //the gold chest on stage 4
-                case 400:
-                    baseCost = InteractableChanges.goldChestTypeCost;
-                    break;
-            }
-
             float costMultiplierExponential = Mathf.Pow(difficultyCoefficient, costExponent);
             float costMultiplierLinear = (difficultyCoefficient * 2.5f - 1.5f); //arbitrary, unused
 

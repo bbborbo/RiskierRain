@@ -18,7 +18,7 @@ namespace RiskierRain.Changes.Components
             int newItemCount = master.inventory.GetTotalItemCount() - master.inventory.GetTotalItemCountOfTier(ItemTier.NoTier);
             foreach(ItemDef itemDef in ItemCatalog.allItemDefs)
             {
-                if (itemDef.tier == ItemTier.NoTier || itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(blacklistItemTag) || !itemDef.canRemove)
+                if (itemDef.tier == ItemTier.NoTier || itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(blacklistItemTag) || !itemDef.canRemove || itemDef.nameToken == "ITEM_EGG_NAME")
                 {
                     newItemCount -= master.inventory.GetItemCount(itemDef);
                 }

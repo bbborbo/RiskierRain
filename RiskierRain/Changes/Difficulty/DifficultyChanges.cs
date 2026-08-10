@@ -51,6 +51,14 @@ namespace RiskierRain.Changes
             DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
 
             //rewards
+            On.RoR2.MoneyPickup.Start += (orig, self) =>
+            {
+                //same as vanilla's but scaled cost uses entry difficulty snapshot
+                if (NetworkServer.active)
+                {
+                    self.goldReward = (self.shouldScale ? Run.instance.GetDifficultyScaledCost(self.baseGoldReward, Stage.instance.entryDifficultyCoefficient) : self.baseGoldReward);
+                }
+            };
         }
         #region oneshot protection aka osp
         public static void RemoveOspForever()
@@ -257,6 +265,18 @@ namespace RiskierRain.Changes
             orig(director);
         }
 
+        static void AdjustTpBossDirector(CombatDirector director)
+        {
+            director.eliteBias = teleBossEliteBias;
+            director.creditMultiplier = teleBossCreditMultiplier;
+            if (Run.instance.stageClearCount == 0)
+                director.creditMultiplier *= teleBossCreditMultiplierStage1;
+        }
+        static void AdjustTpMonsterDirector(CombatDirector director)
+        {
+            director.eliteBias = teleLesserEliteBias;
+            director.creditMultiplier = teleLesserCreditMultiplier;
+        }
         /// <summary>
         /// deprecated
         /// </summary>
@@ -267,25 +287,6 @@ namespace RiskierRain.Changes
             AdjustTpMonsterDirector(self.bonusDirector);
             orig(self);
         }
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        static void AdjustTpBossDirector(CombatDirector director)
-        {
-            director.eliteBias = teleBossEliteBias;
-            director.creditMultiplier = teleBossCreditMultiplier;
-            if (Run.instance.stageClearCount == 0)
-                director.creditMultiplier *= teleBossCreditMultiplierStage1;
-        }
-        /// <summary>
-        /// deprecated
-        /// </summary>
-        static void AdjustTpMonsterDirector(CombatDirector director)
-        {
-            director.eliteBias = teleLesserEliteBias;
-            director.creditMultiplier = teleLesserCreditMultiplier;
-        }
-
         #region Stage Credits
         public static float interactableCreditsAdd = 125f;
         public static float monsterCreditsMultiplier = 1.0f;

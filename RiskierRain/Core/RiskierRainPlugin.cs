@@ -70,7 +70,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "1.3.38";
+        public const string version = "1.3.46";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;

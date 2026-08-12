@@ -94,6 +94,7 @@ What happened to all of our gold?";
         public override GameObject ItemModel => LoadDropPrefab("mdlCoinGun");
 
         public override Sprite ItemIcon => LoadItemIcon("texIconCoinGun");
+        public override bool CanBeTemporary => false;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

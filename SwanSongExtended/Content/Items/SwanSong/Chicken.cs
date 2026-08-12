@@ -41,6 +41,8 @@ namespace SwanSongExtended.Items
         public override GameObject ItemModel => LoadDropPrefab("mdlChicken");
 
         public override Sprite ItemIcon => LoadItemIcon("texIconChicken");
+        public override bool CanBeTemporary => false;
+        public override bool HalcyonShrineBias => false;
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

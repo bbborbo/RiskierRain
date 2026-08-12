@@ -47,6 +47,7 @@ namespace SwanSongExtended.Items
         public virtual bool CanRemove { get; } = false;
         public virtual bool IsHidden { get; } = false;
         public virtual ExpansionDef RequiredExpansion { get; } = null;
+        public virtual bool HalcyonShrineBias { get; } = false;
         public virtual bool CanBeTemporary { get; } = true;
 
         public override void Init()

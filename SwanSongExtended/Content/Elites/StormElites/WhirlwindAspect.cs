@@ -530,11 +530,11 @@ namespace SwanSongExtended.Elites
 
         void OnDisable()
         {
+            isFiring = false;
             if (instancesList.Contains(this))
             {
                 instancesList.Remove(this);
             }
-            _isFiring = false;
         }
 
         void Start()

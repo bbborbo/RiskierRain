@@ -25,6 +25,8 @@ namespace RiskierRain.Changes
     {
         public static void Initialize()
         {
+            DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits;
+
             //ChangeHackingCriteria();
             DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook;
             //DirectorAPI.InteractableActions += PrinterOccurrenceHook;
@@ -459,6 +461,16 @@ namespace RiskierRain.Changes
             }
 
             return (int)((float)baseCost * endMultiplier);
+        }
+        #endregion
+
+        #region Stage Credits
+        public static float interactableCreditsAdd = 125f;
+        public static void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
+        {
+            if (settings.SceneDirectorInteractableCredits == 0)
+                return;
+            settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits + interactableCreditsAdd);
         }
         #endregion
     }

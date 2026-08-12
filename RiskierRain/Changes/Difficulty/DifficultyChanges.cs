@@ -47,7 +47,6 @@ namespace RiskierRain.Changes
 
             //directors
             ChangeDirectorStats();
-            DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits;
             DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
 
             //rewards
@@ -288,12 +287,7 @@ namespace RiskierRain.Changes
             orig(self);
         }
         #region Stage Credits
-        public static float interactableCreditsAdd = 125f;
         public static float monsterCreditsMultiplier = 1.0f;
-        public static void IncreaseStageInteractableCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
-        {
-            settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits + interactableCreditsAdd);
-        }
         public static void IncreaseStageMonsterCredits(DirectorAPI.StageSettings settings, DirectorAPI.StageInfo currentStage)
         {
             settings.SceneDirectorMonsterCredits = (int)(settings.SceneDirectorMonsterCredits * monsterCreditsMultiplier);

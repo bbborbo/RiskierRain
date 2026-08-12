@@ -26,8 +26,10 @@ namespace SwanSongExtended.Elites
         public static float mortarsPerSize = 1f;
         [AutoConfig("Mortar Count Bonus", 1f)]
         public static float mortarsBonus = 1f;
-        [AutoConfig("Mortar Damage", "Scales with level", 10f)]
-        public static float volatileMortarDamage = 10f;
+        [AutoConfig("Mortar Damage Base", "Scales with level", 10f)]
+        public static float volatileMortarDamageBase = 10f;
+        [AutoConfig("Mortar Damage Per Level Scalar", 0.3f)]
+        public static float volatileMortarDamageLevel = 0.3f;
         public static float volatileMortarForce = 400f;
         [AutoConfig("Mortar Velocity", 30f)]
         public static float mortarSpeed = 30f;
@@ -36,8 +38,10 @@ namespace SwanSongExtended.Elites
 
         [AutoConfig("Landmine Count Per Size", 1f)]
         public static float minesPerSize = 1f;
-        [AutoConfig("Landmine Damage", "Scales with level", 10)]
-        public static float volatileLandmineDamage = 15f;
+        [AutoConfig("Landmine Damage Base", "Scales with level", 15)]
+        public static float volatileLandmineDamageBase = 15f;
+        [AutoConfig("Landmine Damage Level Scalar", "Scales with level", 0.4f)]
+        public static float volatileLandmineDamageLevel = 0.4f;
 
         [AutoConfig("On Hit Force Multiplier", 3f)]
         public static float forceMultiplier = 3f;
@@ -101,16 +105,7 @@ namespace SwanSongExtended.Elites
                 {
                     Vector3 spawnPosition = Util.GetCorePosition(victimBody);
 
-                    ProjectileManager.instance.FireProjectile(new FireProjectileInfo
-                    {
-                        projectilePrefab = volatileLandminePrefab,
-                        position = spawnPosition,
-                        rotation = Util.QuaternionSafeLookRotation(Vector3.up),
-                        owner = victimBody.gameObject,
-                        damage = volatileLandmineDamage * Tools.GetAmbientLevelScalar(0.2f),
-                        force = volatileMortarForce,
-                        crit = Util.CheckRoll(victimBody.crit, victimBody.master)
-                    });
+                    FireVolatileLandmine(victimBody, spawnPosition, Vector3.up);
 
                     float radiusForBonus = Mathf.Round(victimBody.radius - 1);
                     int bonusMineCount = (int)Mathf.Ceil(radiusForBonus * VolatileAspect.minesPerSize);
@@ -119,77 +114,26 @@ namespace SwanSongExtended.Elites
                         for(int i = 0; i <= bonusMineCount; i++)
                         {
                             Vector3 dir = UnityEngine.Random.insideUnitSphere + Vector3.up * 1.6f;
-                            ProjectileManager.instance.FireProjectile(new FireProjectileInfo
-                            {
-                                projectilePrefab = volatileLandminePrefab,
-                                position = spawnPosition,
-                                rotation = Util.QuaternionSafeLookRotation(dir),
-                                owner = victimBody.gameObject,
-                                damage = volatileLandmineDamage * Tools.GetAmbientLevelScalar(0.2f),
-                                force = volatileMortarForce,
-                                crit = Util.CheckRoll(victimBody.crit, victimBody.master)
-                            });
+                            FireVolatileLandmine(victimBody, spawnPosition, dir);
                         }
                     }
-
-
-                    /*List<BombArtifactManager.BombRequest> bombRequests = new List<BombArtifactManager.BombRequest>();
-
-                    int num = Mathf.CeilToInt(Mathf.Min(Mathf.CeilToInt(victimBody.bestFitRadius * BombArtifactManager.extraBombPerRadius * BombArtifactManager.cvSpiteBombCoefficient.value),
-                        BombArtifactManager.maxBombCount) / 2);
-                    for (int i = 0; i < num; i++)
-                    {
-                        Vector3 b = UnityEngine.Random.insideUnitSphere * 
-                            (BombArtifactManager.bombSpawnBaseRadius + victimBody.bestFitRadius * BombArtifactManager.bombSpawnRadiusCoefficient);
-                        BombArtifactManager.BombRequest item = new BombArtifactManager.BombRequest
-                        {
-                            spawnPosition = spawnPosition,
-                            raycastOrigin = spawnPosition + b,
-                            bombBaseDamage = victimBody.damage * BombArtifactManager.bombDamageCoefficient,
-                            attacker = victimBody.gameObject,
-                            teamIndex = damageReport.victimTeamIndex,
-                            velocityY = UnityEngine.Random.Range(5f, 25f)
-                        };
-                        bombRequests.Add(item);
-                    }
-
-                    Ray ray = new Ray(spawnPosition + new Vector3(0f, BombArtifactManager.maxBombStepUpDistance, 0f), Vector3.down);
-                    float maxDistance = BombArtifactManager.maxBombStepUpDistance + BombArtifactManager.maxBombFallDistance;
-
-                    RaycastHit raycastHit;
-                    if (Physics.Raycast(ray, out raycastHit, maxDistance, LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
-                    {
-                        float groundY = raycastHit.point.y;
-                        if (spawnPosition.y < groundY + 4f)
-                        {
-                            spawnPosition.y = groundY + 4f;
-                        }
-                        foreach(BombArtifactManager.BombRequest bombRequest in bombRequests)
-                        {
-                            Vector3 raycastOrigin = bombRequest.raycastOrigin;
-                            raycastOrigin.y = groundY;
-                            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(BombArtifactManager.bombPrefab, spawnPosition, UnityEngine.Random.rotation);
-                            SpiteBombController component = gameObject.GetComponent<SpiteBombController>();
-                            DelayBlast delayBlast = component.delayBlast;
-                            TeamFilter component2 = gameObject.GetComponent<TeamFilter>();
-                            component.bouncePosition = raycastOrigin;
-                            component.initialVelocityY = bombRequest.velocityY;
-                            delayBlast.position = spawnPosition;
-                            delayBlast.baseDamage = bombRequest.bombBaseDamage;
-                            delayBlast.baseForce = 2300f;
-                            delayBlast.attacker = bombRequest.attacker;
-                            delayBlast.radius = BombArtifactManager.bombBlastRadius;
-                            delayBlast.crit = false;
-                            delayBlast.procCoefficient = 0.75f;
-                            delayBlast.maxTimer = BombArtifactManager.bombFuseTimeout;
-                            delayBlast.timerStagger = 0f;
-                            delayBlast.falloffModel = BlastAttack.FalloffModel.None;
-                            component2.teamIndex = bombRequest.teamIndex;
-                            NetworkServer.Spawn(gameObject);
-                        }
-                    }*/
                 }
             }
+
+            static void FireVolatileLandmine(CharacterBody victimBody, Vector3 spawnPosition, Vector3 dir)
+            {
+                ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                {
+                    projectilePrefab = volatileLandminePrefab,
+                    position = spawnPosition,
+                    rotation = Util.QuaternionSafeLookRotation(dir),
+                    owner = victimBody.gameObject,
+                    damage = volatileLandmineDamageBase * Tools.GetAmbientLevelScalar(volatileLandmineDamageLevel),
+                    force = volatileMortarForce,
+                    crit = Util.CheckRoll(victimBody.crit, victimBody.master)
+                });
+            }
+
             orig(self, damageReport);
         }
 
@@ -410,7 +354,7 @@ namespace SwanSongExtended.Elites
     class VolatileMortarAttachment : MonoBehaviour
     {
         public static GameObject projectilePrefab => VolatileAspect.volatileMortarPrefab;
-        public static float mortarDamageCoefficient => VolatileAspect.volatileMortarDamage;
+        public static float mortarDamage => VolatileAspect.volatileMortarDamageBase * Tools.GetAmbientLevelScalar(VolatileAspect.volatileMortarDamageLevel);
         public static BuffDef buffDef;
 
         public CharacterBody body;
@@ -456,7 +400,7 @@ namespace SwanSongExtended.Elites
                                 position = body.corePosition,
                                 rotation = Util.QuaternionSafeLookRotation(fireDirection),
                                 owner = body.gameObject,
-                                damage = mortarDamageCoefficient * Tools.GetAmbientLevelScalar(0.2f),
+                                damage = mortarDamage,
                                 force = 0f,
                                 crit = Util.CheckRoll(body.crit, body.master),
                                 damageColorIndex = DamageColorIndex.Default,

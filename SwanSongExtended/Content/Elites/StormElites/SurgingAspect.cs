@@ -62,7 +62,7 @@ namespace SwanSongExtended.Elites
         public static float teleportEffectDuration = 1.0f;
         public static float teleportStaggerDuration = 4f;
 
-        public static int surgingEmpoweredArmor = 200;
+        public static int surgingEmpoweredArmor = 300;
         public static float surgingEmpoweredMoveSpeed = 0.8f;
         public static float surgingEmpoweredAtkSpeed = 0.3f;
 

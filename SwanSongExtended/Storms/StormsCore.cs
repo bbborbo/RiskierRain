@@ -34,10 +34,10 @@ namespace SwanSongExtended.Storms
         public static EliteTierDef StormEliteT2;
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
-        public static float stormDirectorCreditGainMultiplier = 0.5f;
-        public static int stormEliteHealthGateCountBase = 2;
+        public static float stormDirectorCreditGainMultiplier = 0.45f;
+        public static int stormEliteHealthGateCountBase = 1;
         public static int stormEliteHealthGateCountPerSize = 1;
-        public static float stormEliteHealthGateDurationBase = 1.5f;
+        public static float stormEliteHealthGateDurationBase = 2.0f;
         public static float stormEliteHealthGateDurationPerSize = 0.5f;
 
         //storm scheduling:
@@ -151,13 +151,13 @@ namespace SwanSongExtended.Storms
                 return;
             if (sender.IsStormElite())
             {
-                sender.AddTimedBuff(RoR2Content.Buffs.Immune, stormEliteHealthGateDurationBase + sender.radius * stormEliteHealthGateDurationPerSize);
+                sender.AddTimedBuff(RoR2Content.Buffs.Immune, stormEliteHealthGateDurationBase + Mathf.Max(0, sender.radius - 1) * stormEliteHealthGateDurationPerSize);
             }
         }
 
         private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            int ct = stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius) * stormEliteHealthGateCountPerSize;
+            int ct = stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius) * Mathf.Max(0, (stormEliteHealthGateCountPerSize - 1));
             args.ModifyHealthGateCount(ct, sender.IsStormElite());
         }
 

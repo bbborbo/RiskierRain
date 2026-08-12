@@ -35,7 +35,7 @@ namespace RiskierRain.Changes
             GoldShrineRework();
             //ReworkSoulShrine();
             BloodShrineRewardRework();
-            ChangeHalcyoniteShrineGoldRequirements();
+            ChangeHalcyoniteShrine();
 
             //interactable gold costs
             ChestRebalance();
@@ -192,12 +192,17 @@ namespace RiskierRain.Changes
         public static int halcyoniteShrineLowGoldCost = 30;//75
         public static int halcyoniteShrineMidGoldCost = 60;//150
         public static int halcyoniteShrineMaxGoldCost = 90;//300
+        public static int halcyoniteGoldDrainPerTick = 2;//1
         public static float halcyoniteShrineRadius = 30;//30
+        public static float halcyoniteShrineMonsterRewardCoefficient = 0.4f;
+        public static float halcyonTier1Weight = 0.74f; //0.65f
+        public static float halcyonTier2Weight = 0.24f; //0.30f
+        public static float halcyonTier3Weight = 0.02f; //0.05f
+        public static bool enableHalcyonSotsItemBias = false;
 
-        public static void ChangeHalcyoniteShrineGoldRequirements()
+        public static void ChangeHalcyoniteShrine()
         {
-            GameObject halcyoniteShrinePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC2/ShrineHalcyonite.prefab").WaitForCompletion();
-            if (halcyoniteShrinePrefab)
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.ShrineHalcyonite_prefab, (halcyoniteShrinePrefab) =>
             {
                 HalcyoniteShrineInteractable hsi = halcyoniteShrinePrefab.GetComponent<HalcyoniteShrineInteractable>();
                 if (hsi)
@@ -206,8 +211,25 @@ namespace RiskierRain.Changes
                     hsi.midGoldCost = halcyoniteShrineMidGoldCost;
                     hsi.maxGoldCost = halcyoniteShrineMaxGoldCost;
                 }
+
+                if (halcyoniteShrinePrefab.TryGetComponent(out CombatDirector director))
+                {
+                    director.goldRewardCoefficient = halcyoniteShrineMonsterRewardCoefficient;
+                }
+            });
+
+
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.dtShrineHalcyoniteTier1_asset, ChangeHalcyonDropTable);
+            static void ChangeHalcyonDropTable(BasicPickupDropTable dropTable)
+            {
+                dropTable.tier1Weight = halcyonTier1Weight;
+                dropTable.tier2Weight = halcyonTier2Weight;
+                dropTable.tier3Weight = halcyonTier3Weight;
+                if(enableHalcyonSotsItemBias == false)
+                    dropTable.requiredItemTags = new ItemTag[] { };
             }
         }
+
 
         public static void ShrineHalcyoniteShelterEnd(On.EntityStates.ShrineHalcyonite.ShrineHalcyoniteFinished.orig_OnEnter orig, EntityStates.ShrineHalcyonite.ShrineHalcyoniteFinished self)
         {

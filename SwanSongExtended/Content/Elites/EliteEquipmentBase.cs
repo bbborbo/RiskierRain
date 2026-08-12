@@ -59,7 +59,8 @@ namespace SwanSongExtended.Elites
         }
 
 
-
+        public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
+        public override string ConfigName => "Elites : " + EliteModifier;
         public abstract string EliteEquipmentName { get; }
         public abstract string EliteAffixToken { get; }
         public abstract string EliteEquipmentPickupDesc { get; }
@@ -409,5 +410,11 @@ namespace SwanSongExtended.Elites
         }
 
         #endregion Targeting Setup
+        public static GameObject LoadDropPrefab(string prefabName = "", AssetBundle bundle = null)
+            => SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/DropPrefabs/Equipment/{prefabName}.prefab", bundle).FixItemModel();
+        public static GameObject LoadDisplayPrefab(string prefabName = "", AssetBundle bundle = null)
+            => SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/DisplayPrefabs/Equipment/{prefabName}.prefab", bundle) ?? Resources.Load<GameObject>("prefabs/NullModel");
+        public static Sprite LoadItemIcon(string spriteName = "", AssetBundle bundle = null, bool fallBackOnWrench = false)
+            => SwanSongPlugin.TryLoadSpriteFromBundle($"Assets/Textures/Icons/Equipment/{spriteName}.png", bundle, fallBackOnWrench);
     }
 }

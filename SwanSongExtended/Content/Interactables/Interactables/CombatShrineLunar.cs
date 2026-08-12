@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
+using SwanSongExtended.Elites;
 using SwanSongExtended.Items;
 using System;
 using System.Collections.Generic;
@@ -203,7 +204,10 @@ namespace SwanSongExtended.Interactables
                     {
                         inv.GiveItem(CombatShrineLunar.itemToGive);
                         inv.GiveItem(GalleryItemDrop.instance.ItemsDef);
-                        inv.SetEquipmentIndex(RoR2Content.Equipment.AffixLunar.equipmentIndex);
+                        if (GlassAspect.instance != null)
+                            inv.SetEquipmentIndex(GlassAspect.instance.EliteEquipmentDef.equipmentIndex, false);
+                        else
+                            inv.SetEquipmentIndex(RoR2Content.Equipment.AffixLunar.equipmentIndex, false);
                     }
                 }
             }

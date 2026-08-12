@@ -51,11 +51,11 @@ namespace SwanSongExtended.Elites
         public override string EliteEquipmentFullDescription => "Increase movement, attack, and ability recharge speed.";
 
         public override string EliteEquipmentLore => "";
-        public override float EliteHealthModifier => 2f; //soft elite health modifier, as opposed to 3f
+        public override float EliteHealthModifier => 1f; //soft elite health modifier, as opposed to 3f
 
-        public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject EliteEquipmentModel => LoadDropPrefab();// LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
-        public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EliteEquipmentIcon => LoadItemIcon();// LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
 
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matFrenzied.mat");

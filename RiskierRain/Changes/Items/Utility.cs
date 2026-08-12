@@ -84,12 +84,11 @@ namespace RiskierRain.Changes
             if (!Run.instance || !NetworkServer.active)
                 return;
 
+            if (SceneInfo.instance.countsAsStage == false)
+                return;
+
             SceneDef currentScene = currentStage.sceneDef;
-            if (currentScene.preventStageAdvanceCounter
-                || currentScene.sceneType == SceneType.Intermission
-                || currentScene.sceneType == SceneType.Cutscene
-                || currentScene.sceneType == SceneType.UntimedStage
-                || currentScene.sceneType == SceneType.Junk)
+            if (currentScene.allowItemsToSpawnObjects == false)
                 return;
 
             int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, DLC2Content.Items.ExtraShrineItem.itemIndex, true, true);
@@ -117,6 +116,13 @@ namespace RiskierRain.Changes
             DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            if (pillarObject == null)
+                return;
+            if(pillarObject.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+            {
+                purchaseInteraction.automaticallyScaleCostWithDifficulty = false;
+                purchaseInteraction.Networkcost = Run.instance.GetDifficultyScaledCost(purchaseInteraction.cost, Stage.instance.entryDifficultyCoefficient);
+            }
             Debug.Log($"(chance doll) chance shrine spawned at " +
                 $"[{pillarObject.transform.position.x}, {pillarObject.transform.position.y}, {pillarObject.transform.position.z}] ");
         }

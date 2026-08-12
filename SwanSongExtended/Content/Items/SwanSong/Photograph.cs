@@ -163,12 +163,11 @@ namespace SwanSongExtended.Items
             if (!Run.instance || !NetworkServer.active)
                 return;
 
+            if (SceneInfo.instance.countsAsStage == false)
+                return;
+
             SceneDef currentScene = currentStage.sceneDef;
-            if (currentScene.preventStageAdvanceCounter
-                || currentScene.sceneType == SceneType.Intermission
-                || currentScene.sceneType == SceneType.Cutscene
-                || currentScene.sceneType == SceneType.UntimedStage
-                || currentScene.sceneType == SceneType.Junk)
+            if (currentScene.allowItemsToSpawnObjects == false)
                 return;
 
             int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, instance.ItemsDef.itemIndex, true, true);
@@ -189,6 +188,8 @@ namespace SwanSongExtended.Items
             DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+            Debug.Log($"(fotograf) printer {pillarObject.name} spawned at " +
+                $"[{pillarObject.transform.position.x}, {pillarObject.transform.position.y}, {pillarObject.transform.position.z}] ");
             //if (pillarObject)
             //{
             //    createdPillarObjects.Add(pillarObject);

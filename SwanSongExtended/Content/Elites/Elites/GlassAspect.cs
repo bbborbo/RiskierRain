@@ -74,9 +74,17 @@ namespace SwanSongExtended.Elites
 
         public override void Hooks()
         {
+            On.RoR2.CharacterBody.RecalculateStats += CharacterBody_RecalculateStats;
             GetStatCoefficients += GlassAspect_GetStatCoefficients;
             GetMoreStatCoefficients += GlassAspect_GetMoreStatCoefficients;
             OnBodyHealthGateTriggeredGlobal += GlassAspect_OnBodyHealthGateTriggeredGlobal;
+        }
+
+        private void CharacterBody_RecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            orig(self);
+            if (IsElite(self))
+                self.isGlass = true;
         }
 
         private void GlassAspect_GetStatCoefficients(CharacterBody sender, StatHookEventArgs args)

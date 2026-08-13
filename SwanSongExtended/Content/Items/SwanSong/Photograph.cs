@@ -163,11 +163,12 @@ namespace SwanSongExtended.Items
             if (!Run.instance || !NetworkServer.active)
                 return;
 
-            if (SceneInfo.instance.countsAsStage == false)
-                return;
 
-            SceneDef currentScene = currentStage.sceneDef;
-            if (currentScene.allowItemsToSpawnObjects == false)
+            SceneDef currentScene = Stage.instance.sceneDef;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.Junk)
                 return;
 
             int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, instance.ItemsDef.itemIndex, true, true);

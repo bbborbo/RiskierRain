@@ -157,8 +157,9 @@ namespace SwanSongExtended.Storms
 
         private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            int ct = stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius) * Mathf.Max(0, (stormEliteHealthGateCountPerSize - 1));
-            args.ModifyHealthGateCount(ct, sender.IsStormElite());
+            if (!sender.IsStormElite())
+                return;
+            args.ModifyHealthGateCount(stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius - 1f) * Mathf.Max(0, stormEliteHealthGateCountPerSize));
         }
 
         private static void CreateCycloneWard(GameObject damageZoneWard)

@@ -77,7 +77,7 @@ namespace SwanSongExtended.Items
             }
         }
     }
-    public class FrozenShellBehavior : BaseItemBodyBehavior
+    public class FrozenShellBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
         private static ItemDef GetItemDef() => FrozenShell.instance.ItemsDef;
@@ -86,6 +86,8 @@ namespace SwanSongExtended.Items
         //bool hasBuff = false;
         //new version
         int buffCount = 0;
+        float pollInterval = 1f;
+        float pollCountdown = 0;
 
         private void Start()
         {
@@ -93,6 +95,17 @@ namespace SwanSongExtended.Items
             //hasBuff = body.HasBuff(iceBarrierBuffIndex);
         }
         private void FixedUpdate()
+        {
+            if(pollCountdown > 0)
+            {
+                pollCountdown -= Time.fixedDeltaTime;
+                return;
+            }
+            pollCountdown = pollInterval;
+            CalculateBuffCount();
+        }
+
+        void CalculateBuffCount()
         {
             float combinedHealthFraction = healthComponent.combinedHealthFraction;
             /*if (hasBuff)
@@ -116,6 +129,11 @@ namespace SwanSongExtended.Items
         void OnDestroy()
         {
             body.SetBuffCount(iceBarrierBuffIndex, 0);
+        }
+
+        public void OnTakeDamageServer(DamageReport damageReport)
+        {
+            CalculateBuffCount();
         }
     }
 }

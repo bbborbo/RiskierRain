@@ -34,8 +34,14 @@ namespace SwanSongExtended.Storms
         }
         public static CycloneController instance;
         public GameObject beamPreVfxInstance;
+        public bool telegraphActive = false;
         internal void UpdatePreBeamTransform()
         {
+            if(!telegraphActive)
+            {
+                RoR2Application.onLateUpdate -= UpdatePreBeamTransform;
+                return;
+            }
             Ray beamRay = leaderElite.GetBeamRay();
             beamPreVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
         }
@@ -201,8 +207,9 @@ namespace SwanSongExtended.Storms
             }
             internal void UpdateTelegraph(bool newValue)
             {
-                if (newValue == (instance.beamPreVfxInstance != null))
+                if (newValue == instance.telegraphActive)//(instance.beamPreVfxInstance != null))
                     return;
+                instance.telegraphActive = newValue;
                 if (newValue == true)
                 {
                     instance.beamPreVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallPreBeamVfxPrefab);

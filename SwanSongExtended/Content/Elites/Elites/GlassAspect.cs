@@ -44,6 +44,8 @@ namespace SwanSongExtended.Elites
 
         public override EliteModule.EliteTiers EliteTier => EliteModule.EliteTiers.Lunar;
 
+        public override string EliteRampTextureName => "texRampLeeching";
+
         public override GameObject EliteEquipmentModel => LoadDropPrefab();// LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite EliteEquipmentIcon => LoadItemIcon();// LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
@@ -106,7 +108,11 @@ namespace SwanSongExtended.Elites
         {
             if (!IsElite(sender))
                 return;
-            args.ModifyHealthGateCount(healthGateCountBase + healthGateCountPerSize * Mathf.CeilToInt(sender.radius), true);
+            int gateCt = healthGateCountBase + healthGateCountPerSize * Mathf.CeilToInt(sender.radius);
+            int glassCt = sender.inventory.GetItemCountEffective(RoR2Content.Items.LunarDagger);
+            if (glassCt > 0)
+                gateCt += glassCt * 1;
+            args.ModifyHealthGateCount(gateCt, true);
         }
 
         protected override bool ActivateEquipment(EquipmentSlot slot)

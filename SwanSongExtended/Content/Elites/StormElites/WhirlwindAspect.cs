@@ -49,6 +49,8 @@ namespace SwanSongExtended.Elites
 
         public static float missileDamageBase = 10f;
         public static float missileDamagePerLevel = 0.3f;
+        public static int missileCtBase = 2;
+        public static int missileCtPerSize = 1;
 
         public static GameObject squallBeamVfxPrefab;
         public static GameObject squallPreBeamVfxPrefab;
@@ -244,13 +246,10 @@ namespace SwanSongExtended.Elites
         {
             if (IsElite(sender))
             {
-                float missileDamage = missileDamageBase * Tools.GetAmbientLevelScalar(missileDamagePerLevel);
-                MissileUtils.FireMissile(
-                    sender.corePosition, sender, 
-                    default(ProcChainMask), victim: null, 
-                    missileDamage, Util.CheckRoll(sender.crit), 
-                    GlobalEventManager.CommonAssets.missilePrefab, 
-                    DamageColorIndex.Item, addMissileProc: true);
+                if(sender.TryGetComponent(out AffixSquallBehavior behavior))
+                {
+                    behavior.QueueMissiles(missileCtBase + Mathf.FloorToInt((float)missileCtPerSize * sender.radius));
+                }
             }
         }
 
@@ -472,6 +471,9 @@ namespace SwanSongExtended.Elites
         public static ReadOnlyCollection<AffixSquallBehavior> readOnlyInstancesList = new ReadOnlyCollection<AffixSquallBehavior>(AffixSquallBehavior.instancesList);
         private GameObject affixSquallAttachment;
 
+        int missilesQueued = 0;
+        float missileInterval = 0f;
+        float missileCountdown = 0f;
         float squallTimer;
         bool isPlayer;
         bool isPlayerTeam;
@@ -564,6 +566,15 @@ namespace SwanSongExtended.Elites
             if (!NetworkServer.active)
             {
                 return;
+            }
+
+            if (missilesQueued > 0)
+            {
+                if (missileCountdown > 0)
+                    missileCountdown -= Time.fixedDeltaTime;
+
+                if (missileCountdown <= 0)
+                    FireMissile();
             }
 
             DoBodyAttachment();
@@ -663,6 +674,30 @@ namespace SwanSongExtended.Elites
             if (body.teamComponent.teamIndex != TeamIndex.Player)
                 return;
             squallTimer = playerSquallDuration;
+        }
+
+        internal void QueueMissiles(int ct)
+        {
+            missilesQueued = ct;
+            missileInterval = 1f / (float)missilesQueued;
+            FireMissile();
+        }
+
+        private void FireMissile()
+        {
+            if (!NetworkServer.active)
+                return;
+
+            missilesQueued--;
+            missileCountdown = missileInterval;
+
+            float missileDamage = WhirlwindAspect.missileDamageBase * Tools.GetAmbientLevelScalar(WhirlwindAspect.missileDamagePerLevel);
+            MissileUtils.FireMissile(
+                body.corePosition, body,
+                default(ProcChainMask), victim: body.healthComponent.lastHitAttacker,
+                missileDamage, Util.CheckRoll(body.crit),
+                GlobalEventManager.CommonAssets.missilePrefab,
+                DamageColorIndex.Item, addMissileProc: true);
         }
     }
 }

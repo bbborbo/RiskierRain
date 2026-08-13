@@ -435,6 +435,9 @@ namespace RiskierRain.Changes
         {
             switch (self.displayNameToken)
             {
+                case "CHEST1_NAME":
+                    self.cost = smallChestTypeCost;
+                    break;
                 case "CHEST2_NAME":
                     self.cost = bigChestTypeCost;
                     break;

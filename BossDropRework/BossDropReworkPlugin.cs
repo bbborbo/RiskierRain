@@ -228,7 +228,7 @@ namespace BossDropRework
         {
             PickupDropTable dropTable;
             float dropChance = GetBaseBossItemDropChanceFromBody(enemyBody, out dropTable);
-            if (dropChanceOverride != 0)
+            if (dropChanceOverride > 0)
                 dropChance = dropChanceOverride;
             if (dropChance > 0 && dropTable != null)
             {
@@ -267,7 +267,10 @@ namespace BossDropRework
 
             //if enemy has no rewards, no drops
             if (deathRewards.goldReward <= 0)
+            {
+                Debug.Log("FruityBossDrop: Enemy will not drop rewards due to dropping no gold. Is this an error?");
                 return 0;
+            }
 
             //if enemy is a rare boss
             if (enemyBodyIndex == BodyCatalog.FindBodyIndex("SuperRoboBallBossBody") || enemyBodyIndex == BodyCatalog.FindBodyIndex("VultureHunterBody"))

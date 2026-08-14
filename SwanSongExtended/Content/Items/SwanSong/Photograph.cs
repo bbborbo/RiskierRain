@@ -163,10 +163,8 @@ namespace SwanSongExtended.Items
             if (!Run.instance || !NetworkServer.active)
                 return;
 
-
-            SceneDef currentScene = Stage.instance.sceneDef;
-            if (currentScene.preventStageAdvanceCounter
-                || currentScene.sceneType == SceneType.Intermission
+            SceneDef currentScene = currentStage.sceneDef;
+            if (currentScene.sceneType == SceneType.Intermission
                 || currentScene.sceneType == SceneType.Cutscene
                 || currentScene.sceneType == SceneType.Junk)
                 return;
@@ -189,7 +187,7 @@ namespace SwanSongExtended.Items
             DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
-            Debug.Log($"(fotograf) printer {pillarObject.name} spawned at " +
+            Debug.Log($"(photograph) printer {pillarObject.name} spawned at " +
                 $"[{pillarObject.transform.position.x}, {pillarObject.transform.position.y}, {pillarObject.transform.position.z}] ");
             //if (pillarObject)
             //{

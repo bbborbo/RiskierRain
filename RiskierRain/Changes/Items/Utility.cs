@@ -88,7 +88,12 @@ namespace RiskierRain.Changes
                 return;
 
             SceneDef currentScene = currentStage.sceneDef;
-            if (currentScene.allowItemsToSpawnObjects == false)
+            //if (currentScene.allowItemsToSpawnObjects == false)
+            //    return;
+            if (currentScene.preventStageAdvanceCounter
+                || currentScene.sceneType == SceneType.Intermission
+                || currentScene.sceneType == SceneType.Cutscene
+                || currentScene.sceneType == SceneType.Junk)
                 return;
 
             int itemCount = Util.GetItemCountForTeam(TeamIndex.Player, DLC2Content.Items.ExtraShrineItem.itemIndex, true, true);
@@ -118,7 +123,7 @@ namespace RiskierRain.Changes
             GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
             if (pillarObject == null)
                 return;
-            if(pillarObject.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+            if (pillarObject.TryGetComponent(out PurchaseInteraction purchaseInteraction))
             {
                 purchaseInteraction.automaticallyScaleCostWithDifficulty = false;
                 purchaseInteraction.Networkcost = Run.instance.GetDifficultyScaledCost(purchaseInteraction.cost, Stage.instance.entryDifficultyCoefficient);

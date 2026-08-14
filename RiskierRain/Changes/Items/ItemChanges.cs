@@ -115,6 +115,7 @@ namespace RiskierRain.Changes
             //ChangePauldron();
             FixLostSeers();
             //ChangeStickyBomb();
+            ReworkShuriken();
             #endregion
 
             #region economy

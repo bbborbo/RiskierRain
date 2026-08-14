@@ -83,11 +83,15 @@ namespace FruityElites
             {
                 RoR2Application.onLoad += ChangeEliteTierStats;
             }
-            if(Bind("Add Periodical OnHitAll To BeetleGuard Sunder (Affects Overloading Orbs)"))
+            if (Bind("Add Periodical OnHitAll To BeetleGuard Sunder (Affects Overloading Orbs)"))
             {
                 //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
-                AssetReferenceT<GameObject> ref1 = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_BeetleGuard.Sunder_prefab);
-                AssetAsyncReferenceManager<GameObject>.LoadAsset(ref1).Completed += (ctx) => BuffSunder(ctx.Result);
+                EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGuard.Sunder_prefab, BuffSunder);
+            }
+            if (Bind("Add Periodical OnHitAll To Dunestrider Roller (Affects Overloading Orbs)"))
+            {
+                //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
+                EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.TarSeeker_prefab, BuffSunder);
             }
 
 
@@ -173,7 +177,7 @@ namespace FruityElites
             OnHitAllInterval ohai = sunderPrefab.AddComponent<OnHitAllInterval>();
             ohai.pc = pc;
             ohai.pd = pd;
-            ohai.interval = 0.25f;
+            ohai.interval = 0.4f;
         }
 
         private void ChangeEliteTierStats()

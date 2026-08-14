@@ -49,7 +49,7 @@ namespace SwanSongExtended.Elites
 
         public static float missileDamageBase = 10f;
         public static float missileDamagePerLevel = 0.3f;
-        public static int missileCtBase = 2;
+        public static int missileCtBase = 3;
         public static int missileCtPerSize = 1;
 
         public static GameObject squallBeamVfxPrefab;
@@ -532,7 +532,7 @@ namespace SwanSongExtended.Elites
 
         void OnDisable()
         {
-            isFiring = false;
+            UpdateIsFiring(false);
             if (instancesList.Contains(this))
             {
                 instancesList.Remove(this);

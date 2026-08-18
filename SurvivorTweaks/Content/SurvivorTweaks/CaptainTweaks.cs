@@ -29,6 +29,11 @@ namespace SurvivorTweaks.SurvivorTweaks
             RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.OmniExplosionVFXMegaDrone_prefab
             ).WaitForCompletion();// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
 
+        [AutoConfig("Keywords : Exacting : Enable", "Vulcan Shotgun uses Exacting keyword if true. Vanilla is false", true)]
+        public bool shotgunUsesExacting = true;
+        [AutoConfig("Keywords : Exacting : Additive Damage", "Attack Speed is additive to Vulcan Shotgun damage if true, multiplicative if false. Vanilla is N/A", false)]
+        public bool shotgunExactingAdditive = false;
+
         [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Retier", "If true, the Microbots item will be retiered to Uncommon/Tier2/Green. Vanilla is false", true)]
         public static bool microbotRetier = true;
         [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Chance To Appear In Printers", "Expressed as a chance out of 100. Vanilla is 0", 2)]
@@ -38,10 +43,6 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Range", "Expressed in meters. Vanilla is 20", 20)]
         public static float microbotEraserRange = 20f; //20
 
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Exacting Keyword", "Uses Exacting keyword if true. Vanilla is false", true)]
-        public bool shotgunUsesExacting = true;
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Exacting Behavior", "Attack Speed is additive if true, multiplicative if false. Vanilla is N/A", false)]
-        public bool shotgunExactingAdditive = false;
         [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Base Cooldown", "Expressed in seconds. Vanilla is 0", 2f)]
         public static float shotgunCooldown = 2f;
         [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Base Max Stock", "Vanilla is 1", 2)]

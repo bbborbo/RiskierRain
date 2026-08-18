@@ -19,30 +19,48 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class MercTweaks : SurvivorTweakBase<MercTweaks>
     {
-        public override string survivorName => "Mercenary";
-        public override string bodyName => "MERCBODY";
-
-        public static bool attackSpeedDamageAdditive = true;
         private static string exactingKeyword => attackSpeedDamageAdditive ? SharedUtilsPlugin.noAttackSpeedAdditiveKeywordToken : SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken;
-        public float moveSpeed = 8f; //7f
 
+        [AutoConfig("Mercenary : Base Movement Speed", "Vanilla is 7", 8f)]
+        public float moveSpeed = 8f; //7f
+        [AutoConfig("Keywords : Exacting : Additive Damage", "Attack Speed is additive to Mercenary's damage damage if true, multiplicative if false. Vanilla is N/A", true)]
+        public static bool attackSpeedDamageAdditive = true;
+
+        [AutoConfig("Ability Tweaks (Primary) : Laser Sword : Damage Coefficient", "Expressed as a percent (eg 1.3 is 130%). Vanilla is 1.3", 1.3f)]
         public static float primaryDamageCoefficient = 1.3f;//1.3f
 
+        [AutoConfig("Ability Tweaks (Secondary) : Whirlwind (Spin) : Base Cooldown", "Expressed in seconds. Vanilla is 2.5", 2.5f)]
         public static float spinCooldown = 2.5f; //2.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Whirlwind (Spin) : Damage Coefficient Per Slice", "Expressed as a percent (eg 2.5 is 250%). Vanilla is 2", 2.5f)]
         public static float spinDamageCoefficient = 2.5f;//2f
+
+        [AutoConfig("Ability Tweaks (Secondary) : Rising Thunder (Uppercut) : Base Cooldown", "Expressed in seconds. Vanilla is 2.5", 3.5f)]
         public static float uppercutCooldown = 3.5f; //2.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Rising Thunder (Uppercut) : Damage Coefficient", "Expressed as a percent (eg 4.5 is 450%). Vanilla is 5.5", 4.5f)]
         public static float uppercutDamageCoefficient = 4.5f;//5.5f
 
+        [AutoConfig("Ability Tweaks (Utility) : Blinding Assault (Fast Dash) : Base Cooldown", "Expressed in seconds. Vanilla is 8", 8f)]
         public static float fastDashCooldown = 8f; //8f
+        [AutoConfig("Ability Tweaks (Utility) : Blinding Assault (Fast Dash) : Damage Coefficient", "Expressed as a percent (eg 3.0 is 300%). Vanilla is 3", 3f)]
         public static float fastDashDamageCoefficient = 3f;//3f
+        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Base Cooldown", "Expressed in seconds. Vanilla is 8", 8f)]
         public static float focusDashCooldown = 11f; //8f
+        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Damage Coefficient", "Expressed as a percent (eg 6.0 is 600%). Vanilla is 7", 3f)]
         public static float focusDashDamageCoefficient = 6f;//7f
 
-        public static float eviscCooldown = 11f; //6f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Base Cooldown", "Expressed in seconds. Vanilla is 6", 10f)]
+        public static float eviscCooldown = 10f; //6f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Proc Coefficient Per Slice", "Vanilla is 1", 0.4f)]
         public static float eviscProcCoefficient = 0.4f; //1f
-        public static float eviscDuration = 2.5f; //2f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Duration", "Vanilla is 2", 2f)]
+        public static float eviscDuration = 2f; //2f
+
+        [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Base Cooldown", "Expressed in seconds. Vanilla is 6", 9f)]
         public static float windsCooldown = 9f; //6f
+        [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Proc Coefficient Per Slice", "Vanilla is 1", 0.7f)]
         public static float windsProcCoefficient = 0.7f; //1f
+        public override string survivorName => "Mercenary";
+        public override string bodyName => "MERCBODY";
 
         public override void Init()
         {

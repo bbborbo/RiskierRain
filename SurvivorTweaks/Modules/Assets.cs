@@ -51,7 +51,6 @@ namespace SurvivorTweaks.Modules
 
 
         public static BuffDef captainCdrBuff;
-        public static float captainCdrPercent = 0.25f;
 
         public static BuffDef aspdPenaltyDebuff;
         public static float aspdPenaltyPercent = 0.25f;
@@ -134,7 +133,7 @@ namespace SurvivorTweaks.Modules
                 SkillLocator skillLocator = sender.skillLocator;
                 if (skillLocator != null)
                 {
-                    float mult = (1 - captainCdrPercent);
+                    float mult = (1 - CaptainTweaks.supplyCdrPercent);
                     ApplyCooldownScale(skillLocator.primary, mult);
                     ApplyCooldownScale(skillLocator.secondary, mult);
                     ApplyCooldownScale(skillLocator.utility, mult);

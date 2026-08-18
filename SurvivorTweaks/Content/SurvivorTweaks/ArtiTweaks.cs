@@ -26,7 +26,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Passive) : Hover : Speed Boost", "Additive with Goat Hoof. Expressed as a percentage (eg 0.15 is 15%)", 0.15f)]
         public static float jetpackSpeedPercent = 0.15f;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Nanobomb : Max Damage Coefficient", "Expressed as a percentage (eg 14.0 is 1400%). Vanilla is 20", 14)]
+        [AutoConfig("Ability Tweaks (Secondary) : Nanobomb : Damage Coefficient Max", "Expressed as a percentage (eg 14.0 is 1400%). Vanilla is 20", 14)]
         public static float nanobombMaxDamageCoefficient = 14f; //20f
 
         [AutoConfig("Ability Tweaks (Utility) : Snapfreeze : Base Cooldown", "Expressed in seconds. Vanilla is 12", 8f)]

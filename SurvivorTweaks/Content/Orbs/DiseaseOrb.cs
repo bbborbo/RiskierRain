@@ -1,5 +1,6 @@
 ﻿using RoR2;
 using RoR2.Orbs;
+using SurvivorTweaks.SurvivorTweaks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,40 +34,6 @@ namespace SurvivorTweaks.Orbs
         bool redoSearch = false;
         public List<VineOrb.SplitDebuffInformation> splitDotInformation;
         float orbDuration = 0.8f;
-
-        public static List<VineOrb.SplitDebuffInformation> GetSplitDotInformation(CharacterBody victimBody, CharacterBody attackerBody)
-        {
-            List<VineOrb.SplitDebuffInformation> list = new List<VineOrb.SplitDebuffInformation>();
-            DotController dotController = DotController.FindDotController(victimBody.gameObject);
-            foreach (BuffIndex buffIndex in BuffCatalog.debuffAndDotsIndicesExcludingNoxiousThorns)
-            {
-                BuffDef buffDef = BuffCatalog.GetBuffDef(buffIndex);
-                if (!buffDef.isDOT || dotController == null)
-                    continue;
-                int buffCount = victimBody.GetBuffCount(buffDef);
-                if (buffCount > 0)
-                {
-                    int count = Mathf.CeilToInt((float)buffCount * Modules.CommonAssets.contagiousTransferRate);
-                    DotController.DotIndex dotDefIndex = DotController.GetDotDefIndex(buffDef);
-
-                    bool isTimed = false;
-                    float duration = 0f;
-                    isTimed = dotController.GetDotStackTotalDurationForIndex(dotDefIndex, out duration);
-
-                    VineOrb.SplitDebuffInformation item = new VineOrb.SplitDebuffInformation
-                    {
-                        attacker = attackerBody.gameObject,
-                        attackerMaster = attackerBody.master,
-                        index = buffIndex,
-                        isTimed = isTimed,
-                        duration = duration,
-                        count = count
-                    };
-                    list.Add(item);
-                }
-            }
-            return list;
-        }
 
         public override void Begin()
         {

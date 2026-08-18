@@ -2,6 +2,7 @@
 using RoR2.Orbs;
 using RoR2.Projectile;
 using SurvivorTweaks.Orbs;
+using SurvivorTweaks.SurvivorTweaks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,7 +83,7 @@ namespace SurvivorTweaks.Components
                         float sqrDistance = (deltaVector).sqrMagnitude;
                         if (true)//sqrDistance <= Mathf.Pow(blastRadius + targetBody.radius, 2))
                         {
-                            splitDotInfo = DiseaseOrb.GetSplitDotInformation(targetBody, ownerBody);
+                            splitDotInfo = AcridTweaks.GetContagiousDOTInfo(targetBody, ownerBody);
                             targetsHit.Add(firstTarget.healthComponent);
                         }
                     }

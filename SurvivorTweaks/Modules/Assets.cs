@@ -19,6 +19,7 @@ using static R2API.DamageAPI;
 using static SurvivorTweaks.Modules.Language.Styling;
 using static MoreStats.OnHit;
 using static R2API.RecalculateStatsAPI;
+using SurvivorTweaks.SurvivorTweaks;
 
 namespace SurvivorTweaks.Modules
 {
@@ -172,12 +173,6 @@ namespace SurvivorTweaks.Modules
         public static BuffDef corrosionBuff;
         public static DotController.DotDef corrosionDotDef;
         public static DotController.DotIndex corrosionDotIndex;
-        public static float contagiousTransferRate = 0.5f;
-        public static int corrosionArmorReduction = 15;
-        public static float corrosionDuration = 8f;
-        public static float corrosionDamagePerSecond = 1f;
-        public static float corrosionTickInterval = 1f;
-        public static bool festerResetOnlyKitDots = true;
         public const string AcridFesterKeywordToken = "KEYWORD_FESTER";
         public const string AcridCorrosionKeywordToken = "KEYWORD_CORROSION";
         public const string AcridContagiousKeywordToken = "KEYWORD_CONTAGIOUS";
@@ -196,24 +191,36 @@ namespace SurvivorTweaks.Modules
             corrosionDotDef = new DotController.DotDef
             {
                 associatedBuff = corrosionBuff,
-                damageCoefficient = corrosionDamagePerSecond * corrosionTickInterval,
+                damageCoefficient = AcridTweaks.corrosionDamagePerSecond * AcridTweaks.corrosionTickInterval,
                 damageColorIndex = DamageColorIndex.Poison,
-                interval = corrosionTickInterval
+                interval = AcridTweaks.corrosionTickInterval
             };
             corrosionDotIndex = DotAPI.RegisterDotDef(corrosionDotDef, (self, dotStack) =>
             {
 
             });
 
-            LanguageAPI.Add(AcridFesterKeywordToken, KeywordText("Festering", 
-                $"Striking enemies {UtilityColor("resets")} the duration of all " +
-                $"{HealingColor("Poison")}, {VoidColor("Blight")}, and {DamageColor("Corrosion")} stacks."));
+            LanguageAPI.Add(AcridFesterKeywordToken, KeywordText("Festering",
+                $"Striking enemies {UtilityColor("resets")} the duration of {DotFilterText(AcridTweaks.festerOnlyKitDots)}."));
             LanguageAPI.Add(AcridCorrosionKeywordToken, KeywordText("Caustic", 
-                $"Deal {DamageColor(Tools.ConvertDecimal(corrosionDamagePerSecond) + " base damage")} over {UtilityColor($"{corrosionDuration}s")}. " +
-                $"Reduce armor by {DamageColor(corrosionArmorReduction.ToString())}."));
+                $"Deal {DamageColor(Tools.ConvertDecimal(AcridTweaks.corrosionDamagePerSecond) + " base damage")} over {UtilityColor($"{AcridTweaks.corrosionDuration}s")}. " +
+                $"Reduce armor by {DamageColor(AcridTweaks.corrosionArmorReduction.ToString())}."));
             LanguageAPI.Add(AcridContagiousKeywordToken, KeywordText("Contagious", 
-                $"This skill transfers {DamageColor(Tools.ConvertDecimal(contagiousTransferRate))} of {UtilityColor("every damage over time stack")} " +
+                $"This skill transfers {TransferRateText(AcridTweaks.contagiousTransferRate)}{DotFilterText(AcridTweaks.contagiousOnlyKitDots)} " +
                 $"to nearby enemies."));
+
+            string DotFilterText(bool isKitOnly)
+            {
+                if (isKitOnly)
+                    return $"all {HealingColor("Poison")}, {VoidColor("Blight")}, and {DamageColor("Corrosion")} stacks";
+                return $"{UtilityColor("every damage over time stack")}";
+            }
+            string TransferRateText(float transferRate)
+            {
+                if (transferRate == 1)
+                    return "";
+                return $"{DamageColor(Tools.ConvertDecimal(transferRate))} of ";
+            }
 
             GetStatCoefficients += CorrosionArmorReduction;
             GetHitBehavior += FesterOnHit;
@@ -223,7 +230,7 @@ namespace SurvivorTweaks.Modules
         {
             if (sender.HasBuff(corrosionBuff))
             {
-                args.armorAdd -= corrosionArmorReduction;
+                args.armorAdd -= AcridTweaks.corrosionArmorReduction;
             }
         }
 
@@ -237,10 +244,7 @@ namespace SurvivorTweaks.Modules
                     foreach (DotController.DotStack dotStack in dotController.dotStackList)
                     {
                         //if fester is set to only reset acrid's dots and the dot index is not of one of acrid's dots
-                        if (festerResetOnlyKitDots &&
-                            (dotStack.dotIndex != DotController.DotIndex.Blight
-                            && dotStack.dotIndex != DotController.DotIndex.Poison
-                            && dotStack.dotIndex != corrosionDotIndex))
+                        if (AcridTweaks.festerOnlyKitDots && AcridTweaks.GetKitDOTFilter(dotStack.dotIndex) == false)
                             continue;
 
                         float duration = dotStack.totalDuration * damageInfo.procCoefficient;
@@ -265,8 +269,8 @@ namespace SurvivorTweaks.Modules
                 {
                     attackerObject = damageInfo.attacker,
                     victimObject = victimBody.gameObject,
-                    totalDamage = new float?(attackerBody.baseDamage * corrosionDamagePerSecond * corrosionDuration * damageInfo.procCoefficient),
-                    duration = corrosionDuration * damageInfo.procCoefficient,
+                    totalDamage = new float?(attackerBody.baseDamage * AcridTweaks.corrosionDamagePerSecond * AcridTweaks.corrosionDuration * damageInfo.procCoefficient),
+                    duration = AcridTweaks.corrosionDuration * damageInfo.procCoefficient,
                     damageMultiplier = 1f,
                     dotIndex = corrosionDotIndex,
                     maxStacksFromAttacker = maxStacksFromAttacker

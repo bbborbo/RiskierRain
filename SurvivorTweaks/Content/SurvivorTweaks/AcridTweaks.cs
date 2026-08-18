@@ -18,6 +18,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.DamageAPI;
 using RainrotSharedUtils.Components;
+using static RoR2.DotController;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -25,33 +26,112 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static bool isLoaded;
 
+        public static bool GetKitDOTFilter(DotIndex dotIndex)
+        {
+            return dotIndex == DotIndex.Blight || dotIndex == DotIndex.Poison || dotIndex == CommonAssets.corrosionDotIndex;
+        }
+        public static List<VineOrb.SplitDebuffInformation> GetContagiousDOTInfo(CharacterBody victimBody, CharacterBody attackerBody)
+        {
+            List<VineOrb.SplitDebuffInformation> list = new List<VineOrb.SplitDebuffInformation>();
+            DotController dotController = DotController.FindDotController(victimBody.gameObject);
+            foreach (BuffIndex buffIndex in BuffCatalog.debuffAndDotsIndicesExcludingNoxiousThorns)
+            {
+                BuffDef buffDef = BuffCatalog.GetBuffDef(buffIndex);
+                if (!buffDef.isDOT || dotController == null)
+                    continue;
+                int buffCount = victimBody.GetBuffCount(buffDef);
+                if (buffCount > 0)
+                {
+                    int count = Mathf.CeilToInt((float)buffCount * AcridTweaks.contagiousTransferRate);
+                    DotController.DotIndex dotDefIndex = DotController.GetDotDefIndex(buffDef);
+                    if (AcridTweaks.contagiousOnlyKitDots && AcridTweaks.GetKitDOTFilter(dotDefIndex) == false)
+                        continue;
+
+                    bool isTimed = false;
+                    float duration = 0f;
+                    isTimed = dotController.GetDotStackTotalDurationForIndex(dotDefIndex, out duration);
+
+                    VineOrb.SplitDebuffInformation item = new VineOrb.SplitDebuffInformation
+                    {
+                        attacker = attackerBody.gameObject,
+                        attackerMaster = attackerBody.master,
+                        index = buffIndex,
+                        isTimed = isTimed,
+                        duration = duration,
+                        count = count
+                    };
+                    list.Add(item);
+                }
+            }
+            return list;
+        }
+
+        [AutoConfig("Acrid : Base Damage Stat", "Scales 20% per level", 9f)]
         public static float acridBaseDamage = 9; //15
+        [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds", 10f)]
         public static float poisonDuration = 10; //10
+        [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds", 5f)]
         public static float blightDuration = 5; //5
+        [AutoConfig("Keywords : Corrosive : Status Duration", "Expressed in seconds", 8f)]
+        public static float corrosionDuration = 8f;
+        [AutoConfig("Keywords : Corrosive : Armor Reduction Per Stack", 15)]
+        public static int corrosionArmorReduction = 15;
+        [AutoConfig("Keywords : Corrosive : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
+        public static float corrosionDamagePerSecond = 1f;
+        [AutoConfig("Keywords : Corrosive : Tick Interval", "Expressed in seconds", 1f)]
+        public static float corrosionTickInterval = 1f;
 
-        public static float slashDuration = 1f; //1.5f
+        [AutoConfig("Contagious Keyword : Transfer Rate", "Expressed as a percentage (eg 0.5 is 50%)", 0.5f)]
+        public static float contagiousTransferRate = 0.5f;
+        [AutoConfig("Contagious Keyword : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", false)]
+        public static bool contagiousOnlyKitDots = false;
+        [AutoConfig("Festering Keyword : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", true)]
+        public static bool festerOnlyKitDots = true;
 
+        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Base Attack Duration", "Expressed in seconds. Vanilla is 1.5", 0.9f)]
+        public static float slashDuration = 0.9f; //1.5f
+        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Canceled By Sprinting", false)]
+        public static bool slashCanceledBySprinting = false; //true
+
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Cooldown", "Expressed in seconds. Vanilla is 2", 5f)]
         public static float spitCooldown = 5f; //2
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Damage Coefficient", "Expressed as a percentage (eg 1.8 is 180%). Vanilla is 2.4", 1.8f)]
         public static float spitDamageCoeff = 1.8f; //2.4f
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Damage Coefficient (Boosted)", "Expressed as a percentage (eg 5.8 is 580%). Vanilla is 2.4", 5.8f)]
         public static float spitDamageCoeffAfterDistance = 5.8f; //2.4f
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Flight Distance For Damage Boost", "Expressed in meters. Vanilla is N/A", 21f)]
         public static float spitDistanceForBoost = 21f;
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Attack Duration", "Expressed in seconds. Vanilla is 0.5", 0.4f)]
         public static float spitDuration = 0.4f; //0.5
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Blast Radius", "Expressed in meters. Vanilla is 3", 6f)]
         public static float spitBlastRadius = 6f; //3
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Stock", "Vanilla is 1", 3)]
         public static int spitBaseStock = 3;
 
+        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Lunge Force", "Vanilla is 0", 8000f)]
         public static float biteForceStrength = 8000f; //0
+        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Base Cooldown", "Expressed in seconds. Vanilla is 2", 3f)]
         public static float biteCooldown = 3f; //2
+        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Damage Coefficient", "Expressed as a percentage (eg 4.8 is 480%). Vanilla is 3.1", 4.8f)]
         public static float biteDamageCoeff = 4.8f; //3.1f
 
+        [AutoConfig("Ability Tweaks (Utility) : Caustic Leap : Base Cooldown", "Expressed in seconds. Vanilla is 6", 7f)]
         public static float causticCooldown = 7f; //6
         public static float frenziedCooldown = 9; //10
-        public static float leapMinY = -0.3f; //0
+        [AutoConfig("Ability Tweaks (Utility) : Caustic Leap : Minimum Horizontal Launch Angle", "Vanilla is 0", -0.5f)]
+        public static float leapMinY = -0.5f; //0
 
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Base Cooldown", "Expressed in seconds. Vanilla is 10", 15f)]
         public static float epidemicCooldown = 15f; //10
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Damage Coefficient", "Expressed as a percentage (eg 0.5 is 50%). Vanilla is 1.0", 0.5f)]
         public static float epidemicDamageCoefficient = 0.5f; //1
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Initial Range", "Expressed in meters. Vanilla is 30", 80f)]
         public static float epidemicInitialRange = 80;
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Spread Range", "Expressed in meters. Vanilla is 30", 35f)]
         public static float epidemicSpreadRange = 35;
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Projectile Blast Radius", "Expressed in meters.", 3f)]
         public static float epidemicProjectileBlastRadius = 3f;
+        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Max Bounces", "Vanilla is 20", 20)]
         public static int epidemicMaxTargets = 20;
         public static ModdedDamageType AcridSkillBasedDamage;
 
@@ -71,6 +151,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 CharacterBody body = bodyObject.GetComponent<CharacterBody>();
                 body.baseMoveSpeed = 8;//7
                 body.baseDamage = acridBaseDamage; //15
+                body.levelDamage = acridBaseDamage * 0.2f;
 
                 ChangePassive();
 
@@ -166,7 +247,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void ChangeVanillaPrimary(SkillFamily family)
         {
             SkillDef primary = family.variants[0].skillDef;
-            //primary.canceledFromSprinting = false;
+            primary.canceledFromSprinting = slashCanceledBySprinting;
             primary.keywordTokens = new string[] { /*"KEYWORD_AGILE",*/ "KEYWORD_RAPID_REGEN", CommonAssets.AcridFesterKeywordToken };
             LanguageAPI.Add("CROCO_PRIMARY_DESCRIPTION", 
                 //$"<style=cIsUtility>Agile</style>. " +

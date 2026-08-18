@@ -72,13 +72,13 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float poisonDuration = 10; //10
         [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds", 5f)]
         public static float blightDuration = 5; //5
-        [AutoConfig("Keywords : Corrosive : Status Duration", "Expressed in seconds", 8f)]
+        [AutoConfig("Keywords : Caustic : Status Duration", "Expressed in seconds", 8f)]
         public static float corrosionDuration = 8f;
-        [AutoConfig("Keywords : Corrosive : Armor Reduction Per Stack", 15)]
+        [AutoConfig("Keywords : Caustic : Armor Reduction Per Stack", 15)]
         public static int corrosionArmorReduction = 15;
-        [AutoConfig("Keywords : Corrosive : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
+        [AutoConfig("Keywords : Caustic : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
         public static float corrosionDamagePerSecond = 1f;
-        [AutoConfig("Keywords : Corrosive : Tick Interval", "Expressed in seconds", 1f)]
+        [AutoConfig("Keywords : Caustic : Tick Interval", "Expressed in seconds", 1f)]
         public static float corrosionTickInterval = 1f;
 
         [AutoConfig("Contagious Keyword : Transfer Rate", "Expressed as a percentage (eg 0.5 is 50%)", 0.5f)]
@@ -105,7 +105,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float spitDuration = 0.4f; //0.5
         [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Blast Radius", "Expressed in meters. Vanilla is 3", 6f)]
         public static float spitBlastRadius = 6f; //3
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Stock", "Vanilla is 1", 3)]
+        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Max Stock", "Vanilla is 1", 3)]
         public static int spitBaseStock = 3;
 
         [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Lunge Force", "Vanilla is 0", 8000f)]

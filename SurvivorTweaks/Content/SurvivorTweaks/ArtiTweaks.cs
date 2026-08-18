@@ -16,7 +16,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class ArtiTweaks : SurvivorTweakBase<ArtiTweaks>
     {
-        [AutoConfig("Artificer : Base Damage Stat", "Vanilla is 12", 12)]
+        [AutoConfig("Artificer : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 12)]
         public static float artiBaseDamage = 12f; //12f
 
         [AutoConfig("Ability Tweaks (Passive) : Hover : Use Speed Boost", "Vanilla is false", true)]

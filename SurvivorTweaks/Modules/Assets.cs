@@ -203,7 +203,7 @@ namespace SurvivorTweaks.Modules
                 $"Striking enemies {UtilityColor("resets")} the duration of {DotFilterText(AcridTweaks.festerOnlyKitDots)}."));
             LanguageAPI.Add(AcridCorrosionKeywordToken, KeywordText("Caustic", 
                 $"Deal {DamageColor(Tools.ConvertDecimal(AcridTweaks.corrosionDamagePerSecond) + " base damage")} over {UtilityColor($"{AcridTweaks.corrosionDuration}s")}. " +
-                $"Reduce armor by {DamageColor(AcridTweaks.corrosionArmorReduction.ToString())}."));
+                $"Reduce armor by {DamageColor(AcridTweaks.corrosionArmorReduction.ToString())}. <i>Corrosion can stack.</i>"));
             LanguageAPI.Add(AcridContagiousKeywordToken, KeywordText("Contagious", 
                 $"This skill transfers {TransferRateText(AcridTweaks.contagiousTransferRate)}{DotFilterText(AcridTweaks.contagiousOnlyKitDots)} " +
                 $"to nearby enemies."));

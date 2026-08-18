@@ -22,34 +22,83 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static GameObject viendPrimaryDamagePool;
         public static GameObject viendDelayKnockback;
-        static float corruptModeArmor = 100; //100
+        [AutoConfig("Void Fiend : Base Max Health", "Scales 30% per level. Vanilla is 110", 130f)]
         public static float baseMaxHealth = 130f;//110
+        [AutoConfig("Void Fiend : Base Damage", "Scales 20% per level. Vanilla is 12", 11f)]
         public static float baseDamage = 11f;//12f
 
-        static float corruptionPerCleanse = 3; //0
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corrupt Mode Bonus Armor", "Vanilla is 100", 100f)]
+        static float corruptModeArmor = 100; //100
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Minimum Corruption Per Void Item", "Vanilla is 2", 2f)]
         static float minimumCorruptionPerVoidItem = 2; //2
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Damage Taken", "Vanilla is 50", 50f)]
         static float corruptionForFullDamage = 50; //50
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Health Healed", "Vanilla is -50", -50f)]
         static float corruptionForFullHeal = -50; //-100
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (While Corrupted)", "Vanilla is -0.06666667", -0.06666667f)]
         static float corruptionFractionPerSecondWhileCorrupted = -0.06666667f; //aka 15s; -0.06666667f aka 15s
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (In Combat)", "Vanilla is 3", 2.22222222f)]
         static float corruptionPerSecondInCombat = 2.22222222f; //aka 45s; 3 aka 33.3s
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (Out Of Combat)", "Vanilla is 3", 2.22222222f)]
         static float corruptionPerSecondOutOfCombat = 2.22222222f; //3
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Crit", "Vanilla is 2", 0f)]
         static float corruptionPerCrit = 0; //2
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Max Corruption", "Vanilla is 100", 100f)]
         static float maxCorruption = 100; //100
 
-        public static float primaryUnchargedDamage = 0.9f;
-        public static float primaryChargedDamage = 4.8f;
-        public static int primaryStepCount = 3;
-        static int primaryPoolDuration = 3;
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Damage Coefficient", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
+        public static float primaryDamageCoefficientLight = 3.8f;
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Damage Coefficient (Final)", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
+        public static float primaryDamageCoefficientHeavy = 3.8f;
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Pool Damage Coefficient Per Second", "Expressed as a percentage (eg 2.5 is 250%). Vanilla is N/A", 2.5f)]
+        public static float primaryPoolDamageCoefficientPerSecond = 2.5f;
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Base Attack Duration", "Expressed in seconds. Vanilla is 0.6", 0.8f)]
+        public static float primaryBaseDurationLight = 0.8f; //0.6f
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Base Attack Duration (Final)", "Expressed in seconds. Vanilla is 0.6", 1.1f)]
+        public static float primaryBaseDurationHeavy = 1.1f; //0.6f
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Recoil Amplitude", "Vanilla is 1", 2f)]
+        public static float primaryRecoilAmplitudeLight = 2f; //1
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Recoil Amplitude (Final)", "Vanilla is 1", 3.5f)]
+        public static float primaryRecoilAmplitudeHeavy = 3.5f; //1
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Trajectory Aim Assist", "Vanilla is 0.75", 0.25f)]
+        public static float primaryTrajectoryAimAssistMultiplier = 0.25f; //0.75f
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Step Count", "Final step in combo fires a lingering void pool. Vanilla is N/A", 3)]
+        public static int   primaryStepCount = 3;
+        [AutoConfig("Ability Tweaks (Primary) : Drown : Pool Duration", "Expressed in seconds. Vanilla is N/A", 3)]
+        public static int   primaryPoolDuration = 3;
+        #region not gonna bother configging these unless asked for
+        public static float maxSpread = 3; //3
+        public static float maxDistance = 1000; //1000
+        public static float force = 1000; //1000
+        public static int   bulletCount = 1; //1
+        public static float bulletRadius = 2; //2
+        public static float spreadBloomValue = 0.2f; //0.2f
+        #endregion
 
+        [AutoConfig("Ability Tweaks (Primary) : Drown (Corrupted) : Damage Coefficient Per Second", "Expressed as a percentage (eg 20 is 2000%). Vanilla is 20", 20f)]
         public static float primaryCorruptDps = 20; //20
+        [AutoConfig("Ability Tweaks (Primary) : Drown (Corrupted) : Tick Frequency", "Expressed in ticks per second. Vanilla is 8", 8f)]
         public static float primaryCorruptTickRate = 8; //8
 
+        [AutoConfig("Ability Tweaks (Secondary) : Flood : Rocket Jump", "If true, the blast from Flood projectiles will inflict self-knockback aka Rocket Jump. Vanilla is false", true)]
+        public static bool secondaryRocketJump = true;
+        [AutoConfig("Ability Tweaks (Secondary) : Flood : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
         public static float secondaryUncorruptCooldown = 7f; //4f
-        public static float secondaryCorruptCooldown = 7f; //4f
-        public static int secondaryCorruptStock = 1; //1
-        public static int secondaryCorruptRechargeStock = 1; //1
+        [AutoConfig("Ability Tweaks (Secondary) : Flood : Blast Radius", "Expressed in meters. Vanilla is 5", 6f)]
         public static float secondaryUncorruptBlastRadius = 6f;//5f
+        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
+        public static float secondaryCorruptCooldown = 7f; //4f
+        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Base Max Stock", "Vanilla is 1", 1)]
+        public static int secondaryCorruptStock = 1; //1
+        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Recharge Stock", "Vanilla is 1", 1)]
+        public static int secondaryCorruptRechargeStock = 1; //1
+        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Blast Radius", "Expressed in meters. Vanilla is 5", 6f)]
         public static float secondaryCorruptBlastRadius = 12f;//10f
+
+        [AutoConfig("Ability Tweaks (Utility) : Corruption Per Cleanse", "Vanilla is 0", 3)]
+        static float corruptionPerCleanse = 3; //0
+        [AutoConfig("Ability Tweaks (Utility) : Cleanse Debuffs", "If true, both forms of Trespass (Utility) will cleanse debuffs. Vanilla is false", true)]
+        static bool utilityCleanse = true; //false
 
         public override string survivorName => "Void Fiend";
         public override string bodyName => "VoidSurvivorBody";
@@ -85,11 +134,14 @@ namespace SurvivorTweaks.SurvivorTweaks
             #endregion
 
             #region utility
-            On.EntityStates.VoidSurvivor.VoidBlinkBase.OnEnter += VoidBlinkBase_OnEnter;
-            LanguageAPI.Add("VOIDSURVIVOR_UTILITY_DESCRIPTION",
-                $"<style=cIsUtility>Disappear</style> into the Void, <style=cIsUtility>cleansing all debuffs</style> " +
-                $"while moving in an <style=cIsUtility>upward arc</style>. " +
-                $"Gain <style=cIsVoid>{corruptionPerCleanse}% Corruption</style> per debuff cleansed.");
+            if(utilityCleanse == true)
+            {
+                On.EntityStates.VoidSurvivor.VoidBlinkBase.OnEnter += VoidBlinkBase_OnEnter;
+                LanguageAPI.Add("VOIDSURVIVOR_UTILITY_DESCRIPTION",
+                    $"<style=cIsUtility>Disappear</style> into the Void, <style=cIsUtility>cleansing all debuffs</style> " +
+                    $"while moving in an <style=cIsUtility>upward arc</style>. " +
+                    $"Gain <style=cIsVoid>{corruptionPerCleanse}% Corruption</style> per debuff cleansed.");
+            }
             #endregion
 
             #region special
@@ -118,58 +170,63 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private static void DoViendSecondary()
         {
-            Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
-            {
-                viendDelayKnockback = ctx.Result.InstantiateClone("ViendDelayKnockback", true);
-                Content.AddNetworkedObjectPrefab(viendDelayKnockback);
-                ProjectileSetForceOnStart pd = viendDelayKnockback.AddComponent<ProjectileSetForceOnStart>();
-                pd.force = 1000;
-
-                if (viendDelayKnockback.TryGetComponent(out ProjectileImpactExplosion explode))
-                {
-                    explode.blastRadius = secondaryCorruptBlastRadius;
-                    explode.blastAttackerFiltering = AttackerFiltering.AlwaysHitSelf;
-                    explode.explosionEffect = null;
-                    explode.bonusBlastForce = Vector3.up * 500;
-                    explode.canRejectForce = false;
-                    explode.lifetime = 0.01f;
-                    explode.explodeOnLifeTimeExpiration = true;
-                    explode.blastProcCoefficient = 0;
-                }
-
                 Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
                 {
-                    GameObject viendUncorruptBomb = ctx.Result;
+                    viendDelayKnockback = ctx.Result.InstantiateClone("ViendDelayKnockback", true);
+                    Content.AddNetworkedObjectPrefab(viendDelayKnockback);
+                    ProjectileSetForceOnStart pd = viendDelayKnockback.AddComponent<ProjectileSetForceOnStart>();
+                    pd.force = 1000;
 
-                    if (viendUncorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
+                    if (viendDelayKnockback.TryGetComponent(out ProjectileImpactExplosion explode))
                     {
-                        pie.blastRadius = secondaryUncorruptBlastRadius;
-                        pie.childrenCount = 1;
-                        pie.childrenDamageCoefficient = 0;
-                        pie.childrenInheritDamageType = false;
-                        pie.childrenProjectilePrefab = viendDelayKnockback;
-                        pie.fireChildren = true;
+                        explode.blastRadius = secondaryCorruptBlastRadius;
+                        explode.blastAttackerFiltering = AttackerFiltering.AlwaysHitSelf;
+                        explode.explosionEffect = null;
+                        explode.bonusBlastForce = Vector3.up * 500;
+                        explode.canRejectForce = false;
+                        explode.lifetime = 0.01f;
+                        explode.explodeOnLifeTimeExpiration = true;
+                        explode.blastProcCoefficient = 0;
                     }
-                };
-                Addressables.LoadAssetAsync<GameObject>(
-                    //"RoR2/DLC1/VoidSurvivor/VoidSurvivorMegaBlasterBigProjectileCorrupted.prefab"
-                    RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab
-                ).Completed += (ctx) =>
-                {
-                    GameObject viendCorruptBomb = ctx.Result;
 
-                    if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie2))
+                    Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab).Completed += (ctx) =>
                     {
-                        Debug.LogError("VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab");
-                        pie2.blastRadius = secondaryCorruptBlastRadius;
-                        pie2.childrenCount = 1;
-                        pie2.childrenDamageCoefficient = 0;
-                        pie2.childrenInheritDamageType = false;
-                        pie2.childrenProjectilePrefab = viendDelayKnockback;
-                        pie2.fireChildren = true;
-                    }
+                        GameObject viendUncorruptBomb = ctx.Result;
+
+                        if (viendUncorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie))
+                        {
+                            pie.blastRadius = secondaryUncorruptBlastRadius;
+                            if(secondaryRocketJump == true)
+                            {
+                                pie.childrenCount = 1;
+                                pie.childrenDamageCoefficient = 0;
+                                pie.childrenInheritDamageType = false;
+                                pie.childrenProjectilePrefab = viendDelayKnockback;
+                                pie.fireChildren = true;
+                            }
+                        }
+                    };
+                    Addressables.LoadAssetAsync<GameObject>(
+                        //"RoR2/DLC1/VoidSurvivor/VoidSurvivorMegaBlasterBigProjectileCorrupted.prefab"
+                        RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectileCorrupted_prefab
+                    ).Completed += (ctx) =>
+                    {
+                        GameObject viendCorruptBomb = ctx.Result;
+
+                        if (viendCorruptBomb.TryGetComponent(out ProjectileImpactExplosion pie2))
+                        {
+                            pie2.blastRadius = secondaryCorruptBlastRadius;
+                            if (secondaryRocketJump == true)
+                            {
+                                pie2.childrenCount = 1;
+                                pie2.childrenDamageCoefficient = 0;
+                                pie2.childrenInheritDamageType = false;
+                                pie2.childrenProjectilePrefab = viendDelayKnockback;
+                                pie2.fireChildren = true;
+                            }
+                        }
+                    };
                 };
-            };
 
             LanguageAPI.Add("VOIDSURVIVOR_SECONDARY_DESCRIPTION",
                 "<style=cIsUtility>Agile.</style> " +
@@ -280,9 +337,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             LanguageAPI.Add("VOIDSURVIVOR_PRIMARY_DESCRIPTION",
                 $"Fire a <style=cIsUtility>slowing</style> long-range beam for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.damageCoefficientLight)} damage</style>. " +
+                $"<style=cIsDamage>{Tools.ConvertDecimal(primaryDamageCoefficientLight)} damage</style>. " +
                 $"Every third shot leaves a lingering pool for " +
-                $"<style=cIsDamage>{Tools.ConvertDecimal(FireHandBeamLight.poolDamageCoefficientPerSecond * primaryPoolDuration)} damage over time</style>.");
+                $"<style=cIsDamage>{Tools.ConvertDecimal(primaryPoolDamageCoefficientPerSecond * primaryPoolDuration)} damage over time</style>.");
             //On.EntityStates.VoidSurvivor.Weapon.FireHandBeam.OnEnter += Idk;
 
             On.EntityStates.VoidSurvivor.Weapon.FireCorruptHandBeam.OnEnter += FireCorruptHandBeam_OnEnter;

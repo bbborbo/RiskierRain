@@ -23,7 +23,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static bool isLoaded;
 
-        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level", 12f)]
+        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 12f)]
         public static float baseDamage = 12f; //12
 
         [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Coefficient", "Expressed as a percentage (eg 3.4 is 340%). Vanilla is 2.5", 3.4f)]
@@ -155,7 +155,6 @@ namespace SurvivorTweaks.SurvivorTweaks
 
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Huntress.HuntressArrowRain_prefab, (arrowRainPrefab) =>
             {
-                arrowRainPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/HuntressArrowRain.prefab").WaitForCompletion();
                 family.variants[0].skillDef.baseRechargeInterval = arrowRainCooldown;
                 ArrowRain.arrowRainRadius = arrowRainRadius;
 

@@ -20,25 +20,11 @@ namespace SurvivorTweaks.States.VoidFiend
 		public GameObject tracerEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBeamTracer_prefab).WaitForCompletion();
 		public GameObject projectilePrefab => ViendTweaks.viendPrimaryDamagePool;
 
-		public static float damageCoefficientLight = 3.8f;
-		public static float damageCoefficientHeavy = 3.8f;
-		public static float poolDamageCoefficientPerSecond = 2.5f;
-		public float maxDistance = 1000; //1000
-		public float force = 1000; //1000
-		public int bulletCount = 1; //1
-		public float bulletRadius = 2; //2
-		public float baseDurationLight = 0.8f; //0.6f
-		public float baseDurationHeavy = 1.1f; //0.6f
 		public string attackSoundString = "Play_voidman_m1_shoot";
-		public float recoilAmplitudeLight = 2f; //1
-		public float recoilAmplitudeHeavy = 3.5f; //1
-		public float spreadBloomValue = 0.2f; //0.2f
-		public float maxSpread = 3; //3
 		public static string muzzle = "MuzzleHandBeam";
 		public string animationLayerName = "LeftArm, Override";
 		public string animationStateName = "FireHandBeam";
 		public string animationPlaybackRateParam = "HandBeam.playbackRate";
-		public float trajectoryAimAssistMultiplier = 0.25f; //0.75f
 
 		public void SetStep(int i)
 		{
@@ -54,13 +40,13 @@ namespace SurvivorTweaks.States.VoidFiend
 		public override void OnEnter()
 		{
 			base.OnEnter();
-			this.damageCoefficient = isHeavyAttack ? damageCoefficientHeavy : damageCoefficientLight;
-			this.baseDuration = isHeavyAttack ? baseDurationHeavy : baseDurationLight;
+			this.damageCoefficient = isHeavyAttack ? ViendTweaks.primaryDamageCoefficientHeavy : ViendTweaks.primaryDamageCoefficientLight;
+			this.baseDuration = isHeavyAttack ? ViendTweaks.primaryBaseDurationHeavy : ViendTweaks.primaryBaseDurationLight;
 			this.duration = this.baseDuration / this.attackSpeedStat;
 			//Ray aimRay = base.GetAimRay();
 			CalcBeamPath(out Ray aimRay, out Vector3 beamEnd);//
 			base.PlayAnimation(this.animationLayerName, this.animationStateName, this.animationPlaybackRateParam, this.duration, 0f);
-			float recoilAmplitude = isHeavyAttack ? recoilAmplitudeHeavy : recoilAmplitudeLight;
+			float recoilAmplitude = isHeavyAttack ? ViendTweaks.primaryRecoilAmplitudeHeavy : ViendTweaks.primaryRecoilAmplitudeLight;
 			base.AddRecoil(-1f * recoilAmplitude, -2f * recoilAmplitude, -0.5f * recoilAmplitude, 0.5f * recoilAmplitude);
 			base.StartAimMode(aimRay, 2f, false);
 			Util.PlaySound(this.attackSoundString, base.gameObject);
@@ -76,21 +62,21 @@ namespace SurvivorTweaks.States.VoidFiend
 				bulletAttack.origin = aimRay.origin;
 				bulletAttack.aimVector = aimRay.direction;
 				bulletAttack.muzzleName = muzzle;
-				bulletAttack.maxDistance = this.maxDistance;
+				bulletAttack.maxDistance = ViendTweaks.maxDistance;
 				bulletAttack.minSpread = 0f;
 				bulletAttack.maxSpread = base.characterBody.spreadBloomAngle;
-				bulletAttack.radius = this.bulletRadius;
+				bulletAttack.radius = ViendTweaks.bulletRadius;
 				bulletAttack.falloffModel = BulletAttack.FalloffModel.None;
 				bulletAttack.smartCollision = true;
 				bulletAttack.damage = this.damageCoefficient * this.damageStat;
-				bulletAttack.procCoefficient = 1f / (float)this.bulletCount;
-				bulletAttack.force = this.force;
+				bulletAttack.procCoefficient = 1f / (float)ViendTweaks.bulletCount;
+				bulletAttack.force = ViendTweaks.force;
 				bulletAttack.isCrit = Util.CheckRoll(this.critStat, base.characterBody.master);
 				bulletAttack.damageType = DamageType.SlowOnHit;
 				bulletAttack.damageType.damageSource = DamageSource.Primary;
 				bulletAttack.tracerEffectPrefab = this.tracerEffectPrefab;
 				bulletAttack.hitEffectPrefab = this.hitEffectPrefab;
-				bulletAttack.trajectoryAimAssistMultiplier = this.trajectoryAimAssistMultiplier;
+				bulletAttack.trajectoryAimAssistMultiplier = ViendTweaks.primaryTrajectoryAimAssistMultiplier;
 				bulletAttack.stopperMask = LayerIndex.CommonMasks.interactable;
 				bulletAttack.Fire();
 
@@ -100,12 +86,12 @@ namespace SurvivorTweaks.States.VoidFiend
 					fireProjectileInfo.projectilePrefab = this.projectilePrefab;
 					fireProjectileInfo.position = beamEnd + Vector3.up * 1;
 					fireProjectileInfo.owner = base.gameObject;
-					fireProjectileInfo.damage = this.damageStat * poolDamageCoefficientPerSecond * 0.5f;
+					fireProjectileInfo.damage = this.damageStat * ViendTweaks.primaryPoolDamageCoefficientPerSecond * 0.5f;
 					fireProjectileInfo.crit = Util.CheckRoll(this.critStat, base.characterBody.master);
 					ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 				}
 			}
-			base.characterBody.AddSpreadBloom(this.spreadBloomValue);
+			base.characterBody.AddSpreadBloom(ViendTweaks.spreadBloomValue);
 		}
 
 		public override void OnExit()
@@ -132,7 +118,7 @@ namespace SurvivorTweaks.States.VoidFiend
 		{
 			Ray aimRay = base.GetAimRay();
 			float num = float.PositiveInfinity;
-			RaycastHit[] array = Physics.RaycastAll(aimRay, maxDistance, LayerIndex.CommonMasks.bullet, QueryTriggerInteraction.Ignore);
+			RaycastHit[] array = Physics.RaycastAll(aimRay, ViendTweaks.maxDistance, LayerIndex.CommonMasks.bullet, QueryTriggerInteraction.Ignore);
 			Transform root = base.GetModelTransform().root;
 			for (int i = 0; i < array.Length; i++)
 			{
@@ -143,7 +129,7 @@ namespace SurvivorTweaks.States.VoidFiend
 					num = distance;
 				}
 			}
-			num = Mathf.Min(num, maxDistance);
+			num = Mathf.Min(num, ViendTweaks.maxDistance);
 			beamEndPos = aimRay.GetPoint(num);
 			Vector3 position = this.muzzleTransform.position;
 			beamRay = new Ray(position, beamEndPos - position);

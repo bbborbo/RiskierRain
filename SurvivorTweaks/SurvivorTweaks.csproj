@@ -26,6 +26,7 @@
     <Compile Remove="Content\Skills\Engineer\PlaceFlamerTurret.cs" />
     <Compile Remove="Content\Skills\Engineer\Turret\FireTurretFlamer.cs" />
     <Compile Remove="Content\Skills\Huntress\ExplosiveArrowSkill.cs" />
+    <Compile Remove="Content\States\VoidFiend\FireHandBeamNew.cs" />
     <Compile Remove="Modules\ItemDisplayCheck.cs" />
     <Compile Remove="Modules\ItemDisplays.cs" />
     <Compile Remove="Modules\Skins.cs" />
@@ -65,6 +66,7 @@
     <None Include="Content\Skills\Engineer\PlaceFlamerTurret.cs" />
     <None Include="Content\Skills\Engineer\Turret\FireTurretFlamer.cs" />
     <None Include="Content\Skills\Huntress\ExplosiveArrowSkill.cs" />
+    <None Include="Content\States\VoidFiend\FireHandBeamNew.cs" />
     <None Include="Modules\ItemDisplayCheck.cs" />
     <None Include="Modules\ItemDisplays.cs" />
     <None Include="Modules\Skins.cs" />

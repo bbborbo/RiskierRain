@@ -16,7 +16,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     class MulTweaks : SurvivorTweakBase<MulTweaks>
     {
         float nailSpreadCoefficient = 1.2f;
-        public static float baseDamage = 12f;
+        public static float baseDamage = 15f;
 
         GameObject scrapProjectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile");
         public static bool useScrapGravity = true;

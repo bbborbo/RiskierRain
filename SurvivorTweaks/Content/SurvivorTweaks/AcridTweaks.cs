@@ -66,7 +66,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             return list;
         }
 
-        [AutoConfig("Acrid : Base Damage Stat", "Scales 20% per level", 9f)]
+        [AutoConfig("Acrid : Base Damage Stat", "Scales 20% per level. Vanilla is 15", 9f)]
         public static float acridBaseDamage = 9; //15
         [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds", 10f)]
         public static float poisonDuration = 10; //10

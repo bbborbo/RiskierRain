@@ -6,6 +6,7 @@ using RainrotSharedUtils;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
+using SurvivorTweaks.Modules;
 using System;
 using UnityEngine;
 using static MoreStats.StatHooks;
@@ -14,16 +15,22 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class RexTweaks : SurvivorTweakBase<RexTweaks>
     {
-        GameObject syringeB = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/SyringeProjectileHealing");
-        float syringeDamageCoefficient = 0.8f; // 0.8f
-        float syringeHealFraction = 0.3f; // 0.6f
+        [AutoConfig("Ability Tweaks (Primary) : Directive Inject : Damage Coefficient Per Projectile", "Expressed as a percentage (eg 0.8 is 80%). Vanilla is 0.8", 0.8f)]
+        public static float syringeDamageCoefficient = 0.8f; // 0.8f
+        [AutoConfig("Ability Tweaks (Primary) : Directive Inject : Heal Fraction (Final Projectile)", "Expressed as a percentage (eg 0.3 is 30%). Vanilla is 0.6", 0.3f)]
+        public static float syringeHealFraction = 0.3f; // 0.6f
 
+        [AutoConfig("Ability Tweaks (Secondary) : Seed Barrage (Mortar) : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 60%). Vanilla is 4.5", 6.0f)]
         public static float mortarDamageCoeff = 6f;//4.5f
-        public static float mortarCooldown = 0.75f;//0.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Seed Barrage (Mortar) : Base Cooldown", "Expressed in seconds. Vanilla is 0.5", 0.5f)]
+        public static float mortarCooldown = 0.5f;//0.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Directive Drill : Base Cooldown", "Expressed in seconds. Vanilla is 6", 4f)]
         public static float drillCooldown = 4f;//6f
+        [AutoConfig("Ability Tweaks (Secondary) : Directive Drill : Base Max Stock", "Vanilla is 1", 1f)]
         public static int drillMaxStock = 1; //1
 
-        float brambleHealFraction = 0.07f; // 0.1f
+        [AutoConfig("Ability Tweaks (Utility) : Bramble Volley : Heal Fraction", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.07f)]
+        public float brambleHealFraction = 0.07f; // 0.1f
 
         public override string bodyName => "TreebotBody";
 
@@ -42,7 +49,13 @@ namespace SurvivorTweaks.SurvivorTweaks
             });
 
             //primary
-            syringeB.GetComponent<ProjectileHealOwnerOnDamageInflicted>().fractionOfDamage = syringeHealFraction;
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Treebot.SyringeProjectileHealing_prefab, (syringeB) =>
+            {
+                if (syringeB.TryGetComponent(out ProjectileHealOwnerOnDamageInflicted phoodi))
+                {
+                    phoodi.fractionOfDamage = syringeHealFraction;
+                }
+            });
             On.EntityStates.Treebot.Weapon.FireSyringe.OnEnter += NerfSyringe;
             LanguageAPI.Add("TREEBOT_PRIMARY_DESCRIPTION",
                 $"Fire 3 syringes for <style=cIsDamage>3x{Tools.ConvertDecimal(syringeDamageCoefficient)} damage</style>. " +

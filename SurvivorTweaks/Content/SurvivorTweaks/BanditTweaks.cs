@@ -61,7 +61,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float rifleDamageCoeff = 2.8f; // 3.3
         [AutoConfig("Ability Tweaks (Primary) : Blast (Rifle) : Spread Bloom", "Vanilla is 0.5", 0.3f)]
         public static float rifleSpreadBloom = 0.3f; //0.5f
-        [AutoConfig("Ability Tweaks (Primary) : Base Reload Delay", "Duration to delay reloading after firing. Expressed in seconds. Vanilla is 0.25", 0.4)]
+        [AutoConfig("Ability Tweaks (Primary) : Base Reload Delay", "Duration to delay reloading after firing. Expressed in seconds. Vanilla is 0.25", 0.4f)]
         public static float reloadEnterBaseDuration = 0.4f; //0.25f
         [AutoConfig("Ability Tweaks (Primary) : Base Reload Duration", "Duration between reloading bullets. Expressed in seconds. Vanilla is 0.3", 0.5f)]
         public static float reloadBaseDuration = 0.5f; //0.3f
@@ -127,6 +127,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Bandit2.Bandit2Body_prefab, (result) =>
             {
                 bodyObject = result;

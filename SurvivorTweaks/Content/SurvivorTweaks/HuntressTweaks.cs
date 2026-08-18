@@ -36,7 +36,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static bool huntressUltProtection = true;
 
         [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Base Cooldown", "Expressed in seconds. Vanilla is 12", 22f)]
-        public static int arrowRainCooldown = 22; //12
+        public static float arrowRainCooldown = 22; //12
         [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Area Radius", "Expressed in meters. Vanilla is 7.5", 14f)]
         public static float arrowRainRadius = 14; // 7.5f
         [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Proc Coefficient", "Vanilla is 0.2", 0.3f)]
@@ -49,7 +49,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float arrowRainLifetime = 8f; //6f
 
         [AutoConfig("Ability Tweaks (Special) : Ballista : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
-        public static int ballistaCooldown = 18; //12
+        public static float ballistaCooldown = 18; //12
         [AutoConfig("Ability Tweaks (Special) : Ballista : Damage Coefficient", "Expressed as a percentage (eg 7.0 is 700%). Vanilla is 9", 7f)]
         public static float ballistaDamageCoefficient = 7f; //9
         [AutoConfig("Ability Tweaks (Special) : Ballista : Proc Coefficient", "Vanilla is 1", 2f)]
@@ -63,6 +63,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Huntress.HuntressBody_prefab, (result) =>
             {
                 bodyObject = result;

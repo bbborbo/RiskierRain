@@ -43,9 +43,9 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float fastDashCooldown = 8f; //8f
         [AutoConfig("Ability Tweaks (Utility) : Blinding Assault (Fast Dash) : Damage Coefficient", "Expressed as a percent (eg 3.0 is 300%). Vanilla is 3", 3f)]
         public static float fastDashDamageCoefficient = 3f;//3f
-        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Base Cooldown", "Expressed in seconds. Vanilla is 8", 8f)]
+        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Base Cooldown", "Expressed in seconds. Vanilla is 8", 11f)]
         public static float focusDashCooldown = 11f; //8f
-        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Damage Coefficient", "Expressed as a percent (eg 6.0 is 600%). Vanilla is 7", 3f)]
+        [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Damage Coefficient", "Expressed as a percent (eg 6.0 is 600%). Vanilla is 7", 6f)]
         public static float focusDashDamageCoefficient = 6f;//7f
 
         [AutoConfig("Ability Tweaks (Special) : Eviscerate : Base Cooldown", "Expressed in seconds. Vanilla is 6", 10f)]
@@ -64,6 +64,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Merc.MercBody_prefab, (result) =>
             {
                 bodyObject = result;

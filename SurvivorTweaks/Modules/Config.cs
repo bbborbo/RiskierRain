@@ -34,9 +34,10 @@ namespace SurvivorTweaks.Modules
 
         public static void Init()
         {
-            MyConfig = new ConfigFile(Paths.ConfigPath + $"\\{SurvivorTweaksPlugin.modName}.cfg", true); //FortunesPlugin.instance.Config;
+            //i only add fruity to it bcs i fucked up the modname
+            MyConfig = new ConfigFile(Paths.ConfigPath + $"\\Fruity{SurvivorTweaksPlugin.modName}.cfg", true); //FortunesPlugin.instance.Config;
             MyConfig.SaveOnConfigSet = false;
-            BackupConfig = new ConfigFile(Paths.ConfigPath + $"\\{SurvivorTweaksPlugin.modName}.Backup.cfg", true);
+            BackupConfig = new ConfigFile(Paths.ConfigPath + $"\\Fruity{SurvivorTweaksPlugin.modName}.Backup.cfg", true);
             BackupConfig.SaveOnConfigSet = false;
             BackupConfig.Bind(": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :");
         }

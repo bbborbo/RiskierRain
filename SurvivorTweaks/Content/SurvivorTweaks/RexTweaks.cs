@@ -26,7 +26,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float mortarCooldown = 0.5f;//0.5f
         [AutoConfig("Ability Tweaks (Secondary) : Directive Drill : Base Cooldown", "Expressed in seconds. Vanilla is 6", 4f)]
         public static float drillCooldown = 4f;//6f
-        [AutoConfig("Ability Tweaks (Secondary) : Directive Drill : Base Max Stock", "Vanilla is 1", 1f)]
+        [AutoConfig("Ability Tweaks (Secondary) : Directive Drill : Base Max Stock", "Vanilla is 1", 1)]
         public static int drillMaxStock = 1; //1
 
         [AutoConfig("Ability Tweaks (Utility) : Bramble Volley : Heal Fraction", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.07f)]
@@ -38,6 +38,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             GetBodyObject();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Treebot.TreebotBody_prefab, (result) =>
             {

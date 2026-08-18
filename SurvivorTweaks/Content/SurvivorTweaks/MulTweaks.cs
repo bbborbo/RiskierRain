@@ -33,6 +33,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Toolbot.ToolbotBody_prefab, (result) =>

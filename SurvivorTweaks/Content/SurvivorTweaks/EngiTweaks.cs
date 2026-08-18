@@ -33,19 +33,19 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float grenadeStunChance = 25; //0
         [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Max Projectile Count", "Vanilla is 8", 3)]
         public static int grenadeCount = 3;
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Max Charge Time", "Set to 0 to skip charge. Vanilla is 2", 0)]
+        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Max Charge Time", "Set to 0 to skip charge. Vanilla is 2", 0f)]
         public static float grenadeChargeTime = 0f;
         [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Base Max Stock", "Vanilla is N/A", 1)]
         public static int grenadeStock = 1;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Arming Duration", "Expressed in seconds. Vanilla is 3", 2)]
+        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Arming Duration", "Expressed in seconds. Vanilla is 3", 2f)]
         public static float mineArmingDuration = 2f;//3f
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Detection Range (Armed)", "Expressed in seconds. Vanilla is 7.5", 7.5)]
+        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Detection Range (Armed)", "Expressed in seconds. Vanilla is 7.5", 7.5f)]
         public static float mineArmedTriggerRange = 7.5f;//7.5f
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Blast Range (Armed)", "Expressed in meters. Vanilla is 7.5", 10)]
+        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Blast Range (Armed)", "Expressed in meters. Vanilla is 7.5", 10f)]
         public static float mineArmedBlastRange = 10f;//7.5f
 
-        [AutoConfig("Ability Tweaks (Utility) : Bubble Shield : Shield Range", "Expressed in meters. Vanilla is 10", 15)]
+        [AutoConfig("Ability Tweaks (Utility) : Bubble Shield : Shield Range", "Expressed in meters. Vanilla is 10", 15f)]
         public static float bubbleShieldRadius = 15;//10
         [AutoConfig("Ability Tweaks (Utility) : Bubble Shield : Kit Slow", "If true, Bubble Shield will apply Kit Slow to enemies within range. Vanilla is false", true)]
         public static bool bubbleKitSlow = true;
@@ -55,6 +55,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             ShelterUtilsModule.UseCustomShelters = true;
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Engi.EngiBody_prefab, (result) =>
             {

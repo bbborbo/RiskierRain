@@ -94,11 +94,11 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static int secondaryCorruptStock = 1; //1
         [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Recharge Stock", "Vanilla is 1", 1)]
         public static int secondaryCorruptRechargeStock = 1; //1
-        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Blast Radius", "Expressed in meters. Vanilla is 5", 6f)]
+        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Blast Radius", "Expressed in meters. Vanilla is 5", 12f)]
         public static float secondaryCorruptBlastRadius = 12f;//10f
 
-        [AutoConfig("Ability Tweaks (Utility) : Corruption Per Cleanse", "Vanilla is 0", 3)]
-        static float corruptionPerCleanse = 3; //0
+        [AutoConfig("Ability Tweaks (Utility) : Corruption Per Cleanse", "Vanilla is 0", 3f)]
+        static float corruptionPerCleanse = 3f; //0
         [AutoConfig("Ability Tweaks (Utility) : Cleanse Debuffs", "If true, both forms of Trespass (Utility) will cleanse debuffs. Vanilla is false", true)]
         static bool utilityCleanse = true; //false
 
@@ -108,6 +108,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             //GetBodyObject();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_VoidSurvivor.VoidSurvivorBody_prefab, (result) =>
             {

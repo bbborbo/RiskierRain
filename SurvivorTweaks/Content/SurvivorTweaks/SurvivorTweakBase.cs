@@ -1,6 +1,7 @@
 ﻿using RoR2;
 using RoR2.ContentManagement;
 using RoR2.Skills;
+using SurvivorTweaks.Modules;
 using System;
 using System.Collections.Generic;
 using System.Text;

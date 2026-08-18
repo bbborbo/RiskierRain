@@ -50,6 +50,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static string flamethrowerDesc;
         public override void Init()
         {
+            base.Init();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Mage.MageBody_prefab, (result) =>
             {
                 bodyObject = result;

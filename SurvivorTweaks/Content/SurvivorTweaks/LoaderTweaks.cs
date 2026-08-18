@@ -21,6 +21,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             GetBodyObject();
             GetSkillsFromBodyObject(bodyObject);
 

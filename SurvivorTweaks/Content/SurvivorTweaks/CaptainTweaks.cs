@@ -40,7 +40,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static int microbotInPrinterChance = 2;
         [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Recharge Interval", "Expressed in seconds. Vanilla is 0.5", 1.5f)]
         public static float microbotRechargeInterval = 1.5f; //0.5
-        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Range", "Expressed in meters. Vanilla is 20", 20)]
+        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Range", "Expressed in meters. Vanilla is 20", 20f)]
         public static float microbotEraserRange = 20f; //20
 
         [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Base Cooldown", "Expressed in seconds. Vanilla is 0", 2f)]
@@ -65,8 +65,8 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Secondary) : Power Tazer : Max Bounces", "Vanilla is 1", 3)]
         public static int tazerTotalTargets = 3; //1
 
-        [AutoConfig("Ability Tweaks (Utility) : OGM-72 Diablo Strike : Strike Delay", "Expressed in seconds. Vanilla is 20", 10)]
-        public static float diabloMaxDuration = 10; //20
+        [AutoConfig("Ability Tweaks (Utility) : OGM-72 Diablo Strike : Strike Delay", "Expressed in seconds. Vanilla is 20", 10f)]
+        public static float diabloMaxDuration = 10f; //20
 
 
         [AutoConfig("Ability Tweaks (Special) : Refresh Supply Drops", "Beacons refresh during boss fights if true. Vanilla is false", true)]
@@ -74,7 +74,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Effect Radius", "Expressed in meters. Vanilla is 10", 12f)]
         public static float healRadius = 12; //10
-        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.08)]
+        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.08f)]
         public static float healFractionPerSecond = 0.07f;//0.1f
 
         [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Effect Radius", "Expressed in meters. Vanilla is idk", 12f)]
@@ -104,6 +104,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         public override void Init()
         {
+            base.Init();
             //refreshSupplyDrops = 
             //    SurvivorTweaksPlugin.CustomConfigFile.Bind<bool>("Captain", "Captain Beacon Refresh", true, 
             //    "Set to TRUE to refresh Captain's beacons at the beginning of every teleporter event. Only works if Captain changes are enabled!").Value;

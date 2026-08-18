@@ -43,7 +43,6 @@ namespace SurvivorTweaks.SurvivorTweaks
         }
         public override void Hooks()
         {
-            
         }
         public override void Lang()
         {

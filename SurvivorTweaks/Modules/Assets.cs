@@ -48,7 +48,6 @@ namespace SurvivorTweaks.Modules
         public static BuffDef commandoRollBuff;
 
         public static BuffDef jetpackSpeedBoost;
-        public static float jetpackSpeedPercent = 0.15f;
 
 
         public static BuffDef captainCdrBuff;
@@ -128,7 +127,7 @@ namespace SurvivorTweaks.Modules
             }
             if (sender.HasBuff(jetpackSpeedBoost))
             {
-                args.moveSpeedMultAdd += jetpackSpeedPercent;
+                args.moveSpeedMultAdd += ArtiTweaks.jetpackSpeedPercent;
             }
             if (sender.HasBuff(captainCdrBuff))
             {

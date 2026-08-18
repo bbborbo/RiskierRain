@@ -71,8 +71,8 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Special) : Refresh Supply Drops", "Beacons refresh during boss fights if true. Vanilla is false", true)]
         public static bool refreshSupplyDrops = true;
 
-        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Effect Radius", "Expressed in meters. Vanilla is 9", 12f)]
-        public static float healRadius = 12; //9
+        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Effect Radius", "Expressed in meters. Vanilla is 10", 12f)]
+        public static float healRadius = 12; //10
         [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.08)]
         public static float healFractionPerSecond = 0.07f;//0.1f
 
@@ -183,6 +183,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 if (healWard != null)
                 {
                     healWard.radius = healRadius;
+                    healWard.healFraction = healWard.interval * healFractionPerSecond;
                 }
 
                 LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Captain.CaptainSupplyDrop__Hacking_prefab, GetHackBeaconIndicator);
@@ -444,7 +445,8 @@ namespace SurvivorTweaks.SurvivorTweaks
             On.EntityStates.Captain.Weapon.FireCaptainShotgun.OnEnter += CaptainShotgunFixes;
             On.EntityStates.Captain.Weapon.FireCaptainShotgun.ModifyBullet += CaptainShotgunModifyBullet;
             LanguageAPI.Add("CAPTAIN_PRIMARY_DESCRIPTION",
-                $"<style=cIsUtility>Exacting</style>. Fire a blast of pellets that deal <style=cIsDamage>8x{Tools.ConvertDecimal(shotgunPelletDamageCoeff)} damage</style>. " +
+                (shotgunUsesExacting == true ? $"<style=cIsUtility>Exacting</style>. " : "") +
+                $"Fire a blast of pellets that deal <style=cIsDamage>8x{Tools.ConvertDecimal(shotgunPelletDamageCoeff)} damage</style>. " +
                 $"Charging the attack narrows the <style=cIsUtility>spread</style>. Hold up to {shotgunStock} charges.");
         }
 

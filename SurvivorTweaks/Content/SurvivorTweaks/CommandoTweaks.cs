@@ -18,42 +18,76 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class CommandoTweaks : SurvivorTweakBase<CommandoTweaks>
     {
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Damage Coefficient", "Expressed as a percentage (eg 1.4 is 140%). Vanilla is 1", 1.4f)]
         public static float primaryDamageCoeff = 1.4f; //1.0f
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Left)", "Expressed in seconds. Vanilla is 0.167", 1.6f)]
         public static float primaryDurationLeft = 0.16f; //0.167f
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Right)", "Expressed in seconds. Vanilla is 0.167", 2.4f)]
         public static float primaryDurationRight = 0.24f; //0.167f
 
         public static GameObject phaseRoundPrefab;
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Damage Coefficient", "Expressed as a percentage (eg 1.4 is 140%). Vanilla is 1.0", 2.4f)]
         public static float phaseRoundDamageCoeff = 5f; //3
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Base Cooldown", "Expressed in seconds. Vanilla is 3", 4.0f)]
         public static float phaseRoundCooldown = 4f; //3
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Base Attack Duration", "Expressed in seconds. Vanilla is 0.5", 0.7f)]
         public static float phaseRoundDuration = 0.7f; //0.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Projectile Scale", "Vanilla is 1.0", 2.0f)]
         public static float phaseRoundScale = 2f; //1f
 
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Blast : Damage Coefficient Per Pellet", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 2.0", 3.0f)]
         public static float phaseBlastDamageCoeff = 3f; //2f
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Blast : Base Cooldown", "Expressed in seconds. Vanilla is 3", 5.0f)]
         public static float phaseBlastCooldown = 5; //3f
 
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Base Max Stock", "Vanilla is 1", 2)]
         public static int rollStock = 2; //1
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 6.0f)]
         public static float rollCooldown = 6f; //4f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Base Attack Duration", "Expressed in seconds. Vanilla is 0.4", 0.2f)]
         public static float rollDuration = 0.2f; //0.4f
-        public static float rollAspdBuff = 0.6f; 
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Attack Speed Bonus", "Expressed as a percentage (eg 0.6 is 60%). Vanilla is 0", 0.6f)]
+        public static float rollAspdBuff = 0.6f;
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Attack Speed Duration", "Expressed in seconds. Vanilla is 0", 1f)]
         public static float rollAspdDuration = 1f;
 
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Base Max Stock", "Vanilla is 1", 1)]
         public static int slideStock = 1; //1
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Base Cooldown", "Expressed in seconds. Vanilla is 4", 8.0f)]
         public static float slideCooldown = 8f; //4f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Duration Max", "Maximum duration the slide can be held. Expressed in seconds. Vanilla is 4", 8.0f)]
         public static float slideMaxDuration = 4f; //1f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Total Speed Multiplier", "Expressed as a percentage of vanilla's speed", 0.6f)]
         public static float slideSpeedMultiplier = 0.6f; //1f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Strafe Speed Multiplier", "Expressed as a percentage of vanilla's speed", 0.02f)]
         public static float slideStrafeMultiplier = 0.02f; //1f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Jump Boost Duration", "Expressed in seconds. Vanilla is 0.6", 0.6f)]
         public static float slideJumpDuration = 0.6f; //0.6f
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Jump Height Multiplier", "Expressed as a percentage of vanilla's boost", 1.2f)]
         public static float slideJumpMultiplier = 1.2f; //1f
 
+        [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Maximum Targets", 4)]
         public static int soupMaxTargets = 4;
+        [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Total Bullets", "Scales with attack speed. Vanilla is 6", 8)]
         public static int soupBaseShots = 8; //6
+        [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Damage Coefficient Per Bullet", "Expressed as a percentage (eg 1.8 is 180%). Vanilla is 1", 1.8f)]
         public static float soupDamageCoeff = 1.8f; //1f
+        [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Proc Coefficient Per Bullet", "Vanilla is 1", 1.0f)]
         public static float soupProcCoeff = 1f; //1f
+        [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Base Cooldown", "Vanilla is 9", 13f)]
         public static float soupCooldown = 13f; //9f
 
-        public static float nadeRadius = 16f; //11f
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Ignition", "If true, frag grenade ignites. Vanilla is false", true)]
+        public static bool nadeIgnition = true; //false
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Projectile Blast Radius", "Expressed in meters. Vanilla is 11", 16f)]
+        public static float nadeBlastRadius = 16f; //11f
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Damage Coefficient", "Expressed as a percentage (eg 7.0 is 700%). Vanilla is 7", 7f)]
+        public static float nadeDamage = 7f; //7f
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Base Cooldown", "Expressed in seconds. Vanilla is 5", 8f)]
         public static float nadeCooldown = 8f; //5f
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Projectile Mass", "Vanilla is 1", 2.5f)]
         public static float nadeMass = 2.5f; //1f
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Projectile Drag", "Vanilla is 0", 0.9f)]
         public static float nadeDrag = 0.9f; //0f
 
         public override string survivorName => "Commando";
@@ -106,33 +140,44 @@ namespace SurvivorTweaks.SurvivorTweaks
             //nade
             SkillDef nade = special.variants[1].skillDef;
             nade.baseRechargeInterval = nadeCooldown;
-            nade.keywordTokens = new string[1] { "KEYWORD_IGNITE" };
-            GameObject commandoNade = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoGrenadeProjectile.prefab").WaitForCompletion();
-
-            ProjectileDamage projectileDamage = commandoNade.GetComponent<ProjectileDamage>();
-            if (projectileDamage)
+            if(nadeIgnition)
+                nade.keywordTokens = new string[1] { "KEYWORD_IGNITE" };
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Commando.CommandoGrenadeProjectile_prefab, (commandoNade) =>
             {
-                projectileDamage.damageType |= DamageType.IgniteOnHit;
-            }
+                if (commandoNade.TryGetComponent(out ProjectileDamage projectileDamage))
+                {
+                    if(nadeIgnition)
+                        projectileDamage.damageType |= DamageType.IgniteOnHit;
+                }
 
-            Rigidbody rb = commandoNade.GetComponent<Rigidbody>();
-            if (rb)
+                if (commandoNade.TryGetComponent(out Rigidbody rb))
+                {
+                    rb.mass = nadeMass;
+                    rb.drag = nadeDrag;
+                }
+
+                if (commandoNade.TryGetComponent(out ProjectileImpactExplosion pie))
+                {
+                    pie.blastRadius = nadeBlastRadius;
+                }
+            });
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Commando.OmniExplosionVFXCommandoGrenade_prefab, (commandoNadeExplosion) =>
             {
-                rb.mass = nadeMass;
-                rb.drag = nadeDrag;
-            }
+                commandoNadeExplosion.transform.localScale = Vector3.one * nadeBlastRadius * 4 / 11;
+            });
 
-            ProjectileImpactExplosion pie = commandoNade.GetComponent<ProjectileImpactExplosion>();
-            if (pie)
+            if(nadeIgnition == true)
             {
-                pie.blastRadius = nadeRadius;
-
-                GameObject commandoNadeExplosion = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/OmniExplosionVFXCommandoGrenade.prefab").WaitForCompletion();
-                commandoNadeExplosion.transform.localScale = Vector3.one * nadeRadius * 4 / 11;
+                LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_NAME", $"Incendiary Grenade");
+                LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_DESCRIPTION", $"<style=cIsDamage>Ignite</style>. Throw a grenade that explodes for <style=cIsDamage>700% damage</style>. Can hold up to 2.");
             }
+            On.EntityStates.Commando.CommandoWeapon.ThrowGrenade.ModifyProjectileInfo += GrenadeDamage;
+        }
 
-            LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_NAME", $"Incendiary Grenade");
-            LanguageAPI.Add("COMMANDO_SPECIAL_ALT1_DESCRIPTION", $"<style=cIsDamage>Ignite</style>. Throw a grenade that explodes for <style=cIsDamage>700% damage</style>. Can hold up to 2.");
+        private void GrenadeDamage(On.EntityStates.Commando.CommandoWeapon.ThrowGrenade.orig_ModifyProjectileInfo orig, ThrowGrenade self, ref FireProjectileInfo fireProjectileInfo)
+        {
+            orig(self, ref fireProjectileInfo);
+            fireProjectileInfo.damage = self.damageStat * nadeDamage;
         }
 
         private void ChangeUtilities()

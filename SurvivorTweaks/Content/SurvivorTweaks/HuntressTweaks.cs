@@ -8,6 +8,7 @@ using R2API;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
+using SurvivorTweaks.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,28 +22,44 @@ namespace SurvivorTweaks.SurvivorTweaks
     class HuntressTweaks : SurvivorTweakBase<HuntressTweaks>
     {
         public static bool isLoaded;
-        public static GameObject arrowRainPrefab;
+
+        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level", 12f)]
+        public static float baseDamage = 12f; //12
+
+        [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Coefficient", "Expressed as a percentage (eg 3.4 is 340%). Vanilla is 2.5", 3.4f)]
+        public static float glaiveBaseDamage = 3.4f; //2.5f
+        [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Multiplier Per Bounce", "Exponential. Vanilla is 1.1", 1.1f)]
+        public static float glaiveBounceDamage = 1.1f; //1.1f
+
+        [AutoConfig("Ability Tweaks (Special) : Armor Boost While Aiming", 
+            "If true, Huntress gains a small armor boost (value unbeknownst to me) while aiming either of her Special abilities. Vanilla is false", true)]
+        public static bool huntressUltProtection = true;
+
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Base Cooldown", "Expressed in seconds. Vanilla is 12", 22f)]
+        public static int arrowRainCooldown = 22; //12
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Area Radius", "Expressed in meters. Vanilla is 7.5", 14f)]
+        public static float arrowRainRadius = 14; // 7.5f
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Proc Coefficient", "Vanilla is 0.2", 0.3f)]
+        public static float arrowRainProcCoeff = 0.3f; //0.2f
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Coefficient Per Second", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 3.3", 14f)]
+        public static float arrowRainDamageCoeffPerSecond = 4f; //3.3f
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Frequency", "Expressed in ticks per second. Vanilla is 3", 4f)]
+        public static float arrowRainHitFrequency = 4f; //3f
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Area Duration", "Maximum duration of damage area. Expressed in seconds. Vanilla is 6", 8f)]
+        public static float arrowRainLifetime = 8f; //6f
+
+        [AutoConfig("Ability Tweaks (Special) : Ballista : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
+        public static int ballistaCooldown = 18; //12
+        [AutoConfig("Ability Tweaks (Special) : Ballista : Damage Coefficient", "Expressed as a percentage (eg 7.0 is 700%). Vanilla is 9", 7f)]
+        public static float ballistaDamageCoefficient = 7f; //9
+        [AutoConfig("Ability Tweaks (Special) : Ballista : Proc Coefficient", "Vanilla is 1", 2f)]
+        public static float ballistaProcCoefficient = 2.0f; //1.0f
+        [AutoConfig("Ability Tweaks (Special) : Ballista : Slayer Damage Type", "If true, Ballista deals more damage to targets with lower health. Vanilla is false", true)]
+        public static bool ballistaSlayer = true;
 
         public override string survivorName => "Huntress";
 
         public override string bodyName => "HuntressBody";
-
-        static float baseDamage = 14f; //12
-
-        static float glaiveBaseDamage = 3.4f; //2.5f
-        static float glaiveBounceDamage = 1.1f; //1.1f
-
-
-        static int arrowRainCooldown = 22; //12
-        static float arrowRainRadius = 14; // 7.5f
-        static float arrowRainProcCoeff = 0.3f; //0.2f
-        static float arrowRainDamageCoeffPerSecond = 4f; //3.3f
-        static float arrowRainHitFrequency = 4f; //3f
-        static float arrowRainLifetime = 8f; //6f
-
-        static int ballistaCooldown = 18; //12
-        static float ballistaDamageCoefficient = 8f; //9
-        static float ballistaProcCoefficient = 2.0f; //1.0f
 
         public override void Init()
         {
@@ -130,33 +147,43 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         void ChangeVanillaSpecials(SkillFamily family)
         {
-            On.EntityStates.Huntress.BaseArrowBarrage.OnEnter += AddHuntressUltProtection;
-            On.EntityStates.Huntress.BaseArrowBarrage.OnExit += RemoveHuntressUltProtection;
-
-            arrowRainPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/HuntressArrowRain.prefab").WaitForCompletion();
-            family.variants[0].skillDef.baseRechargeInterval = arrowRainCooldown;
-            ArrowRain.arrowRainRadius = arrowRainRadius;
-            On.EntityStates.Huntress.ArrowRain.OnEnter += BuffArrowRain;
-
-            arrowRainPrefab.transform.localScale = Vector3.one * 2 * arrowRainRadius;
-            ProjectileDotZone arrowRainDotZone = arrowRainPrefab?.GetComponent<ProjectileDotZone>();
-            if(arrowRainDotZone != null)
+            if (huntressUltProtection)
             {
-                arrowRainDotZone.damageCoefficient = arrowRainDamageCoeffPerSecond / (2.2f * arrowRainHitFrequency);
-                arrowRainDotZone.resetFrequency = arrowRainHitFrequency;
-                LanguageAPI.Add("HUNTRESS_SPECIAL_DESCRIPTION", $"<style=cIsUtility>Teleport</style> into the sky. " +
-                    $"Target an area to rain arrows, <style=cIsUtility>slowing</style> all enemies and " +
-                    $"dealing <style=cIsDamage>{Tools.ConvertDecimal(arrowRainDamageCoeffPerSecond)} damage per second</style>.");
-                arrowRainDotZone.overlapProcCoefficient = arrowRainProcCoeff;
-                arrowRainDotZone.lifetime = arrowRainLifetime;
+                On.EntityStates.Huntress.BaseArrowBarrage.OnEnter += AddHuntressUltProtection;
+                On.EntityStates.Huntress.BaseArrowBarrage.OnExit += RemoveHuntressUltProtection;
             }
+
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Huntress.HuntressArrowRain_prefab, (arrowRainPrefab) =>
+            {
+                arrowRainPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/HuntressArrowRain.prefab").WaitForCompletion();
+                family.variants[0].skillDef.baseRechargeInterval = arrowRainCooldown;
+                ArrowRain.arrowRainRadius = arrowRainRadius;
+
+                arrowRainPrefab.transform.localScale = Vector3.one * 2 * arrowRainRadius;
+                ProjectileDotZone arrowRainDotZone = arrowRainPrefab.GetComponent<ProjectileDotZone>();
+                if (arrowRainDotZone != null)
+                {
+                    arrowRainDotZone.damageCoefficient = arrowRainDamageCoeffPerSecond / (2.2f * arrowRainHitFrequency);
+                    arrowRainDotZone.resetFrequency = arrowRainHitFrequency;
+                    arrowRainDotZone.overlapProcCoefficient = arrowRainProcCoeff;
+                    arrowRainDotZone.lifetime = arrowRainLifetime;
+                }
+            });
+            On.EntityStates.Huntress.ArrowRain.OnEnter += BuffArrowRain;
+            LanguageAPI.Add("HUNTRESS_SPECIAL_DESCRIPTION", $"<style=cIsUtility>Teleport</style> into the sky. " +
+                $"Target an area to rain arrows, <style=cIsUtility>slowing</style> all enemies and " +
+                $"dealing <style=cIsDamage>{Tools.ConvertDecimal(arrowRainDamageCoeffPerSecond)} damage per second</style>.");
 
             SkillDef ballista = family.variants[1].skillDef;
             ballista.baseRechargeInterval = ballistaCooldown;
-            ballista.keywordTokens = new string[] { "KEYWORD_SLAYER" };
+            if(ballistaSlayer)
+                ballista.keywordTokens = new string[] { "KEYWORD_SLAYER" };
             On.EntityStates.GenericBulletBaseState.OnEnter += BallistaBuff;
-            On.EntityStates.Huntress.Weapon.FireArrowSnipe.ModifyBullet += BallistaDamageType;
-            LanguageAPI.Add("HUNTRESS_SPECIAL_ALT1_DESCRIPTION", $"<style=cIsDamage>Slayer</style>. <style=cIsUtility>Teleport</style> backwards into the sky. " +
+            if(ballistaSlayer)
+                On.EntityStates.Huntress.Weapon.FireArrowSnipe.ModifyBullet += BallistaDamageType;
+            LanguageAPI.Add("HUNTRESS_SPECIAL_ALT1_DESCRIPTION", 
+                (ballistaSlayer == true ? $"<style=cIsDamage>Slayer</style>. " : "") +
+                $"<style=cIsUtility>Teleport</style> backwards into the sky. " +
                 $"Fire up to <style=cIsDamage>3</style> energy bolts, " +
                 $"dealing <style=cIsDamage>3x{Tools.ConvertDecimal(ballistaDamageCoefficient)} damage</style>.");
         }

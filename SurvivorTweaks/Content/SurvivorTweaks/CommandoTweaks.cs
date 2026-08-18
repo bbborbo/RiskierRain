@@ -77,7 +77,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Special) : Suppressive Fire : Base Cooldown", "Vanilla is 9", 13f)]
         public static float soupCooldown = 13f; //9f
 
-        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Ignition", "If true, frag grenade ignites. Vanilla is false", true)]
+        [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Ignition Damage Type", "If true, frag grenade ignites. Vanilla is false", true)]
         public static bool nadeIgnition = true; //false
         [AutoConfig("Ability Tweaks (Special) : Frag Grenade : Projectile Blast Radius", "Expressed in meters. Vanilla is 11", 16f)]
         public static float nadeBlastRadius = 16f; //11f

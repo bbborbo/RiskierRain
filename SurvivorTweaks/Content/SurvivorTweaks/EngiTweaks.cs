@@ -205,7 +205,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             c.EmitDelegate<Func<float, EntityState, float>>((startRadius, state) =>
             {
                 if(state.projectileController?.teamFilter?.teamIndex == TeamIndex.Player)
-                    return mineArmedBlastRange;
+                    return startRadius + (mineArmedBlastRange - mineArmedTriggerRange);
                 return startRadius;
             });
         }

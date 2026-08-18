@@ -29,6 +29,8 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corrupt Mode Bonus Armor", "Vanilla is 100", 100f)]
         static float corruptModeArmor = 100; //100
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corrupt Mode Anti-Healing", "If true, ALL healing will be negated during Corrupt Mode. Vanilla is false", true)]
+        static bool corruptModeAntiHeal = true;
         [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Minimum Corruption Per Void Item", "Vanilla is 2", 2f)]
         static float minimumCorruptionPerVoidItem = 2; //2
         [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Damage Taken", "Vanilla is 50", 50f)]
@@ -383,7 +385,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private float ViendNoHealing(On.RoR2.HealthComponent.orig_Heal orig, HealthComponent self, float amount, ProcChainMask procChainMask, bool nonRegen)
         {
-            if (self.body.HasBuff(DLC1Content.Buffs.VoidSurvivorCorruptMode))
+            if (self.body.HasBuff(DLC1Content.Buffs.VoidSurvivorCorruptMode) && corruptModeAntiHeal)
             {
                 amount = 0;
             }

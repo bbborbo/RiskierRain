@@ -252,7 +252,7 @@ namespace SwanSongExtended.Items
                     SetStateOnHurt component = vBody.healthComponent.GetComponent<SetStateOnHurt>();
                     if (component != null)
                     {
-                        component.OverrideStun(smokeBombStunDuration);
+                        component.SetStun(smokeBombStunDuration);
                     }
                 }
             }

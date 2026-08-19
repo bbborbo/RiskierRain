@@ -19,6 +19,7 @@ using static R2API.DamageAPI;
 using static FruityElites.Modules.Language.Styling;
 using static MoreStats.OnHit;
 using static R2API.RecalculateStatsAPI;
+using FruityElites.EliteReworks;
 
 namespace FruityElites.Modules
 {
@@ -44,29 +45,74 @@ namespace FruityElites.Modules
         public static string eliteMaterialsPath = "Assets/Textures/Materials/Elite/";
         public static void Init()
         {
-            CreateVoidtouchedSingularity();
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidSurvivor.VoidSurvivorMegaBlasterBigProjectile_prefab, CreateVoidSingularityBomb);
+            //CreateVoidtouchedSingularity();
         }
 
+
+        public static GameObject voidSingularityBomb;
         public static GameObject voidtouchedSingularityDelay;
         public static GameObject voidtouchedSingularity;
+        private static void CreateVoidSingularityBomb(GameObject fiendBlasterProjectile)
+        {
+            voidSingularityBomb = fiendBlasterProjectile.InstantiateClone("VoidtouchedSingularityBomb", true);
+            voidSingularityBomb.transform.localScale *= 0.7f;
+
+            if(voidSingularityBomb.TryGetComponent(out ProjectileSingleTargetImpact psti))
+            {
+                UnityEngine.Object.Destroy(psti);
+            }
+
+            ProjectileImpactExplosion pie = voidSingularityBomb.GetComponent<ProjectileImpactExplosion>();
+            if(pie == null)
+                pie = voidSingularityBomb.AddComponent<ProjectileImpactExplosion>();
+            pie.blastRadius = 0;
+            pie.childrenCount = 1;
+            pie.fireChildren = true;
+            pie.destroyOnEnemy = true;
+            pie.destroyOnWorld = true;
+            pie.lifetime = 999;
+
+            AntiGravityForce antiGravity = voidSingularityBomb.GetComponent<AntiGravityForce>();
+            if (antiGravity == null)
+                antiGravity = voidSingularityBomb.AddComponent<AntiGravityForce>();
+            antiGravity.antiGravityCoefficient = VoidtouchedReworks.singularityProjectileAntiGravity;
+            antiGravity.rb = voidSingularityBomb.GetComponent<Rigidbody>();
+
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_ElementalRingVoid.ElementalRingVoidBlackHole_prefab, 
+                (ctx) => CreateVoidSingularity(ctx, pie));
+
+            Modules.Content.AddProjectilePrefab(voidSingularityBomb);
+        }
+
+        private static void CreateVoidSingularity(GameObject ctx, ProjectileImpactExplosion pie)
+        {
+            voidtouchedSingularity = ctx.InstantiateClone("VoidtouchedSingularity", true);
+
+            ProjectileFuse singularityPf = voidtouchedSingularity.GetComponent<ProjectileFuse>();
+            if (singularityPf)
+            {
+                singularityPf.fuse = VoidtouchedReworks.singularityDuration;
+            }
+            RadialForce singularityRF = voidtouchedSingularity.GetComponent<RadialForce>();
+            if (singularityRF)
+            {
+                singularityRF.radius = VoidtouchedReworks.singularityRadius;
+                voidtouchedSingularity.transform.localScale *= (VoidtouchedReworks.singularityRadius / 15);
+            }
+
+            R2API.ContentAddition.AddProjectile(voidtouchedSingularity);
+
+            if (pie != null)
+                pie.childrenProjectilePrefab = voidtouchedSingularity;
+        }
+
         private static void CreateVoidtouchedSingularity()
         {
             float singularityRadius = 8; //15
             GameObject singularity = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/ElementalRingVoid/ElementalRingVoidBlackHole.prefab").WaitForCompletion();
             voidtouchedSingularity = singularity.InstantiateClone("VoidtouchedSingularity", true);
 
-            ProjectileFuse singularityPf = voidtouchedSingularity.GetComponent<ProjectileFuse>();
-            if (singularityPf)
-            {
-                singularityPf.fuse = 3;
-            }
-            RadialForce singularityRF = voidtouchedSingularity.GetComponent<RadialForce>();
-            if (singularityRF)
-            {
-                singularityRF.radius = singularityRadius;
-                voidtouchedSingularity.transform.localScale *= (singularityRadius / 15);
-            }
-            R2API.ContentAddition.AddProjectile(voidtouchedSingularity);
 
             GameObject willowispDelay = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ExplodeOnDeath/WilloWispDelay.prefab").WaitForCompletion();
             voidtouchedSingularityDelay = willowispDelay.InstantiateClone("VoidtouchedDelayBlast", true);

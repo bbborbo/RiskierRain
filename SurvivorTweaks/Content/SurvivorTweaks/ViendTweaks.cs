@@ -35,7 +35,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         static float minimumCorruptionPerVoidItem = 2; //2
         [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Damage Taken", "Vanilla is 50", 50f)]
         static float corruptionForFullDamage = 50; //50
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Health Healed", "Vanilla is -50", -50f)]
+        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Health Healed", "Vanilla is -100", -50f)]
         static float corruptionForFullHeal = -50; //-100
         [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (While Corrupted)", "Vanilla is -0.06666667", -0.06666667f)]
         static float corruptionFractionPerSecondWhileCorrupted = -0.06666667f; //aka 15s; -0.06666667f aka 15s

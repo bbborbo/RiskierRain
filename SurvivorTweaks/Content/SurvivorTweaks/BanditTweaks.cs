@@ -111,9 +111,9 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Ability Tweaks (Special) : Finisher Debuff Duration", "Expressed in seconds. Vanilla is 0", 1.6f)]
         public static float revolverDebuffDuration = 1.6f;//0f
-        [AutoConfig("Ability Tweaks (Special) : Revolver Wind-Up Duration", "Minimum time to cast revolver Special. Expressed in seconds. Vanilla is idk", 1.6f)]
+        [AutoConfig("Ability Tweaks (Special) : Revolver Wind-Up Duration", "Minimum time to cast revolver Special. Expressed in seconds. Vanilla is idk", 0.8f)]
         public static float revolverDrawDuration = 0.8f; //idk
-        [AutoConfig("Ability Tweaks (Special) : Revolver Max Aim Duration", "Maximum time to cast revolver Special. Expressed in seconds. Vanilla is N/A", 1.6f)]
+        [AutoConfig("Ability Tweaks (Special) : Revolver Max Aim Duration", "Maximum time to cast revolver Special. Expressed in seconds. Vanilla is N/A", 5f)]
         public static float finisherAimDuration = 5f; //n/a
         [AutoConfig("Ability Tweaks (Special) : Revolver Hardscope Bullet Width", "Affects aim assist. Expressed in seconds. Vanilla is idk", 1.5f)]
         public static float revolverBulletRadius = 1.5f;
@@ -150,7 +150,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             LanguageAPI.Add("KEYWORD_SUPERBLEED",
                 $"<style=cKeywordName>Hemorrhage</style>" +
                 $"<style=cSub>Bleed enemies for <style=cIsDamage>{Tools.ConvertDecimal(hemorrhageDamageBase)}</style> base damage over 15s. " +
-                $"Can deal <style=cIsDamage>up to {hemorrhageDamageMax}x</style> as much damage against healthy enemies. " +
+                $"Can deal <style=cIsDamage>up to {hemorrhageDamageMaxMultiplier}x</style> as much damage against healthy enemies. " +
                 $"<i>Hemorrhage can stack.</i></style>");
 
             //CharacterBody.onBodyStartGlobal += RecalculateTokenAmount;

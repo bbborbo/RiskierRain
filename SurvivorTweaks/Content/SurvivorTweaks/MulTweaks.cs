@@ -190,7 +190,9 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void FuckTheCorkscrewPattern(On.EntityStates.Toolbot.BaseNailgunState.orig_FireBullet orig, EntityStates.Toolbot.BaseNailgunState self, 
             Ray aimRay, int bulletCount, float spreadPitchScale, float spreadYawScale)
         {
-            orig(self, self.GetAimRay(), bulletCount, 1f, 1f);
+            Ray ray = self.GetAimRay();
+            TrajectoryAimAssist.ApplyTrajectoryAimAssist(ref ray, BaseNailgunState.maxDistance, self.gameObject, 1f);
+            orig(self, ray, bulletCount, 1f, 1f);
         }
     }
 }

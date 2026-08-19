@@ -78,7 +78,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             SkillDef nade = primary.variants[0].skillDef;
             nade.cancelSprintingOnActivation = false;
             nade.keywordTokens = new string[] { "KEYWORD_AGILE", "KEYWORD_STUNNING" };
-            if(grenadesRequireCharge)
+            if(grenadesRequireCharge == false)
                 nade.activationState = new SerializableEntityStateType(typeof(FireGrenades));
             if(grenadeCooldown > 0)
             {
@@ -96,8 +96,15 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"Fire <style=cIsDamage>{grenadeCount}</style> grenades that deal " +
                 $"<style=cIsDamage>{ConvertDecimal(grenadeDamage)} damage</style> each.");
 
+            On.EntityStates.Engi.EngiWeapon.ChargeGrenades.OnEnter += ChargeGrenadeBuff;
             On.EntityStates.Engi.EngiWeapon.FireGrenades.OnEnter += GrenadeStats;
             IL.EntityStates.Engi.EngiWeapon.FireGrenades.FireGrenade += GrenadeStunChance;
+        }
+
+        private void ChargeGrenadeBuff(On.EntityStates.Engi.EngiWeapon.ChargeGrenades.orig_OnEnter orig, ChargeGrenades self)
+        {
+            self.maxChargeTime = grenadeChargeTime;
+            orig(self);
         }
 
         private void GrenadeStats(On.EntityStates.Engi.EngiWeapon.FireGrenades.orig_OnEnter orig, FireGrenades self)

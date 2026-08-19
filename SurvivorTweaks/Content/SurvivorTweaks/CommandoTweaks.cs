@@ -20,13 +20,13 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         [AutoConfig("Ability Tweaks (Primary) : Double Tap : Damage Coefficient", "Expressed as a percentage (eg 1.4 is 140%). Vanilla is 1", 1.4f)]
         public static float primaryDamageCoeff = 1.4f; //1.0f
-        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Left)", "Expressed in seconds. Vanilla is 0.167", 1.6f)]
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Left)", "Expressed in seconds. Vanilla is 0.167", 0.16f)]
         public static float primaryDurationLeft = 0.16f; //0.167f
-        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Right)", "Expressed in seconds. Vanilla is 0.167", 2.4f)]
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Right)", "Expressed in seconds. Vanilla is 0.167", 0.24f)]
         public static float primaryDurationRight = 0.24f; //0.167f
 
         public static GameObject phaseRoundPrefab;
-        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Damage Coefficient", "Expressed as a percentage (eg 1.4 is 140%). Vanilla is 1.0", 2.4f)]
+        [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Damage Coefficient", "Expressed as a percentage (eg 5.0 is 500%). Vanilla is 1.0", 5f)]
         public static float phaseRoundDamageCoeff = 5f; //3
         [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Base Cooldown", "Expressed in seconds. Vanilla is 3", 4.0f)]
         public static float phaseRoundCooldown = 4f; //3
@@ -55,7 +55,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static int slideStock = 1; //1
         [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Base Cooldown", "Expressed in seconds. Vanilla is 4", 8.0f)]
         public static float slideCooldown = 8f; //4f
-        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Duration Max", "Maximum duration the slide can be held. Expressed in seconds. Vanilla is 4", 8.0f)]
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Duration Max", "Maximum duration the slide can be held. Expressed in seconds. Vanilla is 1", 4.0f)]
         public static float slideMaxDuration = 4f; //1f
         [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Total Speed Multiplier", "Expressed as a percentage of vanilla's speed", 0.6f)]
         public static float slideSpeedMultiplier = 0.6f; //1f

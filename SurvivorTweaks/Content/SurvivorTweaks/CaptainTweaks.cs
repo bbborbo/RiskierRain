@@ -74,7 +74,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Effect Radius", "Expressed in meters. Vanilla is 10", 12f)]
         public static float healRadius = 12; //10
-        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.08f)]
+        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.07f)]
         public static float healFractionPerSecond = 0.07f;//0.1f
 
         [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Effect Radius", "Expressed in meters. Vanilla is idk", 12f)]

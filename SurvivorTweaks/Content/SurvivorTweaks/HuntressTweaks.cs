@@ -41,7 +41,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float arrowRainRadius = 14; // 7.5f
         [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Proc Coefficient", "Vanilla is 0.2", 0.3f)]
         public static float arrowRainProcCoeff = 0.3f; //0.2f
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Coefficient Per Second", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 3.3", 14f)]
+        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Coefficient Per Second", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 3.3", 4f)]
         public static float arrowRainDamageCoeffPerSecond = 4f; //3.3f
         [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Frequency", "Expressed in ticks per second. Vanilla is 3", 4f)]
         public static float arrowRainHitFrequency = 4f; //3f

@@ -44,7 +44,7 @@ namespace FruityElites
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "FruityAspectGaming";
-        public const string version = "1.0.0";
+        public const string version = "1.1.0";
 
         public const string DEVELOPER_PREFIX = "FRUIT";
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
@@ -86,12 +86,12 @@ namespace FruityElites
             if (Bind("Add Periodical OnHitAll To BeetleGuard Sunder (Affects Overloading Orbs)"))
             {
                 //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
-                EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGuard.Sunder_prefab, BuffSunder);
+                LoadAsyncLegacy<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGuard.Sunder_prefab, BuffSunder);
             }
             if (Bind("Add Periodical OnHitAll To Dunestrider Roller (Affects Overloading Orbs)"))
             {
                 //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
-                EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.TarSeeker_prefab, BuffSunder);
+                LoadAsyncLegacy<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.TarSeeker_prefab, BuffSunder);
             }
 
 
@@ -231,7 +231,11 @@ namespace FruityElites
         }
 
         #region modify items and equipments
-
+        public static void LoadAsyncLegacy<T>(string path, Action<T> callback) where T : UnityEngine.Object
+        {
+            AssetReferenceT<T> ref1 = new AssetReferenceT<T>(path);
+            AssetAsyncReferenceManager<T>.LoadAsset(ref1).Completed += (ctx) => callback(ctx.Result);
+        }
         public static AssetReferenceT<T> LoadAsync<T>(string guid, Action<T> callback) where T : UnityEngine.Object
         {
             void onCompleted(AsyncOperationHandle<T> handle)

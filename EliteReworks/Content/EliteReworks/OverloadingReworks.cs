@@ -1,6 +1,7 @@
 ﻿using FruityElites.Modules;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MoreStats;
 using RoR2;
 using RoR2.ContentManagement;
 using RoR2.Orbs;
@@ -16,49 +17,88 @@ namespace FruityElites.EliteReworks
 {
     class OverloadingReworks : EliteReworkBase<OverloadingReworks>
     {
-        [AutoConfig("Bomb Blast Radius", 9f)]
-        public static float overloadingBombBlastRadius = 9f;
-        [AutoConfig("Bomb Lifetime", 1.35f)]
-        public static float overloadingBombLifetime = 1.35f;
-        [AutoConfig("Bomb Total Damage Coefficient", "Vanilla is 0.5", 1.5f)]
-        public static float overloadingBombDamage = 1.5f; //0.5f
+        [AutoConfig("Bomb On World Impact: Blast Radius", 8f)]
+        public static float overloadingBombBlastRadius =  8f;
+        [AutoConfig("Bomb On World Impact: Lifetime", 1.25f)]
+        public static float overloadingBombLifetime = 1.25f;
+        [AutoConfig("Bomb On World Impact: Total Damage Coefficient", "Vanilla is 0.5", 1.0f)]
+        public static float overloadingBombDamage = 1.0f; //0.5f
 
         [AutoConfig("Shield Conversion Fraction", "Set to 0.5 or -1 to disable the hook, which should make it compatible with ZetAspects", 0.33f)]
         public static float overloadingShieldConversionFraction = 0.33f; //5f
-        [AutoConfig("Smite Count Base", "Rounded up", 2f)]
+        [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
         public static float overloadingSmiteCountBase = 2;
-        [AutoConfig("Smite Count By Radius", "Rounded up", 1f)]
+        [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]
         public static float overloadingSmiteCountPerRadius = 1f;
-        [AutoConfig("Smite Range Base", 18f)]
+        [AutoConfig("Smite On Death: Max Range Base", 18f)]
         public static float overloadingSmiteRangeBase = 18f;
-        [AutoConfig("Smite Range By Radius", 9f)]
+        [AutoConfig("Smite On Death: Max Range By Radius", "How much to scale the smite range by unit of body size", 9f)]
         public static float overloadingSmiteRangePerRadius = 9f;
-        [AutoConfig("Smite Damage Coefficient Initial", 1f)]
+        [AutoConfig("Smite On Death: Damage Coefficient Initial", 10f)]
         public static float overloadingSmiteStartingDamage = 10f;
-        [AutoConfig("Smite Damage Coefficient Per Strike", 1f)]
+        [AutoConfig("Smite On Death: Damage Coefficient Per Strike", 5f)]
         public static float overloadingSmiteDamagePerStrike = 5f;
         public override string eliteName => "Overloading";
 
+        public override void Init()
+        {
+            base.Init();
+        }
+
         public override void Hooks()
         {
-            if(overloadingShieldConversionFraction != 0.5f || overloadingShieldConversionFraction < 0)
+            BaseStats.OverloadingShieldConversionFraction = overloadingShieldConversionFraction;
+            if(overloadingShieldConversionFraction != 0.5f && overloadingShieldConversionFraction > 0)
                 IL.RoR2.CharacterBody.RecalculateStats += OverloadingShieldConversion;
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
             On.RoR2.GlobalEventManager.OnCharacterDeath += OverloadingSmiteDeath;
 
-            //ChangeLightningStake(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/EliteLightning/LightningStake.prefab").WaitForCompletion());
-            AssetReferenceT<GameObject> ref1 = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_EliteLightning.LightningStake_prefab);
-            AssetAsyncReferenceManager<GameObject>.LoadAsset(ref1).Completed += (ctx) => ChangeLightningStake(ctx.Result);
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStake_prefab, ChangeLightningStake);
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStakeGhost_prefab, ChangeLightningStakeGhost);
         }
 
-        private void ChangeLightningStake(GameObject overloadingBomb)
+        private void ChangeLightningStakeGhost(GameObject lightningStakeGhost)
         {
-            ProjectileStickOnImpact bombStick = overloadingBomb.GetComponent<ProjectileStickOnImpact>();
+            GameObject sphere = lightningStakeGhost.transform.GetChild(0).gameObject;
+            if(sphere != null)
+            {
+                EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteIce.AffixWhiteDelayEffect_prefab, (delayEffect) =>
+                {
+                    Transform novaSphere = delayEffect.transform.Find("Nova Sphere");
+                    if(novaSphere != null)
+                    {
+                        GameObject telegraphRealified = UnityEngine.GameObject.Instantiate(novaSphere.gameObject);
+                        telegraphRealified.transform.parent = sphere.transform;
+                        telegraphRealified.transform.localScale = Vector3.one * overloadingBombBlastRadius * 1.75f;
+
+                        if(telegraphRealified.TryGetComponent(out ParticleSystemRenderer psr))
+                        {
+                            Material mat = UnityEngine.Object.Instantiate(psr.material);
+                            mat.SetColor("_TintColor", new Color32(111, 191, 255, 255));
+                            mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampFogStage1_png).WaitForCompletion());
+                            mat.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_TiledTextures.texCloudWhitenoiseSubtle_png).WaitForCompletion());
+                            mat.SetFloat("_SoftFactor", 8.17f);
+                            mat.SetFloat("_SoftPower", 1.48f);
+                            mat.SetFloat("_BrightnessBoost", 2.15f);
+                            mat.SetFloat("_RimPower", 2.98f);
+                            mat.SetFloat("_RimStrength", 0.24f);
+                            mat.SetFloat("_AlphaBoost", 0.46f);
+                            mat.SetFloat("_IntersectionStrength", 15.51f);
+                            psr.material = mat;
+                        }
+                    }
+                });
+            }
+        }
+
+        private void ChangeLightningStake(GameObject lightningStake)
+        {
+            ProjectileStickOnImpact bombStick = lightningStake.GetComponent<ProjectileStickOnImpact>();
             bombStick.ignoreCharacters = true;
             bombStick.ignoreWorld = false;
 
-            ProjectileImpactExplosion bombPie = overloadingBomb.GetComponent<ProjectileImpactExplosion>();
+            ProjectileImpactExplosion bombPie = lightningStake.GetComponent<ProjectileImpactExplosion>();
             bombPie.blastRadius = overloadingBombBlastRadius;
             bombPie.lifetime = overloadingBombLifetime;
         }

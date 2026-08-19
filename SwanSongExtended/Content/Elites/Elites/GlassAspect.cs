@@ -15,10 +15,11 @@ namespace SwanSongExtended.Elites
     {
         #region config
 
-        public static int healthGateCountBase = 2;
+        public static int healthGateCountBase = 1;
         public static int healthGateCountPerSize = 1;
 
-        public static float shatterDuration = 3;
+        public static float shatterProtectionDuration = 2;
+        public static float shatterDuration = 1.5f;
         public static float shatterMoveSpeed = 1f;
         public static float shatterAttackSpeed = 0.4f;
         public static float shatterCooldownDuration = 0.6f;
@@ -44,7 +45,7 @@ namespace SwanSongExtended.Elites
 
         public override EliteModule.EliteTiers EliteTier => EliteModule.EliteTiers.Lunar;
 
-        public override string EliteRampTextureName => "texRampLeeching";
+        public override string EliteRampTextureName => "texRampGlass";
 
         public override GameObject EliteEquipmentModel => LoadDropPrefab();// LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
@@ -107,8 +108,8 @@ namespace SwanSongExtended.Elites
             if (!IsElite(sender))
                 return;
 
-            sender.AddTimedBuff(RoR2Content.Buffs.Intangible, shatterDuration);
-            sender.AddTimedBuff(RoR2Content.Buffs.HiddenInvincibility, shatterDuration);
+            sender.AddTimedBuff(RoR2Content.Buffs.Intangible, shatterProtectionDuration);
+            sender.AddTimedBuff(RoR2Content.Buffs.Immune, shatterProtectionDuration);
             sender.AddTimedBuff(shatteredBuff, shatterDuration);
         }
 

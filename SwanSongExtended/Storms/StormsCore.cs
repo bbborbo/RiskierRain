@@ -220,8 +220,7 @@ namespace SwanSongExtended.Storms
                     cycloneMaterial = UnityEngine.Object.Instantiate(matWarbanner);
                     cycloneMaterial.SetColor("_TintColor", new Color32(168, 120, 90, 110)/*(150, 110, 0, 191)*/);
                     cycloneMaterial.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_conduitcanyon.texCCTreeRamp4_png).WaitForCompletion());
-                    cycloneMaterial.SetTexture("_CloudTex2", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
-                    cycloneMaterial.SetTexture("_Cloud2", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
+                    cycloneMaterial.SetTexture("_Cloud2Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
                     cycloneMaterial.SetFloat("_Boost", 0.776f); //0.34
                     cycloneMaterial.SetFloat("_RimPower", 1.206f);
                     cycloneMaterial.SetFloat("_RimStrength", 0.828f);

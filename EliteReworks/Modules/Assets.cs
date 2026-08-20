@@ -58,6 +58,11 @@ namespace FruityElites.Modules
             voidSingularityBomb = fiendBlasterProjectile.InstantiateClone("VoidtouchedSingularityBomb", true);
             voidSingularityBomb.transform.localScale *= 0.7f;
 
+            if(voidSingularityBomb.TryGetComponent(out ProjectileSimple controller))
+            {
+                controller.updateAfterFiring = false;
+            }
+
             if(voidSingularityBomb.TryGetComponent(out ProjectileSingleTargetImpact psti))
             {
                 UnityEngine.Object.Destroy(psti);

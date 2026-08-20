@@ -23,7 +23,7 @@ namespace FruityElites.EliteReworks
         public static float singularityMaximumTravelDistance = 60f;
         [AutoConfig("Singularity On Death: Projectile Max Horizontal Speed", 20f)]
         public static float singularityHorizontalSpeed = 20f;
-        public static float singularityProjectileAntiGravity = 1f;
+        public static float singularityProjectileAntiGravity = 0.5f;
         [AutoConfig("Singularity On Death: Singularity Radius", 8f)]
         public static float singularityRadius = 8f;
         [AutoConfig("Singularity On Death: Singularity Duration", 3)]

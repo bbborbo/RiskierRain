@@ -52,10 +52,91 @@ namespace FruityElites.EliteReworks
                 IL.RoR2.CharacterBody.RecalculateStats += OverloadingShieldConversion;
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += OverloadingSmiteDeath;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal += OverloadingSmiteOnDeath;
 
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStake_prefab, ChangeLightningStake);
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStakeGhost_prefab, ChangeLightningStakeGhost);
+        }
+
+        private void OverloadingSmiteOnDeath(DamageReport damageReport)
+        {
+            CharacterBody victimBody = damageReport.victimBody;
+            CharacterBody attackerBody = damageReport.attackerBody;
+            if (victimBody != null && attackerBody != null)
+            {
+                if (victimBody.HasBuff(RoR2Content.Buffs.AffixBlue))
+                {
+                    int maxStrikeCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.bestFitRadius * overloadingSmiteCountPerRadius);
+                    float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
+                    float baseDamage = attackerBody.baseDamage;
+                    float smiteDamageCoefficient = 5f;
+                    ProcChainMask procChainMask6 = damageReport.damageInfo.procChainMask;
+                    //procChainMask6.AddProc(ProcType.LightningStrikeOnHit);
+
+                    SphereSearch sphereSearch = new SphereSearch
+                    {
+                        mask = LayerIndex.entityPrecise.mask,
+                        origin = victimBody.transform.position,
+                        queryTriggerInteraction = QueryTriggerInteraction.Collide,
+                        radius = range
+                    };
+
+                    TeamMask teamMask = TeamMask.GetEnemyTeams(TeamIndex.Player);
+                    List<HurtBox> hurtBoxesList = new List<HurtBox>();
+
+                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
+
+                    int hurtBoxCount = hurtBoxesList.Count;
+                    if (hurtBoxCount == 0)
+                    {
+                        OrbManager.instance.AddOrb(new LightningStrikeOrb
+                        {
+                            attacker = attackerBody.gameObject,
+                            damageColorIndex = DamageColorIndex.Default,
+                            damageValue = baseDamage * smiteDamageCoefficient,
+                            isCrit = damageReport.damageInfo.crit,
+                            procChainMask = procChainMask6,
+                            procCoefficient = 0.5f,
+                            target = damageReport.victimBody.mainHurtBox
+                        });
+                    }
+                    else
+                    {
+                        int targetsSmited = 0;
+                        while (hurtBoxCount > 0 && targetsSmited < maxStrikeCount)
+                        {
+                            int i = UnityEngine.Random.Range(0, hurtBoxCount - 1);
+                            HurtBox targetHurtBox = hurtBoxesList[i];
+                            HealthComponent healthComponent = targetHurtBox.healthComponent;
+                            CharacterBody enemyBody = healthComponent.body;
+                            if (enemyBody.isPlayerControlled)
+                                continue;
+
+                            if (!enemyBody || enemyBody == victimBody)
+                            {
+                                hurtBoxesList.Remove(hurtBoxesList[i]);
+                                hurtBoxCount--;
+                                continue;
+                            }
+
+                            OrbManager.instance.AddOrb(new LightningStrikeOrb
+                            {
+                                attacker = attackerBody.gameObject,
+                                damageColorIndex = DamageColorIndex.Default,
+                                damageValue = baseDamage * smiteDamageCoefficient,
+                                isCrit = damageReport.damageInfo.crit,
+                                procChainMask = procChainMask6,
+                                procCoefficient = 0.5f,
+                                target = targetHurtBox
+                            });
+                            targetsSmited++;
+                            smiteDamageCoefficient += overloadingSmiteDamagePerStrike;
+                            hurtBoxesList.Remove(hurtBoxesList[i]);
+                            hurtBoxCount--;
+                        }
+                    }
+                }
+            }
         }
 
         private void ChangeLightningStakeGhost(GameObject lightningStakeGhost)
@@ -137,72 +218,6 @@ namespace FruityElites.EliteReworks
             c.Remove();
             c.Remove();
             c.Emit(OpCodes.Ldloc, overloadingShieldConversionLoc);
-        }
-        private void OverloadingSmiteDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
-        {
-            CharacterBody victimBody = damageReport.victimBody;
-            CharacterBody attackerBody = damageReport.attackerBody;
-            if (victimBody != null && attackerBody != null)
-            {
-                if (victimBody.HasBuff(RoR2Content.Buffs.AffixBlue))
-                {
-                    int maxStrikeCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.bestFitRadius * overloadingSmiteCountPerRadius);
-                    float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
-                    float baseDamage = attackerBody.baseDamage;
-                    float smiteDamageCoefficient = 5f;
-                    ProcChainMask procChainMask6 = damageReport.damageInfo.procChainMask;
-                    //procChainMask6.AddProc(ProcType.LightningStrikeOnHit);
-
-                    SphereSearch sphereSearch = new SphereSearch
-                    {
-                        mask = LayerIndex.entityPrecise.mask,
-                        origin = victimBody.transform.position,
-                        queryTriggerInteraction = QueryTriggerInteraction.Collide,
-                        radius = range
-                    };
-
-                    TeamMask teamMask = TeamMask.GetEnemyTeams(TeamIndex.Player);
-                    List<HurtBox> hurtBoxesList = new List<HurtBox>();
-
-                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
-
-                    int hurtBoxCount = hurtBoxesList.Count;
-                    int targetsSmited = 0;
-                    while (hurtBoxCount > 0 && targetsSmited < maxStrikeCount)
-                    {
-                        int i = UnityEngine.Random.Range(0, hurtBoxCount - 1);
-                        HurtBox targetHurtBox = hurtBoxesList[i];
-                        HealthComponent healthComponent = targetHurtBox.healthComponent;
-                        CharacterBody enemyBody = healthComponent.body;
-                        if (enemyBody.isPlayerControlled)
-                            continue;
-
-                        if (!enemyBody || enemyBody == victimBody)
-                        {
-                            hurtBoxesList.Remove(hurtBoxesList[i]);
-                            hurtBoxCount--;
-                            continue;
-                        }
-
-                        OrbManager.instance.AddOrb(new LightningStrikeOrb
-                        {
-                            attacker = attackerBody.gameObject,
-                            damageColorIndex = DamageColorIndex.Default,
-                            damageValue = baseDamage * smiteDamageCoefficient,
-                            isCrit = damageReport.damageInfo.crit,
-                            procChainMask = procChainMask6,
-                            procCoefficient = 0.5f,
-                            target = targetHurtBox,
-
-                        });
-                        targetsSmited++;
-                        smiteDamageCoefficient += overloadingSmiteDamagePerStrike;
-                        hurtBoxesList.Remove(hurtBoxesList[i]);
-                        hurtBoxCount--;
-                    }
-                }
-            }
-            orig(self, damageReport);
         }
 
         private void OverloadingBombDamage(ILContext il)

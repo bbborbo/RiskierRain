@@ -222,6 +222,9 @@ namespace RiskierRain.Changes
         }
         private static void EclipseItemTax(Stage obj)
         {
+            //only tax items on players in difficulty levels at or higher than eclipse 7
+            if (Run.instance.selectedDifficulty < eclipseLevelItemTax)
+                return;
             //only tax items on stages, not hidden realms
             if (obj.sceneDef.sceneType != SceneType.Stage
                 && obj.sceneDef.sceneType != SceneType.UntimedStage)
@@ -229,8 +232,7 @@ namespace RiskierRain.Changes
 
             foreach (CharacterMaster master in CharacterMaster.readOnlyInstancesList)
             {
-                //only tax items on players in difficulty levels at or higher than eclipse 7
-                if (master.teamIndex != TeamIndex.Player || Run.instance.selectedDifficulty <= eclipseLevelItemTax)
+                if (master.teamIndex != TeamIndex.Player)
                     continue;
                 if (master.inventory == null)
                     continue;

@@ -194,7 +194,7 @@ namespace RiskierRain.Changes
         public static int halcyoniteShrineLowGoldCost = 30;//75
         public static int halcyoniteShrineMidGoldCost = 60;//150
         public static int halcyoniteShrineMaxGoldCost = 90;//300
-        public static int halcyoniteGoldDrainPerTick = 2;//1
+        public static int halcyoniteGoldDrainPerTick = 1;//1
         public static float halcyoniteShrineRadius = 30;//30
         public static float halcyoniteShrineMonsterRewardCoefficient = 0.4f;
         public static float halcyonTier1Weight = 0.74f; //0.65f
@@ -319,6 +319,8 @@ namespace RiskierRain.Changes
                 (prefab) => ChangeInteractableCost(prefab, smallChestTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_TripleShop.TripleShop_prefab,
                 (prefab) => ChangeInteractableCost(prefab, smallShopTypeCost));
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_TemporaryItemsDistributor.TemporaryItemsShopTerminal_prefab,
+                (prefab) => ChangeInteractableCost(prefab, smallShopTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CategoryChest.CategoryChestDamage_prefab,
                 (prefab) => ChangeInteractableCost(prefab, smallCategoryChestTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CategoryChest.CategoryChestHealing_prefab,
@@ -332,7 +334,7 @@ namespace RiskierRain.Changes
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Chest2.Chest2_prefab,
                 (prefab) => ChangeInteractableCost(prefab, bigChestTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_TripleShopLarge.TripleShopLarge_prefab,
-                (prefab) => ChangeInteractableCost(prefab, bigChestTypeCost));
+                (prefab) => ChangeInteractableCost(prefab, bigShopTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CategoryChest2.CategoryChest2Damage_Variant_prefab,
                 (prefab) => ChangeInteractableCost(prefab, bigCategoryChestTypeCost));
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CategoryChest2.CategoryChest2Healing_Variant_prefab,

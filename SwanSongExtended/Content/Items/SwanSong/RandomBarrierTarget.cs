@@ -107,22 +107,18 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                     return true;
                 if (self.body == null)
                     return isCrit;
-                Log.Error("b");
                 if (self.body.HasBuff(harpoonDebuff) == false)
                 {
-                    Log.Error("c");
                     return isCrit;
                 }
 
                 //idgaf
                 if (damageInfo.attacker != null && damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody))
                 {
-                    Log.Error("d");
                     int crystalBallCt = GetCount(attackerBody);
                     if (crystalBallCt > 0)
                     {
                         float reroll = Util.ConvertAmplificationPercentageIntoReductionPercentage(GetStackValue(harpoonCritChanceBase, harpoonCritChanceStack, crystalBallCt));
-                        Log.Error(reroll);
                         if (Util.CheckRoll(reroll, attackerBody.master))
                             return true;
                     }

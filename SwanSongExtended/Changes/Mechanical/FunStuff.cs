@@ -12,19 +12,26 @@ namespace SwanSongExtended
         private static List<string> swanSongDeathQuoteTokens = new List<string>();
         public static void AddDeathMessages()
         {
-            string baseToken = "PLAYER_DEATH_QUOTE_SWANSONG_";
-            AddDeathQuoteToken(baseToken + "0", "SDIYBT.", "RIPMGSGHBAB.");
-            AddDeathQuoteToken(baseToken + "1", "You have made a poor balancing decision.", "{0} has made a poor balancing decision.");
-            AddDeathQuoteToken(baseToken + "2", "Consider playing SUPERBUG instead.", "{0} is considering playing SUPERBUG instead.");
-            AddDeathQuoteToken(baseToken + "3", "I hope it was worth it.", "{0} is wondering if it was worth it.");
+            AddDeathQuoteToken("RIPMGSGHBAB.", "{0} went KA-BOOM.");
+            AddDeathQuoteToken("You have made a poor balancing decision.", "{0} has made a poor balancing decision.");
+            AddDeathQuoteToken("Consider playing SUPERBUG instead?", "{0} is considering playing SUPERBUG instead.");
+            AddDeathQuoteToken("Was it worth it?", "{0} is wondering if it was worth it.");
+            AddDeathQuoteToken("You didn't play fast enough.", "{0} thought about uninstalling Swan Song.");
+            AddDeathQuoteToken("You were splatted.", "{0} was splatted.");
+            AddDeathQuoteToken("Get got.", "{0} got got.");
+            AddDeathQuoteToken("Congratulations on the spontaneous lobotomy!", "{0} was spontaneously lobotomized.");
+            AddDeathQuoteToken("Your innards became outards.", "{0}'s innards became outards.");
+            AddDeathQuoteToken("Your plea for death is answered.", "{0}'s plea for death was answered.");
+            AddDeathQuoteToken("Curiosity killed the {0}.");
 
             IL.RoR2.GlobalEventManager.OnPlayerCharacterDeath += GlobalEventManager_OnPlayerCharacterDeath;
 
-            void AddDeathQuoteToken(string token, string text, string? multiplayerText = null)
+            void AddDeathQuoteToken(string defaultText, string? secondPlayerText = null)
             {
-                LanguageAPI.Add(token, text);
-                LanguageAPI.Add(token + "_2P", multiplayerText ?? text);
-                swanSongDeathQuoteTokens.Add(token);
+                string baseToken = "PLAYER_DEATH_QUOTE_SWANSONG_" + swanSongDeathQuoteTokens.Count;
+                LanguageAPI.Add(baseToken, defaultText);
+                LanguageAPI.Add(baseToken + "_2P", secondPlayerText ?? defaultText);
+                swanSongDeathQuoteTokens.Add(baseToken);
             }
         }
 

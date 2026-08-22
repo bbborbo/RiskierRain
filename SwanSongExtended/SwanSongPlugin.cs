@@ -125,12 +125,13 @@ namespace SwanSongExtended
             instance = this;
 
             Modules.Config.Init();
+            Modules.Language.Init();
             Log.Init(Logger);
 
             CreateExpansionDef();
             CreateDifficultyDef();
+            AddDeathMessages();
             RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
-            Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
             Modules.EliteModule.Init();

@@ -42,7 +42,7 @@ namespace RiskierRain.Changes
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
         /// </summary>
-        public static float baseScalingMultiplier = 0.8f; //1f
+        public static float baseScalingMultiplier = 0.9f; //1f
         /// <summary>
         /// exponential
         /// </summary>
@@ -53,12 +53,13 @@ namespace RiskierRain.Changes
         public static float difficultyIncreasePerMinuteBase = 1.0f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
+        /// this determines the value used by monsoon but other difficulties will have lower/higher amount depending on their scaling value
         /// </summary>
-        public static float difficultyIncreasePerStage = 0.9f; //1.15f, exponential
+        public static float difficultyIncreasePerStage = -0.1f; //0.15f, exponential
         /// <summary>
         /// exponential. works the same as difficultyIncreasePerStage, but only once per 5 stages
         /// </summary>
-        public static float difficultyIncreasePerLoop = 1.3f; //1.0f, exponential
+        public static float difficultyIncreasePerLoop = 1.2f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
         public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
@@ -112,6 +113,9 @@ namespace RiskierRain.Changes
             c.Emit(OpCodes.Ldc_R4, difficultySpawnRateFactor);
         }
 
+        /// <summary>
+        /// deprecated
+        /// </summary>
         public static void AmbientLevelChanges(ILContext il)
         {
             ILCursor c = new ILCursor(il);
@@ -136,7 +140,7 @@ namespace RiskierRain.Changes
                 x => x.MatchLdfld<RoR2.Run>("stageClearCount")
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerStage);
+            c.Emit(OpCodes.Ldc_R4, 1 + difficultyIncreasePerStage);
 
             //num10 (ambient level)
             c.GotoNext(MoveType.After,
@@ -154,7 +158,7 @@ namespace RiskierRain.Changes
                 x => x.MatchLdfld<RoR2.Run>("stageClearCount")
                 );
             c.Remove();
-            c.Emit(OpCodes.Ldc_R4, difficultyIncreasePerStage);
+            c.Emit(OpCodes.Ldc_R4, 1 + difficultyIncreasePerStage);
 
 
             c.GotoNext(MoveType.Before,
@@ -216,7 +220,7 @@ namespace RiskierRain.Changes
             float baseScalingFactor = 0.0506f * baseScalingMultiplier;
 
             float timeFactor = GetTimeDifficultyFactor(timeInMinutes, scalingValue);
-            float stageFactor = GetStageDifficultyFactor(stageClearCount);
+            float stageFactor = GetStageDifficultyFactor(stageClearCount, scalingValue);
 
             playerBaseFactor = 1 + playerBaseDifficultyFactor * (run.participatingPlayerCount - 1);
             float playerScaleFactor = Mathf.Pow(run.participatingPlayerCount, playerScalingDifficultyFactor);
@@ -229,9 +233,9 @@ namespace RiskierRain.Changes
                 float timeFactor = Mathf.Pow(difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * scalingValue, timeInMinutes);
                 return timeFactor;
             }
-            float GetStageDifficultyFactor(int stageClearCount)
+            float GetStageDifficultyFactor(int stageClearCount, float scalingValue)
             {
-                float stageFactor = Mathf.Pow(difficultyIncreasePerStage, (float)stageClearCount);
+                float stageFactor = Mathf.Pow(difficultyIncreasePerStage * (scalingValue / 3f) + 1f, (float)stageClearCount);
 
                 int totalLoops = Mathf.FloorToInt((float)stageClearCount / 5);
                 if (stageClearCount % 5 <= 1 && Stage.instance && SceneCatalog.GetSceneDefForCurrentScene().isFinalStage)

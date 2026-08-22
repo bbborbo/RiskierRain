@@ -297,26 +297,34 @@ namespace SwanSongExtended.Storms
                     return;
                 }
 
-                List<AffixSquallBehavior> list = AffixSquallBehavior.readOnlyInstancesList.Where(
+                IEnumerable<AffixSquallBehavior> list = AffixSquallBehavior.readOnlyInstancesList.Where(
                         x => x.body.teamComponent.teamIndex != TeamIndex.Player 
                         && !IsBodySheltered(x.body)
-                    ).ToList();
-                int count = list.Count;
-                if (count <= 0)
+                    );
+                int count = list.Count();
+                if (list.Any(x => !IsBodySheltered(x.body)))
                 {
-                    //list = AffixSquallBehavior.readOnlyInstancesList.Where(
-                    //        x => x.body.teamComponent.teamIndex != TeamIndex.Player
-                    //    ).ToList();
-                    //count = list.Count;
-                    //if(count <= 0)
-                    //{
-                    //}
-                    ResetRefreshCountdown();
-                    return;
+                    list.Where(x => !IsBodySheltered(x.body));
+                    count = list.Count();
+                }
+                else
+                {
+                    if (count <= 0)
+                    {
+                        ResetRefreshCountdown();
+                        return;
+                        //list = AffixSquallBehavior.readOnlyInstancesList.Where(
+                        //        x => x.body.teamComponent.teamIndex != TeamIndex.Player
+                        //    ).ToList();
+                        //count = list.Count;
+                        //if (count <= 0)
+                        //{
+                        //}
+                    }
                 }
                 //just fucking pick a random one i guess.
                 //this is a stand in for using the cool and awesome density based formula i envisioned
-                AffixSquallBehavior randomElite = list[UnityEngine.Random.Range(0, count - 1)];
+                AffixSquallBehavior randomElite = list.ElementAt(UnityEngine.Random.Range(0, count - 1));
 
                 NodeGraph nodeGraph = SceneInfo.instance.GetNodeGraph(MapNodeGroup.GraphType.Ground);
                 NodeGraph.NodeIndex node = nodeGraph.FindClosestNode(randomElite.transform.position, HullClassification.BeetleQueen, maxDistance: 50f);
@@ -331,7 +339,7 @@ namespace SwanSongExtended.Storms
                         List<Vector3> validPositions = new List<Vector3>();
                         foreach(NodeGraph.NodeIndex node2 in validNodes)
                         {
-                            if (nodeGraph.GetNodePosition(node2, out Vector3 temp) && IsPositionSheltered(temp))
+                            if (nodeGraph.GetNodePosition(node2, out Vector3 temp) && !IsPositionSheltered(temp))
                                 validPositions.Add(temp);
                         }
                             //.Where(x => nodeGraph.GetNodePosition(x, out Vector3 temp) && !IsPositionSuperSheltered(temp)).ToList();

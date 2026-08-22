@@ -146,11 +146,6 @@ namespace RiskierRain
             EnemyChanges.Initialize();
             InteractableChanges.Initialize();
 
-            #region drone changes
-            EntityStates.Drone.Cleanup.goldPackValue = 8;
-            EntityStates.Drone.Cleanup.healthOrbFractionalHealing = 0.10f;
-            EntityStates.Drone.Cleanup.healthOrbFlatHealing = 0;
-            #endregion
             DoSacrificeDropLimit();
 
 

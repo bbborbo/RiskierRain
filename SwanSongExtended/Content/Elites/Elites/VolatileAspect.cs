@@ -99,7 +99,7 @@ namespace SwanSongExtended.Elites
         {
             CharacterBody victimBody = damageReport.victimBody;
             CharacterMaster victimMaster = damageReport.victimMaster;
-            if (victimBody)
+            if (victimBody && victimBody.healthComponent.globalDeathEventChanceCoefficient >= 0)
             {
                 if (victimBody.HasBuff(EliteBuffDef))
                 {

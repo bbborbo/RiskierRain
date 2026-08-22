@@ -129,7 +129,7 @@ namespace SwanSongExtended.Storms
             HowlSquallDriver.aimVectorDampTimeOverride = WhirlwindAspect.squallAimDamping;
             HowlSquallDriver.aimVectorMaxSpeedOverride = WhirlwindAspect.squallAimMaxSpeed;
             HowlSquallDriver.customName = "FireSquall";
-            HowlSquallDriver.driverUpdateTimerOverride = 2f;
+            HowlSquallDriver.driverUpdateTimerOverride = 1f;
             HowlSquallDriver.maxDistance = float.PositiveInfinity;
             HowlSquallDriver.moveInputScale = 1;
             HowlSquallDriver.shouldFireEquipment = true;
@@ -503,12 +503,23 @@ namespace SwanSongExtended.Storms
                     return;
 
                 bool reelectionTimePassed = base.fixedAge > 1f;
-                if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime == squallTimeCache))
+                bool fizzleOutTimePassed = base.fixedAge >= StormsCore.squallRallyTimeMax + 1;
+                if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime <= squallTimeCache) || fizzleOutTimePassed)
                 {
                     Log.Debug("PrepareSquall: Entering reelection");
                     UpdateTelegraph(false);
                     outer.SetNextState(GetNextState());
                     return;
+                }
+                if(leaderElite != null && leaderElite.body.master != null)
+                {
+                    BaseAI ai = leaderElite.body.master != null ? leaderElite.body.master.aiComponents[0] : null;
+                    if(ai != null && ai.customTarget.gameObject == null)
+                    {
+                        instance.accumulatedSquallTime = instance.squallContributorCountCurrent == 0 ? 0 : squallTimeCache + 1;
+                        instance.accumulatedSquallCharge = 0;
+                        return;
+                    }
                 }
                 UpdateTelegraph(reelectionTimePassed);
 

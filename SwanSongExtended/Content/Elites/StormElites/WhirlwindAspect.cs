@@ -263,10 +263,21 @@ namespace SwanSongExtended.Elites
                     && CycloneController.instance.HowlSquallDriver != null)
                 {
                     self.UpdateTargets();
-                    self.customTarget.gameObject = CharacterMaster.instancesList
-                        .Where(x => x.teamIndex == TeamIndex.Player && x.playerCharacterMasterController != null)
-                        .OrderByDescending(x => (x.GetBodyObject().transform.position - self.body.corePosition))
-                        .FirstOrDefault().GetBodyObject();
+                    CharacterBody body;
+                    IEnumerable<CharacterMaster> masterCandidates = CharacterMaster.instancesList
+                        .Where(x => x.teamIndex == TeamIndex.Player 
+                        && (body = x.GetBody()) != null 
+                        && body.isPlayerControlled == true 
+                        && IsBodySheltered(body) == false
+                        );
+                    if(masterCandidates.Count() > 0)
+                    {
+                        self.customTarget.gameObject = masterCandidates
+                            .OrderByDescending(x => (x.GetBodyObject().transform.position - self.body.corePosition))
+                            .FirstOrDefault().GetBodyObject();
+                    }
+                    else
+                        self.customTarget.gameObject = null;
 
                     return new BaseAI.SkillDriverEvaluation
                     {

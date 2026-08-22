@@ -99,7 +99,7 @@ namespace SwanSongExtended.Elites
         {
             CharacterBody victimBody = damageReport.victimBody;
             CharacterMaster victimMaster = damageReport.victimMaster;
-            if (victimBody && victimBody.healthComponent.globalDeathEventChanceCoefficient >= 0)
+            if (victimBody && victimBody.healthComponent.globalDeathEventChanceCoefficient >= 1)
             {
                 if (victimBody.HasBuff(EliteBuffDef))
                 {
@@ -376,7 +376,7 @@ namespace SwanSongExtended.Elites
             if(body != null && body.healthComponent != null)
             {
                 HealthComponent hc = body.healthComponent;
-                if (body.HasBuff(buffDef) && hc.alive && !hc.isInFrozenState)// && (!body.outOfDanger || !body.outOfCombat))
+                if (body.HasBuff(buffDef) && hc.alive && !hc.isInFrozenState && hc.globalDeathEventChanceCoefficient >= 1)// && (!body.outOfDanger || !body.outOfCombat))
                 {
                     mortarTimer += Time.fixedDeltaTime * body.attackSpeed;
                     if (mortarTimer >= mortarInterval)

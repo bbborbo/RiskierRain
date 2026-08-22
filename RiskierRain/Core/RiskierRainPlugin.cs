@@ -143,6 +143,7 @@ namespace RiskierRain
             ItemChanges.Initialize();
             EquipmentChanges.Initialize();
             DifficultyChanges.Initialize();
+            AllyChanges.Initialize();
             EnemyChanges.Initialize();
             InteractableChanges.Initialize();
 

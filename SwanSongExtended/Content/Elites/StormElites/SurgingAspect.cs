@@ -36,6 +36,7 @@ namespace SwanSongExtended.Elites
 
         public static GameObject waveProjectilePrefab;
         public static GameObject cannonballProjectilePrefab;
+        public static float enemySurgeDashCooldown = 9f;
         public static float waveProjectileSpeed = 30f; //60f
         public static float waveProjectileDuration = 1.5f; //3f
         public static float waveProjectileCount = 5f; //12f
@@ -520,7 +521,7 @@ namespace SwanSongExtended.Elites
         {
             instancesList.Add(this);
 
-            this.cooldownTimer = 10f;
+            this.cooldownTimer = 4f;
             this.nextStep = new Action(StepIdentifyNextLocation);
 
             if(body != null)
@@ -692,7 +693,7 @@ namespace SwanSongExtended.Elites
         {
             SurgingAspect.FireRingAuthority(teleportLocation, body.inputBank.aimDirection, body.gameObject, body.damage, Util.CheckRoll(body.crit, body.master));
 
-            QuickCooldown(SurgingAspect.instance.Cooldown);
+            QuickCooldown(SurgingAspect.enemySurgeDashCooldown);
             this.foundLocation = false;
             nextStep = new Action(StepIdentifyNextLocation);
         }

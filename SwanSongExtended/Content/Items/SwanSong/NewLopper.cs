@@ -19,11 +19,11 @@ namespace SwanSongExtended.Items
     class NewLopper : ItemBase<NewLopper>
     {
         public override string ConfigName => "Items : New Lopper";
-        internal static float maxHealthThreshold = 0.3f;
-        int freeCritChance = 15;
+        internal static float maxHealthThreshold = 0.5f;
+        int freeCritChance = 20;
         float freeCritDamage = 0.1f;
         int dangerCritChance = 50;
-        float bonusCritDamageLowHealthBase = 0;
+        float bonusCritDamageLowHealthBase = 2.5f;
         float bonusCritDamageLowHealthStack = 2.5f;
         public static float rampageExtendTime = 4;
 
@@ -37,9 +37,9 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Massively increase 'Critical Strike' damage at low health.";
 
         public override string ItemFullDescription => $"Gain <style=cIsDamage>{freeCritChance}% critical chance.</style> " +
-            $"Falling below <style=cIsHealth>{Tools.ConvertDecimal(maxHealthThreshold)} health</style> sends you into a rampage, increasing " +
-            $"<style=cIsDamage>critical strike damage by {Tools.ConvertDecimal(bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(bonusCritDamageLowHealthStack)} per stack)</style>, and " +
+            $"Falling below <style=cIsHealth>{maxHealthThreshold.AsPercent()} health</style> sends you into a rampage, increasing " +
+            $"<style=cIsDamage>critical strike damage by {bonusCritDamageLowHealthStack.AsPercent()}</style> " +
+            $"<style=cStack>(+{bonusCritDamageLowHealthStack.AsPercent()} per stack)</style>, and " +
             $"<style=cIsDamage>critical strike chance by {dangerCritChance - freeCritChance}%</style>. " +
             $"Killing enemies <style=cIsDamage>extends</style> the rampage for <style=cIsDamage>{rampageExtendTime} seconds</style>.";
 
@@ -99,7 +99,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
                 if (sender.HasBuff(dangerCritBuff))
                 {
                     critAdd = dangerCritChance;
-                    critDmgAdd = bonusCritDamageLowHealthBase + bonusCritDamageLowHealthStack * count;
+                    critDmgAdd = GetStackValue(bonusCritDamageLowHealthBase, bonusCritDamageLowHealthStack, count);
                 }
                 args.critAdd += critAdd;
                 args.critDamageMultAdd += critDmgAdd;

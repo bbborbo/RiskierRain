@@ -73,7 +73,7 @@ namespace SwanSongExtended.Items
                 int buffCount = sender.GetBuffCount(frozenShellArmorBuff);
                 float fraction = (float)buffCount / (float)maxBuffCount;
                 int buffArmor = Mathf.RoundToInt((float)maxBonusArmor * fraction);
-                args.armorAdd += itemCount * (freeArmor + buffArmor * buffCount);
+                args.armorAdd += itemCount * (freeArmor + buffArmor);
             }
         }
     }

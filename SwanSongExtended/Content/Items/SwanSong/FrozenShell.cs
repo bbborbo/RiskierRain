@@ -71,8 +71,8 @@ namespace SwanSongExtended.Items
             if (itemCount > 0)
             {
                 int buffCount = sender.GetBuffCount(frozenShellArmorBuff);
-                float fraction = buffCount / maxBuffCount;
-                int buffArmor = Mathf.RoundToInt(maxBonusArmor * fraction);
+                float fraction = (float)buffCount / (float)maxBuffCount;
+                int buffArmor = Mathf.RoundToInt((float)maxBonusArmor * fraction);
                 args.armorAdd += itemCount * (freeArmor + buffArmor * buffCount);
             }
         }
@@ -92,7 +92,14 @@ namespace SwanSongExtended.Items
         private void Start()
         {
             healthComponent = body.healthComponent;
+            body?.healthComponent?.AddOnTakeDamageServerReceiver(this);
+            CalculateBuffCount();
             //hasBuff = body.HasBuff(iceBarrierBuffIndex);
+        }
+        void OnDestroy()
+        {
+            body.SetBuffCount(iceBarrierBuffIndex, 0);
+            body?.healthComponent?.RemoveOnTakeDamageServerReceiver(this);
         }
         private void FixedUpdate()
         {
@@ -125,10 +132,6 @@ namespace SwanSongExtended.Items
             float missingHealthFraction = (1 - combinedHealthFraction);
             int newBuffCount = Mathf.CeilToInt(missingHealthFraction * (FrozenShell.maxBuffCount));
             body.SetBuffCount(iceBarrierBuffIndex, newBuffCount);
-        }
-        void OnDestroy()
-        {
-            body.SetBuffCount(iceBarrierBuffIndex, 0);
         }
 
         public void OnTakeDamageServer(DamageReport damageReport)

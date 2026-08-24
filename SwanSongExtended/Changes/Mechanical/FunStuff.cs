@@ -15,11 +15,14 @@ namespace SwanSongExtended
         private static List<string> swanSongStormDeathQuoteTokens = new List<string>();
         public static void AddDeathMessages()
         {
-            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "You didn't play fast enough.", "{0} thought about uninstalling Swan Song.");
+            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "You didn't go fast enough.", "{0} thought about uninstalling Swan Song.");
             AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "Was it worth it?", "{0} is wondering if it was worth it.");
             AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "Sending complaints about storms..", "{0} is sending complaints about storms..");
-            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "Should've checked the forecast.", "{0} didn't check the forecast.");
+            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "Should've checked the forecast..", "{0} didn't check the forecast.");
             AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "Consider playing SUPERBUG instead?", "{0} is considering playing SUPERBUG instead.");
+            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "You were washed away.", "{0} was washed away.");
+            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "The storm blew you away.", "The storm blew {0} away.");
+            AddDeathQuoteTokenToList(ref swanSongStormDeathQuoteTokens, "You'll get the hang of it!", "{0} is still learning!");
 
             AddDeathQuoteToken("RIPMGSGHBAB.", "{0} went KA-BOOM.");
             AddDeathQuoteToken("You have made a poor balancing decision.", "{0} has made a poor balancing decision.");
@@ -36,6 +39,7 @@ namespace SwanSongExtended
             AddDeathQuoteToken("Remember to drink water.", "{0} wants a water break.");
             AddDeathQuoteToken("Didn't account for that?", "{0} didn't account for that.");
             AddDeathQuoteToken("You were slain..", "{0} was slain..");
+            AddDeathQuoteToken("You weren't green enough..", "{0} wasnt green enough..");
             //AddDeathQuoteToken("Curiosity killed the {0}.");
 
             IL.RoR2.GlobalEventManager.OnPlayerCharacterDeath += GlobalEventManager_OnPlayerCharacterDeath;

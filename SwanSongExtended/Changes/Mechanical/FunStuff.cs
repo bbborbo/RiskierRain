@@ -74,7 +74,9 @@ namespace SwanSongExtended
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Func<string, DamageReport, string>>((tokenIn, damageReport) =>
             {
-                if(damageReport.damageInfo.HasModdedDamageType(StormsCore.stormDamageType) && swanSongStormDeathQuoteTokens.Count > 0)
+                if(swanSongStormDeathQuoteTokens.Count > 0 
+                    && StormsCore.IsStormDamage(damageReport.damageInfo, damageReport.attackerBody)
+                    )
                 {
                     return swanSongStormDeathQuoteTokens[UnityEngine.Random.Range(0, swanSongStormDeathQuoteTokens.Count)];
                 }

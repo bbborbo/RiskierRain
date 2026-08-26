@@ -70,6 +70,9 @@ namespace SwanSongExtended.Items
             On.RoR2.HealthComponent.TakeDamageProcess += DestroyWishboneOnDamage;
         }
 
+        /// <summary>
+        /// generic method for removing wishbones, called by StealWishboneOnTeleCharge and both DestryWishboneOn... methods
+        /// </summary>
         private void BreakWishbones(CharacterBody body, int wishboneCount, bool badBreak = true)
         {
             if (wishboneCount <= 0)
@@ -210,12 +213,22 @@ namespace SwanSongExtended.Items
                 return;
             if (damageInfo.procCoefficient <= 0)
                 return;
-            if (damageInfo.attacker && damageInfo.attacker == self.gameObject)
-                return;
+
             int count = GetCount(self.body);
             if (count > 0 && (StormRunBehavior.hasBegunStorm == true || !self.alive))
             {
-                BreakWishbones(self.body, count);
+                bool shouldBreak = self.alive == false;
+                if(shouldBreak == false)
+                {
+                    CharacterBody attackerBody = null;
+                    if (damageInfo.attacker && damageInfo.attacker != self.gameObject)
+                    {
+                        attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
+                    }
+                    shouldBreak = StormsCore.IsStormDamage(damageInfo, attackerBody);
+                }
+                if(shouldBreak == true)
+                    BreakWishbones(self.body, count);
             }
         }
 

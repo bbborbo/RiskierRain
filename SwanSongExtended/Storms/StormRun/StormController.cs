@@ -493,6 +493,7 @@ namespace SwanSongExtended.Storms
                     component.explosionEffect = meteorImpactEffectPrefab;
                     component.delayEffect = meteorWarningEffectPrefab;
                     component.damageType = DamageType.Generic;
+                    component.damageType.AddModdedDamageType(StormsCore.stormDamageType);
                     TeamFilter component2 = gameObject2.GetComponent<TeamFilter>();
                     if (component2)
                     {

@@ -21,6 +21,14 @@ namespace SwanSongExtended.Storms
 {
     public static class StormsCore
     {
+        public static bool IsStormDamage(DamageInfo damageType, CharacterBody attackerBody = null)
+        {
+            if (attackerBody != null && attackerBody.IsStormElite())
+                return true;
+            if (damageType.HasModdedDamageType(stormDamageType))
+                return true;
+            return false;
+        }
         public static bool stormsEnabled = true;
         public const string stormShelterObjectiveToken = "OBJECTIVE_SHELTER";
         public const string wishboneObjectiveToken = "OBJECTIVE_WISHBONE";
@@ -251,6 +259,10 @@ namespace SwanSongExtended.Storms
             if(meteorDelayBlastPrefab.TryGetComponent(out NetworkIdentity netId))
             {
                 netId.localPlayerAuthority = true;
+            }
+            if(meteorDelayBlastPrefab.TryGetComponent(out DelayBlast delayBlast))
+            {
+                delayBlast.damageType.AddModdedDamageType(stormDamageType);
             }
 
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Meteor.MeteorStrikePredictionEffect_prefab, (predictionEffect) =>

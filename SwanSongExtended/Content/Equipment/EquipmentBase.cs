@@ -140,6 +140,36 @@ namespace SwanSongExtended.Equipment
         protected abstract bool ActivateEquipment(EquipmentSlot slot);
 
 
+        public bool HasEquip(CharacterBody body)
+        {
+            if (body == null)
+                return false;
+
+            return HasEquip(body.equipmentSlot);
+        }
+        public bool HasEquip(EquipmentSlot inventory)
+        {
+            if (inventory == null)
+                return false;
+
+            return inventory.equipmentIndex == EquipDef.equipmentIndex;
+        }
+
+        public bool HasEquip(CharacterMaster master)
+        {
+            if (master == null)
+                return false;
+
+            return HasEquip(master.GetBody());
+        }
+        public static bool HasEquipSpecific(CharacterBody body, EquipmentIndex itemIndex)
+        {
+            if (!body || !body.equipmentSlot) 
+                return false;
+
+            return body.equipmentSlot != null && body.equipmentSlot.equipmentIndex == itemIndex;
+        }
+
         #region Targeting
         public Ray GetAimRay(InputBankTest inputBank)
         {

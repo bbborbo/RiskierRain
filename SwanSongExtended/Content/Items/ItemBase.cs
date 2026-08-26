@@ -221,7 +221,7 @@ namespace SwanSongExtended.Items
             return GetCount(master.inventory, permanentOnly);
         }
 
-        public int GetCountSpecific(CharacterBody body, ItemDef itemIndex)
+        public static int GetCountSpecific(CharacterBody body, ItemDef itemIndex)
         {
             if (!body || !body.inventory) { return 0; }
 

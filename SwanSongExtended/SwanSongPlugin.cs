@@ -45,8 +45,8 @@ namespace SwanSongExtended
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(BetterSoulCost.SoulCostPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(FabricatorStandalone.FabricatorPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -97,6 +97,7 @@ namespace SwanSongExtended
         public static bool iabMissilesLoaded => ModLoaded("com.RiskOfBrainrot.IAmBecomeMissiles");
         public static bool isAELoaded => ModLoaded("com.Borbo.ArtificerExtended");
         public static bool is2R4RLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
+        public static bool isBossDropLoaded => ModLoaded("com.RiskOfBrainrot.FruityBossDrop");
         public static bool isHBULoaded => ModLoaded("com.Borbo.HuntressBuffULTIMATE");
         public static bool isScepterLoaded => ModLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => ModLoaded("com.johnedwa.RTAutoSprintEx");

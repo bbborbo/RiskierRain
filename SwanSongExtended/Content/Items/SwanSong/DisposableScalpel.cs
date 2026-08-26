@@ -9,6 +9,7 @@ using UnityEngine;
 using BossDropRework;
 using static BossDropRework.BossDropReworkPlugin;
 using SwanSongExtended.Modules;
+using System.Runtime.CompilerServices;
 
 namespace SwanSongExtended.Items
 {
@@ -73,6 +74,34 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
 
         public override void Hooks()
         {
+            if (SwanSongPlugin.isBossDropLoaded)
+                DoFruityBossDropHooks();
+            else
+            {
+                GlobalEventManager.onCharacterDeathGlobal += ScalpelOnKillHetero;
+            }
+        }
+
+        #region hetero
+        private void ScalpelOnKillHetero(DamageReport damageReport)
+        {
+            CharacterBody characterBody = damageReport.attackerBody;
+            if (characterBody != null && damageReport.victimBody != null && damageReport.victimBody.TryGetComponent(out DeathRewards deathRewards))
+			{
+				Vector3 vector = damageReport.victimBody.corePosition;
+				Vector3 normalized = (vector - damageReport.attackerBody.corePosition).normalized;
+                if (GetScalpelProc(characterBody))
+                {
+                    UniquePickup drop = deathRewards.bossDropTable.GeneratePickup(Run.instance.bossRewardRng);
+                    PickupDropletController.CreatePickupDroplet(drop, vector, normalized * 15f, false);
+                }
+			}
+		}
+        #endregion
+        #region fruity
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public void DoFruityBossDropHooks()
+        {
             ShouldTricornFireAndBreak += ScalpelTricornSynergy;
             ModifyBossItemDropChance += ScalpelDropChance;
         }
@@ -82,26 +111,29 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
             if (GetCount(attacker) > 0)
             {
                 shouldFire = false;
-                victim.AddBuff(CommonAssets.bossHunterDebuffWithScalpel);
                 ConsumeScalpel(attacker);
             }
         }
 
         private void ScalpelDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
         {
-            if (victim.HasBuff(CommonAssets.bossHunterDebuffWithScalpel))
-            {
-                dropChance = 100;
-            }
-            else if (dropChance < 100 && GetCount(attacker) > 0)
-            {
-                if (Util.CheckRoll(bonusDropChance))
-                {
-                    dropChance = 100;
-                    ConsumeScalpel(attacker);
-                }
-            }
+			if(dropChance < 100 && GetScalpelProc(attacker))
+			    dropChance = 100;
         }
+        #endregion
+
+        public bool GetScalpelProc(CharacterBody attackerBody)
+		{
+			if (GetCount(attackerBody) > 0)
+			{
+				if (Util.CheckRoll(bonusDropChance))
+				{
+					ConsumeScalpel(attackerBody);
+					return true;
+				}
+			}
+			return false;
+		}
         public static void ConsumeScalpel(CharacterBody attackerBody)
         {
             Inventory.ItemTransformation.TryTransformResult tryTransformResult;

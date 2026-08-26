@@ -21,20 +21,20 @@ namespace SwanSongExtended.Items
         public static float amplifyDamageIncreaseBase = 9f;
         public static float amplifyDamageIncreaseStack = 3f;
         public static float amplifyDamageMultiplierForFullShield = 2f;
-        public override string ItemName => "Jellyfish Necklace";
+        public override string ItemName => "Snapping Stone";
 
         public override string ItemLangTokenName => "SHIELDAMP";
 
-        public override string ItemPickupDesc => "While shields are full, dealing damage drains shield and creates energizing sparks.";
+        public override string ItemPickupDesc => "While shields are full, your next attack drains a small amount of shield for amplified damage.";
 
         public override string ItemFullDescription => $"Gain {HealingColor(shieldFlatBase + " shield")}. " +
             $"While shields are full, {DamageColor("amplify")} damage from skills. " +
-            $"{DamageColor("Amplified")} hits {DamageColor($"drain {Tools.ConvertDecimal(shieldDrainFractionBase)}")} of your max shield " +
-            $"{StackText($"{ConvertDecimal(shieldDrainFractionStack)}")}, " +
-            $"dealing {DamageColor($"+{ConvertDecimal(amplifyDamageIncreaseBase)} BASE damage")}" +
-            $"{StackText($"+{ConvertDecimal(amplifyDamageIncreaseStack)}")}, " +
+            $"{DamageColor("Amplified")} hits {DamageColor($"drain {shieldDrainFractionBase.AsPercent()}")} of your max shield " +
+            $"{StackText($"{shieldDrainFractionStack.AsPercent()}")}, " +
+            $"dealing {DamageColor($"+{amplifyDamageIncreaseBase.AsPercent()} BASE damage")}" +
+            $"{StackText($"+{amplifyDamageIncreaseStack.AsPercent()}")}, " +
             $"and creating {UtilityColor("Energizing Sparks")}, " +
-            $"temporarily increasing {DamageColor("attack speed")} by {DamageColor(ConvertDecimal(RainrotSharedUtils.Assets.sparkBoosterAspdBonus))}.";
+            $"temporarily increasing {DamageColor("attack speed")} by {DamageColor(RainrotSharedUtils.Assets.sparkBoosterAspdBonus.AsPercent())}.";
 
         public override string ItemLore => "";
 
@@ -105,7 +105,7 @@ namespace SwanSongExtended.Items
 
                 DamageInfo damageInfo = new DamageInfo();
                 damageInfo.damage = shieldToDrain;
-                damageInfo.attacker = healthComponent.gameObject;
+                damageInfo.attacker = null;// healthComponent.gameObject;
                 damageInfo.damageType = new DamageTypeCombo(DamageType.NonLethal, DamageTypeExtended.Generic, DamageSource.NoneSpecified);
                 damageInfo.damageColorIndex = DamageColorIndex.Fragile;
                 damageInfo.procCoefficient = 0;

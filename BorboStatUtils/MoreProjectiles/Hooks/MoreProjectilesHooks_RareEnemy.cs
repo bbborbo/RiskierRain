@@ -143,30 +143,70 @@ namespace RainrotSharedUtils.MoreProjectiles
                 MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
             }
         }
-        public static void MissileArtifact_BrotherFistSlam(On.EntityStates.BrotherMonster.FistSlam.orig_OnEnter orig, EntityStates.BrotherMonster.FistSlam self)
+
+        public static void MissileArtifact_BrotherUltChannelState(ILContext il)
         {
-            orig(self);
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+            ILCursor c = new ILCursor(il);
+
+            int hookCt = 0;
+            while (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld<EntityStates.BrotherMonster.UltChannelState>(nameof(EntityStates.BrotherMonster.UltChannelState.waveProjectileCount))))
             {
-                EntityStates.BrotherMonster.FistSlam.waveProjectileCount *= 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<int, EntityStates.BrotherMonster.UltChannelState, int>>((projectileCtIn, self) =>
+                {
+                    if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+                        return projectileCtIn + 6;
+                    return projectileCtIn;
+                });
+                hookCt++;
+            }
+            if (hookCt < 2)
+            {
+                RainrotSharedUtils.SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_BrotherUltChannelState), hookCt + 1);
             }
         }
 
-        public static void MissileArtifact_BrotherUltChannelState(On.EntityStates.BrotherMonster.UltChannelState.orig_OnEnter orig, EntityStates.BrotherMonster.UltChannelState self)
+        public static void MissileArtifact_BrotherWeaponSlam(ILContext il)
         {
-            orig(self);
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+            ILCursor c = new ILCursor(il);
+
+            int hookCt = 0;
+            while (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld<EntityStates.BrotherMonster.WeaponSlam>(nameof(EntityStates.BrotherMonster.WeaponSlam.waveProjectileCount))))
             {
-                EntityStates.BrotherMonster.UltChannelState.waveProjectileCount += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<int, EntityStates.BrotherMonster.WeaponSlam, int>>((projectileCtIn, self) =>
+                {
+                    if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+                        return projectileCtIn + 2;
+                    return projectileCtIn;
+                });
+                hookCt++;
+            }
+            if (hookCt < 3)
+            {
+                RainrotSharedUtils.SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_BrotherWeaponSlam), hookCt + 1);
             }
         }
 
-        public static void MissileArtifact_BrotherWeaponSlam(On.EntityStates.BrotherMonster.WeaponSlam.orig_OnEnter orig, EntityStates.BrotherMonster.WeaponSlam self)
+        public static void MissileArtifact_BrotherFistSlam(ILContext il)
         {
-            orig(self);
-            if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+            ILCursor c = new ILCursor(il);
+
+            int hookCt = 0;
+            while (c.TryGotoNext(MoveType.After, x => x.MatchLdsfld<EntityStates.BrotherMonster.FistSlam>(nameof(EntityStates.BrotherMonster.FistSlam.waveProjectileCount))))
             {
-                EntityStates.BrotherMonster.WeaponSlam.waveProjectileCount += 2;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<int, EntityStates.BrotherMonster.FistSlam, int>>((projectileCtIn, self) =>
+                {
+                    if (MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.characterBody))
+                        return projectileCtIn + 6;
+                    return projectileCtIn;
+                });
+                hookCt++;
+            }
+            if (hookCt < 2)
+            {
+                RainrotSharedUtils.SharedUtilsPlugin.DebugBreakpoint(nameof(MissileArtifact_BrotherFistSlam), hookCt + 1);
             }
         }
 

@@ -18,11 +18,12 @@ namespace SwanSongExtended.Elites
         public static int healthGateCountBase = 1;
         public static int healthGateCountPerSize = 1;
 
-        public static float shatterProtectionDuration = 2;
-        public static float shatterDuration = 1.5f;
-        public static float shatterMoveSpeed = 1f;
-        public static float shatterAttackSpeed = 0.4f;
-        public static float shatterCooldownDuration = 0.6f;
+        public static float shatterProtectionDuration = 1;
+        public static float shatterDuration = 0.75f;
+        public static float shatterDurationMultiplierPerSize = 0.3f;
+        public static float shatterMoveSpeed = 2f;
+        public static float shatterAttackSpeed = 1f;
+        public static float shatterCooldownDuration = 0.5f;
 
         public static float healthTotalMult = 0.2f;
         #endregion
@@ -108,6 +109,7 @@ namespace SwanSongExtended.Elites
             if (!IsElite(sender))
                 return;
 
+            float multiplier = 1 + shatterDurationMultiplierPerSize * sender.radius;
             sender.AddTimedBuff(RoR2Content.Buffs.Intangible, shatterProtectionDuration);
             sender.AddTimedBuff(RoR2Content.Buffs.Immune, shatterProtectionDuration);
             sender.AddTimedBuff(shatteredBuff, shatterDuration);

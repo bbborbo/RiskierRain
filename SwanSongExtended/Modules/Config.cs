@@ -69,9 +69,9 @@ namespace SwanSongExtended.Modules
                                         true);
         }
 
-        public static ConfigEntry<T> BindAndOptions<T>(string section, string name, T defaultValue, string description = "", bool restartRequired = false) =>
+        public static ConfigEntry<T> BindAndOptions<T>(string section, string name, T defaultValue, string description = "", bool restartRequired = true) =>
             BindAndOptions<T>(section, name, defaultValue, 0, 20, description, restartRequired);
-        public static ConfigEntry<T> BindAndOptions<T>(string section, string name, T defaultValue, float min, float max, string description = "", bool restartRequired = false)
+        public static ConfigEntry<T> BindAndOptions<T>(string section, string name, T defaultValue, float min, float max, string description = "", bool restartRequired = true)
         {
             if (string.IsNullOrEmpty(description))
             {
@@ -93,7 +93,7 @@ namespace SwanSongExtended.Modules
         }
 
         //back compat
-        public static ConfigEntry<float> BindAndOptionsSlider(string section, string name, float defaultValue, string description, float min = 0, float max = 20, bool restartRequired = false) =>
+        public static ConfigEntry<float> BindAndOptionsSlider(string section, string name, float defaultValue, string description, float min = 0, float max = 20, bool restartRequired = true) =>
             BindAndOptions<float>(section, name, defaultValue, min, max, description, restartRequired);
 
         //add risk of options dll to your project libs and uncomment this for a soft dependency

@@ -52,9 +52,12 @@ namespace FruityElites.EliteReworks
 
         public override void Hooks()
         {
-            BaseStats.OverloadingShieldConversionFraction = overloadingShieldConversionFraction;
-            if(overloadingShieldConversionFraction != 0.5f && overloadingShieldConversionFraction > 0)
+            //if(BaseStats.ApplyShieldConversionHook)
+            //    BaseStats.OverloadingShieldConversionFraction = overloadingShieldConversionFraction;
+            //else { }
+                if(overloadingShieldConversionFraction != 0.5f && overloadingShieldConversionFraction > 0)
                 IL.RoR2.CharacterBody.RecalculateStats += OverloadingShieldConversion;
+
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
             RoR2.GlobalEventManager.onCharacterDeathGlobal += OverloadingSmiteOnDeath;

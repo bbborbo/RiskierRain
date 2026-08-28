@@ -28,7 +28,7 @@ namespace MoreStats
 
         public bool shieldRechargeReady = true;
         public float shieldRechargeDelay = BaseStats.BaseShieldDelaySeconds;
-        float shieldToHealthConversion = 0;
+        public float healthToShieldConversionReversed = 0;
 
         public float selfExecutionThresholdAdd = 0;
         public float selfExecutionThresholdBase = Mathf.NegativeInfinity;
@@ -259,11 +259,12 @@ namespace MoreStats
 
             #region shield
             /// <summary>
-            /// ADD to increase shield to health conversion
-            /// Expressed as a decimal, i.e. 0.5 is 50% and 1 is 100%
-            /// Max of 1 (100%), in which case the health stat will always be 1.
+            /// MULTIPLY by a value between 0 and 1 to increase shield to health conversion
+            /// Represents the ratio of max health to shield in the conversion
+            /// Expressed as a reversed decimal, i.e. 0.5 is 50% and 0 is 100%
+            /// Lowest is 0 (100%), in which case the health stat will always be 1.
             /// </summary>
-            public float shieldToHealthConversionFractionAdd = 0;
+            public float shieldHealthConversionFractionReversedMult = 1;
             /// <summary>
             /// SUBTRACT to reduce delay, ADD to increase
             /// SHIELD_DELAY = ([baseShieldDelay] + [shieldDelaySecondsIncreaseAddPreMult]) 
@@ -432,6 +433,8 @@ namespace MoreStats
                 UpdateShieldRechargeReady(body, CustomStats);
                 #endregion
 
+                CustomStats.healthToShieldConversionReversed = 1 - Mathf.Clamp01(StatMods.shieldHealthConversionFractionReversedMult);
+
                 CustomStats.selfExecutionThresholdAdd = StatMods.selfExecutionThresholdAdd;
                 CustomStats.selfExecutionThresholdBase = StatMods.selfExecutionThresholdBase;
 
@@ -441,6 +444,8 @@ namespace MoreStats
             ProcessLuck(c);
             ProcessMaxJumpCount(c);
             ProcessScrapCounts(c);
+            if(BaseStats.ApplyShieldConversionHook == true)
+                ProcessShieldConversion(c);
         }
 
         private static void GetStatMods(CharacterBody body)
@@ -634,6 +639,101 @@ namespace MoreStats
                 MoreStatCoefficients stats = GetMoreStatsFromBody(body);
                 return stats.shieldRechargeReady;
             });
+        }
+        #endregion
+
+        #region shield conversion
+        private static void ProcessShieldConversion(ILCursor c)
+        {
+            c.Index = 0;
+
+            ILLabel gotoHere = c.DefineLabel();
+            int localShieldTotalLoc = 74;
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<CharacterBody>(nameof(CharacterBody.levelMaxShield)))
+                && c.TryGotoNext(MoveType.After,
+                x => x.MatchStloc(out localShieldTotalLoc)
+                );
+            if (!b1)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessShieldConversion), 1);
+                return;
+            }
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdarg(0),
+                x => x.MatchLdloc(out _),
+                x => x.MatchCallOrCallvirt<CharacterBody>("set_maxShield")
+                );
+            if(!b2)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessShieldConversion), 2);
+                return;
+            }
+            c.MarkLabel(gotoHere);
+            c.Index++;
+            c.EmitDelegate<Func<CharacterBody, float, float>>(ConvertHealthToShield);
+
+            bool b3 = c.TryGotoPrev(MoveType.Before,
+                x => x.MatchBrfalse(out _)
+                );
+            if (!b3)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessShieldConversion), 3);
+                return;
+            }
+            c.EmitDelegate<Func<bool, bool>>((_) => { return false; });
+
+            bool b4 = c.TryGotoPrev(MoveType.Before,
+                x => x.MatchDup(),
+                x => x.MatchBrfalse(out _)
+                );
+            if (!b4)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(ProcessShieldConversion), 4);
+                return;
+            }
+            c.Remove();
+            c.Emit(OpCodes.Ldc_I4_0);
+            //c.Index++;
+            //c.EmitDelegate<Func<object, bool>>((_) => { return false; });
+        }
+
+        public static float ConvertHealthToShield(CharacterBody self, float maxShield)
+        {
+            float shieldHealthConversionReversed = CustomStats.healthToShieldConversionReversed;
+
+            int transCount = self.inventory.GetItemCountEffective(RoR2Content.Items.ShieldOnly);
+            bool isTrans = transCount > 0;
+            bool isPerfected = self.HasBuff(RoR2Content.Buffs.AffixLunar);
+            bool isOverloading = self.HasBuff(RoR2Content.Buffs.AffixBlue);
+
+
+            float GetTransConversion(float transBase, float transStack, float perfected)
+            {
+                if (isTrans == false && isPerfected == false)
+                    return 0;
+                if (isTrans != isPerfected)
+                {
+                    if (isPerfected)
+                        return perfected;
+                    return transBase + transStack * (transCount - 1);
+                }
+                return Mathf.Max(transBase, perfected)
+                    + (transStack * (transCount - 1));
+            }
+
+            shieldHealthConversionReversed *= 1 - GetTransConversion(BaseStats.TranscendenceShieldConversionFractionBase, BaseStats.TranscendenceShieldConversionFractionStack, BaseStats.PerfectedShieldConversionFraction);
+            shieldHealthConversionReversed *= 1 - (isOverloading ? BaseStats.OverloadingShieldConversionFraction : 0);
+
+            //defaults to 1
+            float transHealthBonus = GetTransConversion(BaseStats.TranscendenceHealthBonusBase, BaseStats.TranscendenceHealthBonusStack, BaseStats.PerfectedHealthBonus);
+
+            self.maxHealth *= transHealthBonus;
+            float shieldBonus = self.maxHealth * (1 - shieldHealthConversionReversed);
+            self.maxHealth = (shieldHealthConversionReversed == 0) ? 1 : self.maxHealth - shieldBonus;
+
+            return maxShield + shieldBonus;
         }
         #endregion
 

@@ -47,36 +47,43 @@ namespace MoreStats
         private static void DoIgniteOnHit(DamageInfo damageInfo, GameObject victim, CharacterBody attackerBody, CharacterBody victimBody)
         {
             Inventory inv = attackerBody.inventory;
-
-            uint? maxStacksFromAttacker = null;
-            if ((damageInfo != null) ? damageInfo.inflictor : null)
-            {
-                ProjectileDamage component = damageInfo.inflictor.GetComponent<ProjectileDamage>();
-                if (component && component.useDotMaxStacksFromAttacker)
-                {
-                    maxStacksFromAttacker = new uint?(component.dotMaxStacksFromAttacker);
-                }
-            }
+            if (damageInfo.damageType.damageType.HasFlag(DamageType.IgniteOnHit))
+                return;
 
             float burnProcChance = GetMoreStatsFromBody(attackerBody).burnChance;
             if (burnProcChance > 0)
             {
-                //Debug.Log("Burn proc chance: " + burnProcChance);
-                if (Util.CheckRoll(burnProcChance, attackerBody.master))
-                {
-                    InflictDotInfo inflictDotInfo = new InflictDotInfo
-                    {
-                        attackerObject = damageInfo.attacker,
-                        victimObject = victim,
-                        totalDamage = new float?(damageInfo.damage * 0.5f),
-                        damageMultiplier = 1f,
-                        dotIndex = DotController.DotIndex.Burn,
-                        maxStacksFromAttacker = maxStacksFromAttacker
-                    };
-                    StrengthenBurnUtils.CheckDotForUpgrade(inv, ref inflictDotInfo);
-                    DotController.InflictDot(ref inflictDotInfo);
-                }
+                damageInfo.damageType.damageType |= DamageType.IgniteOnHit;
             }
+            //uint? maxStacksFromAttacker = null;
+            //if ((damageInfo != null) ? damageInfo.inflictor : null)
+            //{
+            //    ProjectileDamage component = damageInfo.inflictor.GetComponent<ProjectileDamage>();
+            //    if (component && component.useDotMaxStacksFromAttacker)
+            //    {
+            //        maxStacksFromAttacker = new uint?(component.dotMaxStacksFromAttacker);
+            //    }
+            //}
+            //
+            //float burnProcChance = GetMoreStatsFromBody(attackerBody).burnChance;
+            //if (burnProcChance > 0)
+            //{
+            //    //Debug.Log("Burn proc chance: " + burnProcChance);
+            //    if (Util.CheckRoll(burnProcChance, attackerBody.master))
+            //    {
+            //        InflictDotInfo inflictDotInfo = new InflictDotInfo
+            //        {
+            //            attackerObject = damageInfo.attacker,
+            //            victimObject = victim,
+            //            totalDamage = new float?(damageInfo.damage * 0.5f),
+            //            damageMultiplier = 1f,
+            //            dotIndex = DotController.DotIndex.Burn,
+            //            maxStacksFromAttacker = maxStacksFromAttacker
+            //        };
+            //        StrengthenBurnUtils.CheckDotForUpgrade(inv, ref inflictDotInfo);
+            //        DotController.InflictDot(ref inflictDotInfo);
+            //    }
+            //}
         }
     }
 }

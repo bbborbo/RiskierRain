@@ -12,6 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using static MoreStats.StatHooks;
 
 namespace FruityElites.EliteReworks
 {
@@ -26,6 +27,10 @@ namespace FruityElites.EliteReworks
 
         [AutoConfig("Shield Conversion Fraction", "Set to 0.5 or -1 to disable the hook, which should make it compatible with ZetAspects", 0.33f)]
         public static float overloadingShieldConversionFraction = 0.33f; //5f
+        [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", 1f)]
+        public static float overloadingShieldRechargeDelay = 1f; //0f
+        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 1f)]
+        public static float overloadingShieldRechargeDelayChampions = 1f; //0f
         [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
         public static float overloadingSmiteCountBase = 2;
         [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]
@@ -53,9 +58,20 @@ namespace FruityElites.EliteReworks
             On.RoR2.HealthComponent.TakeDamageProcess += OverloadingKnockbackFix;
             IL.RoR2.GlobalEventManager.OnHitAllProcess += OverloadingBombDamage;
             RoR2.GlobalEventManager.onCharacterDeathGlobal += OverloadingSmiteOnDeath;
+            GetMoreStatCoefficients += ShieldRecharge;
 
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStake_prefab, ChangeLightningStake);
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EliteLightning.LightningStakeGhost_prefab, ChangeLightningStakeGhost);
+        }
+
+        private void ShieldRecharge(CharacterBody sender, MoreStatHookEventArgs args)
+        {
+            if (sender.HasBuff(RoR2Content.Buffs.AffixBlue))
+            {
+                args.shieldDelaySecondsIncreaseAddPreMult += overloadingShieldRechargeDelay;
+                if (sender.isChampion)
+                    args.shieldDelaySecondsIncreaseAddPreMult += overloadingShieldRechargeDelayChampions;
+            }
         }
 
         private void OverloadingSmiteOnDeath(DamageReport damageReport)

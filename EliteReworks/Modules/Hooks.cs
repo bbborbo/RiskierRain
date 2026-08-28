@@ -38,8 +38,8 @@ namespace FruityElites.Modules
                     || self.HasBuff(RoR2Content.Buffs.Immune) 
                     || self.HasBuff(RoR2Content.Buffs.Intangible) 
                     || self.HasBuff(DLC2Content.Buffs.HiddenRejectAllDamage)
-                    //|| self.HasBuff(RoR2Content.Buffs.Cloak)
-                    //|| (self.TryGetComponent(out CharacterModel model) == true && model.invisibilityCount > 0)
+                    || self.HasBuff(RoR2Content.Buffs.Cloak)
+                    || (self.TryGetComponent(out CharacterModel model) == true && model.invisibilityCount > 0)
                     ;
             }
         }

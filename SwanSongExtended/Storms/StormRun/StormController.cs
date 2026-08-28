@@ -50,7 +50,7 @@ namespace SwanSongExtended.Storms
         internal float stormDelayTime = 0;
         internal float stormWarningTime = 0;
         bool shelterObjectiveActive = false;
-        bool bossHealthBarActive = false;
+        public static bool bossHealthBarActive { get; private set; } = false;
 
 
         public void Awake()
@@ -624,7 +624,7 @@ namespace SwanSongExtended.Storms
                 }
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
-                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null && stormController.bossHealthBarActive == false);
+                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null && StormController.bossHealthBarActive == false);
                 }
                 SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
             }

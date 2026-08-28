@@ -21,11 +21,11 @@ namespace SwanSongExtended.Storms
 {
     public static class StormsCore
     {
-        public static bool IsStormDamage(DamageInfo damageType, CharacterBody attackerBody = null)
+        public static bool IsStormDamage(DamageInfo damageInfo, CharacterBody attackerBody = null)
         {
-            if (attackerBody != null && attackerBody.IsStormElite())
+            if (damageInfo.damageType.HasModdedDamageType(stormDamageType))
                 return true;
-            if (damageType.HasModdedDamageType(stormDamageType))
+            if (attackerBody != null && attackerBody.IsStormElite())
                 return true;
             return false;
         }

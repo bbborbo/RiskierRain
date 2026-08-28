@@ -215,7 +215,7 @@ namespace SwanSongExtended.Items
                 return;
 
             int count = GetCount(self.body);
-            if (count > 0 && (StormRunBehavior.hasBegunStorm == true || !self.alive))
+            if (count > 0)
             {
                 bool shouldBreak = self.alive == false;
                 if(shouldBreak == false)

@@ -48,11 +48,11 @@ namespace SwanSongExtended
             {
                 AddDeathQuoteTokenToList(ref swanSongDeathQuoteTokens, defaultText, secondPlayerText);
             }
-            void AddDeathQuoteTokenToList(ref List<string> list, string defaultText, string? secondPlayerText = null)
+            void AddDeathQuoteTokenToList(ref List<string> list, string secondPerson, string? thirdPerson = null)
             {
                 string baseToken = "PLAYER_DEATH_QUOTE_SWANSONG_" + swanSongDeathQuoteTokens.Count;
-                LanguageAPI.Add(baseToken, defaultText);
-                LanguageAPI.Add(baseToken + "_2P", secondPlayerText ?? defaultText);
+                LanguageAPI.Add(baseToken + "_2P", secondPerson); //IDK WHY FIRST PERSON IS 2P ?????????
+                LanguageAPI.Add(baseToken, thirdPerson ?? secondPerson);
                 list.Add(baseToken);
             }
         }

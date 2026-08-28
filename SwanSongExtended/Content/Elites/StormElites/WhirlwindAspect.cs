@@ -47,7 +47,7 @@ namespace SwanSongExtended.Elites
         public static float squallPreBeamRadius = 0.75f;
         public static float squallBeamTickFrequency = 8f;
 
-        public static float missileDamageBase = 10f;
+        public static float missileDamageBase = 6f;
         public static float missileDamagePerLevel = 0.3f;
         public static int missileCtBase = 3;
         public static int missileCtPerSize = 1;

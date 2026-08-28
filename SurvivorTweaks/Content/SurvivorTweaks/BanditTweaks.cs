@@ -40,8 +40,8 @@ namespace SurvivorTweaks.SurvivorTweaks
             "This is purely cosmetic and does not affect the token transference mechanic.", false)]
         public static bool useBanditSkullSurplus = false;
 
-        [AutoConfig("Bandit : Base Max Health", "Scales 30% per level. Vanilla is 110", 90f)]
-        public static float baseMaxHealth = 90f;//110
+        [AutoConfig("Bandit : Base Max Health Stat", "Scales 30% per level. Vanilla is 110", 110f)]
+        public static float baseMaxHealth = 110f;//110
         [AutoConfig("Keywords : Hemorrhage : Base Damage Coefficient", "Total damage of the DOT. Expressed as a percentage (eg 7.5 is 750%). Vanilla is 20", 7.5f)]
         public static float hemorrhageDamageBase = 7.5f;
         [AutoConfig("Keywords : Hemorrhage : Damage Multiplier To Full Health Enemies", "Vanilla is 1", 5f)]

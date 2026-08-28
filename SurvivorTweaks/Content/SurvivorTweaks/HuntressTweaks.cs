@@ -23,8 +23,8 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static bool isLoaded;
 
-        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 12f)]
-        public static float baseDamage = 12f; //12
+        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 10f)]
+        public static float baseDamage = 10f; //12
 
         [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Coefficient", "Expressed as a percentage (eg 3.4 is 340%). Vanilla is 2.5", 3.4f)]
         public static float glaiveBaseDamage = 3.4f; //2.5f

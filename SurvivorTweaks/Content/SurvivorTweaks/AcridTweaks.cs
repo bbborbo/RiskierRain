@@ -19,6 +19,7 @@ using UnityEngine.AddressableAssets;
 using static R2API.DamageAPI;
 using RainrotSharedUtils.Components;
 using static RoR2.DotController;
+using static SurvivorTweaks.Modules.Language.Styling;
 
 namespace SurvivorTweaks.SurvivorTweaks
 {
@@ -68,6 +69,10 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Acrid : Base Damage Stat", "Scales 20% per level. Vanilla is 15", 9f)]
         public static float acridBaseDamage = 9; //15
+        [AutoConfig("Acrid : Base Health Regeneration Stat", "Scales 20% per level. Vanilla is 2.5", 1.0f)]
+        public static float acridBaseRegen = 1f; //2.5f
+        [AutoConfig("Acrid : Base Movement Speed Stat", "Vanilla is 7", 8.0f)]
+        public static float acridBaseMoveSpeed = 8f; //7f
         [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds", 10f)]
         public static float poisonDuration = 10; //10
         [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds", 5f)]
@@ -88,8 +93,12 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Festering Keyword : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", true)]
         public static bool festerOnlyKitDots = true;
 
-        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Base Attack Duration", "Expressed in seconds. Vanilla is 1.5", 0.9f)]
-        public static float slashDuration = 0.9f; //1.5f
+        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Base Attack Duration", "Expressed in seconds. Vanilla is 1.5", 0.6f)]
+        public static float slashDuration = 0.6f; //1.5f
+        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 2.0", 3.0f)]
+        public static float slashDamageCoefficient = 3f; //2f
+        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Damage Coefficient (Final)", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 4.0", 6.0f)]
+        public static float slashDamageCoefficientFinal = 6f; //4f
         [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Canceled By Sprinting", false)]
         public static bool slashCanceledBySprinting = false; //true
 
@@ -110,8 +119,8 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Lunge Force", "Vanilla is 0", 8000f)]
         public static float biteForceStrength = 8000f; //0
-        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Base Cooldown", "Expressed in seconds. Vanilla is 2", 3f)]
-        public static float biteCooldown = 3f; //2
+        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Base Cooldown", "Expressed in seconds. Vanilla is 2", 2f)]
+        public static float biteCooldown = 2f; //2
         [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Damage Coefficient", "Expressed as a percentage (eg 4.8 is 480%). Vanilla is 3.1", 4.8f)]
         public static float biteDamageCoeff = 4.8f; //3.1f
 
@@ -150,9 +159,11 @@ namespace SurvivorTweaks.SurvivorTweaks
                 GetSkillsFromBodyObject(bodyObject);
 
                 CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-                body.baseMoveSpeed = 8;//7
+                body.baseMoveSpeed = acridBaseMoveSpeed;//7
                 body.baseDamage = acridBaseDamage; //15
                 body.levelDamage = acridBaseDamage * 0.2f;
+                body.baseRegen = acridBaseRegen; //15
+                body.levelRegen = acridBaseRegen * 0.2f;
 
                 ChangePassive();
 
@@ -252,7 +263,10 @@ namespace SurvivorTweaks.SurvivorTweaks
             primary.keywordTokens = new string[] { /*"KEYWORD_AGILE",*/ "KEYWORD_RAPID_REGEN", CommonAssets.AcridFesterKeywordToken };
             LanguageAPI.Add("CROCO_PRIMARY_DESCRIPTION", 
                 //$"<style=cIsUtility>Agile</style>. " +
-                $"Maul an enemy for <style=cIsDamage>200% damage</style>. Every 3rd hit is <style=cIsHealing>Regenerative</style> and <style=cIsVoid>Festering</style> for <style=cIsDamage>400% damage</style>.");
+                $"Maul an enemy for " +
+                $"{DamageValueText(slashDamageCoefficient)}. " +
+                $"Every 3rd hit is <style=cIsHealing>Regenerative</style> and " +
+                $"<style=cIsVoid>Festering</style> for {DamageValueText(slashDamageCoefficientFinal)}.");
             On.EntityStates.Croco.Slash.OnEnter += ChangeCrocoSlashDuration;
             On.EntityStates.Croco.Slash.AuthorityModifyOverlapAttack += CrocoSlashDamageType;
         }
@@ -314,7 +328,11 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void ChangeCrocoSlashDuration(On.EntityStates.Croco.Slash.orig_OnEnter orig, EntityStates.Croco.Slash self)
         {
-            self.baseDuration = slashDuration;
+            self.baseDuration = slashDuration + 0.1f;
+            self.damageCoefficient = slashDamageCoefficient;
+            Slash.comboFinisherDamageCoefficient = slashDamageCoefficientFinal;
+            Slash.baseDurationBeforeInterruptable = slashDuration;
+            Slash.comboFinisherBaseDurationBeforeInterruptable = slashDuration;
             orig(self);
         }
 

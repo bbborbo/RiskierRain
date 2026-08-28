@@ -21,8 +21,14 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         private static string exactingKeyword => attackSpeedDamageAdditive ? SharedUtilsPlugin.noAttackSpeedAdditiveKeywordToken : SharedUtilsPlugin.noAttackSpeedMultiplicativeKeywordToken;
 
-        [AutoConfig("Mercenary : Base Movement Speed", "Vanilla is 7", 8f)]
+        [AutoConfig("Mercenary : Base Movement Speed Stat", "Vanilla is 7", 8f)]
         public float moveSpeed = 8f; //7f
+        [AutoConfig("Mercenary : Base Health Regeneration Stat", "Scales 20% per level. Vanilla is 1", 1f)]
+        public float baseRegen = 1f; //1f
+        [AutoConfig("Mercenary : Base Armor Stat", "Vanilla is 20", 0)]
+        public int baseArmor = 0; //20
+        [AutoConfig("Mercenary : Base Maximum Health Stat", "Scales 30% per level. Vanilla is 110", 110f)]
+        public float baseHealth = 110f; //20
         [AutoConfig("Keywords : Exacting : Additive Damage", "Attack Speed is additive to Mercenary's damage damage if true, multiplicative if false. Vanilla is N/A", true)]
         public static bool attackSpeedDamageAdditive = true;
 
@@ -72,6 +78,11 @@ namespace SurvivorTweaks.SurvivorTweaks
 
                 CharacterBody body = bodyObject.GetComponent<CharacterBody>();
                 body.baseMoveSpeed = moveSpeed;
+                body.baseArmor = baseArmor;
+                body.baseRegen = baseRegen;
+                body.levelRegen = baseRegen * 0.2f;
+                body.baseMaxHealth = baseHealth;
+                body.levelMaxHealth = baseHealth * 0.3f;
 
                 DoPrimary(primary);
                 DoSecondary(secondary);

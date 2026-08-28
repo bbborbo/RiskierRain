@@ -46,7 +46,7 @@ namespace FruityElites.Modules
 
         private static void DelayOutOfCombat(CharacterBody self, float stopwatch = 0)
         {
-            if (self.isPlayerControlled)
+            if (self.isPlayerControlled || self.teamComponent.teamIndex == TeamIndex.Player)
                 return;
             self.outOfDangerStopwatch = Mathf.Clamp(stopwatch, 0, 5f);
             self.outOfDanger = false;

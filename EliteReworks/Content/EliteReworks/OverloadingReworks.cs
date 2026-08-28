@@ -27,10 +27,10 @@ namespace FruityElites.EliteReworks
 
         [AutoConfig("Shield Conversion Fraction", "Set to 0.5 or -1 to disable the hook, which should make it compatible with ZetAspects", 0.33f)]
         public static float overloadingShieldConversionFraction = 0.33f; //5f
-        [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", 1f)]
-        public static float overloadingShieldRechargeDelay = 1f; //0f
-        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 1f)]
-        public static float overloadingShieldRechargeDelayChampions = 1f; //0f
+        [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", -2f)]
+        public static float overloadingShieldRechargeDelay = -2f; //0f
+        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 0f)]
+        public static float overloadingShieldRechargeDelayChampions = 0f; //0f
         [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
         public static float overloadingSmiteCountBase = 2;
         [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]

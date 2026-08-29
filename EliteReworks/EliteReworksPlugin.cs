@@ -86,16 +86,19 @@ namespace FruityElites
             if (Bind("Add Periodical OnHitAll To BeetleGuard Sunder (Affects Overloading Orbs)"))
             {
                 //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
-                LoadAsyncLegacy<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGuard.Sunder_prefab, BuffSunder);
+                LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BeetleGuard.Sunder_prefab, BuffSunder);
             }
             if (Bind("Add Periodical OnHitAll To Dunestrider Roller (Affects Overloading Orbs)"))
             {
                 //BuffSunder(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Beetle/Sunder.prefab").WaitForCompletion());
-                LoadAsyncLegacy<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.TarSeeker_prefab, BuffSunder);
+                LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClayBoss.TarSeeker_prefab, BuffSunder);
             }
 
 
             Modules.Config.Save();
+
+            // this has to be last
+            new Modules.ContentPacks().Initialize();
 
             bool Bind(string configName, string configDesc = "")
             {

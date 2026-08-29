@@ -19,7 +19,7 @@ namespace FruityElites.EliteReworks
         public override void Init()
         {
             base.Init();
-            EliteReworksPlugin.LoadAsyncLegacy<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.ChefIceBoxExplosionVFX_prefab, CreateEffect);
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.ChefIceBoxExplosionVFX_prefab, CreateEffect);
         }
 
         private void CreateEffect(GameObject obj)
@@ -56,7 +56,7 @@ namespace FruityElites.EliteReworks
                 return;
             if(damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody) && attackerBody.HasBuff(RoR2Content.Buffs.AffixWhite))
             {
-                EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Chef.ChefIceBoxExplosionVFX_prefab).WaitForCompletion(), 
+                EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(frozenExplosionPrefab).WaitForCompletion(), 
                     new EffectData
                 {
                     origin = damageInfo.position,

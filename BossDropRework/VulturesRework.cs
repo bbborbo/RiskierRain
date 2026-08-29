@@ -5,11 +5,36 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using static RainrotSharedUtils.Difficulties.DifficultyUtilsModule;
 
 namespace BossDropRework
 {
     public partial class BossDropReworkPlugin : BaseUnityPlugin
     {
+        #region horde of many
+        void HordeOfManyRework()
+        {
+            UseForceElite = true;
+            ForceEliteMasterProvider += ForceHordeOfManyElite;
+        }
+
+        private static bool ForceHordeOfManyElite(CharacterMaster sender)
+        {
+            //filter for monster team so mithrix p2 isnt all perfected (could you imagine)
+            if (sender.teamIndex != TeamIndex.Monster)
+                return false;
+            //if monster is boss but not champion (aka horde of many)
+            if (sender.isBoss == false)
+                return false;
+            if (sender.bodyPrefab && sender.bodyPrefab.TryGetComponent(out CharacterBody body))
+            {
+                if (body.isChampion == false)
+                    return true;
+            }
+            return false;
+        }
+        #endregion
+        #region vultures
         public static ExplicitPickupDropTable hordeDropTable;
         void WakeOfVulturesRework()
         {
@@ -64,4 +89,5 @@ namespace BossDropRework
             }
         }
     }
+    #endregion
 }

@@ -59,20 +59,6 @@ namespace RainrotSharedUtils.Difficulties
         public static float GoldRewardMultiplierGlobal = 1f;
         public static float ExpRewardMultiplierGlobal = 1f;
         public static float DefaultTeleParticleRadius = 1f;
-        internal static bool _useDifficultyStats;
-        public static bool UseDifficultyStats
-        {
-            get
-            {
-                return _useDifficultyStats;
-            }
-            set
-            {
-                if (value == true)
-                    SetHooks();
-                _useDifficultyStats = value;
-            }
-        }
         private static bool _boostTeleporterContrast;
         public static bool BoostTeleporterContrast
         {
@@ -89,18 +75,54 @@ namespace RainrotSharedUtils.Difficulties
         }
         /// <summary>
         /// Sets these to true:
-        /// UseDifficultyStats, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost
+        /// UseDifficultyStats, UseForceElite, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost
         /// </summary>
         public static void EnableAll()
         {
             UseDifficultyStats = true;
+            UseForceElite = true;
             BoostTeleporterContrast = true;
             CompensateRewardsForDifficultyScaling = true;
             CompensateRewardsForDifficultyBoost = true;
         }
 
+        #region force elite
+        internal static bool _useForceElite;
+        public static bool UseForceElite
+        {
+            get
+            {
+                return _useForceElite;
+            }
+            set
+            {
+                if (value == true)
+                    SetHooksForceElite();
+                _useForceElite = value;
+            }
+        }
+        private static void SetHooksForceElite()
+        {
+            if (_hooksEnabledForceElite)
+                return;
+            _hooksEnabledForceElite = true;
+
+            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor += OverridePromoteIfHonor;
+            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonorAndApplyStats += OverridePromoteIfHonor;
+            //On.RoR2.CombatDirector.PrepareNewMonsterWave += ForceEliteMonsterWave;
+            //On.RoR2.CombatDirector.ResetEliteType += ForceEliteType;
+            //On.RoR2.CombatDirector.AttemptSpawnOnTarget += ForceEliteSpawn;
+
+            //if (!_hooksEnabled)
+            //    On.RoR2.CombatDirector.Spawn += ForceSpawnToBeElite;
+            On.RoR2.BossGroup.OnMemberDiscovered += ForceEliteBossGroup;
+        }
+
         internal static bool forceNextSpawnAsElite;
         private static event ForceEliteMasterEventHandler _forceEliteMasterProvider;
+        /// <summary>
+        /// Use this one. Called on spawn using master
+        /// </summary>
         public static event ForceEliteMasterEventHandler ForceEliteMasterProvider
         {
             add
@@ -117,9 +139,13 @@ namespace RainrotSharedUtils.Difficulties
                 _forceEliteMasterProvider -= value;
             }
         }
+
         public delegate bool ForceEliteMasterEventHandler(CharacterMaster sender);
 
         private static event ForceEliteSpawnEventHandler _forceEliteSpawnProvider;
+        /// <summary>
+        /// Not functional. For use with spawn cards
+        /// </summary>
         public static event ForceEliteSpawnEventHandler ForceEliteSpawnProvider
         {
             add
@@ -167,6 +193,47 @@ namespace RainrotSharedUtils.Difficulties
             }
 
             return false;
+        }
+
+        private static bool ForceSpawnToBeElite(On.RoR2.CombatDirector.orig_Spawn orig, CombatDirector self, SpawnCard spawnCard, EliteDef eliteDef, Transform spawnTarget, DirectorCore.MonsterSpawnDistance spawnDistance, bool preventOverhead, float valueMultiplier, DirectorPlacementRule.PlacementMode placementMode, bool singleScaledBoss)
+        {
+            bool b = orig(self, spawnCard, eliteDef, spawnTarget, spawnDistance, preventOverhead, valueMultiplier, placementMode, singleScaledBoss);
+            //if(eliteDef == null && (spawnCard as CharacterSpawnCard).noElites == false)
+            //    RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng);
+
+            return b;
+        }
+        #endregion
+
+        #region difficulty stats
+        internal static bool _useDifficultyStats;
+        public static bool UseDifficultyStats
+        {
+            get
+            {
+                return _useDifficultyStats;
+            }
+            set
+            {
+                if (value == true)
+                    SetHooks();
+                _useDifficultyStats = value;
+            }
+        }
+        private static void SetHooks()
+        {
+            if (_hooksEnabled)
+                return;
+            _hooksEnabled = true;
+
+            On.RoR2.Run.OnRuleBookUpdated += CacheDifficultyStats;
+            IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
+            IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += RecalculateDifficultyCoefficient_DifficultyStats;
+            On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
+            IL.RoR2.TeleporterInteraction.ChargingState.OnEnter += CompensateBossCredits;
+
+            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
+            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
         }
 
         public static Dictionary<DifficultyIndex, MoreDifficultyStats> difficultyCustomStats = new Dictionary<DifficultyIndex, MoreDifficultyStats>();
@@ -245,48 +312,6 @@ namespace RainrotSharedUtils.Difficulties
 
             return cachedDifficultyStats.startingLevelBoost;
         }
-        private static void SetHooksForceElite()
-        {
-            if (_hooksEnabledForceElite)
-                return;
-            _hooksEnabledForceElite = true;
-
-            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor += OverridePromoteIfHonor;
-            IL.RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonorAndApplyStats += OverridePromoteIfHonor;
-            //On.RoR2.CombatDirector.PrepareNewMonsterWave += ForceEliteMonsterWave;
-            //On.RoR2.CombatDirector.ResetEliteType += ForceEliteType;
-            //On.RoR2.CombatDirector.AttemptSpawnOnTarget += ForceEliteSpawn;
-
-            //if (!_hooksEnabled)
-            //    On.RoR2.CombatDirector.Spawn += ForceSpawnToBeElite;
-            On.RoR2.BossGroup.OnMemberDiscovered += ForceEliteBossGroup;
-        }
-
-        private static bool ForceSpawnToBeElite(On.RoR2.CombatDirector.orig_Spawn orig, CombatDirector self, SpawnCard spawnCard, EliteDef eliteDef, Transform spawnTarget, DirectorCore.MonsterSpawnDistance spawnDistance, bool preventOverhead, float valueMultiplier, DirectorPlacementRule.PlacementMode placementMode, bool singleScaledBoss)
-        {
-            bool b = orig(self, spawnCard, eliteDef, spawnTarget, spawnDistance, preventOverhead, valueMultiplier, placementMode, singleScaledBoss);
-            //if(eliteDef == null && (spawnCard as CharacterSpawnCard).noElites == false)
-            //    RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng);
-
-            return b;
-        }
-
-        private static void SetHooks()
-        {
-            if (_hooksEnabled)
-                return;
-            _hooksEnabled = true;
-
-            SetHooksForceElite();
-
-            On.RoR2.Run.OnRuleBookUpdated += CacheDifficultyStats;
-            IL.RoR2.UI.DifficultyBarController.DoBarUpdates += CorrectDifficultyBar;
-            IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += RecalculateDifficultyCoefficient_DifficultyStats;
-            On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
-            IL.RoR2.TeleporterInteraction.ChargingState.OnEnter += CompensateBossCredits;
-
-            ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
-            ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);
-        }
+        #endregion
     }
 }

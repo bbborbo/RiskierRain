@@ -42,6 +42,7 @@ namespace BossDropRework
         public static ConfigEntry<bool> ForceDropsFromAurelionite { get; set; }
         public static ConfigEntry<bool> ReworkTricorn { get; set; }
         public static ConfigEntry<bool> ReworkVultures { get; set; }
+        public static ConfigEntry<bool> ReworkHordeOfMany { get; set; }
         public static ConfigEntry<bool> ReworkPrinters { get; set; }
         public static ConfigEntry<float> TricornDamageCoefficient { get; set; }
         public static ConfigEntry<float> TricornProcCoefficient { get; set; }
@@ -90,9 +91,15 @@ namespace BossDropRework
                 true,
                 ""
                 );
+            ReworkHordeOfMany = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Rework Horde of Many",
+                true,
+                "Force Horde of Many Elites"
+                );
             ReworkVultures = CustomConfigFile.Bind<bool>(
                 "Reworks",
-                "Rework Wake of Vultures",
+                "Rework Horde of Many",
                 true,
                 "Turns it into a Horde of Many trophy"
                 );
@@ -143,7 +150,9 @@ namespace BossDropRework
                 TricornRework();
             if (ReworkVultures.Value)
                 WakeOfVulturesRework();
-            if(ReworkPrinters.Value)
+            if (ReworkHordeOfMany.Value)
+                HordeOfManyRework();
+            if (ReworkPrinters.Value)
                 DirectorAPI.InteractableActions += DeleteYellowPrinters;
         }
 

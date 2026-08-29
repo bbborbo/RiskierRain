@@ -67,4 +67,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\BorboStatUtils\RainrotSharedUtils.csproj" />
+  </ItemGroup>
 </Project>

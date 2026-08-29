@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using static MoreStats.StatHooks;
 
@@ -30,7 +31,7 @@ namespace FruityElites.EliteReworks
         [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", -2f)]
         public static float overloadingShieldRechargeDelay = -2f; //0f
         [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 0f)]
-        public static float overloadingShieldRechargeDelayChampions = 0f; //0f
+        public static float overloadingShieldRechargeDelayChampions = 2f; //0f
         [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
         public static float overloadingSmiteCountBase = 2;
         [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]
@@ -79,6 +80,8 @@ namespace FruityElites.EliteReworks
 
         private void OverloadingSmiteOnDeath(DamageReport damageReport)
         {
+            if (!NetworkServer.active)
+                return;
             CharacterBody victimBody = damageReport.victimBody;
             CharacterBody attackerBody = damageReport.attackerBody;
             if (victimBody != null && attackerBody != null)
@@ -108,16 +111,10 @@ namespace FruityElites.EliteReworks
                     int hurtBoxCount = hurtBoxesList.Count;
                     if (hurtBoxCount == 0)
                     {
-                        OrbManager.instance.AddOrb(new LightningStrikeOrb
+                        EffectManager.SpawnEffect(OrbStorageUtility.Get("Prefabs/Effects/ImpactEffects/LightningStrikeImpact"), new EffectData
                         {
-                            attacker = attackerBody.gameObject,
-                            damageColorIndex = DamageColorIndex.Default,
-                            damageValue = baseDamage * smiteDamageCoefficient,
-                            isCrit = damageReport.damageInfo.crit,
-                            procChainMask = procChainMask6,
-                            procCoefficient = 0.5f,
-                            target = damageReport.victimBody.mainHurtBox
-                        });
+                            origin = victimBody.corePosition
+                        }, true);
                     }
                     else
                     {

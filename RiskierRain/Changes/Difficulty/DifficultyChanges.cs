@@ -206,15 +206,30 @@ namespace RiskierRain.Changes
         #endregion
 
         #region directors
-        public static float fastDirectorEliteBias = 1.5f;//1
+        /// <summary>
+        /// elite bias is inversed (lower bias = more elites)
+        /// </summary>
+        public static float fastDirectorEliteBias = 0.75f;//1
         public static float fastDirectorCreditMultiplier = 0.75f;//0.75f
-        public static float slowDirectorEliteBias = 1.5f;//1
+        /// <summary>
+        /// elite bias is inversed (lower bias = more elites)
+        /// </summary>
+        public static float slowDirectorEliteBias = 0.5f;//1
         public static float slowDirectorCreditMultiplier = 1f;//0.75f
 
-        public static float teleLesserEliteBias = 1.2f;//1
+        /// <summary>
+        /// elite bias is inversed (lower bias = more elites)
+        /// </summary>
+        public static float teleLesserEliteBias = 0.5f;//1
         public static float teleLesserCreditMultiplier = 0.8f;//1f
+        /// <summary>
+        /// elite bias is inversed (lower bias = more elites)
+        /// </summary>
         public static float teleBossEliteBias = 1f;//1
         public static float teleBossCreditMultiplier = 1.0f;//1f
+        /// <summary>
+        /// unused
+        /// </summary>
         public static float teleBossCreditMultiplierStage1 = 0.5f;//1f
         public static void ChangeDirectorStats()
         {

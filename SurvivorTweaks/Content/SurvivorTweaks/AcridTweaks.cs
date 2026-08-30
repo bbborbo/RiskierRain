@@ -73,12 +73,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float acridBaseRegen = 1f; //2.5f
         [AutoConfig("Acrid : Base Movement Speed Stat", "Vanilla is 7", 8.0f)]
         public static float acridBaseMoveSpeed = 8f; //7f
-        [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds", 10f)]
-        public static float poisonDuration = 10; //10
-        [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds", 5f)]
-        public static float blightDuration = 5; //5
-        [AutoConfig("Keywords : Caustic : Status Duration", "Expressed in seconds", 8f)]
-        public static float corrosionDuration = 8f;
+        [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds. Vanilla is 10", 10f)]
+        public static float poisonDuration = 10f; //10
+        [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds. Vanilla is 5", 8f)]
+        public static float blightDuration = 8f; //5
+        [AutoConfig("Keywords : Blighted : Base Damage Per Second", "Expressed as a percentage (eg 0.4 is 40%). Vanilla is 0.6", 0.4f)]
+        public static float blightDamagePerSecond = 0.4f; //0.6f
+        [AutoConfig("Keywords : Caustic : Status Duration", "Expressed in seconds", 5f)]
+        public static float corrosionDuration = 5f;
         [AutoConfig("Keywords : Caustic : Armor Reduction Per Stack", 15)]
         public static int corrosionArmorReduction = 15;
         [AutoConfig("Keywords : Caustic : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
@@ -171,6 +173,19 @@ namespace SurvivorTweaks.SurvivorTweaks
                 ChangeVanillaSecondaries(secondary);
                 ChangeVanillaUtilities(utility);
                 ChangeVanillaSpecials(special);
+
+                Transform modelTransform = body.GetComponent<ModelLocator>()?.modelTransform;
+                if (modelTransform == null)
+                    return;
+                List<HitBoxGroup> hitBoxGroups = GetComponentsCache<HitBoxGroup>.GetGameObjectComponents(modelTransform.gameObject);
+                for(int i = 0; i < hitBoxGroups.Count; i++)
+                {
+                    if(hitBoxGroups[i].groupName == "Slash")
+                    {
+                        hitBoxGroups[i].hitBoxes[0].transform.localScale = new Vector3(45, 35, 45);
+                    }
+                }
+                GetComponentsCache<HitBoxGroup>.ReturnBuffer(hitBoxGroups);
             });
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangePoisonDuration;
@@ -180,8 +195,22 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"<i>Poison cannot kill enemies.</i></style>");
             LanguageAPI.Add(AcridBlightKeywordToken,
                 $"<style=cKeywordName>Blighted</style>" +
-                $"<style=cSub>Deal <style=cIsDamage>60% base damage</style> over <style=cIsUtility>{blightDuration}s</style>. " +
+                $"<style=cSub>Deal <style=cIsDamage>{blightDamagePerSecond.AsPercent()} base damage</style> " +
+                $"over <style=cIsUtility>{blightDuration}s</style>. " +
                 $"<i>Blight can stack.</i></style>");
+        }
+
+        [SystemInitializer(typeof(BuffCatalog))]
+        private static void ChangeBlightDamage()
+        {
+            foreach(DotController.DotDef dotDef in DotController.dotDefs)
+            {
+                if(dotDef.associatedBuff == RoR2Content.Buffs.Blight)
+                {
+                    dotDef.interval = 0.333f;
+                    dotDef.damageCoefficient = blightDamagePerSecond / dotDef.interval;
+                }
+            }
         }
 
         private void ChangePassive()
@@ -317,6 +346,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void BuffBite(On.EntityStates.Croco.Bite.orig_OnEnter orig, EntityStates.Croco.Bite self)
         {
+            Debug.Log(self.hitBoxGroupName);
             self.damageCoefficient = biteDamageCoeff;
             orig(self);
             if (!SurvivorTweaksPlugin.acridLungeLoaded)
@@ -328,6 +358,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void ChangeCrocoSlashDuration(On.EntityStates.Croco.Slash.orig_OnEnter orig, EntityStates.Croco.Slash self)
         {
+            Debug.Log(self.hitBoxGroupName);
             self.baseDuration = slashDuration + 0.1f;
             self.damageCoefficient = slashDamageCoefficient;
             Slash.comboFinisherDamageCoefficient = slashDamageCoefficientFinal;
@@ -425,6 +456,31 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             ILCursor c = new ILCursor(il);
 
+            ChangeDebuffDuration(DamageType.PoisonOnHit, poisonDuration);
+            ChangeDebuffDuration(DamageType.BlightOnHit, blightDuration);
+
+            void ChangeDebuffDuration(DamageType damageType, float newDuration)
+            {
+                c.Index = 0;
+                bool b1 = 
+                    c.TryGotoNext(MoveType.After,
+                        x => x.MatchLdfld<RoR2.DamageInfo>("damageType"),
+                        x => x.MatchLdcI4((int)damageType))
+                    && c.TryGotoNext(MoveType.Before,
+                        x => x.MatchLdcR4(out _),
+                        x => x.MatchLdarg(1),
+                        x => x.MatchLdfld<RoR2.DamageInfo>("procCoefficient")
+                        );
+                if(b1 == false)
+                {
+                    Log.DebugBreakpoint($"{nameof(ChangeDebuffDuration)}/{damageType.ToString()}");
+                    return;
+                }
+                c.Remove();
+                c.Emit(OpCodes.Ldc_R4, poisonDuration);
+            }
+            return;
+            
             //poison duration
             c.GotoNext(MoveType.After,
                 x => x.MatchLdfld<RoR2.DamageInfo>("damageType"),
@@ -438,7 +494,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 );
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, poisonDuration);
-            return;
+
             //blight duration
             c.GotoNext(MoveType.After,
                 x => x.MatchLdfld<RoR2.DamageType>(nameof(DamageInfo.damageType)),

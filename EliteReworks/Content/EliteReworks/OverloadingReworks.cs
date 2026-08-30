@@ -30,8 +30,8 @@ namespace FruityElites.EliteReworks
         public static float overloadingShieldConversionFraction = 0.33f; //5f
         [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", -2f)]
         public static float overloadingShieldRechargeDelay = -2f; //0f
-        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 0f)]
-        public static float overloadingShieldRechargeDelayChampions = 2f; //0f
+        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 4f)]
+        public static float overloadingShieldRechargeDelayChampions = 4f; //0f
         [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
         public static float overloadingSmiteCountBase = 2;
         [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]

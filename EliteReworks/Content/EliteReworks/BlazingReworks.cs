@@ -30,7 +30,7 @@ namespace FruityElites.EliteReworks
         public static float flameAuraGrowthPerSecond = 0.25f;
         public static float flameAuraDamageInterval = 0.5f;
 
-        public static float flameAuraIgniteTotalDamageBase = 7f;
+        public static float flameAuraIgniteTotalDamageBase = 10f;
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;
 
 
@@ -259,11 +259,11 @@ namespace FruityElites.EliteReworks
         }
         public void OnTakeDamageServer(DamageReport damageReport)
         {
-            if(damageReport.damageInfo.damageType.IsDamageSourceSkillBased || damageReport.damageInfo.damageType.damageSource == DamageSource.Equipment)
+            if(damageReport.damageInfo.damageType.IsDamageSourceSkillBased || damageReport.damageInfo.damageType.damageSource == DamageSource.Equipment && damageReport.attackerBody.isPlayerControlled)
             {
                 List<AffixRedBehavior> reds = new List<AffixRedBehavior>(readOnlyInstancesList).Where(x => 
                 x.currentRange > minRange
-                && ((body.corePosition - x.body.corePosition).sqrMagnitude <= flameAuraMaxRange * flameAuraMaxRange)
+                && ((body.corePosition - x.body.corePosition).sqrMagnitude <= Mathf.Pow(flameAuraMaxRange + 2,2))
                 ).ToList();
 
                 foreach(AffixRedBehavior red in reds)
@@ -328,7 +328,7 @@ namespace FruityElites.EliteReworks
         void AccelerateNearby(TeamIndex targetTeam)
         {
             //get targets
-            List<HurtBox> enemies = GetNearbyTargets(flameAuraMaxRange, targetTeam, false);
+            List<HurtBox> enemies = GetNearbyTargets(flameAuraMaxRange + 2, targetTeam, false);
 
             //buff targets/send buff orb
             foreach (HurtBox target in enemies)

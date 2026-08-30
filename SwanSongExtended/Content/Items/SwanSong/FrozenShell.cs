@@ -114,7 +114,7 @@ namespace SwanSongExtended.Items
 
         void CalculateBuffCount()
         {
-            float combinedHealthFraction = healthComponent.combinedHealthFraction;
+            float combinedHealthFraction = healthComponent.healthFraction + (healthComponent.shield / healthComponent.fullShield);
             /*if (hasBuff)
             {
                 if (combinedHealthFraction > 0.5f)

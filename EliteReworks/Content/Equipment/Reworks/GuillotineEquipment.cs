@@ -35,19 +35,19 @@ namespace FruityElites.Equipment
 
         [AutoConfig("Base Execution Threshold", 0.20f)]
         public static float newExecutionThresholdBase = 0.20f;
-        [AutoConfig("Bonus Execution Threshold For Status", 0.10f)]
+        //[AutoConfig("Bonus Execution Threshold For Status", 0.10f)]
         public static float newExecutionThresholdStack = 0.10f;
 
-        [AutoConfig("Execution Status Bonus VS Bosses", false)]
+        //[AutoConfig("Execution Status Bonus VS Bosses", false)]
         bool strongerVsBosses = false;
-        [AutoConfig("Execution Status Bonus VS Elites", true)]
+        //[AutoConfig("Execution Status Bonus VS Elites", true)]
         bool strongerVsElites = true;
 
-        [AutoConfig("Execution Duration", 10)]
+        //[AutoConfig("Execution Duration", 10)]
         public static float executeDuration = 10;
-        [AutoConfig("Luck Duration", 10)]
+        //[AutoConfig("Luck Duration", 10)]
         public static float luckDuration = 9;
-        [AutoConfig("Guillotine Damage Coefficient", 1)]
+        //[AutoConfig("Guillotine Damage Coefficient", 1)]
         public static float guillotineDamageCoefficient = 1;
         #endregion
         static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();

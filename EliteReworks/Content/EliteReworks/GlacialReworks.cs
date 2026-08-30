@@ -1,4 +1,5 @@
-﻿using R2API;
+﻿using FruityElites.Modules;
+using R2API;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,9 @@ namespace FruityElites.EliteReworks
     public class GlacialReworks : EliteReworkBase<GlacialReworks>
     {
         public static GameObject frozenExplosionPrefab;
+        [AutoConfig("On-Hit : Chill AoE Radius", "Expressed in meters. Vanilla is 0", 5f)]
         public static float glacialFrostRadius = 5f;
+        [AutoConfig("On-Hit : Chill AoE Duration", "Expressed in seconds. Vanilla is 1.5", 2f)]
         public static float glacialFrostDuration = 2f;
         public override string eliteName => "Glacial";
 
@@ -47,6 +50,8 @@ namespace FruityElites.EliteReworks
         private void GlacialChillAoe(On.RoR2.GlobalEventManager.orig_OnHitAllProcess orig, RoR2.GlobalEventManager self, RoR2.DamageInfo damageInfo, GameObject hitObject)
         {
             orig(self, damageInfo, hitObject);
+            if (glacialFrostRadius <= 0)
+                return;
             if (!NetworkServer.active)
                 return;
             if (damageInfo.attacker == null)

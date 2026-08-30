@@ -21,24 +21,31 @@ namespace FruityElites.EliteReworks
         public static GameObject flameAuraMaxRangeIndicatorPrefab;
 
         public static BuffDef accelerantBuff;
+        [AutoConfig("On-Death : Accelerant Buff Duration", "Expressed in seconds. Vanilla is N/A", 8f)]
         public static float accelerantDuration = 8f;
+        [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a percentage (eg 0.25 is 25%). Vanilla is N/A", 0.25f)]
         public static float accelerantAttackSpeed = 0.25f;
+        [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a percentage (eg 0.25 is 25%). Vanilla is N/A", 0.0f)]
         public static float accelerantMovementSpeed = 0.0f;
+        [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a chance out of 100 (eg 100 is 100%). Vanilla is N/A", 100f)]
         public static float accelerantIgniteChance = 100f;
 
+        [AutoConfig("Passive : Flame Aura Range", "Maximum range of flame aura, added to body radius. Expressed in meters. Vanilla is N/A", 18f)]
         public static float flameAuraRange = 18f;
+        [AutoConfig("Passive : Flame Aura Growth Per Second", "Expressed as a fraction of max range (eg 0.25 is 25% is 4 seconds for full range). Vanilla is N/A", 0.25f)]
         public static float flameAuraGrowthPerSecond = 0.25f;
+        [AutoConfig("Passive : Flame Aura Damage Interval", "Duration in seconds between ticks of damage. Vanilla is N/A", 0.5f)]
         public static float flameAuraDamageInterval = 0.5f;
 
+        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 0.5f)]
         public static float flameAuraIgniteTotalDamageBase = 10f;
+        [AutoConfig("Passive : Flame Aura Ignite Damage Level", 
+            "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.5f)]
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;
 
 
-        [AutoConfig("Fire Trail Damage Per Second", "Scales with ambient level", 80f)]
         public static float fireTrailDPS = 80f; //1.5f
-        [AutoConfig("Fire Trail Base Radius", "Vanilla is 3.0", 6f)]
         public static float fireTrailBaseRadius = 6f; //3f
-        [AutoConfig("Fire Trail Lifetime", "Might not work, vanilla is 3.0", 100f)]
         public static float fireTrailLifetime = 100f; //3f
         public override string eliteName => "Blazing";
 
@@ -304,11 +311,12 @@ namespace FruityElites.EliteReworks
 
                         foreach(HurtBox target in enemies)
                         {
+                            bool isResistAoe = target.healthComponent.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ResistantToAOE);
                             InflictDotInfo inflictDotInfo = new InflictDotInfo
                             {
                                 attackerObject = body.gameObject,
                                 victimObject = target.healthComponent.gameObject,
-                                totalDamage = new float?(totalDamage),
+                                totalDamage = new float?(isResistAoe ? totalDamage * 0.33f : totalDamage),
                                 damageMultiplier = 1f,
                                 dotIndex = DotController.DotIndex.Burn,
                                 maxStacksFromAttacker = null

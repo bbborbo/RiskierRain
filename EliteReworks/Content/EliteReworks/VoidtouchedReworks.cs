@@ -17,19 +17,19 @@ namespace FruityElites.EliteReworks
 {
     class VoidtouchedReworks : EliteReworkBase<VoidtouchedReworks>
     {
-        [AutoConfig("Singularity On Death: Projectile Min Travel Time", 0.2f)]
+        [AutoConfig("On-Death : Projectile Min Travel Time", "Expressed in seconds", 0.2f)]
         public static float singularityMinimumTravelTime = 0.3f;
-        [AutoConfig("Singularity On Death: Projectile Max Travel Distance", 60f)]
+        [AutoConfig("On-Death : Projectile Max Travel Distance", "Expressed in meters", 60f)]
         public static float singularityMaximumTravelDistance = 60f;
-        [AutoConfig("Singularity On Death: Projectile Max Horizontal Speed", 20f)]
+        [AutoConfig("On-Death : Projectile Max Horizontal Speed", "Expressed in meters per second", 20f)]
         public static float singularityHorizontalSpeed = 20f;
         public static float singularityProjectileAntiGravity = 0.5f;
-        [AutoConfig("Singularity On Death: Singularity Radius", 8f)]
+        [AutoConfig("on-Death : Void Singularity Radius", "Expressed in meters", 8f)]
         public static float singularityRadius = 8f;
-        [AutoConfig("Singularity On Death: Singularity Duration", 3)]
+        [AutoConfig("On-Death : Void Singularity Duration", "Expressed in seconds", 3)]
         public static float singularityDuration = 3f;
 
-        [AutoConfig("Nullify Stack On Hit: Base Duration", 18)]
+        [AutoConfig("On-Hit : Nullify Stack Base Duration", "Expressed in seconds", 18)]
         public static float voidtouchedNullifyBaseDuration = 18;
         public override string eliteName => "Voidtouched";
 

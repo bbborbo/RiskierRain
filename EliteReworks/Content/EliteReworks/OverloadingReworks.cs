@@ -19,30 +19,31 @@ namespace FruityElites.EliteReworks
 {
     class OverloadingReworks : EliteReworkBase<OverloadingReworks>
     {
-        [AutoConfig("Bomb On World Impact: Blast Radius", 8f)]
+        [AutoConfig("On-Hit : Lightning Stake Blast Radius", "Expressed in meters.", 8f)]
         public static float overloadingBombBlastRadius =  8f;
-        [AutoConfig("Bomb On World Impact: Lifetime", 1.25f)]
+        [AutoConfig("On-Hit : Lightning Stake Blast Delay", "Expressed in seconds.", 1.25f)]
         public static float overloadingBombLifetime = 1.25f;
-        [AutoConfig("Bomb On World Impact: Total Damage Coefficient", "Vanilla is 0.5", 1.0f)]
+        [AutoConfig("On-Hit : Lightning Stake Total Damage", "Expressed as a percentage (eg 1.0 is 100%). Vanilla is 0.5", 1.0f)]
         public static float overloadingBombDamage = 1.0f; //0.5f
 
-        [AutoConfig("Shield Conversion Fraction", "Set to 0.5 or -1 to disable the hook, which should make it compatible with ZetAspects", 0.33f)]
-        public static float overloadingShieldConversionFraction = 0.33f; //5f
-        [AutoConfig("Shield Recharge Delay", "Seconds to increase shield recharge delay. Vanilla is 0", -2f)]
-        public static float overloadingShieldRechargeDelay = -2f; //0f
-        [AutoConfig("Shield Recharge Delay", "Seconds to further increase shield recharge delay for Champion/Boss enemies. Vanilla is 0", 4f)]
-        public static float overloadingShieldRechargeDelayChampions = 4f; //0f
-        [AutoConfig("Smite On Death: Count Base", "Rounded up", 2f)]
+        [AutoConfig("Passive : Shield Conversion Fraction", "Set to 0.5 or -1 to disable the hook, which should make it compatible with ZetAspects", 0.33f)]
+        public static float overloadingShieldConversionFraction = 0.33f; //0.5f
+        [AutoConfig("Passive : Shield Recharge Delay (Non-Champion)", "Recharge delay for non-Champion enemies. Vanilla is 7", 5f)]
+        public static float overloadingShieldRechargeDelay = 5f; //7f
+        [AutoConfig("Passive : Shield Recharge Delay (Champion Only)", "Recharge delay for Champion/Boss enemies. Expressed in seconds. Vanilla is 7", 9f)]
+        public static float overloadingShieldRechargeDelayChampions = 9f; //7f
+
+        [AutoConfig("On-Death : Smite Count Base", "How many nearby enemies to strike on-death. Rounded up. Vanilla is 0", 2f)]
         public static float overloadingSmiteCountBase = 2;
-        [AutoConfig("Smite On Death: Count By Radius", "Rounded up", 1f)]
+        [AutoConfig("On-Death : Smite  Count By Radius", "How many nearby enemies to strike on-death per unit of body size. Rounded up. Vanilla is 0", 1f)]
         public static float overloadingSmiteCountPerRadius = 1f;
-        [AutoConfig("Smite On Death: Max Range Base", 18f)]
+        [AutoConfig("On-Death : Smite Max Range Base", "Expressed in meters. Vanilla is 0.", 18f)]
         public static float overloadingSmiteRangeBase = 18f;
-        [AutoConfig("Smite On Death: Max Range By Radius", "How much to scale the smite range by unit of body size", 9f)]
+        [AutoConfig("On-Death : Smite Max Range By Radius", "Per unit of body size. Expressed in meters. Vanilla is 0.", 9f)]
         public static float overloadingSmiteRangePerRadius = 9f;
-        [AutoConfig("Smite On Death: Damage Coefficient Initial", 10f)]
+        [AutoConfig("On-Death : Smite Base Damage Coefficient Initial", "Expressed as a percentage of killer's base damage (eg 10.0 is 1000%). Vanilla is N/A", 10f)]
         public static float overloadingSmiteStartingDamage = 10f;
-        [AutoConfig("Smite On Death: Damage Coefficient Per Strike", 5f)]
+        [AutoConfig("On-Death : Smite Base Damage Coefficient Per Strike", "How much to increase damage per consecutive strike. Expressed as a percentage of killer's base damage (eg 5.0 is 500%). Vanilla is N/A", 5f)]
         public static float overloadingSmiteDamagePerStrike = 5f;
         public override string eliteName => "Overloading";
 
@@ -72,9 +73,8 @@ namespace FruityElites.EliteReworks
         {
             if (sender.HasBuff(RoR2Content.Buffs.AffixBlue))
             {
-                args.shieldDelaySecondsIncreaseAddPreMult += overloadingShieldRechargeDelay;
-                if (sender.isChampion)
-                    args.shieldDelaySecondsIncreaseAddPreMult += overloadingShieldRechargeDelayChampions;
+                float delay = sender.isChampion ? overloadingShieldRechargeDelayChampions : overloadingShieldRechargeDelay;
+                args.shieldDelaySecondsIncreaseAddPreMult += delay - BaseStats.BaseShieldDelaySeconds;
             }
         }
 
@@ -89,7 +89,14 @@ namespace FruityElites.EliteReworks
                 if (victimBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                 {
                     int maxStrikeCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.bestFitRadius * overloadingSmiteCountPerRadius);
+
+                    if (maxStrikeCount <= 0 )
+                        return;
+
                     float range = overloadingSmiteRangeBase + victimBody.radius * overloadingSmiteRangePerRadius;
+                    if (range <= 0)
+                        return;
+
                     float baseDamage = attackerBody.baseDamage;
                     float smiteDamageCoefficient = 5f;
                     ProcChainMask procChainMask6 = damageReport.damageInfo.procChainMask;

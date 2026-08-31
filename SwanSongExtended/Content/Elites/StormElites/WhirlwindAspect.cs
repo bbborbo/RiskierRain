@@ -39,8 +39,8 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
-        public static float squallDamagePerSecond = 50f;
-        public static float squallDamagePerLevel = 0.5f;//0.2f
+        public static float squallDamagePerSecond = 40f;
+        public static float squallDamagePerLevel = 0.4f;//0.2f
         public static float squallAimDamping = 1.1f;
         public static float squallAimMaxSpeed = 40f;
         public static float squallBeamRadius = 1.75f;
@@ -634,7 +634,7 @@ namespace SwanSongExtended.Elites
                 procChainMask = default(ProcChainMask),
                 owner = base.gameObject,
                 weapon = base.gameObject,
-                damage = WhirlwindAspect.squallDamagePerSecond * Tools.GetAmbientLevelScalar(0.2f) / WhirlwindAspect.squallBeamTickFrequency,
+                damage = WhirlwindAspect.squallDamagePerSecond * Tools.GetAmbientLevelScalar(WhirlwindAspect.squallDamagePerLevel) / WhirlwindAspect.squallBeamTickFrequency,
                 damageColorIndex = DamageColorIndex.Default,
                 damageType = DamageType.Generic,
                 falloffModel = BulletAttack.FalloffModel.None,

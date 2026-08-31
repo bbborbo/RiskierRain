@@ -77,7 +77,7 @@ namespace FruityElites.EliteReworks
         public static float flameAuraDamageInterval = 0.5f;
 
         [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 10f)]
-        public static float flameAuraIgniteTotalDamageBase = 10f;
+        public static float flameAuraIgniteTotalDamageBase = 5f;
         [AutoConfig("Passive : Flame Aura Ignite Damage Level", 
             "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.4f)]
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;

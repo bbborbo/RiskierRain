@@ -74,7 +74,7 @@ namespace SwanSongExtended.Components
 			this.meshVisuals[this.bounces].SetActive(false);
 			Util.PlaySound(this.bounceSoundStrings[this.bounces], base.gameObject);
 
-			SurgingAspect.FireRingAuthority(bouncePosition, transform.forward, delayBlast.attacker, delayBlast.baseDamage, delayBlast.crit);
+			SurgingAspect.FireRingAuthority(bouncePosition, transform.forward, this.gameObject, delayBlast.baseDamage, delayBlast.crit);
 
 			this.bounces++;
 			if (this.bounces >= maxBounces)

@@ -143,6 +143,7 @@ namespace SwanSongExtended.Elites
             if (waveProjectilePrefab.TryGetComponent(out TeamFilter teamFilter))
             {
                 teamFilter.defaultTeam = TeamIndex.Monster;
+                teamFilter.teamIndex = TeamIndex.Monster;
             }
 
             if (waveProjectilePrefab.TryGetComponent(out ProjectileDamage pd))
@@ -153,6 +154,7 @@ namespace SwanSongExtended.Elites
 
             if (waveProjectilePrefab.TryGetComponent(out ProjectileController pc))
             {
+                pc.teamFilter = teamFilter;
                 SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Brother.BrotherSunderWaveGhost_prefab, (baseGhost) =>
                 {
                     GameObject waveGhost = baseGhost.InstantiateClone("FloodWaveProjectileGhost");
@@ -188,6 +190,7 @@ namespace SwanSongExtended.Elites
 
             if(waveProjectilePrefab.TryGetComponent(out ProjectileOverlapAttack overlap))
             {
+                overlap.resetInterval = 1f;
                 overlap.overlapProcCoefficient = waveProjectileProcCoefficient;
                 overlap.forceVector = Vector3.up * waveProjectileForce;
             }
@@ -252,7 +255,9 @@ namespace SwanSongExtended.Elites
         {
             cannonballProjectilePrefab = spiteBomb.InstantiateClone("FloodCannonballProjectile", true);
 
-            if(cannonballProjectilePrefab.TryGetComponent(out SpiteBombController bombController))
+            cannonballProjectilePrefab.AddComponent<TeamComponent>();
+
+            if (cannonballProjectilePrefab.TryGetComponent(out SpiteBombController bombController))
             {
                 CannonballController cannonball = cannonballProjectilePrefab.AddComponent<CannonballController>();
                 HG.ArrayUtils.CloneTo(bombController.bounceSoundStrings, ref cannonball.bounceSoundStrings);
@@ -328,6 +333,8 @@ namespace SwanSongExtended.Elites
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
 
+                TeamComponent teamComponent = gameObject.GetComponent<TeamComponent>();
+                teamComponent.teamIndex = team;
                 TeamFilter teamFilter = gameObject.GetComponent<TeamFilter>();
                 teamFilter.teamIndex = team;
 
@@ -419,14 +426,24 @@ namespace SwanSongExtended.Elites
             {
                 Vector3 dir = Quaternion.AngleAxis(num * (float)i, Vector3.up) * point;
 
-                ProjectileManager.instance.FireProjectileWithoutDamageType(
-                    SurgingAspect.waveProjectilePrefab,
-                    position + dir * cannonballBlastRadius, Util.QuaternionSafeLookRotation(dir),
-                    attacker,
-                    waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel),
-                    0,
-                    isCrit,
-                    DamageColorIndex.Default, null, -1f);
+                DamageTypeCombo damageType = new DamageTypeCombo();
+                    damageType.AddModdedDamageType(riptideDamageType);
+                FireProjectileInfo fpi = new FireProjectileInfo()
+                {
+                    projectilePrefab = waveProjectilePrefab,
+                    position = position + dir * cannonballBlastRadius,
+                    rotation = Util.QuaternionSafeLookRotation(dir),
+                    owner = attacker,
+                    damage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel),
+                    force = 0,
+                    crit = isCrit,
+                    damageColorIndex = DamageColorIndex.Default,
+                    target = null,
+                    speedOverride = -1f,
+                    damageTypeOverride = damageType
+                };
+
+                ProjectileManager.instance.FireProjectile(fpi);
             }
         }
     }

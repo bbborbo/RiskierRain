@@ -54,6 +54,12 @@ namespace FruityElites
         {
             return (d * 100f).ToString() + "%";
         }
+        public static float GetAmbientLevelScalar(float scalar)
+        {
+            if (!Run.instance)
+                return 1;
+            return 1 + scalar * Run.instance.ambientLevel;
+        }
 
         #region Materials + Etc
         internal static void GetMaterial(GameObject model, string childObject, Color color, ref Material material, float scaleMultiplier = 1, bool replaceAll = false)

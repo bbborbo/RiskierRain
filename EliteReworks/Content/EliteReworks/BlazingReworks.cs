@@ -57,15 +57,16 @@ namespace FruityElites.EliteReworks
     {
         public static GameObject flameAuraPrefab;
         public static GameObject flameAuraMaxRangeIndicatorPrefab;
+        public static GameObject extinguishImpactEffect;
 
         public static BuffDef accelerantBuff;
         [AutoConfig("On-Death : Accelerant Buff Duration", "Expressed in seconds. Vanilla is N/A", 8f)]
         public static float accelerantDuration = 8f;
         [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a percentage (eg 0.25 is 25%). Vanilla is N/A", 0.25f)]
         public static float accelerantAttackSpeed = 0.25f;
-        [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a percentage (eg 0.25 is 25%). Vanilla is N/A", 0.0f)]
+        [AutoConfig("On-Death : Accelerant Movement Speed", "Expressed as a percentage (eg 0.25 is 25%). Vanilla is N/A", 0.0f)]
         public static float accelerantMovementSpeed = 0.0f;
-        [AutoConfig("On-Death : Accelerant Attack Speed", "Expressed as a chance out of 100 (eg 100 is 100%). Vanilla is N/A", 100f)]
+        [AutoConfig("On-Death : Accelerant Ignite Chance", "Expressed as a chance out of 100 (eg 100 is 100%). Vanilla is N/A", 100f)]
         public static float accelerantIgniteChance = 100f;
 
         [AutoConfig("Passive : Flame Aura Range", "Maximum range of flame aura, added to body radius. Expressed in meters. Vanilla is N/A", 18f)]
@@ -75,10 +76,10 @@ namespace FruityElites.EliteReworks
         [AutoConfig("Passive : Flame Aura Damage Interval", "Duration in seconds between ticks of damage. Vanilla is N/A", 0.5f)]
         public static float flameAuraDamageInterval = 0.5f;
 
-        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 0.5f)]
+        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 10f)]
         public static float flameAuraIgniteTotalDamageBase = 10f;
         [AutoConfig("Passive : Flame Aura Ignite Damage Level", 
-            "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.5f)]
+            "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.4f)]
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;
 
 
@@ -98,7 +99,19 @@ namespace FruityElites.EliteReworks
             });
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BurnNearby.HelfireController_prefab, CreateFlameAura);
             EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_NearbyDamageBonus.NearbyDamageBonusIndicator_prefab, CreateRangeIndicator);
+            EliteReworksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Bandit2.Bandit2SmokeBombMini_prefab, CreateExtinguishImpactEffect);
+            //RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Bandit2.Bandit2SmokeBombMini_prefab
+            //RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.MuzzleflashSmokeRing_prefab
+            //RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Toolbot.
+            //RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MiniMushroom.SporeGrenadeGasImpact_prefab
+            //RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_FriendUnit.FriendUnitImpact_prefab
             base.Init();
+        }
+
+        private void CreateExtinguishImpactEffect(GameObject obj)
+        {
+            extinguishImpactEffect = obj.InstantiateClone("BlazingExtinguishImpactEffect", false);
+            Content.CreateAndAddEffectDef(extinguishImpactEffect);
         }
 
         private void CreateRangeIndicator(GameObject obj)
@@ -281,7 +294,7 @@ namespace FruityElites.EliteReworks
 
             indicatorEnabled = true;
             auraInstance = Instantiate(BlazingReworks.flameAuraPrefab, body.transform);
-            ServerSetAuraRange(0);
+            SetAuraRange(0);
 
             if (NetworkServer.active)
             {
@@ -314,7 +327,7 @@ namespace FruityElites.EliteReworks
                 ).ToList();
 
                 foreach(AffixRedBehavior red in reds)
-                    red.ResetFlameAura();
+                    red.ServerSetAuraRange(0);
             }
             //if(body.healthComponent.alive == false && body.healthComponent.wasAlive == true && damageReport.attackerTeamIndex != damageReport.victimTeamIndex)
             //{
@@ -343,7 +356,7 @@ namespace FruityElites.EliteReworks
                     //get targets
                     List<HurtBox> enemies = GetNearbyTargets(currentRange, body.teamComponent.teamIndex, true);
 
-                    float totalDamage = (BlazingReworks.flameAuraIgniteTotalDamageBase + BlazingReworks.flameAuraIgniteTotalDamageLevel * (body.level - 1));
+                    float totalDamage = BlazingReworks.flameAuraIgniteTotalDamageBase * Tools.GetAmbientLevelScalar(BlazingReworks.flameAuraIgniteTotalDamageLevel);
                     Inventory inv = body.inventory;
                     while (damageStopwatch < 0)
                     {
@@ -435,13 +448,6 @@ namespace FruityElites.EliteReworks
             {
                 auraInstance.transform.localScale = Vector3.one * auraScale * currentRange;
             }
-        }
-
-        public void ResetFlameAura()
-        {
-            ServerSetAuraRange(0);
-            //body.outOfCombatStopwatch = 0;
-            //body.outOfDanger = false;
         }
     }
 }

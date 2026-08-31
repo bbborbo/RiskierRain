@@ -417,6 +417,18 @@ namespace FruityElites.EliteReworks
             bool isActive = auraInstance.activeSelf;
             if(isActive != shouldBeActive)
             {
+                if(shouldBeActive == false)
+                {
+                    //EffectManager.SimpleImpactEffect(BlazingReworks)
+                    EffectManager.SpawnEffect(BlazingReworks.extinguishImpactEffect,
+                        new EffectData
+                        {
+                            origin = body.corePosition,
+                            scale = 1,
+                            rotation = UnityEngine.Random.rotation
+                        }, false);
+                    damageStopwatch = flameAuraDamageInterval;
+                }
                 auraInstance.SetActive(shouldBeActive);
             }
             if (shouldBeActive)
@@ -428,7 +440,6 @@ namespace FruityElites.EliteReworks
         public void ResetFlameAura()
         {
             ServerSetAuraRange(0);
-            damageStopwatch = flameAuraDamageInterval;
             //body.outOfCombatStopwatch = 0;
             //body.outOfDanger = false;
         }

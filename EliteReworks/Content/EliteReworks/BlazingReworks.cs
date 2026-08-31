@@ -12,9 +12,47 @@ using R2API;
 using UnityEngine.AddressableAssets;
 using System.Collections.ObjectModel;
 using System.Linq;
+using R2API.Networking.Interfaces;
+using R2API.Networking;
 
 namespace FruityElites.EliteReworks
 {
+    public class SyncBlazingAuraRadius : INetMessage
+    {
+        GameObject bodyObject;
+        float radius;
+        public SyncBlazingAuraRadius()
+        {
+        }
+        public SyncBlazingAuraRadius(GameObject bodyObject, float radius)
+        {
+            this.bodyObject = bodyObject;
+            this.radius = radius;
+        }
+
+        public void Serialize(NetworkWriter writer)
+        {
+            writer.Write(this.bodyObject);
+            writer.Write((double)this.radius);
+        }
+        public void Deserialize(NetworkReader reader)
+        {
+            this.bodyObject = reader.ReadGameObject();
+            this.radius = (float)reader.ReadDouble();
+        }
+
+        public void OnReceived()
+        {
+            if (!NetworkServer.active)
+                return;
+
+            if (bodyObject.TryGetComponent(out AffixRedBehavior red))
+            {
+                red.SetAuraRange(radius);
+            }
+        }
+    }
+
     class BlazingReworks : EliteReworkBase<BlazingReworks>
     {
         public static GameObject flameAuraPrefab;
@@ -51,6 +89,8 @@ namespace FruityElites.EliteReworks
 
         public override void Init()
         {
+            NetworkingAPI.RegisterMessageType<SyncBlazingAuraRadius>();
+
             accelerantBuff = Content.CreateAndAddBuff("bdBlazingAccelerant", null, Color.red, false, false);
             EliteReworksPlugin.LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.bdOnFire_asset, (onFire) =>
             {
@@ -241,7 +281,7 @@ namespace FruityElites.EliteReworks
 
             indicatorEnabled = true;
             auraInstance = Instantiate(BlazingReworks.flameAuraPrefab, body.transform);
-            SetAuraRange(0);
+            ServerSetAuraRange(0);
 
             if (NetworkServer.active)
             {
@@ -288,8 +328,8 @@ namespace FruityElites.EliteReworks
             {
                 if (currentRange < minRange)
                     damageStopwatch = flameAuraDamageInterval;
-                if (currentRange < flameAuraMaxRange)
-                    SetAuraRange(MathF.Min(flameAuraMaxRange, currentRange + flameAuraGrowthPerSecond * Time.deltaTime));
+
+                SetAuraRange(MathF.Min(flameAuraMaxRange, currentRange + flameAuraGrowthPerSecond * Time.deltaTime));
             }
         }
 
@@ -361,8 +401,16 @@ namespace FruityElites.EliteReworks
             sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(mask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(candidates);
             return candidates;
         }
+        private void ServerSetAuraRange(float newRange)
+        {
+            if (NetworkServer.active)
+            {
+                SetAuraRange(newRange);
+                new SyncBlazingAuraRadius(body.gameObject, newRange).Send(NetworkDestination.Clients);
+            }
+        }
 
-        void SetAuraRange(float newRange)
+        internal void SetAuraRange(float newRange)
         {
             currentRange = newRange;
             bool shouldBeActive = currentRange > minRange;
@@ -379,7 +427,7 @@ namespace FruityElites.EliteReworks
 
         public void ResetFlameAura()
         {
-            SetAuraRange(0);
+            ServerSetAuraRange(0);
             damageStopwatch = flameAuraDamageInterval;
             //body.outOfCombatStopwatch = 0;
             //body.outOfDanger = false;

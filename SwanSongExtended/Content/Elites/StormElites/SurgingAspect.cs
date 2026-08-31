@@ -718,7 +718,8 @@ namespace SwanSongExtended.Elites
 
         void StepFireWaveProjectile()
         {
-            SurgingAspect.FireRingAuthority(teleportLocation, body.inputBank.aimDirection, body.gameObject, body.damage, Util.CheckRoll(body.crit, body.master));
+            if(Tools.IsEasyMode() == false)
+                SurgingAspect.FireRingAuthority(teleportLocation, body.inputBank.aimDirection, body.gameObject, body.damage, Util.CheckRoll(body.crit, body.master));
 
             QuickCooldown(SurgingAspect.enemySurgeDashCooldown);
             this.foundLocation = false;

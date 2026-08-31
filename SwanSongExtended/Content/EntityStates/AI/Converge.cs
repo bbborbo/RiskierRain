@@ -29,7 +29,7 @@ namespace SwanSongExtended.States.AI
 			Vector3 defaultPos = GetDefaultConvergePosition();
 
 			//if no cyclone: leader does whatever it wants. followers follow leader
-			if (CycloneController.instance.primaryCycloneInstance == null)
+			if (CycloneController.instance.defaultConvergePosition == null)
 			{
 				if (body.HasBuff(StormsCore.CycloneLeader))
                 {
@@ -41,7 +41,7 @@ namespace SwanSongExtended.States.AI
 
 			//if cyclone...
 			//leader runs to, then stops near center of cyclone
-			Vector3 cyclonePos = CycloneController.instance.primaryCycloneInstance.transform.position;
+			Vector3 cyclonePos = CycloneController.instance.defaultConvergePosition.Value;
 			float sqrDistance = ((Vector2)cyclonePos - (Vector2)body.footPosition).sqrMagnitude;
 			if (body.HasBuff(StormsCore.CycloneLeader))
 			{

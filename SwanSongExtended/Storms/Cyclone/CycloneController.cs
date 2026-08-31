@@ -64,12 +64,13 @@ namespace SwanSongExtended.Storms
                 leaderElite.body.RemoveBuff(StormsCore.CycloneLeader);
             leaderElite = null;
         }
+        public Vector3? defaultConvergePosition;
         public GameObject primaryCycloneInstance { get; private set; }
 
         public static bool GetShouldConverge()
         {
             return instance != null
-                && (instance.primaryCycloneInstance != null || instance.leaderElite != null);
+                && (instance.defaultConvergePosition != null || instance.leaderElite != null);
         }
         public static Vector3 convergePositionGround;
         public static Vector3 convergePositionAir;
@@ -160,20 +161,20 @@ namespace SwanSongExtended.Storms
             NodeGraph airNodes = SceneInfo.instance.GetNodeGraph(MapNodeGroup.GraphType.Air);
             NodeGraph groundNodes = SceneInfo.instance.GetNodeGraph(MapNodeGroup.GraphType.Ground);
 
-            GameObject targetObject = primaryCycloneInstance;
+            Vector3? targetPosition = defaultConvergePosition;
             if (leaderElite != null && leaderElite.gameObject != null && leaderElite.body.HasBuff(StormsCore.CycloneProtection))
             {
-                targetObject = leaderElite.gameObject;
+                targetPosition = leaderElite.transform.position;
             }
-            if (targetObject == null)
+            if (targetPosition == null)
                 return;
 
-            NodeGraph.NodeIndex airNode = airNodes.FindClosestNode(targetObject.transform.position, HullClassification.Golem);
+            NodeGraph.NodeIndex airNode = airNodes.FindClosestNode(targetPosition.Value, HullClassification.Golem);
             if (airNodes.GetNodePosition(airNode, out Vector3 airPos))
             {
                 convergePositionAir = airPos;
             }
-            NodeGraph.NodeIndex groundNode = groundNodes.FindClosestNode(targetObject.transform.position, HullClassification.BeetleQueen);
+            NodeGraph.NodeIndex groundNode = groundNodes.FindClosestNode(targetPosition.Value, HullClassification.BeetleQueen);
             if (groundNodes.GetNodePosition(groundNode, out Vector3 groundPos))
             {
                 convergePositionGround = groundPos;
@@ -226,6 +227,11 @@ namespace SwanSongExtended.Storms
                     instance.beamPreVfxInstance = null;
                 }
             }
+            public override void OnExit()
+            {
+                base.OnExit();
+                UpdateTelegraph(false);
+            }
 
             public void ElectLeader(AffixSquallBehavior candidateElite)
             {
@@ -257,7 +263,13 @@ namespace SwanSongExtended.Storms
             public override void OnEnter()
             {
                 if (CycloneController.instance.primaryCycloneInstance)
+                {
                     Destroy(CycloneController.instance.primaryCycloneInstance);
+                }
+                if (CycloneController.instance.defaultConvergePosition != null)
+                {
+                    CycloneController.instance.defaultConvergePosition = null;
+                }
 
                 ResetRefreshCountdown();
                 DemoteCurrentLeader();
@@ -360,16 +372,16 @@ namespace SwanSongExtended.Storms
                     //}
 
                     Debug.LogError("Electing leader and placing cyclone");
-                    GameObject cycloneInstance = UnityEngine.Object.Instantiate(StormsCore.cycloneWardPrefab, nodePosition, Quaternion.identity);
-                    cycloneInstance.GetComponent<TeamFilter>().teamIndex = TeamIndex.None;
-                    CycloneController.instance.primaryCycloneInstance = cycloneInstance;
                     ElectLeader(randomElite);
-                    NetworkServer.Spawn(cycloneInstance);
+                    CycloneController.instance.defaultConvergePosition = nodePosition;
 
-                    StormsCore.cycloneMaterial.SetFloat("_TriplanarOn", 0);
-                    StormsCore.cycloneMaterial.SetInt("_TriplanarOn", 0);
-                    StormsCore.cycloneMaterial.SetFloat("_TriplanarOff", 1);
-                    StormsCore.cycloneMaterial.SetInt("_TriplanarOff", 1);
+                    if(Tools.IsEasyMode() == false)
+                    {
+                        GameObject cycloneInstance = UnityEngine.Object.Instantiate(StormsCore.cycloneWardPrefab, nodePosition, Quaternion.identity);
+                        cycloneInstance.GetComponent<TeamFilter>().teamIndex = TeamIndex.None;
+                        CycloneController.instance.primaryCycloneInstance = cycloneInstance;
+                        NetworkServer.Spawn(cycloneInstance);
+                    }
 
                     outer.SetNextState(GetNextState());
                 }
@@ -453,7 +465,7 @@ namespace SwanSongExtended.Storms
             public override BaseCycloneState GetNextState()
             {
                 //if no cyclone or timed out with no leader
-                if (instance.primaryCycloneInstance == null 
+                if ((instance.primaryCycloneInstance == null && instance.defaultConvergePosition == null)
                     || instance.leaderElite == null
                     || shouldMoveCyclone == true)
                     return new PrepareCyclone();

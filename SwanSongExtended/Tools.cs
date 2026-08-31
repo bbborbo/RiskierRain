@@ -217,6 +217,12 @@ namespace SwanSongExtended
                 return 1;
             return 1 + scalar * Run.instance.ambientLevel;
         }
+        public static bool IsEasyMode(DifficultyIndex minDifficultyIndex = DifficultyIndex.Easy)
+        {
+            if (Run.instance == null)
+                return true;
+            return Run.instance.selectedDifficulty <= minDifficultyIndex;
+        }
 
         #region Materials + Etc
         internal static void GetMaterial(GameObject model, string childObject, Color color, ref Material material, float scaleMultiplier = 1, bool replaceAll = false)

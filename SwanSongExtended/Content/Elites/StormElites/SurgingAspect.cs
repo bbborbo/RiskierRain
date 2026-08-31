@@ -50,6 +50,7 @@ namespace SwanSongExtended.Elites
         /// </summary>
         public static int cannonballBouncesPerSize = 1;
         public static float cannonballInitialVelocity = 50f;
+        public static float cannonballBlastRadius = 4f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
@@ -139,13 +140,18 @@ namespace SwanSongExtended.Elites
             Vector3 size = new Vector3(20f, 2.0f, 1.0f);//30f, 4.5f, 1.0f
             waveProjectilePrefab = baseWaveProjectile.InstantiateClone("FloodWaveProjectile", true);
 
-            if(waveProjectilePrefab.TryGetComponent(out ProjectileDamage pd))
+            if (waveProjectilePrefab.TryGetComponent(out TeamFilter teamFilter))
+            {
+                teamFilter.defaultTeam = TeamIndex.Monster;
+            }
+
+            if (waveProjectilePrefab.TryGetComponent(out ProjectileDamage pd))
             {
                 pd.damageType = new DamageTypeCombo();
                 pd.damageType.AddModdedDamageType(riptideDamageType);
             }
 
-            if(waveProjectilePrefab.TryGetComponent(out ProjectileController pc))
+            if (waveProjectilePrefab.TryGetComponent(out ProjectileController pc))
             {
                 SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Brother.BrotherSunderWaveGhost_prefab, (baseGhost) =>
                 {
@@ -316,26 +322,30 @@ namespace SwanSongExtended.Elites
                     level = Run.instance.ambientLevelFloor;
 
                 GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(cannonballProjectilePrefab, spawnPosition, UnityEngine.Random.rotation);
+
                 CannonballController cannonball = gameObject.GetComponent<CannonballController>();
                 cannonball.maxBounces = cannonballBouncesMin + (int)victimBody.radius * (cannonballBouncesPerSize - 1);
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
-                DelayBlast delayBlast = cannonball.delayBlast;
+
                 TeamFilter teamFilter = gameObject.GetComponent<TeamFilter>();
+                teamFilter.teamIndex = team;
+
+                DelayBlast delayBlast = cannonball.delayBlast;
+                delayBlast.teamFilter = teamFilter;
                 cannonball.bouncePosition = bouncePosition;
                 cannonball.initialVelocityY = cannonballInitialVelocity;
                 delayBlast.position = spawnPosition;
                 delayBlast.baseDamage = waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel);
                 delayBlast.baseForce = 2300f;
                 delayBlast.attacker = victimBody.gameObject;
-                delayBlast.radius = BombArtifactManager.bombBlastRadius;
+                delayBlast.radius = cannonballBlastRadius;
                 delayBlast.crit = false;
                 delayBlast.procCoefficient = 0.75f;
                 delayBlast.maxTimer = BombArtifactManager.bombFuseTimeout / cannonballGravityCoefficient;
                 delayBlast.timerStagger = 0f;
                 delayBlast.falloffModel = BlastAttack.FalloffModel.Linear;
-                delayBlast.teamFilter = teamFilter;
-                teamFilter.teamIndex = team;
+
                 NetworkServer.Spawn(gameObject);
             }
         }
@@ -411,12 +421,12 @@ namespace SwanSongExtended.Elites
 
                 ProjectileManager.instance.FireProjectileWithoutDamageType(
                     SurgingAspect.waveProjectilePrefab,
-                    position, Util.QuaternionSafeLookRotation(dir),
+                    position + dir * cannonballBlastRadius, Util.QuaternionSafeLookRotation(dir),
                     attacker,
                     waveProjectileBaseDamage * Tools.GetAmbientLevelScalar(waveProjectileDamageLevel),
                     0,
                     isCrit,
-                    DamageColorIndex.Default, null, -1f) ;
+                    DamageColorIndex.Default, null, -1f);
             }
         }
     }

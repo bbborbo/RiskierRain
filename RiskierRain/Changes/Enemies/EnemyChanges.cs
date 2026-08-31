@@ -39,6 +39,18 @@ namespace RiskierRain.Changes
             ChangeSolusScorcher();
             ChangeSolusProspector();
             ChangeLesserWisp();
+            ChangeAWU();
+        }
+
+        static float awuBaseHealth = 1600; //2500
+        private static void ChangeAWU()
+        {
+            LoadAsync<CharacterBody>(RoR2_Base_RoboBallBoss.SuperRoboBallBossBody_prefab, BodyStats);
+            void BodyStats(CharacterBody body)
+            {
+                body.baseMaxHealth = awuBaseHealth;
+                body.levelMaxHealth = awuBaseHealth * 0.3f;
+            }
         }
 
         #region enemy use equip

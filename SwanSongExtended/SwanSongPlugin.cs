@@ -97,7 +97,7 @@ namespace SwanSongExtended
         public static bool iabMissilesLoaded => ModLoaded("com.RiskOfBrainrot.IAmBecomeMissiles");
         public static bool isAELoaded => ModLoaded("com.Borbo.ArtificerExtended");
         public static bool is2R4RLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
-        public static bool isBossDropLoaded => ModLoaded("com.RiskOfBrainrot.FruityBossDrop");
+        public static bool isBossDropLoaded => ModLoaded(BossDropRework.BossDropReworkPlugin.guid);
         public static bool isHBULoaded => ModLoaded("com.Borbo.HuntressBuffULTIMATE");
         public static bool isScepterLoaded => ModLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => ModLoaded("com.johnedwa.RTAutoSprintEx");

@@ -260,7 +260,7 @@ namespace BossDropRework
         {
             //if no drop table, no drops
             DeathRewards deathRewards = GetDeathRewardsFromTarget(body);
-            if (deathRewards == null || deathRewards.bossDropTable == null)
+            if (deathRewards == null || deathRewards.bossDropTable == null || deathRewards.bossDropTable.GetPickupCount() <= 0)
             {
                 dropTable = null;
                 return 0;

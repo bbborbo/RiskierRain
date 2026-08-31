@@ -88,6 +88,8 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
             CharacterBody characterBody = damageReport.attackerBody;
             if (characterBody != null && damageReport.victimBody != null && damageReport.victimBody.TryGetComponent(out DeathRewards deathRewards))
 			{
+                if (deathRewards.bossDropTable == null || deathRewards.bossDropTable.GetPickupCount() <= 0)
+                    return;
 				Vector3 vector = damageReport.victimBody.corePosition;
 				Vector3 normalized = (vector - damageReport.attackerBody.corePosition).normalized;
                 if (GetScalpelProc(characterBody))
@@ -117,7 +119,7 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
 
         private void ScalpelDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
         {
-			if(dropChance < 100 && GetScalpelProc(attacker))
+			if(dropChance > 0 && dropChance < 100 && GetScalpelProc(attacker))
 			    dropChance = 100;
         }
         #endregion

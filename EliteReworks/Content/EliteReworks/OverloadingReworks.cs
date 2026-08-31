@@ -120,7 +120,7 @@ namespace FruityElites.EliteReworks
                     {
                         EffectManager.SpawnEffect(OrbStorageUtility.Get("Prefabs/Effects/ImpactEffects/LightningStrikeImpact"), new EffectData
                         {
-                            origin = victimBody.corePosition
+                            origin = damageReport.damageInfo.position
                         }, true);
                     }
                     else

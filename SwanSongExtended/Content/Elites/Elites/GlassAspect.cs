@@ -119,6 +119,8 @@ namespace SwanSongExtended.Elites
         {
             if (!IsElite(sender))
                 return;
+            args.preventHitStunCount++;
+
             int gateCt = healthGateCountBase + healthGateCountPerSize * Mathf.CeilToInt(sender.radius);
             int glassCt = sender.inventory.GetItemCountEffective(RoR2Content.Items.LunarDagger);
             if (glassCt > 0)

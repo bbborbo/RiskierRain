@@ -40,6 +40,7 @@ namespace MoreStats
         public int bodyScrapRedCount = 0;
         public int bodyScrapYellowCount = 0;
 
+        #region health gate
         public int maxHealthGateCount = 0;
         public float lowestCombinedHealthFraction = 1f;
         internal float GetNextThresholdHealthFraction()
@@ -63,6 +64,10 @@ namespace MoreStats
                 return -1;
             return 1 / (maxHealthGateCount + 1);
         }
+        #endregion
+
+        public bool preventHitStun = false;
+        public float hitStunThresholdScale = 1f;
 
         /// <summary>
         /// Does not reset luckFromMaster
@@ -148,8 +153,25 @@ namespace MoreStats
             GlobalEventManager.onClientDamageNotified += RecordHealthFractionClient;
             CharacterBody.onBodyStartGlobal += RecordHealthFractionBody;
 
+            // Hit Stun
+            On.RoR2.SetStateOnHurt.GetShouldHitStun += OverrideHitStun;
+
             // Body Scrap Count
             On.RoR2.DrifterTrashToTreasureController.OnInventoryChanged += DrifterUpdateScrapCounts;
+        }
+
+        private static bool OverrideHitStun(On.RoR2.SetStateOnHurt.orig_GetShouldHitStun orig, SetStateOnHurt self, HealthComponent healthComponent, float trueDamage)
+        {
+            if (healthComponent.body)
+            {
+                MoreStatCoefficients moreStatCoefficients = GetMoreStatsFromBody(healthComponent.body);
+                if (moreStatCoefficients.preventHitStun == true)
+                    return false;
+
+                trueDamage *= moreStatCoefficients.hitStunThresholdScale;
+            }
+
+            return orig(self, healthComponent, trueDamage);
         }
 
         private static void HookHealthComponentUpdate(ILContext il)
@@ -381,6 +403,17 @@ namespace MoreStats
                 return maxHealthGateCount;
             }
             #endregion
+
+            #region
+            /// <summary>
+            /// Tally of hit stun prevention sources. If over 0, this character will not stagger.
+            /// </summary>
+            public int preventHitStunCount = 0;
+            /// <summary>
+            /// MULTIPLY to increase hit stun threshold. >1 values mean the character will take more damage before staggering.
+            /// </summary>
+            public float hitStunThresholdScaleMult = 1f;
+            #endregion
         }
         public delegate void MoreStatHookEventHandler(CharacterBody sender, MoreStatHookEventArgs args);
 
@@ -439,6 +472,8 @@ namespace MoreStats
                 CustomStats.selfExecutionThresholdBase = StatMods.selfExecutionThresholdBase;
 
                 CustomStats.maxHealthGateCount = StatMods.maxHealthGateCount;
+                CustomStats.hitStunThresholdScale = StatMods.hitStunThresholdScaleMult;
+                CustomStats.preventHitStun = StatMods.preventHitStunCount > 0;
             });
 
             ProcessLuck(c);

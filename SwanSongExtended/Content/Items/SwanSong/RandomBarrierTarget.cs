@@ -13,6 +13,8 @@ using static MoreStats.OnHit;
 using static MoreStats.StatHooks;
 using static SwanSongExtended.Modules.Language.Styling;
 using RoR2.Items;
+using System.Linq;
+
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
@@ -20,7 +22,9 @@ namespace SwanSongExtended.Items
     class RandomBarrierTarget : ItemBase<RandomBarrierTarget>
     {
         public static BuffDef harpoonDebuff;
-        public static GameObject harpoonEffectPrefab;
+        public static GameObject harpoonBodyEffectPrefab;
+        public static GameObject harpoonTetherOriginBodyAttachmentPrefab;
+        public static Material harpoonTargetMaterial;
         public override bool isEnabled => true; 
 
         public static float harpoonBarrierBase = 10;
@@ -30,7 +34,6 @@ namespace SwanSongExtended.Items
         public static float harpoonCritChanceBase = 20f;
         public static float harpoonCritChanceStack = 10f;
 
-        public static Material harpoonTargetMaterial;
 
         public override string ItemName => "Crystal Ball";
 
@@ -86,12 +89,49 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
             harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
 
             GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
-            harpoonEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
+            harpoonBodyEffectPrefab = PrefabAPI.InstantiateClone(deathMarkVisualEffect, "HarpoonTargetVisualEffect");
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_SharedSuffering.SharedSufferingTetherOrigin_prefab, CreateBodyAttachment);
+            harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 170));
             base.Init();
         }
+
+        private void CreateBodyAttachment(GameObject sharedSufferingAttachment)
+        {
+            harpoonTetherOriginBodyAttachmentPrefab = sharedSufferingAttachment.InstantiateClone("RandomBarrierTargetTetherOriginBodyAttachment", true);
+
+            //actually i want this
+            //if(harpoonTetherOriginBodyAttachmentPrefab.TryGetComponent(out SharedSufferingTetherManager sharedSufferingTether))
+            //{
+            //    UnityEngine.Object.Destroy(sharedSufferingTether);
+            //}
+
+            if(harpoonTetherOriginBodyAttachmentPrefab.TryGetComponent(out TetherVfxOrigin tether))
+            {
+                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_SharedSuffering.SharedSufferingConnectionTether_prefab, (sharedSufferingTether) =>
+                {
+                    GameObject tetherPrefab = sharedSufferingTether.InstantiateClone("RandomBarrierTargetConnectionTether", false);
+                    tether.tetherPrefab = tetherPrefab;
+
+                    if(tetherPrefab.TryGetComponent(out LineRenderer line))
+                    {
+                        Material mat = UnityEngine.Object.Instantiate(line.material);
+                        mat.SetColor("_TintColor", new Color32(85, 66, 6, 215));
+                        mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drifter.texDrifterRamp_png).WaitForCompletion());
+                        mat.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_blackbeach.texBbDecalMask2_png).WaitForCompletion());
+
+                        mat.SetFloat("_SoftFactor", 0.65f);
+                        mat.SetFloat("_BrightnessBoost", 1f);
+                        mat.SetFloat("_AlphaBoost", 0.62f);
+                        line.material = mat;
+                    }
+                });
+            }
+
+            Content.AddNetworkedObjectPrefab(harpoonTetherOriginBodyAttachmentPrefab);
+        }
+
         public override void Hooks()
         {
-            harpoonTargetMaterial = CreateMatRecolor(new Color32(210, 140, 32, 100));
 
             GetMoreStatCoefficients += HarpoonDecay;
             //IL.RoR2.HealthComponent.TakeDamageProcess += HarpoonCritReroll;
@@ -208,14 +248,31 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
         private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
+        private static BuffDef buffDef => RandomBarrierTarget.harpoonDebuff;
         public static float baseHauntRadius = 35;
         public static float hauntRetryTime = 1;
         float hauntStopwatch = 0;
+        GameObject tetherOriginInstance;
+        SharedSufferingTetherManager tetherManager;
         void Start()
         {
             hauntStopwatch = RandomBarrierTarget.harpoonTargetTime;
+
+            this.tetherOriginInstance = UnityEngine.Object.Instantiate<GameObject>(RandomBarrierTarget.harpoonTetherOriginBodyAttachmentPrefab, base.body.gameObject.transform);
+            NetworkedBodyAttachment component = this.tetherOriginInstance.GetComponent<NetworkedBodyAttachment>();
+            if (component)
+            {
+                component.AttachToGameObjectAndSpawn(base.gameObject, null);
+            }
+            this.tetherManager = component.GetComponent<SharedSufferingTetherManager>();
         }
 
+        private void OnDisable()
+        {
+            hauntStopwatch = 0;
+        }
+
+        #region barrier on hit
         public void OnDamageDealtServer(DamageReport damageReport)
         {
             if (!damageReport.victimBody.HasBuff(RandomBarrierTarget.harpoonDebuff))
@@ -227,7 +284,16 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                 body.healthComponent.AddBarrierAuthority(barrierGrant * damageReport.damageInfo.procCoefficient);
             }
         }
+        #endregion
         private void FixedUpdate()
+        {
+            TryHauntInterval();
+
+            this.UpdateAfflicted();
+            this.UpdateTethers();
+        }
+
+        private void TryHauntInterval()
         {
             hauntStopwatch += Time.fixedDeltaTime;
             if (hauntStopwatch >= RandomBarrierTarget.harpoonTargetTime)
@@ -242,10 +308,14 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                         radius = baseHauntRadius
                     };
 
-                    TeamMask teamMask = TeamMask.AllExcept(body.teamComponent.teamIndex);
+                    TeamMask teamMask = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
                     List<HurtBox> hurtBoxesList = new List<HurtBox>();
 
-                    sphereSearch.RefreshCandidates().FilterCandidatesByHurtBoxTeam(teamMask).FilterCandidatesByDistinctHurtBoxEntities().GetHurtBoxes(hurtBoxesList);
+                    sphereSearch
+                        .RefreshCandidates()
+                        .FilterCandidatesByHurtBoxTeam(teamMask)
+                        .FilterCandidatesByDistinctHurtBoxEntities()
+                        .GetHurtBoxes(hurtBoxesList);
 
                     int hurtBoxCount = hurtBoxesList.Count;
                     while (hurtBoxCount > 0)
@@ -254,16 +324,26 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                         HealthComponent healthComponent = hurtBoxesList[i].healthComponent;
                         CharacterBody enemyBody = healthComponent.body;
 
-                        if (!enemyBody)
+                        if (!enemyBody || enemyBody.HasBuff(buffDef))
                         {
                             hurtBoxesList.Remove(hurtBoxesList[i]);
                             hurtBoxCount--;
                             continue;
                         }
 
-                        DebuffEnemy(enemyBody);
-                        hauntStopwatch -= RandomBarrierTarget.harpoonTargetTime;
-                        return;
+                        if (TryAdd(enemyBody))
+                        {
+                            if (this.afflicted.Count >= this.currentMax)
+                            {
+                                hauntStopwatch -= RandomBarrierTarget.harpoonTargetTime;
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            hurtBoxesList.Remove(hurtBoxesList[i]);
+                            hurtBoxCount--;
+                        }
                     }
                     hauntStopwatch -= hauntRetryTime;
                 }
@@ -274,7 +354,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         {
             for (int n = 0; n < stack; n++)
             {
-                enemyBody.AddTimedBuffAuthority(RandomBarrierTarget.harpoonDebuff.buffIndex, RandomBarrierTarget.harpoonTargetTime);
+                enemyBody.AddTimedBuffAuthority(buffDef.buffIndex, RandomBarrierTarget.harpoonTargetTime);
             }
 
             //thanks hifu <3
@@ -291,10 +371,40 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
             }
         }
 
-        private void OnDisable()
+        #region tether update
+        List<CharacterBody> afflicted = new List<CharacterBody>();
+        bool afflictedDirty = false;
+        int currentMax = 1;
+        public bool TryAdd(CharacterBody newTarget)
         {
-            hauntStopwatch = 0;
+            if (this.afflicted.Count >= this.currentMax)
+            {
+                return false;
+            }
+            this.afflicted.Add(newTarget);
+            DebuffEnemy(newTarget);
+            this.afflictedDirty = true;
+            return true;
         }
-
+        private void UpdateAfflicted()
+        {
+            for (int i = this.afflicted.Count - 1; i >= 0; i--)
+            {
+                if (this.afflicted[i] == null || !this.afflicted[i].healthComponent.alive || !this.afflicted[i].HasBuff(buffDef))
+                {
+                    this.afflicted.RemoveAt(i);
+                    this.afflictedDirty = true;
+                }
+            }
+        }
+        private void UpdateTethers()
+        {
+            if (this.afflictedDirty)
+            {
+                this.tetherManager.SetAfflicted(this.afflicted);
+                this.afflictedDirty = false;
+            }
+        }
+        #endregion
     }
 }

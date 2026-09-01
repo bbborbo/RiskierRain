@@ -58,11 +58,19 @@ namespace SwanSongExtended.Storms
         }
 
         public AffixSquallBehavior leaderElite { get; private set; }
-        public void DemoteCurrentLeader()
+        public static void DemoteCurrentLeader()
         {
-            if (leaderElite != null && leaderElite.body.HasBuff(StormsCore.CycloneLeader))
-                leaderElite.body.RemoveBuff(StormsCore.CycloneLeader);
-            leaderElite = null;
+            CycloneController.squallTargetBody = null;
+            if(instance != null)
+            {
+                if (instance.leaderElite != null)
+                {
+                    instance.leaderElite.firingState = AffixSquallBehavior.FiringState.Off;
+                    if(instance.leaderElite.body.HasBuff(StormsCore.CycloneLeader))
+                        instance.leaderElite.body.RemoveBuff(StormsCore.CycloneLeader);
+                }
+                instance.leaderElite = null;
+            }
         }
         public Vector3? defaultConvergePosition;
         public GameObject primaryCycloneInstance { get; private set; }
@@ -72,6 +80,8 @@ namespace SwanSongExtended.Storms
             return instance != null
                 && (instance.defaultConvergePosition != null || instance.leaderElite != null);
         }
+
+        public static CharacterBody squallTargetBody;
         public static Vector3 convergePositionGround;
         public static Vector3 convergePositionAir;
 
@@ -94,7 +104,6 @@ namespace SwanSongExtended.Storms
         {
             if (CycloneController.instance == null)
                 return;
-            Debug.Log(instance.cycloneState.ToString());
             if (CycloneController.instance.cycloneState == CycloneState.FiringSquall)
                 return;
             instance.accumulatedSquallTime += time;
@@ -204,9 +213,9 @@ namespace SwanSongExtended.Storms
             public override void OnEnter()
             {
                 Debug.LogError(cycloneState.ToString());
-                UpdateTelegraph(false);
+                //UpdateTelegraph(false);
             }
-            internal void UpdateTelegraph(bool newValue)
+            internal void UpdateTelegraphr(bool newValue)
             {
                 if (newValue == instance.telegraphActive)//(instance.beamPreVfxInstance != null))
                     return;
@@ -230,23 +239,23 @@ namespace SwanSongExtended.Storms
             public override void OnExit()
             {
                 base.OnExit();
-                UpdateTelegraph(false);
+                //UpdateTelegraph(false);
             }
 
             public void ElectLeader(AffixSquallBehavior candidateElite)
             {
                 if (leaderElite == candidateElite || candidateElite == null)
                     return;
-                DemoteCurrentLeader();
+                DemoteCurrentLeaderInternal();
                 candidateElite.body.AddBuff(StormsCore.CycloneLeader);
                 leaderElite = candidateElite;
                 EntityStateMachine esm = EntityStateMachine.FindByCustomName(leaderElite.gameObject, "Body");
                 if (esm != null)
                     esm.SetNextStateToMain();
             }
-            public void DemoteCurrentLeader()
+            public void DemoteCurrentLeaderInternal()
             {
-                instance.DemoteCurrentLeader();
+                CycloneController.DemoteCurrentLeader();
             }
             public static bool IsAnyEliteInCyclone()
             {
@@ -272,7 +281,7 @@ namespace SwanSongExtended.Storms
                 }
 
                 ResetRefreshCountdown();
-                DemoteCurrentLeader();
+                DemoteCurrentLeaderInternal();
 
                 if(instance.accumulatedSquallTime <= 0)
                 {
@@ -499,12 +508,10 @@ namespace SwanSongExtended.Storms
             {
                 base.OnEnter();
                 squallTimeCache = instance.accumulatedSquallTime;
-                //UpdateTelegraph(true);
             }
             public override void OnExit()
             {
                 base.OnExit();
-                UpdateTelegraph(false);
             }
 
 
@@ -519,21 +526,16 @@ namespace SwanSongExtended.Storms
                 if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime <= squallTimeCache) || fizzleOutTimePassed)
                 {
                     Log.Debug("PrepareSquall: Entering reelection");
-                    UpdateTelegraph(false);
+                    //UpdateTelegraph(false);
                     outer.SetNextState(GetNextState());
                     return;
                 }
-                if(leaderElite != null && leaderElite.body.master != null)
+                if(CycloneController.squallTargetBody == null)
                 {
-                    BaseAI ai = leaderElite.body.master != null ? leaderElite.body.master.aiComponents[0] : null;
-                    if(ai != null && ai.customTarget.gameObject == null)
-                    {
-                        instance.accumulatedSquallTime = instance.squallContributorCountCurrent == 0 ? 0 : squallTimeCache + 1;
-                        instance.accumulatedSquallCharge = 0;
-                        return;
-                    }
+                    instance.accumulatedSquallTime = instance.squallContributorCountCurrent == 0 ? 0 : squallTimeCache + 1;
+                    instance.accumulatedSquallCharge = 0;
+                    return;
                 }
-                UpdateTelegraph(reelectionTimePassed);
 
                 if (GetSquallThresholdMet())
                 {
@@ -577,7 +579,6 @@ namespace SwanSongExtended.Storms
             public override BaseCycloneState GetNextState()
             {
                 BaseCycloneState nextState;
-                UpdateTelegraph(false);
                 nextState = new ElectLeader();
                 //add a slight delay to reelect leader if no charge was added, to allow for enemies to enter the cyclone before dispelling
                 if (instance.squallContributorCountCurrent <= 0)
@@ -610,9 +611,21 @@ namespace SwanSongExtended.Storms
 
             public override void OnEnter()
             {
-                if(leaderElite != null)
-                    leaderElite.isFiring = true;
+                RefreshFiringState();
                 base.OnEnter();
+            }
+
+            void RefreshFiringState()
+            {
+                if (leaderElite == null)
+                    return;
+                if (base.fixedAge + instance.squallTimeFired >= WhirlwindAspect.squallPreFireTime)
+                {
+                    leaderElite.firingState = AffixSquallBehavior.FiringState.Firing;
+                    return;
+                }
+                leaderElite.firingState = AffixSquallBehavior.FiringState.Aiming;
+                leaderElite.OnTargetUpdated();
             }
 
             public override void FixedUpdate()
@@ -624,9 +637,13 @@ namespace SwanSongExtended.Storms
                     outer.SetNextState(new ElectLeader());
                     return;
                 }
+                if(base.fixedAge + instance.squallTimeFired >= WhirlwindAspect.squallPreFireTime)
+                {
+                    RefreshFiringState();
+                }
 
                 float fireDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill * Tools.CountOverspillTriangular(instance.squallContributorCountHighest);
-                if(base.fixedAge + instance.squallTimeFired >= fireDuration)
+                if(base.fixedAge + instance.squallTimeFired >= fireDuration + WhirlwindAspect.squallPreFireTime)
                 {
                     Log.Debug("End squall");
                     outer.SetNextState(GetNextState());
@@ -636,8 +653,13 @@ namespace SwanSongExtended.Storms
             public override void OnExit()
             {
                 if (leaderElite != null)
-                    leaderElite.isFiring = false;
+                {
+                    leaderElite.firingState = AffixSquallBehavior.FiringState.Off;
+                }
+                CycloneController.squallTargetBody = null;
+
                 base.OnExit();
+
                 if (!resetting)
                     instance.squallTimeFired = 0;
                 else

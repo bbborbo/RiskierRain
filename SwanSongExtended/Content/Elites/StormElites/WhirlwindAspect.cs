@@ -41,7 +41,11 @@ namespace SwanSongExtended.Elites
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
         public static float squallDamagePerSecond = 40f;
         public static float squallDamagePerLevel = 0.4f;//0.2f
-        public static float squallAimDamping = 1.1f;
+        /// <summary>
+        /// expressed in seconds?
+        /// </summary>
+        public static float squallAimDamping = 0.6f;
+        public static float squallPreFireTime = 2.0f;
         public static float squallAimMaxSpeed = 40f;
         public static float squallBeamRadius = 1.75f;
         public static float squallPreBeamRadius = 0.75f;
@@ -263,21 +267,33 @@ namespace SwanSongExtended.Elites
                     && CycloneController.instance.HowlSquallDriver != null)
                 {
                     self.UpdateTargets();
-                    CharacterBody body;
-                    IEnumerable<CharacterMaster> masterCandidates = CharacterMaster.instancesList
-                        .Where(x => x.teamIndex == TeamIndex.Player 
-                        && (body = x.GetBody()) != null 
-                        && body.isPlayerControlled == true 
-                        && IsBodySheltered(body) == false
-                        );
-                    if(masterCandidates.Count() > 0)
+                    if(CycloneController.squallTargetBody == null || IsBodySheltered(CycloneController.squallTargetBody))
                     {
-                        self.customTarget.gameObject = masterCandidates
-                            .OrderByDescending(x => (x.GetBodyObject().transform.position - self.body.corePosition))
-                            .FirstOrDefault().GetBodyObject();
+                        CharacterBody body;
+                        IEnumerable<CharacterMaster> masterCandidates = CharacterMaster.instancesList
+                            .Where(x => x.teamIndex == TeamIndex.Player
+                            && (body = x.GetBody()) != null
+                            && body.isPlayerControlled == true
+                            && IsBodySheltered(body) == false
+                            );
+                        if (masterCandidates.Count() > 0)
+                        {
+                            CycloneController.squallTargetBody = 
+                                masterCandidates
+                                .Select(x => x.GetBody())
+                                .OrderByDescending(x => (x.corePosition - self.body.corePosition))
+                                .FirstOrDefault()
+                                ;
+
+                            GameObject leaderBodyObject = self.master.GetBodyObject();
+                            if(leaderBodyObject && leaderBodyObject.TryGetComponent(out AffixSquallBehavior squall))
+                            {
+                                squall.OnTargetUpdated();
+                            }
+                        }
                     }
-                    else
-                        self.customTarget.gameObject = null;
+                    if (CycloneController.squallTargetBody != null)
+                        self.customTarget.gameObject = CycloneController.squallTargetBody.gameObject;
 
                     return new BaseAI.SkillDriverEvaluation
                     {
@@ -474,6 +490,21 @@ namespace SwanSongExtended.Elites
 
     public class AffixSquallBehavior : BaseStormEliteBehavior
     {
+        public enum FiringState
+        {
+            Off,
+            Aiming,
+            Firing
+        }
+        private Queue<Vector3> targetFixedPositions = new Queue<Vector3>();
+        Vector3 lastFixedUpdatePosition;
+        Vector3 currentFixedUpdatePosition;
+        private float lastTargetPositionUpdateTimestamp = float.NegativeInfinity;
+        float aimLerp => timeSinceLastTargetPositionUpdate / (isRetargeting ? WhirlwindAspect.squallAimDamping : Time.fixedDeltaTime);
+        float timeSinceLastTargetPositionUpdate => Time.time - lastTargetPositionUpdateTimestamp;
+        private float targetAcquiredFixedTimestamp = float.NegativeInfinity;
+        float timeSinceTargetAcquired => Time.time - targetAcquiredFixedTimestamp;
+        bool isRetargeting => timeSinceTargetAcquired < WhirlwindAspect.squallAimDamping;
         public static bool GetShouldConverge()
         {
             return CycloneController.GetShouldConverge();
@@ -485,6 +516,9 @@ namespace SwanSongExtended.Elites
         int missilesQueued = 0;
         float missileInterval = 0f;
         float missileCountdown = 0f;
+        /// <summary>
+        /// squall timer is used exclusively for howling elite players
+        /// </summary>
         float squallTimer;
         bool isPlayer;
         bool isPlayerTeam;
@@ -492,49 +526,121 @@ namespace SwanSongExtended.Elites
         bool hasAuthority;
         private GameObject beamVfxInstance;
         private LoopSoundManager.SoundLoopPtr loopPtr;
-        public bool isFiring
+
+        FiringState _firingState = FiringState.Off;
+        public FiringState firingState
         {
             get
             {
-                return _isFiring;
+                return _firingState;
             }
             set
             {
-                if (_isFiring != value)
-                    UpdateIsFiring(value);
-                _isFiring = value;
+                if (_firingState != value)
+                    UpdateFiringState(value);
+                _firingState = value;
             }
         }
 
-        private void UpdateIsFiring(bool newValue)
+        public void OnTargetUpdated()
         {
-            if(newValue == true)
-            {
-                this.beamVfxInstance = UnityEngine.Object.Instantiate<GameObject>(WhirlwindAspect.squallBeamVfxPrefab);
-                this.beamVfxInstance.transform.SetParent(body.aimOriginTransform, true);
-                this.UpdateBeamTransform();
-                RoR2Application.onLateUpdate += this.UpdateBeamTransform;
+            UpdateAimPosition(reset: true);
+        }
 
-                this.loopPtr = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, EntityStates.VoidRaidCrab.SpinBeamAttack.loopSound);
-                //Util.PlaySound(EntityStates.VoidRaidCrab.SpinBeamAttack.enterSoundString, base.gameObject);
+        public Ray GetBeamRay()
+        {
+            Vector3 targetPosition = Vector3.Lerp(lastFixedUpdatePosition, currentFixedUpdatePosition, aimLerp);
+
+            if (body == null)
+            {
+                if (CycloneController.instance != null && CycloneController.instance.leaderElite == this)
+                {
+                    CycloneController.DemoteCurrentLeader();
+                }
+                UpdateFiringState(FiringState.Off);
+                firingState = FiringState.Off;
+                return new Ray(transform.position, isPlayer ? transform.forward : PositionToDirection(transform.position, targetPosition));
             }
-            else
-            {
-                RoR2Application.onLateUpdate -= this.UpdateBeamTransform;
-                VfxKillBehavior.KillVfxObject(this.beamVfxInstance);
-                this.beamVfxInstance = null;
 
-                LoopSoundManager.StopSoundLoopLocal(this.loopPtr);
+            if (body.inputBank)
+            {
+                return new Ray(body.inputBank.aimOrigin, isPlayer ? body.inputBank.aimDirection : PositionToDirection(body.inputBank.aimOrigin, targetPosition));
+            }
+            return new Ray(transform.position, isPlayer ? transform.forward : PositionToDirection(transform.position, targetPosition));
+
+            Vector3 PositionToDirection(Vector3 origin, Vector3 position)
+            {
+                return (position - origin).normalized;
             }
         }
 
         private void UpdateBeamTransform()
         {
+            if(CycloneController.squallTargetBody == null 
+                || CycloneController.instance == null 
+                || CycloneController.instance.cycloneState != CycloneController.CycloneState.FiringSquall 
+                || CycloneController.instance.leaderElite == null)
+            {
+                Debug.LogError("UpdateBeamTransform demote");
+                firingState = FiringState.Off;
+                CycloneController.DemoteCurrentLeader();
+                return;
+            }
+
             Ray beamRay = this.GetBeamRay();
             this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
         }
 
-        bool _isFiring = false;
+        private void UpdateFiringState(FiringState newState)
+        {
+            bool wasOn = _firingState != FiringState.Off;
+            bool newOn = newState != FiringState.Off;
+            Debug.Log($"Updating firing state, {_firingState.ToString()} to {newState.ToString()}");
+            if (wasOn == true)
+            {
+                //if was firing
+                if (_firingState == FiringState.Firing)
+                {
+                    VfxKillBehavior.KillVfxObject(this.beamVfxInstance);
+                    LoopSoundManager.StopSoundLoopLocal(this.loopPtr);
+                }
+                else
+                {
+                    Destroy(this.beamVfxInstance);
+                }
+                this.beamVfxInstance = null;
+                //if will not be firing
+                if (newOn == false)
+                {
+                    UpdateAimPosition(reset: true);
+                    RoR2Application.onLateUpdate -= this.UpdateBeamTransform;
+                }
+            }
+
+            if(newOn == true)
+            {
+                GameObject beamVfxPrefab = null;
+                if (newState == FiringState.Firing)
+                {
+                    beamVfxPrefab = WhirlwindAspect.squallBeamVfxPrefab;
+                    this.loopPtr = LoopSoundManager.PlaySoundLoopLocal(base.gameObject, EntityStates.VoidRaidCrab.SpinBeamAttack.loopSound);
+                }
+                else
+                {
+                    beamVfxPrefab = WhirlwindAspect.squallPreBeamVfxPrefab;
+                }
+
+                this.beamVfxInstance = UnityEngine.Object.Instantiate<GameObject>(beamVfxPrefab);
+                this.beamVfxInstance.transform.SetParent(body.aimOriginTransform, true);
+
+                if(wasOn == false)
+                {
+                    UpdateAimPosition(true);
+                    RoR2Application.onLateUpdate += this.UpdateBeamTransform;
+                }
+                this.UpdateBeamTransform();
+            }
+        }
 
         void OnEnable()
         {
@@ -543,7 +649,7 @@ namespace SwanSongExtended.Elites
 
         void OnDisable()
         {
-            UpdateIsFiring(false);
+            UpdateFiringState(FiringState.Off);
             if (instancesList.Contains(this))
             {
                 instancesList.Remove(this);
@@ -552,6 +658,7 @@ namespace SwanSongExtended.Elites
 
         void Start()
         {
+            this.targetFixedPositions = new Queue<Vector3>();
             if (this.body)
             {
                 isPlayer = body.isPlayerControlled;
@@ -574,6 +681,7 @@ namespace SwanSongExtended.Elites
         {
             base.FixedUpdate();
 
+
             if (!NetworkServer.active)
             {
                 return;
@@ -594,18 +702,58 @@ namespace SwanSongExtended.Elites
         }
 
         float beamTickTimer = 0f;
+        bool hasUpdatedThisFrame = false;
+        private void UpdateAimPosition(bool reset)
+        {
+            if (isPlayer)
+                return;
+            lastTargetPositionUpdateTimestamp = Time.fixedTime;
+
+            if(isRetargeting == false)
+                lastFixedUpdatePosition = currentFixedUpdatePosition;
+
+            if (reset == true)
+            {
+                targetFixedPositions.Clear();
+                currentFixedUpdatePosition = GetTargetPosition();
+                targetAcquiredFixedTimestamp = Time.time;
+            }
+            else if (isRetargeting == false)
+            {
+                currentFixedUpdatePosition = targetFixedPositions.Count > 0 ? targetFixedPositions.Dequeue() : GetTargetPosition();
+            }
+
+            Debug.Log($"Player current position [{GetTargetPosition()}] " +
+                $"Last Aim position [{currentFixedUpdatePosition}] " +
+                $"Next Aim position [{currentFixedUpdatePosition}] " +
+                $"Positions queued [{targetFixedPositions.Count}] " +
+                $"Is retargeting [{isRetargeting}] " +
+                $"Is resetting [{reset}]");
+            if (firingState == FiringState.Off || CycloneController.squallTargetBody == null)
+                return;
+            targetFixedPositions.Enqueue(GetTargetPosition());
+
+            Vector3 GetTargetPosition()
+            {
+                if (CycloneController.squallTargetBody != null)
+                    return CycloneController.squallTargetBody.corePosition;
+                return currentFixedUpdatePosition;
+            }
+        }
         private void DoBeamAttackServer()
         {
             if (squallTimer > 0)
             {
                 squallTimer -= Time.fixedDeltaTime;
-                isFiring = squallTimer > 0;
+                firingState = squallTimer > 0 ? FiringState.Firing : FiringState.Off;
             }
-            if (!isFiring)
+            if (firingState == FiringState.Off)
             {
                 beamTickTimer = 1f / WhirlwindAspect.squallBeamTickFrequency;
                 return;
             }
+
+            UpdateAimPosition(reset: false);
 
             beamTickTimer -= Time.fixedDeltaTime;
             if (beamTickTimer > 0)
@@ -614,7 +762,7 @@ namespace SwanSongExtended.Elites
 
             Ray beamRay = GetBeamRay();
             //this is here again because getbeamray has the magical ability to turn off firing :D
-            if (!isFiring)
+            if (firingState != FiringState.Firing)
                 return;
             new BulletAttack
             {
@@ -644,25 +792,6 @@ namespace SwanSongExtended.Elites
                 isCrit = false,
                 HitEffectNormal = false
             }.Fire();
-        }
-
-        public Ray GetBeamRay()
-        {
-            if(body == null)
-            {
-                if (CycloneController.instance != null && CycloneController.instance.leaderElite == this)
-                {
-                    CycloneController.instance.DemoteCurrentLeader();
-                }
-                UpdateIsFiring(false);
-                isFiring = false;
-                return new Ray(transform.position, transform.forward);
-            }
-            if (body.inputBank)
-            {
-                return new Ray(body.inputBank.aimOrigin, body.inputBank.aimDirection);
-            }
-            return new Ray(transform.position, transform.forward);
         }
 
         private void DoBodyAttachment()

@@ -122,6 +122,8 @@ namespace SwanSongExtended.Elites
 
             static void FireVolatileLandmine(CharacterBody victimBody, Vector3 spawnPosition, Vector3 dir)
             {
+                DamageTypeCombo damageType = new DamageTypeCombo();
+                damageType.damageSource = DamageSource.Equipment;
                 ProjectileManager.instance.FireProjectile(new FireProjectileInfo
                 {
                     projectilePrefab = volatileLandminePrefab,
@@ -130,7 +132,8 @@ namespace SwanSongExtended.Elites
                     owner = victimBody.gameObject,
                     damage = volatileLandmineDamageBase * Tools.GetAmbientLevelScalar(volatileLandmineDamageLevel),
                     force = volatileMortarForce,
-                    crit = Util.CheckRoll(victimBody.crit, victimBody.master)
+                    crit = Util.CheckRoll(victimBody.crit, victimBody.master),
+                    damageTypeOverride = damageType
                 });
             }
 
@@ -394,6 +397,8 @@ namespace SwanSongExtended.Elites
                             Vector3 forward2 = (projectileCount == 1) ? forward : Util.ApplySpread(forward, 2, 10, 1f, 1f, currentYaw, 0);
                             Vector3 fireDirection = forward2 + Vector3.up * 1.2f;
 
+                            DamageTypeCombo damageType = new DamageTypeCombo();
+                            damageType.damageSource = DamageSource.Equipment;
                             ProjectileManager.instance.FireProjectile(new FireProjectileInfo
                             {
                                 projectilePrefab = projectilePrefab,
@@ -404,7 +409,8 @@ namespace SwanSongExtended.Elites
                                 force = 0f,
                                 crit = Util.CheckRoll(body.crit, body.master),
                                 damageColorIndex = DamageColorIndex.Default,
-                                target = null
+                                target = null,
+                                damageTypeOverride = damageType
                             });
                         }
                     }

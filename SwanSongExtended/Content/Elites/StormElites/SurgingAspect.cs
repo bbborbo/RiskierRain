@@ -427,7 +427,8 @@ namespace SwanSongExtended.Elites
                 Vector3 dir = Quaternion.AngleAxis(num * (float)i, Vector3.up) * point;
 
                 DamageTypeCombo damageType = new DamageTypeCombo();
-                    damageType.AddModdedDamageType(riptideDamageType);
+                damageType.damageSource = DamageSource.Equipment;
+                damageType.AddModdedDamageType(riptideDamageType);
                 FireProjectileInfo fpi = new FireProjectileInfo()
                 {
                     projectilePrefab = waveProjectilePrefab,

@@ -106,9 +106,32 @@ namespace SwanSongExtended.Elites
         {
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_EliteEarth.AffixEarthBodyAttachment_prefab, CreateBodyAttachment);
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidRaidCrab.VoidRaidCrabSpinBeamVFX_prefab, CreateBeamVfx);
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.MissileProjectile_prefab, CreateHowlMissile);
 
             Modules.Content.AddEntityState(typeof(Converge));
             base.Init();
+        }
+
+        private void CreateHowlMissile(GameObject missilePrefab)
+        {
+            howlWindMissilePrefab = missilePrefab.InstantiateClone("HowlWindMissile", true);
+
+            if(howlWindMissilePrefab.TryGetComponent(out ProjectileController projectile))
+            {
+                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Lemurian.FireballGhost_prefab, (fireballGhost) =>
+                {
+                    //no need to register ghost to content pack
+                    GameObject ghost = fireballGhost.InstantiateClone("HowlWindMissileGhost", false);
+                    projectile.ghostPrefab = ghost;
+                });
+            }
+
+            if(howlWindMissilePrefab.TryGetComponent(out ProjectileDamage pd))
+            {
+                pd.damageType.damageSource = DamageSource.Equipment;
+            }
+
+            Content.AddProjectilePrefab(howlWindMissilePrefab);
         }
 
         private void CreateBeamVfx(GameObject voidlingBeamVfx)
@@ -795,6 +818,8 @@ namespace SwanSongExtended.Elites
             //this is here again because getbeamray has the magical ability to turn off firing :D
             if (firingState != FiringState.Firing)
                 return;
+            DamageTypeCombo damageType = new DamageTypeCombo();
+            damageType.damageSource = DamageSource.Equipment;
             new BulletAttack
             {
                 muzzleName = "Head",
@@ -815,7 +840,7 @@ namespace SwanSongExtended.Elites
                 weapon = base.gameObject,
                 damage = WhirlwindAspect.squallDamagePerSecond * Tools.GetAmbientLevelScalar(WhirlwindAspect.squallDamagePerLevel) / WhirlwindAspect.squallBeamTickFrequency,
                 damageColorIndex = DamageColorIndex.Default,
-                damageType = DamageType.Generic,
+                damageType = damageType,
                 falloffModel = BulletAttack.FalloffModel.None,
                 force = 0f,
                 hitEffectPrefab = null,// EntityStates.VoidRaidCrab.SpinBeamAttack.beamImpactEffectPrefab,
@@ -859,6 +884,8 @@ namespace SwanSongExtended.Elites
         {
             if (!NetworkServer.active)
                 return;
+            if (body == null || body.healthComponent == null || body.healthComponent.alive == false)
+                return;
 
             missilesQueued--;
             missileCountdown = missileInterval;
@@ -868,7 +895,7 @@ namespace SwanSongExtended.Elites
                 body.corePosition, body,
                 default(ProcChainMask), victim: body.healthComponent.lastHitAttacker,
                 missileDamage, Util.CheckRoll(body.crit),
-                GlobalEventManager.CommonAssets.missilePrefab,
+                WhirlwindAspect.howlWindMissilePrefab,
                 DamageColorIndex.Item, addMissileProc: true);
         }
     }

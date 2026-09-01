@@ -144,6 +144,24 @@ namespace SwanSongExtended.Elites
                 }
             }
 
+            Transform glows = squallBeamVfxPrefab.transform.GetChild(1);
+            if(glows && glows.gameObject.TryGetComponent(out ParticleSystem psr0))
+            {
+                glows.gameObject.SetActive(false);
+            }
+
+            Transform billboards = squallBeamVfxPrefab.transform.GetChild(2);
+            if(billboards && billboards.gameObject.TryGetComponent(out ParticleSystemRenderer psr))
+            {
+                Material mat = UnityEngine.Object.Instantiate(psr.material);
+                SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampMissileTrail_png, (tex) =>
+                {
+                    mat.SetTexture("_RemapTex", tex);
+                    mat.SetColor("_TintColor", new Color32(234, 228, 171, 255));
+                });
+                psr.material = mat;
+            }
+
             Transform lightMiddle = squallBeamVfxPrefab.transform.GetChild(3);
             if (lightMiddle && lightMiddle.TryGetComponent(out Light light1))
             {
@@ -158,6 +176,18 @@ namespace SwanSongExtended.Elites
                 light2.color = new Color32(156, 156, 156, 255);
                 light2.range = 30;
                 light2.intensity = 30;
+            }
+
+            Transform swirlyParticles = squallBeamVfxPrefab.transform.GetChild(5);
+            if (swirlyParticles && swirlyParticles.gameObject.TryGetComponent(out ParticleSystemRenderer psr2))
+            {
+                Material mat = UnityEngine.Object.Instantiate(psr2.sharedMaterials[1]);
+                SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampBanditSmokescreen_png, (tex) =>
+                {
+                    mat.SetTexture("_RemapTex", tex);
+                    mat.SetColor("_TintColor", new Color32(199, 180, 79, 255));
+                });
+                psr2.sharedMaterials[1] = mat;
             }
 
             Transform muzzleRayParticles = squallBeamVfxPrefab.transform.GetChild(6);
@@ -192,7 +222,7 @@ namespace SwanSongExtended.Elites
                     SwanSongPlugin.LoadAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_FalseSonBoss.texFSBLunarSpikeRampGrey_png, (tex) =>
                     {
                         mat.SetTexture("_RemapTex", tex);
-                        mat.SetColor("_TintColor", new Color32(54, 54, 54, 255));
+                        mat.SetColor("_TintColor", new Color32(54, 54, 54, 205));
                     });
                     mr2.material = mat;
                 }
@@ -595,7 +625,7 @@ namespace SwanSongExtended.Elites
         {
             bool wasOn = _firingState != FiringState.Off;
             bool newOn = newState != FiringState.Off;
-            Debug.Log($"Updating firing state, {_firingState.ToString()} to {newState.ToString()}");
+            //Debug.Log($"Updating firing state, {_firingState.ToString()} to {newState.ToString()}");
             if (wasOn == true)
             {
                 //if was firing
@@ -723,12 +753,12 @@ namespace SwanSongExtended.Elites
                 currentFixedUpdatePosition = targetFixedPositions.Count > 0 ? targetFixedPositions.Dequeue() : GetTargetPosition();
             }
 
-            Debug.Log($"Player current position [{GetTargetPosition()}] " +
-                $"Last Aim position [{currentFixedUpdatePosition}] " +
-                $"Next Aim position [{currentFixedUpdatePosition}] " +
-                $"Positions queued [{targetFixedPositions.Count}] " +
-                $"Is retargeting [{isRetargeting}] " +
-                $"Is resetting [{reset}]");
+            //Debug.Log($"Player current position [{GetTargetPosition()}] " +
+            //    $"Last Aim position [{currentFixedUpdatePosition}] " +
+            //    $"Next Aim position [{currentFixedUpdatePosition}] " +
+            //    $"Positions queued [{targetFixedPositions.Count}] " +
+            //    $"Is retargeting [{isRetargeting}] " +
+            //    $"Is resetting [{reset}]");
             if (firingState == FiringState.Off || CycloneController.squallTargetBody == null)
                 return;
             targetFixedPositions.Enqueue(GetTargetPosition());

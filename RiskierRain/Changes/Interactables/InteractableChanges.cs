@@ -38,9 +38,26 @@ namespace RiskierRain.Changes
             //ReworkSoulShrine();
             BloodShrineRewardRework();
             ChangeHalcyoniteShrine();
+            ChangeCombatShrine();
 
             //interactable gold costs
             ChestRebalance();
+        }
+
+        public static float shrineCombatGoldRewardCoefficient = 0.5f;//1f
+        private static void ChangeCombatShrine()
+        {
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineCombat.ShrineCombat_prefab, RewardReduce);
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineCombat.ShrineCombatSandy_Variant_prefab, RewardReduce);
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineCombat.ShrineCombatSnowy_Variant_prefab, RewardReduce);
+
+            void RewardReduce(GameObject shrinePrefab)
+            {
+                if(shrinePrefab.TryGetComponent(out CombatDirector shrineDirector))
+                {
+                    shrineDirector.goldRewardCoefficient = shrineCombatGoldRewardCoefficient;
+                }
+            }
         }
 
         #region soul shrine / shrine of shaping

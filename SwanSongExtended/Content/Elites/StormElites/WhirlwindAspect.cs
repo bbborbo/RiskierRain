@@ -299,6 +299,7 @@ namespace SwanSongExtended.Elites
                     self.UpdateTargets();
                     if(CycloneController.squallTargetBody == null || IsBodySheltered(CycloneController.squallTargetBody))
                     {
+                        CycloneController.squallTargetBody = null;
                         CharacterBody body;
                         IEnumerable<CharacterMaster> masterCandidates = CharacterMaster.instancesList
                             .Where(x => x.teamIndex == TeamIndex.Player

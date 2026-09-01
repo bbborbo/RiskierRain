@@ -624,7 +624,7 @@ namespace SwanSongExtended.Storms
                 }
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
-                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null && StormController.bossHealthBarActive == false);
+                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null);// && StormController.bossHealthBarActive == false);
                 }
                 SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
             }

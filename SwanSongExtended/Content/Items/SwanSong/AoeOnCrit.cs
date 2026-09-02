@@ -156,40 +156,25 @@ I told you. I. Dont. FUCKING. CARE.";
         public override void Hooks()
         {
             GetStatCoefficients += AoeOnCritBaseCrit;
+            On.RoR2.GlobalEventManager.OnCrit += AoEOnCritOnCrit;
         }
 
-        private void AoeOnCritBaseCrit(CharacterBody sender, StatHookEventArgs args)
+        private void AoEOnCritOnCrit(On.RoR2.GlobalEventManager.orig_OnCrit orig, GlobalEventManager self, CharacterBody body, DamageInfo damageInfo, CharacterMaster master, float procCoefficient, ProcChainMask procChainMask)
         {
-            int count = GetCount(sender);
-            if(count > 0)
-            {
-                args.critAdd += 5;
-            }
-        }
-    }
+            orig(self, body, damageInfo, master, procCoefficient, procChainMask);
 
-    public class AoeOnCritBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
-    {
-        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => AoeOnCrit.instance.ItemsDef;
-        private static GameObject orbEffectObject => AoeOnCrit.laserOrbEffect;
-        private static ModdedProcType procType => AoeOnCrit.AoeOnCritProc;
-
-        public void OnDamageDealtServer(DamageReport damageReport)
-        {
-            if (damageReport.damageInfo.procChainMask.HasModdedProc(procType))
-                return;
-            if (!damageReport.damageInfo.crit)
+            if (damageInfo.procChainMask.HasModdedProc(AoeOnCritProc))
                 return;
             SphereSearch sphereSearch = new SphereSearch
             {
                 mask = LayerIndex.entityPrecise.mask,
-                origin = damageReport.damageInfo.position,
+                origin = damageInfo.position,
                 queryTriggerInteraction = QueryTriggerInteraction.Collide,
                 radius = AoeOnCrit.bounceRange
             };
 
             TeamMask teamMask = TeamMask.GetEnemyTeams(TeamIndex.Player);
+
             List<HurtBox> hurtBoxesList = new List<HurtBox>();
 
             sphereSearch
@@ -199,15 +184,18 @@ I told you. I. Dont. FUCKING. CARE.";
                 .GetHurtBoxes(hurtBoxesList);
             if (hurtBoxesList.Count <= 0)
                 return;
+
             hurtBoxesList = hurtBoxesList
-                .Where((hurtBox) => hurtBox.healthComponent.body != damageReport.victimBody)
-                .OrderBy((hurtBox) => (hurtBox.transform.position - damageReport.damageInfo.position).sqrMagnitude)
+                .Where((hurtBox) => hurtBox != damageInfo.inflictedHurtbox)
+                .OrderBy((hurtBox) => (hurtBox.transform.position - damageInfo.position).sqrMagnitude)
                 .ToList();
             if (hurtBoxesList.Count <= 0)
                 return;
+
             int index = 0;// UnityEngine.Random.RandomRangeInt(0, hurtBoxesList.Count);
             HurtBox target = hurtBoxesList[index];
 
+            int stack = GetCount(body);
             float damageCoefficient = AoeOnCrit.firstBounceDamageBase + AoeOnCrit.firstBounceDamageStack * (stack - 1);
             int bounces = AoeOnCrit.bouncesBase + AoeOnCrit.bouncesStack * (stack - 1);
             float lastBounceDamageMultiplier = AoeOnCrit.lastBounceDamageCoefficient / damageCoefficient;
@@ -215,25 +203,34 @@ I told you. I. Dont. FUCKING. CARE.";
             // |, |_
             float loss = bounces > 1f ? Mathf.Pow(lastBounceDamageMultiplier, 1f / ((float)bounces - 1f)) : 0f;
 
-            ChainGunOrb chainGunOrb = new ChainGunOrb(orbEffectObject);
-            chainGunOrb.damageValue = damageReport.damageInfo.damage * damageCoefficient;
+            ChainGunOrb chainGunOrb = new ChainGunOrb(laserOrbEffect);
+            chainGunOrb.damageValue = damageInfo.damage * damageCoefficient;
             chainGunOrb.isCrit = true;
-            chainGunOrb.teamIndex = TeamComponent.GetObjectTeam(this.body.gameObject);
-            chainGunOrb.attacker = this.body.gameObject;
+            chainGunOrb.teamIndex = TeamComponent.GetObjectTeam(body.gameObject);
+            chainGunOrb.attacker = body.gameObject;
             chainGunOrb.procCoefficient = AoeOnCrit.procCoefficientPerBounce;
-            chainGunOrb.procChainMask = damageReport.damageInfo.procChainMask;
-            chainGunOrb.procChainMask.AddModdedProc(procType);
-            chainGunOrb.origin = damageReport.damageInfo.position;
+            chainGunOrb.procChainMask = procChainMask;
+            chainGunOrb.procChainMask.AddModdedProc(AoeOnCritProc);
+            chainGunOrb.origin = damageInfo.position;
             chainGunOrb.target = target;
             chainGunOrb.speed = 600f;
             chainGunOrb.bouncesRemaining = bounces - 1;
             chainGunOrb.bounceRange = AoeOnCrit.bounceRange;
             chainGunOrb.damageCoefficientPerBounce = loss;// AoeOnCrit.lastBounceDamageMultiplier;
-            chainGunOrb.bouncedObjects = new List<HealthComponent>() { damageReport.victimBody.healthComponent };
+            chainGunOrb.bouncedObjects = new List<HealthComponent>() { damageInfo.inflictedHurtbox.healthComponent };
             chainGunOrb.targetsToFindPerBounce = 1;
             chainGunOrb.canBounceOnSameTarget = false;
             chainGunOrb.damageColorIndex = DamageColorIndex.Item;
             OrbManager.instance.AddOrb(chainGunOrb);
+        }
+
+        private void AoeOnCritBaseCrit(CharacterBody sender, StatHookEventArgs args)
+        {
+            int count = GetCount(sender);
+            if(count > 0)
+            {
+                args.critAdd += 5;
+            }
         }
     }
 }

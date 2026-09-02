@@ -57,38 +57,90 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             AoeOnCritProc = ProcTypeAPI.ReserveProcType();
-            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_DroneWeapons.ChainGunOrbEffect_prefab, (effect) =>
-            {
-                laserOrbEffect = effect.InstantiateClone("AoeOnCritLaserOrb", false);
-
-                laserOrbEffect.transform.localScale *= 2;
-                if(laserOrbEffect.TryGetComponent(out OrbEffect orbEffect))
-                {
-                    //orbEffect.
-                }
-
-                Transform trail = laserOrbEffect.transform.Find("Trail");
-                if (trail)
-                {
-                    if (trail.TryGetComponent(out TrailRenderer tr)) 
-                    {
-                        tr.time = 2.0f;
-
-                        tr.startWidth = 1.0f;
-                        tr.endWidth = 0.7f;
-                        tr.startColor = new Color(1, 0.6f, 0.5f);
-                        tr.endColor = new Color(0.6f, 0.0f, 0.0f);
-                    }
-
-                    if(trail.TryGetComponent(out AnimateShaderAlpha asa))
-                    {
-                        asa.timeMax = 1.0f;
-                    }
-                }
-
-                Content.CreateAndAddEffectDef(laserOrbEffect);
-            });
+            //SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_DroneWeapons.ChainGunOrbEffect_prefab, (effect) =>
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolOrbEffect_prefab, CreateOrbEffect);
             base.Init();
+        }
+
+        private void CreateOrbEffect(GameObject effect)
+        {
+            laserOrbEffect = effect.InstantiateClone("AoeOnCritLaserOrb", false);
+
+            laserOrbEffect.transform.localScale *= 2;
+            if (laserOrbEffect.TryGetComponent(out OrbEffect orbEffect))
+            {
+                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolRicochetImpactEffect_prefab, (impactEffect) =>
+                {
+                    GameObject laserImpactEffect = impactEffect.InstantiateClone("AoeOnCritLaserImpact", false);
+
+                    Transform ringBurst0 = laserImpactEffect.transform.GetChild(0);
+                    MakeRed(ref ringBurst0, new Color32(74, 0, 0, 255));
+                    Transform ringBurst1 = laserImpactEffect.transform.GetChild(1);
+                    MakeRed(ref ringBurst1, new Color32(74, 0, 0, 255));
+                    Transform shockwave = laserImpactEffect.transform.GetChild(2);
+                    MakeRed(ref shockwave, new Color32(74, 0, 0, 255));
+                    Transform impactBits = laserImpactEffect.transform.GetChild(3);
+                    MakeRed(ref impactBits, new Color32(46, 0, 0, 255));
+                    Transform impactPixels = laserImpactEffect.transform.GetChild(4);
+                    MakeRed(ref impactPixels, new Color32(74, 0, 0, 255));
+                    Transform impactSmall = laserImpactEffect.transform.GetChild(5);
+                    MakeRed(ref impactSmall, new Color32(46, 0, 0, 255));
+                    //Transform pointLight = laserImpactEffect.transform.GetChild(6);
+
+                    Content.CreateAndAddEffectDef(laserImpactEffect);
+
+                    void MakeRed(ref Transform t, Color32 color)
+                    {
+                        if(t != null && t.TryGetComponent(out ParticleSystemRenderer psr))
+                        {
+                            Material newMat = UnityEngine.Object.Instantiate(psr.material);
+                            newMat.SetColor("_TintColor", color);
+                            psr.material = newMat;
+                        }
+                    }
+                });
+                //orbEffect.
+            }
+
+            Transform trailParent = laserOrbEffect.transform.GetChild(0);
+            if (trailParent)
+            {
+                if (trailParent.TryGetComponent(out ParticleSystemRenderer psr1))
+                {
+                    //tr.time = 2.0f;
+                    //
+                    ////tr.startWidth = 1.0f;
+                    ////tr.endWidth = 0.7f;
+                    //tr.startColor = new Color(1, 0.6f, 0.5f);
+                    //tr.endColor = new Color(0.6f, 0.0f, 0.0f);
+                }
+
+                //if (trailParent.TryGetComponent(out AnimateShaderAlpha asa))
+                //{
+                //    asa.timeMax = 1.0f;
+                //}
+
+                Transform trailLight = trailParent.GetChild(0);
+                if(trailLight.gameObject.TryGetComponent(out TrailRenderer trail1))
+                {
+                    Material mat = UnityEngine.Object.Instantiate(trail1.material);
+                    mat.SetColor("_TintColor", new Color32(176, 2, 0, 255));
+                    trail1.material = mat;
+                }
+                Transform trailDark = trailParent.GetChild(1);
+                if (trailLight.gameObject.TryGetComponent(out TrailRenderer trail2))
+                {
+                    Material mat = UnityEngine.Object.Instantiate(trail2.material);
+                    mat.SetColor("_TintColor", new Color32(38, 2, 0, 255));
+                    mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampDiamondLaser_png).WaitForCompletion());
+                    //mat.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_SpeedBoostPickup.texNegateAttackTrail_png).WaitForCompletion());
+                    //.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Railgunner.texRailgunnerBeamMask_png).WaitForCompletion());
+                    mat.SetTexture("_Cloud1Tex", Addressables.LoadAssetAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Gravekeeper.texChainTrailMask_png).WaitForCompletion());
+                    trail2.material = mat;
+                }
+            }
+
+            Content.CreateAndAddEffectDef(laserOrbEffect);
         }
 
         public override void Hooks()

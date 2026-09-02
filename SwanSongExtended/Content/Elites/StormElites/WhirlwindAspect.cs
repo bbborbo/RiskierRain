@@ -304,8 +304,6 @@ namespace SwanSongExtended.Elites
                         mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampMissileTrail_png).WaitForCompletion());
                         mat.SetTexture("_Cloud2Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_TiledTextures.texCloudIce_png).WaitForCompletion());
 
-                        line.sharedMaterials[0] = mat;
-                        line.material = mat;
 
                         Material mat2 = UnityEngine.Object.Instantiate(line.sharedMaterials[1]);
                         mat2.SetColor("_TintColor", new Color32(255, 255, 255, 255));
@@ -316,15 +314,15 @@ namespace SwanSongExtended.Elites
                     Transform endTransform = tetherPrefab.transform.GetChild(0);
                     if (endTransform)
                     {
-                        Transform light = tetherPrefab.transform.GetChild(0);
+                        Transform light = endTransform.transform.GetChild(0);
                         if (light)
                         {
-                            UnityEngine.GameObject.Destroy(light);
+                            UnityEngine.GameObject.Destroy(light.gameObject);
                         }
-                        Transform healedFx = tetherPrefab.transform.GetChild(1);
+                        Transform healedFx = endTransform.transform.GetChild(1);
                         if (healedFx)
                         {
-                            UnityEngine.GameObject.Destroy(healedFx);
+                            UnityEngine.GameObject.Destroy(healedFx.gameObject);
                         }
                     }
                 });
@@ -334,7 +332,7 @@ namespace SwanSongExtended.Elites
 
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Elites_EliteBead.EliteBeadTether_prefab, (earthTetherVfx) =>
             {
-                tetherVfxPrefab = earthTetherVfx.InstantiateClone("AffixSquallTetherVfx");
+                tetherVfxPrefab = earthTetherVfx.InstantiateClone("AffixSquallTetherVfx2");
                 controller.activeVfx = tetherVfxPrefab;
             });
 

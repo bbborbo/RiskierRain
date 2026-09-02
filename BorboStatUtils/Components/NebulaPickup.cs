@@ -29,7 +29,6 @@ namespace RainrotSharedUtils.Components
                     CharacterBody body = other.GetComponent<CharacterBody>();
                     if (body)
                     {
-                        body.OnPickup(CharacterBody.PickupClass.Minor);
                         NebulaPickup.ApplyNebulaBooster(this.buffDef, body);
                         EffectManager.SpawnEffect(this.pickupEffect, new EffectData
                         {
@@ -64,6 +63,7 @@ namespace RainrotSharedUtils.Components
                     CharacterBody body = teamComponent.body;//.GetComponent<CharacterBody>();
                     if (body)
                     {
+                        body.OnPickup(CharacterBody.PickupClass.Minor);
                         AddBoosterBuff(buffDef, body);
                     }
                 }

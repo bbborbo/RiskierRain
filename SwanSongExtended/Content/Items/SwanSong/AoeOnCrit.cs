@@ -40,7 +40,16 @@ namespace SwanSongExtended.Items
             $"{DamageColor(firstBounceDamageBase.AsPercent())} {StackText("+" + firstBounceDamageStack.AsPercent())} TOTAL damage " +
             $"on to up to {DamageColor($"{bouncesBase} {StackText("+" + bouncesStack)} enemies")}.";
 
-        public override string ItemLore => "";
+        public override string ItemLore => 
+@"You dumbass! These things are supposed to be UNBREAKABLE. How the hell did you manage to do this?
+
+Dude... Sorry to break it to ya but hyper threaders are cheap as shit. Itll cost you, like, pocket change to get a new one. You ever wonder why?
+
+I dont fucking care man. This thing barely works now. If anyone is buying me a new one it's YOU.
+
+Haha, dude, uh, what do you think I am, made out of money? I uh-
+
+I told you. I. Dont. FUCKING. CARE.";
 
         public override ItemTier Tier => ItemTier.Tier2;
 

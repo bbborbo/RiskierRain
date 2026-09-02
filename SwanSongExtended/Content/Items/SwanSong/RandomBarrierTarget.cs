@@ -40,7 +40,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "RANDOMBARRIERTARGET";
 
-        public override string ItemPickupDesc => "Highlight a nearby enemy. Gain barrier and critical strike chance on hit.";
+        public override string ItemPickupDesc => "Highlights a nearby enemy. Gain barrier and critical strike chance on hit.";
 
         public override string ItemFullDescription => 
             $"Reduce barrier decay by <style=cIsHealing>-{harpoonDecayReduction.AsPercent()}</style>. " +
@@ -62,7 +62,7 @@ I ordered this Omen Globe from you guys, and oh my gods, I am NEVER buying anyth
 
 I tried for HOURS, for this ball to show me ANYTHING, and never once was I granted a moment of divine clairvoyance. 
 
-And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS Inc. Don't fucking tell me I'm not enlightened enough. 
+And believe me, I KNOW I'm enlightened, I'm WAY MORe enlightened than any of you DAMN WEASELS at Arcane SCAMMERS. Don't fucking tell me I'm not enlightened enough. 
 
 Your crystal, or should I say plastic, ball cost me more than my ENTIRE life savings. I DEMAND MY MONEY BACK, OR YOU WILL FACE DIRE CONSEQUENCES!!!";
 

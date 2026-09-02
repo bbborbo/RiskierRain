@@ -75,7 +75,7 @@ namespace RainrotSharedUtils.Difficulties
             }
         }
 
-        #region tp contrast
+        #region visual enhancements
         internal static void DoBoostedTpContrast()
         {
             if (_tpContrasted)

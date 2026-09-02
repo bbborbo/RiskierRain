@@ -1,8 +1,11 @@
 ﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
+using R2API;
+using RainrotSharedUtils.Components;
 using RoR2;
 using RoR2.ContentManagement;
+using RoR2.UI;
 using RoR2BepInExPack.Utilities;
 using System;
 using System.Collections.Generic;
@@ -59,6 +62,20 @@ namespace RainrotSharedUtils.Difficulties
         public static float GoldRewardMultiplierGlobal = 1f;
         public static float ExpRewardMultiplierGlobal = 1f;
         public static float DefaultTeleParticleRadius = 1f;
+        /// <summary>
+        /// Sets these to true:
+        /// UseDifficultyStats, UseForceElite, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost
+        /// </summary>
+        public static void EnableAll()
+        {
+            UseDifficultyStats = true;
+            UseForceElite = true;
+            BoostTeleporterContrast = true;
+            DisplayCurrentStageTime = true;
+            CompensateRewardsForDifficultyScaling = true;
+            CompensateRewardsForDifficultyBoost = true;
+        }
+        #region visual enhancements
         private static bool _boostTeleporterContrast;
         public static bool BoostTeleporterContrast
         {
@@ -73,18 +90,66 @@ namespace RainrotSharedUtils.Difficulties
                 _boostTeleporterContrast = value;
             }
         }
-        /// <summary>
-        /// Sets these to true:
-        /// UseDifficultyStats, UseForceElite, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost
-        /// </summary>
-        public static void EnableAll()
+        private static bool _displayCurrentStageTime;
+        public static bool DisplayCurrentStageTime
         {
-            UseDifficultyStats = true;
-            UseForceElite = true;
-            BoostTeleporterContrast = true;
-            CompensateRewardsForDifficultyScaling = true;
-            CompensateRewardsForDifficultyBoost = true;
+            get
+            {
+                return _displayCurrentStageTime;
+            }
+            set
+            {
+                if (value == true)
+                    AddCurrentStageTimer();
+                _displayCurrentStageTime = value;
+            }
         }
+
+        private static bool currentStageTimerAdded = false;
+        internal static void AddCurrentStageTimer()
+        {
+            if (currentStageTimerAdded == true)
+                return;
+            currentStageTimerAdded = true;
+
+            SharedUtilsPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ClassicRun.ClassicRunInfoHudPanel_prefab, (runInfoHudPanel) =>
+            {
+                Transform timerPanel = runInfoHudPanel.transform.GetChild(0);
+                if(timerPanel != null)
+                {
+                    Transform wormGear = timerPanel.transform.GetChild(0);
+                    if(wormGear != null)
+                    {
+                        wormGear.gameObject.SetActive(false);
+                    }
+                    Transform timerText1 = timerPanel.transform.GetChild(1);
+                    if(timerText1 != null)
+                    {
+                        GameObject timerText2 = timerText1.gameObject.InstantiateClone("RunTimerText");
+                        timerText1.transform.localPosition = new Vector3(-40.5f, 0, 0f);
+                        timerText2.transform.parent = timerPanel;
+                        timerText2.transform.localPosition = new Vector3(-38f, -14.5f, 0f);
+                        if(timerText2.TryGetComponent(out HGTextMeshProUGUI tmp))
+                        {
+                            tmp.fontSizeMin = 10;
+                            tmp.fontSize = 15;
+                        }
+                        if(timerText2.TryGetComponent(out RunTimerUIController runTimerUIController))
+                        {
+                            StageTimerUIController stageTimerUIController = timerText2.gameObject.AddComponent<StageTimerUIController>();
+                            stageTimerUIController.timerTextController = runTimerUIController.runStopwatchTimerTextController;
+                            if(timerText1.TryGetComponent(out RunTimerUIController other))
+                            {
+                                stageTimerUIController.otherTimerUiController = other;
+                            }
+
+                            runTimerUIController.enabled = false;
+                        }
+                    }
+                }
+            });
+        }
+        #endregion
 
         #region force elite
         internal static bool _useForceElite;

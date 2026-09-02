@@ -942,7 +942,7 @@ namespace MoreStats
                     return damageIn;
 
                 float nextThresholdHealthFraction = statCoefficients.GetNextThresholdHealthFraction();
-                if (nextThresholdHealthFraction < statCoefficients.GetHealthFractionSize())
+                if (nextThresholdHealthFraction < statCoefficients.GetHealthFractionSize() || nextThresholdHealthFraction <= 0.02f)
                     return damageIn;
 
                 float healthAboveNextThreshold = (self.combinedHealth) - (self.fullCombinedHealth * nextThresholdHealthFraction);

@@ -84,8 +84,9 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                 "bdHarpoonTargetDebuff",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/DLC1/MoveSpeedOnKill/texBuffKillMoveSpeed.tif").WaitForCompletion(),
                 new Color(0.9f, 0.7f, 0.1f),
-                true,
-                true);
+                canStack: false,
+                isDebuff: true,
+                isHidden: true);
             harpoonDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
 
             GameObject deathMarkVisualEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/DeathMark/DeathMarkEffect.prefab").WaitForCompletion();
@@ -352,10 +353,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
 
         private void DebuffEnemy(CharacterBody enemyBody)
         {
-            for (int n = 0; n < stack; n++)
-            {
-                enemyBody.AddTimedBuffAuthority(buffDef.buffIndex, RandomBarrierTarget.harpoonTargetTime);
-            }
+            enemyBody.AddBuff(buffDef.buffIndex);
 
             //thanks hifu <3
             Transform modelTransform = enemyBody.modelLocator?.modelTransform;

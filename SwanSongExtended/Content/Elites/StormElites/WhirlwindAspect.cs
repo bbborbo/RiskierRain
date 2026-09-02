@@ -26,6 +26,8 @@ using System.Reflection;
 using UnityEngine.Networking;
 using RoR2.Audio;
 using System.Linq;
+using SwanSongExtended.Modules;
+using RoR2.Projectile;
 
 namespace SwanSongExtended.Elites
 {
@@ -59,6 +61,7 @@ namespace SwanSongExtended.Elites
         public static GameObject squallBeamVfxPrefab;
         public static GameObject squallPreBeamVfxPrefab;
         public static GameObject tetherVfxPrefab;
+        public static GameObject howlWindMissilePrefab;
         #endregion
 
         public static GameObject howlingRallyBodyAttachment;
@@ -123,6 +126,12 @@ namespace SwanSongExtended.Elites
                     //no need to register ghost to content pack
                     GameObject ghost = fireballGhost.InstantiateClone("HowlWindMissileGhost", false);
                     projectile.ghostPrefab = ghost;
+
+                    //if(ghost.TryGetComponent(out ParticleSystem particleSystem))
+                    //{
+                    //    ParticleSystem.ColorOverLifetimeModule colorOverLifetime = particleSystem.colorOverLifetime;
+                    //    colorOverLifetime.color.
+                    //}
                 });
             }
 
@@ -272,6 +281,53 @@ namespace SwanSongExtended.Elites
                 controller.tetherVfxOrigin = healNearbyController.tetherVfxOrigin;
                 controller.activeVfx = healNearbyController.activeVfx;
                 UnityEngine.Object.Destroy(healNearbyController);
+            }
+
+            if(howlingRallyBodyAttachment.TryGetComponent(out TetherVfxOrigin tether))
+            {
+                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_EliteEarth.AffixEarthTetherVFX_prefab, (sharedSufferingTether) =>
+                {
+                    GameObject tetherPrefab = sharedSufferingTether.InstantiateClone("AffixSquallTetherVFX", false);
+                    tether.tetherPrefab = tetherPrefab;
+
+                    if(tetherPrefab.TryGetComponent(out LoopSoundPlayer loopSoundPlayer))
+                    {
+                        UnityEngine.Object.Destroy(loopSoundPlayer);
+                    }
+
+                    if (tetherPrefab.TryGetComponent(out LineRenderer line))
+                    {
+                        line.widthMultiplier = 2;
+
+                        Material mat = UnityEngine.Object.Instantiate(line.sharedMaterials[0]);
+                        mat.SetColor("_TintColor", new Color32(255, 241, 168, 255));
+                        mat.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_ColorRamps.texRampMissileTrail_png).WaitForCompletion());
+                        mat.SetTexture("_Cloud2Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_TiledTextures.texCloudIce_png).WaitForCompletion());
+
+                        line.sharedMaterials[0] = mat;
+                        line.material = mat;
+
+                        Material mat2 = UnityEngine.Object.Instantiate(line.sharedMaterials[1]);
+                        mat2.SetColor("_TintColor", new Color32(255, 255, 255, 255));
+                        mat2.SetTexture("_MainTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidJailer.texVoidJailerTentacleMask2_png).WaitForCompletion());
+                        line.sharedMaterials[1] = mat2;
+                    }
+
+                    Transform endTransform = tetherPrefab.transform.GetChild(0);
+                    if (endTransform)
+                    {
+                        Transform light = tetherPrefab.transform.GetChild(0);
+                        if (light)
+                        {
+                            UnityEngine.GameObject.Destroy(light);
+                        }
+                        Transform healedFx = tetherPrefab.transform.GetChild(1);
+                        if (healedFx)
+                        {
+                            UnityEngine.GameObject.Destroy(healedFx);
+                        }
+                    }
+                });
             }
 
             Transform activeVfx = howlingRallyBodyAttachment.transform.GetChild(0);

@@ -43,7 +43,7 @@ namespace FruityElites.EliteReworks
 
         public void OnReceived()
         {
-            if (!NetworkServer.active)
+            if (!NetworkClient.active)
                 return;
 
             if (bodyObject.TryGetComponent(out AffixRedBehavior red))

@@ -219,7 +219,7 @@ namespace SwanSongExtended.Elites
                     mat.SetTexture("_RemapTex", tex);
                     mat.SetColor("_TintColor", new Color32(199, 180, 79, 255));
                 });
-                psr2.sharedMaterials[1] = mat;
+                psr2.sharedMaterials = new Material[] { null, mat };
             }
 
             Transform muzzleRayParticles = squallBeamVfxPrefab.transform.GetChild(6);
@@ -234,7 +234,7 @@ namespace SwanSongExtended.Elites
                 psr3.material = mat;
             }
 
-            squallPreBeamVfxPrefab = voidlingBeamVfx.InstantiateClone("SquallBeamVfx", false);
+            squallPreBeamVfxPrefab = voidlingBeamVfx.InstantiateClone("SquallPreBeamVfx", false);
 
             squallPreBeamVfxPrefab.transform.localScale = new Vector3(squallPreBeamRadius, squallPreBeamRadius, 30f);
 
@@ -310,7 +310,7 @@ namespace SwanSongExtended.Elites
                         Material mat2 = UnityEngine.Object.Instantiate(line.sharedMaterials[1]);
                         mat2.SetColor("_TintColor", new Color32(255, 255, 255, 255));
                         mat2.SetTexture("_MainTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidJailer.texVoidJailerTentacleMask2_png).WaitForCompletion());
-                        line.sharedMaterials[1] = mat2;
+                        line.sharedMaterials = new Material[] { mat, mat };
                     }
 
                     Transform endTransform = tetherPrefab.transform.GetChild(0);

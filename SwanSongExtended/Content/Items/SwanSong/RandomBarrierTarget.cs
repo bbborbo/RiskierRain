@@ -27,23 +27,24 @@ namespace SwanSongExtended.Items
         public static Material harpoonTargetMaterial;
         public override bool isEnabled => true; 
 
-        public static float harpoonBarrierBase = 10;
-        public static float harpoonBarrierStack = 10;
-        public static float harpoonTargetTime = 8;
+        public static float harpoonBarrierBase = 12;
+        public static float harpoonBarrierStack = 12;
+        public static float harpoonTargetTime = 4;
         public static float harpoonDecayReduction = 0.2f;
         public static float harpoonCritChanceBase = 20f;
         public static float harpoonCritChanceStack = 10f;
-
+        public static float harpoonTargetInitialRange = 35f;
+        public static float harpoonTargetLossRange = 50f;
 
         public override string ItemName => "Crystal Ball";
 
         public override string ItemLangTokenName => "RANDOMBARRIERTARGET";
 
-        public override string ItemPickupDesc => "Target a nearby enemy, gaining barrier and critical strike chance on hit.";
+        public override string ItemPickupDesc => "Highlight a nearby enemy. Gain barrier and critical strike chance on hit.";
 
         public override string ItemFullDescription => 
             $"Reduce barrier decay by <style=cIsHealing>-{harpoonDecayReduction.AsPercent()}</style>. " +
-            $"<style=cIsDamage>Targets</style> a random enemy. " +
+            $"<style=cIsDamage>Highlights</style> a random enemy. " +
             $"Attacking the targeted enemy grants a <style=cIsHealing>temporary barrier</style> " +
             $"for <style=cIsHealing>{harpoonBarrierBase} health</style> <style=cStack>(+{harpoonBarrierStack} per stack)</style> " +
             $"and increases {DamageColor("critical strike chance")} by " +
@@ -246,7 +247,6 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
         private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
         private static BuffDef buffDef => RandomBarrierTarget.harpoonDebuff;
-        public static float baseHauntRadius = 35;
         public static float hauntRetryTime = 2;
         float hauntCountdown = 0;
         GameObject tetherOriginInstance;
@@ -305,7 +305,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                         mask = LayerIndex.entityPrecise.mask,
                         origin = body.transform.position,
                         queryTriggerInteraction = QueryTriggerInteraction.Collide,
-                        radius = baseHauntRadius
+                        radius = RandomBarrierTarget.harpoonTargetInitialRange
                     };
 
                     TeamMask teamMask = TeamMask.GetEnemyTeams(body.teamComponent.teamIndex);
@@ -396,7 +396,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                     targetKilled = true;
                     continue;
                 }
-                if((afflictedBody.corePosition - body.corePosition).sqrMagnitude > baseHauntRadius * baseHauntRadius)
+                if((afflictedBody.corePosition - body.corePosition).sqrMagnitude > RandomBarrierTarget.harpoonTargetLossRange * RandomBarrierTarget.harpoonTargetLossRange)
                 {
                     if(afflictedBody.HasBuff(buffDef))
                         afflictedBody.RemoveBuff(buffDef);

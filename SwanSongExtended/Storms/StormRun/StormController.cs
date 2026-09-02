@@ -55,6 +55,7 @@ namespace SwanSongExtended.Storms
 
         public void Awake()
         {
+            bossHealthBarActive = false;
             combatDirector = GetComponent<CombatDirector>();
             combatDirector.enabled = false;
             mainStateMachine = EntityStateMachine.FindByCustomName(this.gameObject, StormsCore.esmStormName);//GetComponent<EntityStateMachine>();
@@ -624,7 +625,7 @@ namespace SwanSongExtended.Storms
                 }
                 foreach (HUD hud in HUD.readOnlyInstanceList)
                 {
-                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null);// && StormController.bossHealthBarActive == false);
+                    SetHudCountdownEnabled(hud, hud.targetBodyObject != null && StormController.bossHealthBarActive == false);
                 }
                 SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
             }

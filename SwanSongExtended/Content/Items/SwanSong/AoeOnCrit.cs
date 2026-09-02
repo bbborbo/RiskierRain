@@ -80,11 +80,11 @@ namespace SwanSongExtended.Items
                     Transform shockwave = laserImpactEffect.transform.GetChild(2);
                     MakeRed(ref shockwave, new Color32(74, 0, 0, 255));
                     Transform impactBits = laserImpactEffect.transform.GetChild(3);
-                    MakeRed(ref impactBits, new Color32(46, 0, 0, 255));
+                    MakeRed(ref impactBits, new Color32(74, 0, 0, 255));
                     Transform impactPixels = laserImpactEffect.transform.GetChild(4);
                     MakeRed(ref impactPixels, new Color32(74, 0, 0, 255));
                     Transform impactSmall = laserImpactEffect.transform.GetChild(5);
-                    MakeRed(ref impactSmall, new Color32(46, 0, 0, 255));
+                    MakeRed(ref impactSmall, new Color32(74, 0, 0, 255));
                     //Transform pointLight = laserImpactEffect.transform.GetChild(6);
 
                     Content.CreateAndAddEffectDef(laserImpactEffect);
@@ -98,6 +98,7 @@ namespace SwanSongExtended.Items
                             psr.material = newMat;
                         }
                     }
+                    orbEffect.endEffect = laserImpactEffect;
                 });
                 //orbEffect.
             }
@@ -128,7 +129,7 @@ namespace SwanSongExtended.Items
                     trail1.material = mat;
                 }
                 Transform trailDark = trailParent.GetChild(1);
-                if (trailLight.gameObject.TryGetComponent(out TrailRenderer trail2))
+                if (trailDark.gameObject.TryGetComponent(out TrailRenderer trail2))
                 {
                     Material mat = UnityEngine.Object.Instantiate(trail2.material);
                     mat.SetColor("_TintColor", new Color32(38, 2, 0, 255));

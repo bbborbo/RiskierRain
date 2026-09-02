@@ -29,7 +29,7 @@ namespace SwanSongExtended.Items
 
         public static float harpoonBarrierBase = 10;
         public static float harpoonBarrierStack = 10;
-        public static float harpoonTargetTime = 15;
+        public static float harpoonTargetTime = 8;
         public static float harpoonDecayReduction = 0.2f;
         public static float harpoonCritChanceBase = 20f;
         public static float harpoonCritChanceStack = 10f;
@@ -187,22 +187,18 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
             c.Emit(OpCodes.Ldarg_1); //damageinfo
             c.EmitDelegate<Func<bool, HealthComponent, DamageInfo, bool>>((isCrit, self, damageInfo) =>
             {
-                Log.Error("a");
                 if (isCrit == true)
                     return isCrit;
                 if (self.body == null )
                     return isCrit;
-                Log.Error("b");
                 if (self.body.HasBuff(harpoonDebuff) == false)
                 {
-                    Log.Error("c");
                     return isCrit;
                 }
 
                 //idgaf
                 if (damageInfo.attacker != null && damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody))
                 {
-                    Log.Error("d");
                     int crystalBallCt = GetCount(attackerBody);
                     if(crystalBallCt > 0)
                     {
@@ -251,13 +247,13 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
         private static BuffDef buffDef => RandomBarrierTarget.harpoonDebuff;
         public static float baseHauntRadius = 35;
-        public static float hauntRetryTime = 1;
-        float hauntStopwatch = 0;
+        public static float hauntRetryTime = 2;
+        float hauntCountdown = 0;
         GameObject tetherOriginInstance;
         SharedSufferingTetherManager tetherManager;
         void Start()
         {
-            hauntStopwatch = RandomBarrierTarget.harpoonTargetTime;
+            hauntCountdown = 0;
 
             this.tetherOriginInstance = UnityEngine.Object.Instantiate<GameObject>(RandomBarrierTarget.harpoonTetherOriginBodyAttachmentPrefab, base.body.gameObject.transform);
             NetworkedBodyAttachment component = this.tetherOriginInstance.GetComponent<NetworkedBodyAttachment>();
@@ -270,7 +266,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
 
         private void OnDisable()
         {
-            hauntStopwatch = 0;
+            hauntCountdown = 0;
         }
 
         #region barrier on hit
@@ -296,9 +292,12 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
 
         private void TryHauntInterval()
         {
-            hauntStopwatch += Time.fixedDeltaTime;
-            if (hauntStopwatch >= RandomBarrierTarget.harpoonTargetTime)
+            if (afflicted.Count >= currentMax)
+                return;
+            hauntCountdown -= Time.fixedDeltaTime;
+            if (hauntCountdown <= 0)
             {
+                targetKilled = false;
                 if (NetworkServer.active)
                 {
                     SphereSearch sphereSearch = new SphereSearch
@@ -336,7 +335,6 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                         {
                             if (this.afflicted.Count >= this.currentMax)
                             {
-                                hauntStopwatch -= RandomBarrierTarget.harpoonTargetTime;
                                 return;
                             }
                         }
@@ -346,7 +344,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                             hurtBoxCount--;
                         }
                     }
-                    hauntStopwatch -= hauntRetryTime;
+                    hauntCountdown += hauntRetryTime;
                 }
             }
         }
@@ -373,6 +371,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         List<CharacterBody> afflicted = new List<CharacterBody>();
         bool afflictedDirty = false;
         int currentMax = 1;
+        bool targetKilled = false;
         public bool TryAdd(CharacterBody newTarget)
         {
             if (this.afflicted.Count >= this.currentMax)
@@ -388,12 +387,36 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         {
             for (int i = this.afflicted.Count - 1; i >= 0; i--)
             {
-                if (this.afflicted[i] == null || !this.afflicted[i].healthComponent.alive || !this.afflicted[i].HasBuff(buffDef))
+                CharacterBody afflictedBody = this.afflicted[i];
+                if (afflictedBody == null || !afflictedBody.healthComponent.alive || !afflictedBody.HasBuff(buffDef))
                 {
                     this.afflicted.RemoveAt(i);
                     this.afflictedDirty = true;
+                    SetHauntCooldown(true);
+                    targetKilled = true;
+                    continue;
+                }
+                if((afflictedBody.corePosition - body.corePosition).sqrMagnitude > baseHauntRadius * baseHauntRadius)
+                {
+                    if(afflictedBody.HasBuff(buffDef))
+                        afflictedBody.RemoveBuff(buffDef);
+                    this.afflicted.RemoveAt(i);
+                    this.afflictedDirty = true;
+                    SetHauntCooldown(false);
                 }
             }
+        }
+
+        void SetHauntCooldown(bool kill)
+        {
+            if(hauntCountdown > 0)
+            {
+                if (kill == false)
+                    return;
+                if (targetKilled == true)
+                    return;
+            }
+            hauntCountdown = kill ? RandomBarrierTarget.harpoonTargetTime : hauntRetryTime;
         }
         private void UpdateTethers()
         {

@@ -16,6 +16,7 @@ using UnityEngine.Networking;
 using static R2API.DamageAPI;
 using static RoR2.CombatDirector;
 using static MoreStats.StatHooks;
+using R2API.Networking;
 
 namespace SwanSongExtended.Storms
 {
@@ -97,6 +98,7 @@ namespace SwanSongExtended.Storms
 
         public static void Init()
         {
+            DifficultyUtilsModule.DisplayCurrentStageTime = true;
             ShelterUtilsModule.UseGlobalShelters = true;
             RoR2Application.onLoad += AddDifficultyStats;
             stormDamageType = ReserveDamageType();
@@ -119,6 +121,8 @@ namespace SwanSongExtended.Storms
 
             GetMoreStatCoefficients += StormEliteHealthGates;
             OnBodyHealthGateTriggeredGlobal += OnStormEliteHealthGateTriggered;
+
+            NetworkingAPI.RegisterMessageType<SyncStormApproach>();
 
             CycloneLeader = Content.CreateAndAddBuff(
                 "bdCycloneLeader",
@@ -233,9 +237,6 @@ namespace SwanSongExtended.Storms
                     cycloneMaterial.SetFloat("_RimPower", 1.206f);
                     cycloneMaterial.SetFloat("_RimStrength", 0.828f);
                     cycloneMaterial.SetFloat("_TriplanarOn", 0);
-                    cycloneMaterial.SetInt("_TriplanarOn", 0);
-                    cycloneMaterial.SetFloat("_TriplanarOff", 1);
-                    cycloneMaterial.SetInt("_TriplanarOff", 1);
 
                     MeshRenderer mr = cycloneIndicator.GetComponentInChildren<MeshRenderer>(includeInactive: false);
                     if (mr)

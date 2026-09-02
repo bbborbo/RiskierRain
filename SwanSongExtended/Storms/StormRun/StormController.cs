@@ -13,6 +13,7 @@ using static SwanSongExtended.Storms.StormRunBehavior;
 using static SwanSongExtended.Storms.StormsCore;
 using static R2API.DamageAPI;
 using RainrotSharedUtils.Difficulties;
+using RainrotSharedUtils;
 
 namespace SwanSongExtended.Storms
 {
@@ -223,6 +224,23 @@ namespace SwanSongExtended.Storms
             public float GetRunDeltaTime()
             {
                 return runDeltaTimeThisFrame;
+            }
+            public float GetTimeSinceStageStart(out bool runInstanceAvailable)
+            {
+                runInstanceAvailable = false;
+                if (Run.instance == null || Stage.instance == null)
+                {
+                    return fixedAge;
+                }
+                runInstanceAvailable = true;
+                return Run.instance.GetStageStopwatch(out _);
+            }
+            public bool GetTimeOverDelay(float delayTime, float delayTimeIfRunNull = -1)
+            {
+                float age = GetTimeSinceStageStart(out bool b);
+                if (b == false && delayTimeIfRunNull != -1)
+                    return age >= delayTimeIfRunNull;
+                return age >= delayTime;
             }
 
             public override void FixedUpdate()
@@ -592,7 +610,7 @@ namespace SwanSongExtended.Storms
                 {
                     SetHudCountdownEnabled(hud, hud.targetBodyObject != null);
                 }
-                SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
+                SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime));
 
                 BroadcastStormWarningMessage(stormType);
             }
@@ -607,7 +625,7 @@ namespace SwanSongExtended.Storms
             public override void FixedUpdate()
             {
                 base.FixedUpdate();
-                if (base.fixedAge >= stormController.stormWarningTime)
+                if (GetTimeOverDelay(stormController.stormWarningTime + stormController.stormDelayTime, stormController.stormWarningTime))
                 {
                     SetNextState();
                 }
@@ -627,7 +645,13 @@ namespace SwanSongExtended.Storms
                 {
                     SetHudCountdownEnabled(hud, hud.targetBodyObject != null && StormController.bossHealthBarActive == false);
                 }
-                SetCountdownTime(Mathf.Max(0, stormController.stormWarningTime - base.fixedAge));
+
+                float age = GetTimeSinceStageStart(out bool b);
+                float arrivalTime = stormController.stormWarningTime;
+                if (b)
+                    arrivalTime += stormController.stormDelayTime;
+
+                SetCountdownTime(Mathf.Max(0, arrivalTime - age));
             }
 
 
@@ -696,7 +720,7 @@ namespace SwanSongExtended.Storms
             public override void FixedUpdate()
             {
                 base.FixedUpdate();
-                if (base.fixedAge >= stormController.stormDelayTime)
+                if (GetTimeOverDelay(stormController.stormDelayTime))
                 {
                     SetNextState();
                 }

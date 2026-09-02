@@ -1,4 +1,5 @@
-﻿using RainrotSharedUtils.Difficulties;
+﻿using R2API.Networking.Interfaces;
+using RainrotSharedUtils.Difficulties;
 using RoR2;
 using SwanSongExtended.Interactables;
 using System;
@@ -87,22 +88,19 @@ namespace SwanSongExtended.Storms
             GameObject stormControllerObject = Instantiate(StormsCore.StormsControllerPrefab);
             stormControllerInstance = stormControllerObject.GetComponent<StormController>();
 
-            if (Run.instance.stageClearCount == 0 && DifficultyUtilsModule.cachedDifficultyStats.delayFirstStorm_ForSwanSong)
-                stormTime += StormsCore.firstStageStormDelayMinutes;
-            stormTime += Run.instance.stageRng.RangeFloat(0, stormMaxRandomDelayMinutes);
-
-            stormControllerInstance.BeginStormApproach(stormTime, warningTime);
 
             if (NetworkServer.active)
             {
+                if (Run.instance.stageClearCount == 0 && DifficultyUtilsModule.cachedDifficultyStats.delayFirstStorm_ForSwanSong)
+                    stormTime += StormsCore.firstStageStormDelayMinutes;
+                //stage rng is server only
+                stormTime += Run.instance.stageRng.RangeFloat(0, stormMaxRandomDelayMinutes);
+
+                stormControllerInstance.BeginStormApproach(stormTime, warningTime);
+                new SyncStormApproach(stormControllerObject, stormTime, warningTime);
+
                 WishboneCarcass.ScatterWishbones();
             }
-
-            //dumb ass bullshit
-            cycloneMaterial.SetFloat("_TriplanarOn", 0);
-            cycloneMaterial.SetInt("_TriplanarOn", 0);
-            cycloneMaterial.SetFloat("_TriplanarOff", 1);
-            cycloneMaterial.SetInt("_TriplanarOff", 1);
         }
 
         #region hooks

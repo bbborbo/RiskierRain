@@ -121,7 +121,8 @@ namespace SwanSongExtended.Equipment
                 itemDisplayRules = new ItemDisplayRuleDict();
             }
 
-            ItemAPI.Add(new CustomEquipment(EquipDef, itemDisplayRules));
+            //ItemAPI.Add(new CustomEquipment(EquipDef, itemDisplayRules));
+            Content.AddEquipmentDef(EquipDef);
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
         }
 

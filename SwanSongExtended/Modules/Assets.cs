@@ -1354,6 +1354,10 @@ namespace SwanSongExtended.Modules
     internal class Content
     {
         //consolidate contentaddition here in case something breaks and/or want to move to r2api
+        internal static void AddCraftableDef(CraftableDef craftable)
+        {
+            ContentPacks.craftableDefs.Add(craftable);
+        }
         internal static void AddExpansionDef(ExpansionDef expansion)
         {
             ContentPacks.expansionDefs.Add(expansion);
@@ -1397,6 +1401,10 @@ namespace SwanSongExtended.Modules
         internal static void AddItemDef(ItemDef itemDef)
         {
             ContentPacks.itemDefs.Add(itemDef);
+        }
+        internal static void AddEquipmentDef(EquipmentDef equipmentDef)
+        {
+            ContentPacks.equipmentDefs.Add(equipmentDef);
         }
         internal static void AddEliteDef(EliteDef eliteDef)
         {

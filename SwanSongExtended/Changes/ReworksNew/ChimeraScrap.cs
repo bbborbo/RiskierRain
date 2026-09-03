@@ -12,6 +12,7 @@ using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using System.Linq;
 using static MoreStats.StatHooks;
+using RainrotSharedUtils;
 
 namespace SwanSongExtended.Changes
 {
@@ -70,41 +71,22 @@ namespace SwanSongExtended.Changes
         public override void PostInit()
         {
             base.PostInit();
+            SwanSongPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdScrapRed_asset, (cdScrapRed) =>
+            {
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Items_ExtraStatsOnLevelUp.ExtraStatsOnLevelUp_asset, 
+                    out RecipeIngredient prayerBeads);
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapGreen_asset,
+                    out RecipeIngredient greenScrap);
+
+                cdScrapRed.recipes = new Recipe[] { CraftingUtils.MakeRecipe(prayerBeads, greenScrap) };
+            });
             SwanSongPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdRegeneratingScrap_asset, (cdRegenScrap) =>
             {
-                RecipeIngredient anyRed = new RecipeIngredient();
-                anyRed.type = IngredientTypeIndex.AnyItem;
-                anyRed.itemTier = ItemTier.Tier3;
-                anyRed.requiredTags = new ItemTag[] { ItemTag.Any };
-                anyRed.forbiddenTags = new ItemTag[] { ItemTag.Scrap, ItemTag.PriorityScrap, ItemTag.WorldUnique, ItemTag.ObjectiveRelated };
-                RecipeIngredient anyScrap = new RecipeIngredient();
-                anyScrap.type = IngredientTypeIndex.AnyItem;
-                anyScrap.itemTier = ItemTier.Tier2;
-                anyScrap.requiredTags = new ItemTag[] { ItemTag.Scrap };
-                anyScrap.forbiddenTags = new ItemTag[] { ItemTag.Count };
-                RecipeIngredient anyPriorityScrap = new RecipeIngredient();
-                anyPriorityScrap.type = IngredientTypeIndex.AnyItem;
-                anyPriorityScrap.itemTier = ItemTier.Tier2;
-                anyPriorityScrap.requiredTags = new ItemTag[] { ItemTag.PriorityScrap };
-                anyPriorityScrap.forbiddenTags = new ItemTag[] { ItemTag.Count };
-
-                Recipe newRecipe1 = new Recipe();
-                newRecipe1.craftableDef = cdRegenScrap;
-                newRecipe1.priority = -1;
-                newRecipe1.ingredients = new RecipeIngredient[]
-                {
-                    anyRed,
-                    anyScrap
-                };
-                Recipe newRecipe2 = new Recipe();
-                newRecipe2.craftableDef = cdRegenScrap;
-                newRecipe2.priority = -1;
-                newRecipe2.ingredients = new RecipeIngredient[]
-                {
-                    anyRed,
-                    anyPriorityScrap
-                };
-                cdRegenScrap.recipes = new Recipe[] { newRecipe1, newRecipe2 };
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Infusion.Infusion_asset,
+                    out RecipeIngredient infusion);
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
+                    out RecipeIngredient scrapYellow);
+                cdRegenScrap.recipes = new Recipe[] { CraftingUtils.MakeRecipe(scrapYellow, scrapYellow) };
             });
         }
         public override void Hooks()

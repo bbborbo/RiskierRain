@@ -76,7 +76,6 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
         public override void PostInit()
         {
             base.PostInit();
-
             RecipeIngredient brokenScalpel = CraftingUtils.GetRecipeIngredient(brokenItemDef);
 
             CraftableDef craftScalpel = ScriptableObject.CreateInstance<CraftableDef>();
@@ -99,6 +98,7 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
             craftScalpel.recipes = new Recipe[] { repair, craft };
             Content.AddCraftableDef(craftScalpel);
 
+            return;
             SwanSongPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdFireballsOnHit_asset, (craftMerf) =>
             {
                 CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ElementalRings.FireRing_asset,

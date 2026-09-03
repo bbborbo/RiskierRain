@@ -186,7 +186,7 @@ I told you. I. Dont. FUCKING. CARE.";
                 return;
 
             hurtBoxesList = hurtBoxesList
-                .Where((hurtBox) => hurtBox != damageInfo.inflictedHurtbox)
+                .Where((hurtBox) => hurtBox.healthComponent != damageInfo.inflictedHurtbox.healthComponent)
                 .OrderBy((hurtBox) => (hurtBox.transform.position - damageInfo.position).sqrMagnitude)
                 .ToList();
             if (hurtBoxesList.Count <= 0)

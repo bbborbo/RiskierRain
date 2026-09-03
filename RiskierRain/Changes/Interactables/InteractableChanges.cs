@@ -42,6 +42,14 @@ namespace RiskierRain.Changes
 
             //interactable gold costs
             ChestRebalance();
+            On.RoR2.Run.GetDifficultyScaledCost_int += FixScaledCost;
+        }
+
+        private static int FixScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int orig, Run self, int baseCost)
+        {
+            if(Stage.instance != null)
+                return self.GetDifficultyScaledCost(baseCost, Stage.instance.entryDifficultyCoefficient);
+            return orig(self, baseCost);
         }
 
         public static float shrineCombatGoldRewardCoefficient = 0.5f;//1f

@@ -332,32 +332,37 @@ namespace RainrotSharedUtils.Difficulties
         }
         public static float GetCompensatedDifficultyFraction()
         {
-            if (!UseDifficultyStats)
+            if (UseDifficultyStats == false || 
+                (CompensateRewardsForDifficultyScaling == false && CompensateRewardsForDifficultyBoost == false))
             {
                 return 1;
             }
             float entryDiffCoeff = GetCompensatedStageEntryDifficulty();
 
+            //compensated == enemy spawns, includes starting difficulty boost
+            //noncompensated == chest costs, does not include starting difficulty boost
             return (1 + entryDiffCoeff) / (1 + Run.instance.compensatedDifficultyCoefficient);
 
             float GetCompensatedStageEntryDifficulty()
             {
-                if (!CompensateRewardsForDifficultyScaling && !CompensateRewardsForDifficultyBoost)
-                    return Run.instance.compensatedDifficultyCoefficient;
+                //determine if the compensation should be based on the difference offered by the total amount of scaling in the current stage, or only for the difficulty boost
+                float initialDiffCoeff = Run.instance.difficultyCoefficient;
+                if(CompensateRewardsForDifficultyScaling == true && Stage.instance != null)
+                    initialDiffCoeff = Stage.instance.entryDifficultyCoefficient;
 
-                float entryDiffCoeff = CompensateRewardsForDifficultyScaling ? Stage.instance.entryDifficultyCoefficient : Run.instance.difficultyCoefficient;
-
+                //value of 1 means full compensation, in other words the entire difficulty boost is subtracted from the reward value
                 if (CompensateRewardsForDifficultyBoost && BoostedRewardCompensationCoefficient == 1)
-                    return entryDiffCoeff;
+                    return initialDiffCoeff;
 
                 if (!ValidateCachedDifficultyStats())
                 {
-                    return entryDiffCoeff;
+                    return initialDiffCoeff;
                 }
 
                 float compensation = CompensateRewardsForDifficultyBoost ? BoostedRewardCompensationCoefficient : 0;
 
-                return entryDiffCoeff + cachedDifficultyStats.startingDifficultyCoefficientBoost * (1 - compensation);
+                //adds part of the difficulty coefficient boost according to the compensation rate, interpolating it closer to the denominator value
+                return initialDiffCoeff + cachedDifficultyStats.startingDifficultyCoefficientBoost * (1 - compensation);
             }
         }
 

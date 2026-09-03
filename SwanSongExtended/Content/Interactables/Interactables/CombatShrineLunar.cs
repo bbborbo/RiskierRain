@@ -141,8 +141,8 @@ namespace SwanSongExtended.Interactables
         {
             CombatSquad cs = interaction.gameObject.AddComponent<CombatSquad>();
             CombatDirector cd = interaction.gameObject.AddComponent<CombatDirector>();
-            cd.expRewardCoefficient = 1f;
-            cd.goldRewardCoefficient = 1f;
+            cd.expRewardCoefficient = 0.5f;
+            cd.goldRewardCoefficient = 0.5f;
             cd.eliteBias = 0;
             cd.maximumNumberToSpawnBeforeSkipping = 6;
             cd.teamIndex = TeamIndex.Lunar;

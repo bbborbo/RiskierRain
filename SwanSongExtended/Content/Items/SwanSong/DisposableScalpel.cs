@@ -11,6 +11,7 @@ using static BossDropRework.BossDropReworkPlugin;
 using SwanSongExtended.Modules;
 using System.Runtime.CompilerServices;
 using RainrotSharedUtils;
+using System.Linq;
 
 namespace SwanSongExtended.Items
 {
@@ -76,12 +77,13 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
         {
             base.PostInit();
 
-            CraftableDef craftable = ScriptableObject.CreateInstance<CraftableDef>();
-            craftable.name = "CRAFTABLE_" + this.ItemLangTokenName;
-            craftable.pickup = this.ItemsDef;
-            craftable.itemIndex = this.ItemsDef.itemIndex;
-
             RecipeIngredient brokenScalpel = CraftingUtils.GetRecipeIngredient(brokenItemDef);
+
+            CraftableDef craftScalpel = ScriptableObject.CreateInstance<CraftableDef>();
+            craftScalpel.name = "CRAFTABLE_" + this.ItemLangTokenName;
+            craftScalpel.pickup = this.ItemsDef;
+            craftScalpel.itemIndex = this.ItemsDef.itemIndex;
+
             CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
                 out RecipeIngredient yellowScrap);
 
@@ -94,8 +96,25 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
 
             Recipe craft = CraftingUtils.MakeRecipe(rustedKey, triTipDagger);
 
-            craftable.recipes = new Recipe[] { repair, craft };
-            Content.AddCraftableDef(craftable);
+            craftScalpel.recipes = new Recipe[] { repair, craft };
+            Content.AddCraftableDef(craftScalpel);
+
+            SwanSongPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdFireballsOnHit_asset, (craftMerf) =>
+            {
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ElementalRings.FireRing_asset,
+                    out RecipeIngredient kjaro);
+
+                craftMerf.recipes = craftMerf.recipes.Append(CraftingUtils.MakeRecipe(brokenScalpel, kjaro)).ToArray();
+            });
+            SwanSongPlugin.LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Recipes.cdLightningStrikeOnHit_asset, (craftCherf) =>
+            {
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Lightning.Lightning_asset,
+                    out RecipeIngredient capacitor);
+                CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShockNearby.ShockNearby_asset,
+                    out RecipeIngredient tesla);
+
+                craftCherf.AddAllRecipePermutations(new RecipeIngredient[] { brokenScalpel }, new RecipeIngredient[] { tesla, capacitor });
+            });
         }
 
         public override void Hooks()

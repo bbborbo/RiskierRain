@@ -397,12 +397,13 @@ namespace SwanSongExtended.Storms
                     cd.creditMultiplier = stormDirectorCreditGainMultiplier;
                     cd.eliteBias = 0;
                     cd.maximumNumberToSpawnBeforeSkipping = 6;
-                    cd.expRewardCoefficient = 1f;
+                    cd.expRewardCoefficient = 0.2f;
                     cd.goldRewardCoefficient = 0f;
                     cd.teamIndex = TeamIndex.Monster;
                     //duration between monster waves
                     cd.minRerollSpawnInterval = stormDirectorSpawnIntervalMin;
                     cd.maxRerollSpawnInterval = stormDirectorSpawnIntervalMax;
+                    cd.eliteBias = float.PositiveInfinity;
 
                     directorInstanceFound = true;
                     cd.onSpawnedServer.AddPersistentListener(OnStormDirectorSpawnServer);

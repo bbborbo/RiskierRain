@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using static SwanSongExtended.Modules.Language.Styling;
 using static MoreStats.StatHooks;
+using RainrotSharedUtils;
 
 namespace SwanSongExtended.Changes
 {
@@ -34,6 +35,35 @@ namespace SwanSongExtended.Changes
         {
             base.OnItemLoaded(item);
             item.tags = new ItemTag[]{ ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.Scrap, ItemTag.SacrificeBlacklist, ItemTag.ExtractorUnitBlacklist, ItemTag.CannotDuplicate };
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            CraftableDef craftBeads = ScriptableObject.CreateInstance<CraftableDef>();
+            craftBeads.name = "CRAFTABLE_EXTRASTATSONLEVELUP_SWANSONG";
+            craftBeads.pickup = itemDef;
+            craftBeads.itemIndex = itemDef.itemIndex;
+            Content.AddCraftableDef(craftBeads);
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Pearl.Pearl_asset, 
+                out RecipeIngredient pearl);
+            craftBeads.recipes = new Recipe[] { CraftingUtils.MakeRecipe(pearl, pearl) };
+
+
+            CraftableDef craftShinyPearl = ScriptableObject.CreateInstance<CraftableDef>();
+            craftShinyPearl.name = "CRAFTABLE_SHINYPEARL_SWANSONG";
+            SwanSongPlugin.LoadAsync<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShinyPearl.ShinyPearl_asset, (shinyPearl) =>
+            {
+                craftShinyPearl.pickup = shinyPearl;
+                craftShinyPearl.itemIndex = shinyPearl.itemIndex;
+            });
+            Content.AddCraftableDef(craftShinyPearl);
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
+                out RecipeIngredient scrapYellow);
+            CraftingUtils.ItemToIngredient(itemDef, out RecipeIngredient prayerBeads);
+            craftShinyPearl.recipes = new Recipe[] { CraftingUtils.MakeRecipe(scrapYellow, prayerBeads) };
         }
         public override void Hooks()
         {

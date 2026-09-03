@@ -44,6 +44,8 @@ namespace SwanSongExtended.Storms
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
         public static float stormDirectorCreditGainMultiplier = 0.3f;
+        public static float stormDirectorSpawnIntervalMin = 22.5f; //12.5f
+        public static float stormDirectorSpawnIntervalMax = 37.5f; //22.5f
         public static int stormEliteHealthGateCountBase = 1;
         public static int stormEliteHealthGateCountPerSize = 1;
         public static float stormEliteHealthGateDurationBase = 2.0f;
@@ -399,8 +401,8 @@ namespace SwanSongExtended.Storms
                     cd.goldRewardCoefficient = 0f;
                     cd.teamIndex = TeamIndex.Monster;
                     //duration between monster waves
-                    cd.minRerollSpawnInterval = 12.5f;
-                    cd.maxRerollSpawnInterval = 22.5f;
+                    cd.minRerollSpawnInterval = stormDirectorSpawnIntervalMin;
+                    cd.maxRerollSpawnInterval = stormDirectorSpawnIntervalMax;
 
                     directorInstanceFound = true;
                     cd.onSpawnedServer.AddPersistentListener(OnStormDirectorSpawnServer);

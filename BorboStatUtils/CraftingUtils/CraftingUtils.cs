@@ -19,13 +19,7 @@ namespace RainrotSharedUtils
             {
                 foreach (RecipeIngredient second in secondSlotIngredients)
                 {
-                    Recipe newRecipe = new Recipe();
-                    newRecipe.ingredients = new RecipeIngredient[]
-                    {
-                        first,
-                        second
-                    };
-                    recipes.Add(newRecipe);
+                    recipes.Add(CraftingUtils.MakeRecipe(first, second));
                 }
             }
 
@@ -64,6 +58,16 @@ namespace RainrotSharedUtils
                 return _VanillaBossKeys;
             }
             private set { _VanillaBossKeys = value; }
+        }
+        public static Recipe MakeRecipe(RecipeIngredient ingredientL, RecipeIngredient ingredientR)
+        {
+            Recipe newRecipe = new Recipe();
+            newRecipe.ingredients = new RecipeIngredient[]
+            {
+                ingredientL,
+                ingredientR
+            };
+            return newRecipe;
         }
         public static bool LoadAsIngredient<T>(string path, out RecipeIngredient ingredient) where T : UnityEngine.Object
         {

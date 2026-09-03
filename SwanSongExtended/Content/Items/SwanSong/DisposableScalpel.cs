@@ -10,6 +10,7 @@ using BossDropRework;
 using static BossDropRework.BossDropReworkPlugin;
 using SwanSongExtended.Modules;
 using System.Runtime.CompilerServices;
+using RainrotSharedUtils;
 
 namespace SwanSongExtended.Items
 {
@@ -70,6 +71,31 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
                 LoadItemIcon("texIconDisposableScalpelUsed"));
             DoLangForItem(brokenItemDef, "Broken Scalpel", "The blade has shattered into innumerous pieces.", "It is no longer usable.");
             base.Init();
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            CraftableDef craftable = ScriptableObject.CreateInstance<CraftableDef>();
+            craftable.name = "CRAFTABLE_" + this.ItemLangTokenName;
+            craftable.pickup = this.ItemsDef;
+            craftable.itemIndex = this.ItemsDef.itemIndex;
+
+            RecipeIngredient brokenScalpel = CraftingUtils.GetRecipeIngredient(brokenItemDef);
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
+                out RecipeIngredient yellowScrap);
+
+            Recipe repair = CraftingUtils.MakeRecipe(brokenScalpel, yellowScrap);
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_TreasureCache.TreasureCache_asset,
+                out RecipeIngredient rustedKey);
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BleedOnHit.BleedOnHit_asset,
+                out RecipeIngredient triTipDagger);
+
+            Recipe craft = CraftingUtils.MakeRecipe(rustedKey, triTipDagger);
+
+            craftable.recipes = new Recipe[] { repair, craft };
+            Content.AddCraftableDef(craftable);
         }
 
         public override void Hooks()

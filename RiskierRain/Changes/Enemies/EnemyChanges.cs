@@ -66,8 +66,23 @@ namespace RiskierRain.Changes
         }
 
         static float awuBaseHealth = 2500;//1600 //2500
+        static float awuShieldDurationMidHealth = 3f;//6
+        static float awuShieldDurationLowHealth = 3f;//6
+        static float awuShieldCooldown = 15;//15
         private static void ChangeAWU()
         {
+            On.EntityStates.RoboBallBoss.Weapon.FireSuperDelayKnockup.OnEnter += (orig, self) =>
+            {
+                if(self.healthComponent.healthFraction <= 0.25f)
+                    EntityStates.RoboBallBoss.Weapon.FireSuperDelayKnockup.shieldDuration = awuShieldDurationLowHealth;
+                else
+                    EntityStates.RoboBallBoss.Weapon.FireSuperDelayKnockup.shieldDuration = awuShieldDurationMidHealth;
+                orig(self);
+            };
+            LoadAsync<SkillDef>(RoR2_Base_RoboBallBoss.SuperFireDelayKnockup_asset, (skillDef) =>
+            {
+                skillDef.baseRechargeInterval = awuShieldCooldown;
+            });
             LoadAsync<CharacterBody>(RoR2_Base_RoboBallBoss.SuperRoboBallBossBody_prefab, BodyStats);
             void BodyStats(CharacterBody body)
             {

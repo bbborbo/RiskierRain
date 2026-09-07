@@ -80,7 +80,7 @@ namespace SwanSongExtended.Interactables
             cd.shouldSpawnOneWave = true;
             cd.skipSpawnIfTooCheap = false;
             cd.increaseSpawnDistanceOnFailure = true;
-            cd.goldRewardCoefficient = 1.0f;
+            cd.goldRewardCoefficient = 0.5f;
             cd.maxSpawnDistance = float.PositiveInfinity;
             cd.onSpawnedServer = new OnSpawnedServer();
             cd.onSpawnedServer.AddPersistentListener(OnGalleryDirectorSpawnServer);

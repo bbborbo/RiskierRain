@@ -417,7 +417,7 @@ namespace RiskierRain.Changes
         #endregion
 
         #region solus extractor
-        public static float extractorDuplicateDelay = 10f;//20f
+        public static float extractorDuplicateDelay = 7.5f;//20f
         private static void ChangeSolusExtractor()
         {
             On.EntityStates.ExtractorUnit.DuplicateItem.OnEnter += (orig, self) =>
@@ -425,10 +425,6 @@ namespace RiskierRain.Changes
                 EntityStates.ExtractorUnit.DuplicateItem.baseDuration = extractorDuplicateDelay;
                 orig(self);
             };
-            RiskierRainPlugin.LoadAsync<SkillDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_ExtractorUnit.ExtractorUnitDuplicate_asset, (skillDef) =>
-            {
-                skillDef.baseRechargeInterval = 10;
-            });
         }
         #endregion
 

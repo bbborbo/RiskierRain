@@ -17,12 +17,13 @@ namespace SwanSongExtended.Items
         public static int cashBackValue = 25;
         private static string fullDescPartial = $"When purchasing from {UtilityColor("multishop")} terminals, " +
             $"the other terminals {UtilityColor("stay open")}, refunding {UtilityColor($"${cashBackValue}")}.";
+        private static string shortDescPartial = "Shop terminals give cash back and stay open.";
         public string itemName = "Loyalty Card";
         public override string ItemName => itemName;
 
         public override string ItemLangTokenName => "DISCOUNTCARDNEW";
 
-        public override string ItemPickupDesc => "Gain cash back on shop purchases, up to two times.";
+        public override string ItemPickupDesc => shortDescPartial + " Can be used twice.";//"Gain cash back on shop purchases, up to two times.";
 
         public override string ItemFullDescription => fullDescPartial + " Usable up to two times.";
 
@@ -45,7 +46,7 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             usedItemDef = CreateNewUntieredItem("DISCOUNTCARDUSED", LoadItemIcon("texIconDiscountCardUsed"), itemTags: ItemTags);
-            DoLangForItem(usedItemDef, itemName + " (Used)", "Gain cash back on shop purchases. One use remaining.",
+            DoLangForItem(usedItemDef, itemName + " (Used)", shortDescPartial + " One use remaining.",
                 fullDescPartial + " One use remaining.");
             spentItemDef = CreateNewUntieredItem("DISCOUNTCARDSPENT", LoadItemIcon("texIconDiscountCardSpent"), itemTags: ItemTags);
             DoLangForItem(spentItemDef, itemName + " (Spent)", "It's just a piece of paper with a bunch of holes.",

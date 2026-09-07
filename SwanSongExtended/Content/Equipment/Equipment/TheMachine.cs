@@ -34,9 +34,9 @@ namespace SwanSongExtended.Equipment
 
         public override string EquipmentLore => "";
 
-        public override GameObject EquipmentModel => LoadDropPrefab("TheMachine");
+        public override GameObject EquipmentModel => LoadDropPrefab("mdlTheMachine");
 
-        public override Sprite EquipmentIcon => LoadItemIcon("TheMachine");
+        public override Sprite EquipmentIcon => LoadItemIcon("texIconTheMachine");
 
         public override float BaseCooldown => 10f;
 

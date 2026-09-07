@@ -39,10 +39,33 @@ namespace RiskierRain.Changes
             ChangeSolusScorcher();
             ChangeSolusProspector();
             ChangeLesserWisp();
+
+            ChangeSpecialBossScaling();
             ChangeAWU();
         }
 
-        static float awuBaseHealth = 1600; //2500
+        public static float bossScalingDifficultyToHealth = 0.3f;//0.4f
+        public static float bossScalingDifficultyToDamage = 0.0333f;//0.0333f
+        private static void ChangeSpecialBossScaling()
+        {
+            On.RoR2.CharacterMaster.ScaleDifficultyAsBoss += OverrideSpecialBossScaling;
+        }
+
+        private static void OverrideSpecialBossScaling(On.RoR2.CharacterMaster.orig_ScaleDifficultyAsBoss orig, CharacterMaster self, float hpDivisor, float damageDivisor, bool boostByHPPlayerCount)
+        {
+            float num = 1f + (Run.instance.compensatedDifficultyCoefficient * bossScalingDifficultyToHealth);
+            float num2 = 1f + (Run.instance.compensatedDifficultyCoefficient * bossScalingDifficultyToDamage);
+
+            if (boostByHPPlayerCount)
+            {
+                int num3 = Mathf.Max(1, Run.instance.livingPlayerCount);
+                num *= Mathf.Pow((float)num3, 0.5f);
+            }
+            self.inventory.GiveItemPermanent(RoR2Content.Items.BoostHp, Mathf.RoundToInt((num - 1f) * 10f));
+            self.inventory.GiveItemPermanent(RoR2Content.Items.BoostDamage, Mathf.RoundToInt((num2 - 1f) * 10f));
+        }
+
+        static float awuBaseHealth = 2500;//1600 //2500
         private static void ChangeAWU()
         {
             LoadAsync<CharacterBody>(RoR2_Base_RoboBallBoss.SuperRoboBallBossBody_prefab, BodyStats);

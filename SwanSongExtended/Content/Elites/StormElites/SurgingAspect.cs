@@ -30,9 +30,9 @@ namespace SwanSongExtended.Elites
 
         public static ModdedDamageType riptideDamageType;
         public static BuffDef riptideDebuff;
-        public static int riptideArmorPenalty = 20;
-        public static float riptideMovementPenalty = 0.8f;
-        public static float riptideDuration = 1f;
+        public static int riptideArmorPenalty = 0;
+        public static float riptideMovementPenalty = 1f;
+        public static float riptideDuration = 1.2f;
 
         public static GameObject waveProjectilePrefab;
         public static GameObject cannonballProjectilePrefab;
@@ -135,6 +135,7 @@ namespace SwanSongExtended.Elites
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Brother.BrotherSunderWave_prefab, CreateWaveProjectile);
         }
 
+        #region assets
         private void CreateWaveProjectile(GameObject baseWaveProjectile)
         {
             Vector3 size = new Vector3(20f, 2.0f, 1.0f);//30f, 4.5f, 1.0f
@@ -282,6 +283,7 @@ namespace SwanSongExtended.Elites
 
             Modules.Content.AddNetworkedObjectPrefab(cannonballProjectilePrefab);
         }
+        #endregion
 
         public override void Hooks()
         {

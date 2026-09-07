@@ -73,10 +73,10 @@ namespace FruityElites.EliteReworks
         public static float flameAuraRange = 18f;
         [AutoConfig("Passive : Flame Aura Growth Per Second", "Expressed as a fraction of max range (eg 0.25 is 25% is 4 seconds for full range). Vanilla is N/A", 0.25f)]
         public static float flameAuraGrowthPerSecond = 0.25f;
-        [AutoConfig("Passive : Flame Aura Damage Interval", "Duration in seconds between ticks of damage. Vanilla is N/A", 0.5f)]
+        [AutoConfig("Passive : Flame Aura Damage Interval", "Duration in seconds between ticks of damage (0.5 is 2 burns per second). Vanilla is N/A", 0.5f)]
         public static float flameAuraDamageInterval = 0.5f;
 
-        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 10f)]
+        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 5f)]
         public static float flameAuraIgniteTotalDamageBase = 5f;
         [AutoConfig("Passive : Flame Aura Ignite Damage Level", 
             "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.4f)]

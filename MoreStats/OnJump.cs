@@ -65,7 +65,7 @@ namespace MoreStats
         /// Only to be used inside of Jump API events. Uses the highest proposed value. 
         /// Calling this method outside of Jump API events will do nothing
         /// </summary>
-        public static void SetJumpPowerForCurrentJump(float vBonus = 0, float hBonus = 0)
+        public static void ProposeJumpPowerBonusForCurrentJump(float vBonus = 0, float hBonus = 0)
         {
             if (verticalBonus <= vBonus)
                 verticalBonus = vBonus;

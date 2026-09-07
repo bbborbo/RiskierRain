@@ -175,7 +175,7 @@ namespace JumpRework
             {
                 IL.EntityStates.GenericCharacterMain.ProcessJump_bool += DoubleJumpStrengthNerf;
             }
-            if (false)//ReworkFeather.Value)
+            if (ReworkFeather.Value)
             {
                 BaseStats.FeatherJumpCountBase = FeatherJumpCount.Value;
                 BaseStats.FeatherJumpCountStack = 0;

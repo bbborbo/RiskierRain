@@ -8,6 +8,14 @@ using RoR2;
 
 namespace JumpRework
 {
+
+    public static class Extensions
+    {
+        public static string AsPercent(this float d)
+        {
+            return (d * 100f).ToString() + "%";
+        }
+    }
     public static class Tools
     {
 

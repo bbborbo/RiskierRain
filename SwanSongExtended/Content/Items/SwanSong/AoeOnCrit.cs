@@ -165,6 +165,9 @@ I told you. I. Dont. FUCKING. CARE.";
 
             if (damageInfo.procChainMask.HasModdedProc(AoeOnCritProc))
                 return;
+            int stack = GetCount(body);
+            if (stack <= 0)
+                return;
             SphereSearch sphereSearch = new SphereSearch
             {
                 mask = LayerIndex.entityPrecise.mask,
@@ -195,7 +198,6 @@ I told you. I. Dont. FUCKING. CARE.";
             int index = 0;// UnityEngine.Random.RandomRangeInt(0, hurtBoxesList.Count);
             HurtBox target = hurtBoxesList[index];
 
-            int stack = GetCount(body);
             float damageCoefficient = AoeOnCrit.firstBounceDamageBase + AoeOnCrit.firstBounceDamageStack * (stack - 1);
             int bounces = AoeOnCrit.bouncesBase + AoeOnCrit.bouncesStack * (stack - 1);
             float lastBounceDamageMultiplier = AoeOnCrit.lastBounceDamageCoefficient / damageCoefficient;

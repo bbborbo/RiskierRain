@@ -28,6 +28,7 @@ using RoR2.Audio;
 using System.Linq;
 using SwanSongExtended.Modules;
 using RoR2.Projectile;
+using static R2API.DamageAPI;
 
 namespace SwanSongExtended.Elites
 {
@@ -36,6 +37,14 @@ namespace SwanSongExtended.Elites
         #region
         public override string ConfigName => "Elites : Storm : " + EliteModifier;
 
+        public static ModdedDamageType strippingDamageType;
+        public static BuffDef strippedDebuff;
+        public static int strippedArmorPenalty = 5;
+        /// <summary>
+        /// -1 is permanent
+        /// </summary>
+        public static float strippedDuration = -1;
+
         public static int   howlingEmpoweredArmor => SurgingAspect.surgingEmpoweredArmor;
         public static float howlingEmpoweredMoveSpeed = 0.8f;
         public static float howlingEmpoweredAtkSpeed = 0.3f;
@@ -43,6 +52,7 @@ namespace SwanSongExtended.Elites
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
         public static float squallDamagePerSecond = 40f;
         public static float squallDamagePerLevel = 0.4f;//0.2f
+        public static float squallProcCoefficient = 0.25f;
         /// <summary>
         /// expressed in seconds?
         /// </summary>
@@ -55,6 +65,7 @@ namespace SwanSongExtended.Elites
 
         public static float missileDamageBase = 6f;
         public static float missileDamagePerLevel = 0.3f;
+        public static float missileProcCoefficient = 0.5f;
         public static int missileCtBase = 3;
         public static int missileCtPerSize = 1;
 
@@ -107,6 +118,21 @@ namespace SwanSongExtended.Elites
 
         public override void Init()
         {
+            strippingDamageType = ReserveDamageType();
+
+            strippedDebuff = Modules.Content.CreateAndAddBuff(
+                "bdWindEliteStripped",
+                null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffSlow50Icon_tif).WaitForCompletion(),
+                Color.grey,
+                canStack: false,
+                isDebuff: true,
+                isHidden: false
+                );
+            SwanSongPlugin.LoadAsync<BuffDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ArmorReductionOnHit.bdPulverizeBuildup_asset, (bd) =>
+            {
+                strippedDebuff.iconSprite = bd.iconSprite;
+            });
+
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_EliteEarth.AffixEarthBodyAttachment_prefab, CreateBodyAttachment);
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_VoidRaidCrab.VoidRaidCrabSpinBeamVFX_prefab, CreateBeamVfx);
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.MissileProjectile_prefab, CreateHowlMissile);
@@ -115,13 +141,15 @@ namespace SwanSongExtended.Elites
             base.Init();
         }
 
+        #region assets
         private void CreateHowlMissile(GameObject missilePrefab)
         {
             howlWindMissilePrefab = missilePrefab.InstantiateClone("HowlWindMissile", true);
 
             if(howlWindMissilePrefab.TryGetComponent(out ProjectileController projectile))
             {
-                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Lemurian.FireballGhost_prefab, (fireballGhost) =>
+                projectile.procCoefficient = missileProcCoefficient;
+                SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Vulture.WindbladeProjectileGhost_prefab, (fireballGhost) =>
                 {
                     //no need to register ghost to content pack
                     GameObject ghost = fireballGhost.InstantiateClone("HowlWindMissileGhost", false);
@@ -133,6 +161,14 @@ namespace SwanSongExtended.Elites
                     //    colorOverLifetime.color.
                     //}
                 });
+            }
+
+            if(howlWindMissilePrefab.TryGetComponent(out MissileController missile))
+            {
+                missile.maxVelocity = 25;
+                missile.acceleration = 2;
+                missile.delayTimer = 0.5f;
+                missile.turbulence = 5f;
             }
 
             if(howlWindMissilePrefab.TryGetComponent(out ProjectileDamage pd))
@@ -338,11 +374,13 @@ namespace SwanSongExtended.Elites
 
             Modules.Content.AddNetworkedObjectPrefab(howlingRallyBodyAttachment);
         }
+        #endregion
 
         public override void Hooks()
         {
             GetStatCoefficients += HowlingStats;
             OnBodyHealthGateTriggeredGlobal += HowlingRetaliate;
+            MoreStats.OnHit.GetHitBehavior += HowlingStripOnHit;
             On.RoR2.CharacterBody.AddOrRemoveEliteItemBehavior += AddAffixBehavior;
             On.RoR2.HealthComponent.TakeDamage += CycloneBlock;
 
@@ -351,6 +389,24 @@ namespace SwanSongExtended.Elites
             On.EntityStates.AI.Walker.Wander.FixedUpdate += HowlingConvergeWander2;
             On.EntityStates.AI.Walker.LookBusy.FixedUpdate += HowlingConvergeLookBusy2;
             //RemoveOspForever();
+        }
+
+        private void HowlingStripOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
+        {
+            if (!NetworkServer.active)
+                return;
+            if (attackerBody.HasBuff(EliteBuffDef) || damageInfo.HasModdedDamageType(strippingDamageType))
+            {
+                if (strippedDuration == -1)
+                {
+                    if (Util.CheckRoll(damageInfo.procCoefficient, attackerBody.master))
+                        victimBody.AddBuff(strippedDebuff);
+                }
+                else
+                {
+                    victimBody.AddTimedBuff(strippedDebuff, strippedDuration * damageInfo.procCoefficient);
+                }
+            }
         }
 
         private void HowlingRetaliate(CharacterBody sender)
@@ -558,6 +614,11 @@ namespace SwanSongExtended.Elites
 
         private void HowlingStats(CharacterBody sender, StatHookEventArgs args)
         {
+            int stripCount = sender.GetBuffCount(strippedDebuff);
+            if (stripCount > 0)
+            {
+                args.armorAdd -= strippedArmorPenalty * stripCount;
+            }
             if (sender.HasBuff(EliteBuffDef))
             {
                 bool isLeader = sender.HasBuff(StormsCore.CycloneLeader);
@@ -888,7 +949,7 @@ namespace SwanSongExtended.Elites
                 radius = WhirlwindAspect.squallBeamRadius,
                 smartCollision = false,
                 queryTriggerInteraction = QueryTriggerInteraction.Ignore,
-                procCoefficient = 1f,
+                procCoefficient = WhirlwindAspect.squallProcCoefficient,
                 procChainMask = default(ProcChainMask),
                 owner = base.gameObject,
                 weapon = base.gameObject,

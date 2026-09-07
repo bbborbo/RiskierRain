@@ -405,6 +405,7 @@ namespace SwanSongExtended.Elites
                 else
                 {
                     victimBody.AddTimedBuff(strippedDebuff, strippedDuration * damageInfo.procCoefficient);
+                    victimBody.ExtendTimedBuffIfPresent(strippedDebuff, strippedDuration * damageInfo.procCoefficient);
                 }
             }
         }

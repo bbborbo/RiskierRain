@@ -39,7 +39,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "CRITRETALIATE";
 
-        public override string ItemPickupDesc => "Increase critical strike chance for a short time after being hit.";
+        public override string ItemPickupDesc => "Critically strike after taking damage.";
 
         public override string ItemFullDescription => $"After getting hit, gain a <style=cIsDamage>{critChanceBonus}%</style> chance " +
             $"to <style=cIsDamage>Critically Strike</style>, fading over " +

@@ -16,7 +16,7 @@ namespace SurvivorTweaks.SurvivorTweaks
     class MulTweaks : SurvivorTweakBase<MulTweaks>
     {
         float nailSpreadCoefficient = 1.2f;
-        public static float baseDamage = 15f;
+        public static float baseDamage = 12f; //12
 
         GameObject scrapProjectile = LegacyResourcesAPI.Load<GameObject>("prefabs/projectiles/ToolbotGrenadeLauncherProjectile");
         public static bool useScrapGravity = true;
@@ -85,7 +85,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 
                 On.EntityStates.Toolbot.ToolbotStanceSwap.OnEnter += RetoolBuff;
                 SkillDef retool = special.variants[0].skillDef;
-                retool.baseRechargeInterval = retoolDuration * 4;
+                retool.baseRechargeInterval = retoolDuration;
 
                 On.EntityStates.Toolbot.ToolbotDualWieldBase.OnEnter += PowerModeNerf;
                 On.EntityStates.Toolbot.ToolbotDualWieldBase.OnExit += UndoPowerMode;

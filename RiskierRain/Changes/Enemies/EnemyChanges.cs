@@ -19,6 +19,7 @@ using RoR2.Projectile;
 using EntityStates.BeetleQueenMonster;
 using EntityStates.NullifierMonster;
 using SwanSongExtended.Modules;
+using RoR2.Skills;
 
 namespace RiskierRain.Changes
 {
@@ -38,6 +39,7 @@ namespace RiskierRain.Changes
             ChangeGup();
             ChangeSolusScorcher();
             ChangeSolusProspector();
+            ChangeSolusExtractor();
             ChangeLesserWisp();
 
             ChangeSpecialBossScaling();
@@ -411,6 +413,22 @@ namespace RiskierRain.Changes
                 body.baseMaxHealth = solusProspectorBaseHealth;
                 body.levelMaxHealth = solusProspectorBaseHealth * 0.3f;
             }
+        }
+        #endregion
+
+        #region solus extractor
+        public static float extractorDuplicateDelay = 10f;//20f
+        private static void ChangeSolusExtractor()
+        {
+            On.EntityStates.ExtractorUnit.DuplicateItem.OnEnter += (orig, self) =>
+            {
+                EntityStates.ExtractorUnit.DuplicateItem.baseDuration = extractorDuplicateDelay;
+                orig(self);
+            };
+            RiskierRainPlugin.LoadAsync<SkillDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_ExtractorUnit.ExtractorUnitDuplicate_asset, (skillDef) =>
+            {
+                skillDef.baseRechargeInterval = 10;
+            });
         }
         #endregion
 

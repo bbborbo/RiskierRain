@@ -17,18 +17,23 @@ namespace SwanSongExtended.Items
 {
     class CritRetaliate : ItemBase<CritRetaliate>
     {
-        public static BuffDef watchCritBuff;
+        public static BuffDef temporaryCritBuff;
+        public static BuffDef hiddenGuaranteedCritBuff;
         #region config
         public override string ConfigName => "Items : Destroyer Emblem";
         [AutoConfig("Critical Strike Chance Bonus", 100)]
         public static float critChanceBonus = 100;
-        public static float critChancePerBuff => critChanceBonus / buffTotal;
-        [AutoConfig("Total Buffs", 20)]
-        public static int buffTotal = 20;
-        [AutoConfig("Base Duration Of Buffs", 6f)]
-        public static float buffDurationBase = 6f;
-        [AutoConfig("Stack Duration Of Buffs", 4f)]
-        public static float buffDurationStack = 4f;
+        [AutoConfig("Critical Strike Chance Free", 5)]
+        public static float critChanceFree = 5;
+        public static float critChancePerBuff => critChanceBonus / tierTotal;
+        [AutoConfig("Total Buff Tiers", "In order to avoid constantly recalculating stats, the total crit chance bonus is divided into this amount of tiers. For example with 10 tiers at 100% crit chance, it would decay 10% crit chance at a time.", 10)]
+        public static int tierTotal = 10;
+        [AutoConfig("Duration Fraction Of Guaranteed Crit", 0.25f)]
+        public static float guaranteeDurationBase = 0.25f;
+        [AutoConfig("Base Duration Of Buffs", 4f)]
+        public static float buffDurationBase = 4f;
+        [AutoConfig("Stack Duration Of Buffs", 2f)]
+        public static float buffDurationStack = 2f;
         #endregion
         public override string ItemName => "Destroyer Emblem";
 
@@ -56,11 +61,18 @@ namespace SwanSongExtended.Items
         }
         public override void Init()
         {
-            watchCritBuff = Content.CreateAndAddBuff("bdWatchCritChance",
+            temporaryCritBuff = Content.CreateAndAddBuff("bdRetaliateCritBonusTemporary",
                 Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
                 Color.yellow,
                 true, false,
-                BuffDef.StackingDisplayMethod.Default);
+                BuffDef.StackingDisplayMethod.Percentage,
+                isHidden: false);
+            hiddenGuaranteedCritBuff = Content.CreateAndAddBuff("bdRetaliateCritBonusHidden",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/CritOnUse/texBuffFullCritIcon.tif").WaitForCompletion(),
+                Color.yellow,
+                true, false,
+                BuffDef.StackingDisplayMethod.Default,
+                isHidden: true);
 
             base.Init();
         }
@@ -68,15 +80,29 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             GetStatCoefficients += WatchCritChance;
+            On.RoR2.GlobalEventManager.OnCrit += RemoveGuaranteeCritOnCrit;
+        }
+
+        private void RemoveGuaranteeCritOnCrit(On.RoR2.GlobalEventManager.orig_OnCrit orig, GlobalEventManager self, CharacterBody body, DamageInfo damageInfo, CharacterMaster master, float procCoefficient, ProcChainMask procChainMask)
+        {
+            orig(self, body, damageInfo, master, procCoefficient, procChainMask);
+            if (body == null 
+                || NetworkServer.active == false
+                || (damageInfo.damageType.IsDamageSourceSkillBased == false 
+                    && damageInfo.damageType.damageSource != DamageSource.Equipment)
+                )
+                return;
+            if (body.HasBuff(hiddenGuaranteedCritBuff))
+                body.RemoveBuff(hiddenGuaranteedCritBuff);
         }
 
         private void WatchCritChance(CharacterBody sender, StatHookEventArgs args)
         {
-            int buffCount = sender.GetBuffCount(watchCritBuff);
-            args.critAdd += critChancePerBuff * buffCount;
-
+            float crit = sender.GetBuffCount(temporaryCritBuff);
+            if (sender.HasBuff(hiddenGuaranteedCritBuff))
+                crit += 100;
             if (GetCount(sender) > 0)
-                args.critAdd += 2;
+                args.critAdd += Mathf.Clamp(crit, critChanceFree, 100);
         }
     }
     public class DestroyerEmblemBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
@@ -99,13 +125,22 @@ namespace SwanSongExtended.Items
             if (victimBody == null)
                 return;
 
-            victimBody.ClearTimedBuffs(CritRetaliate.watchCritBuff);
-            float duration = CritRetaliate.buffDurationStack * (stack - 1) + CritRetaliate.buffDurationBase;
-            for (int i = 0; i < CritRetaliate.buffTotal; i++)
+            victimBody.ClearTimedBuffs(CritRetaliate.temporaryCritBuff);
+
+            float totalDuration = CritRetaliate.buffDurationBase + (CritRetaliate.buffDurationStack * (stack - 1));
+            float buffsPerTier = CritRetaliate.critChanceBonus / (float)CritRetaliate.tierTotal;
+            int lastTier = 0;
+            for (int i = 0; i < CritRetaliate.tierTotal; i++)
             {
-                victimBody.AddTimedBuffAuthority(CritRetaliate.watchCritBuff.buffIndex, duration * (float)(i + 1) / (float)CritRetaliate.buffTotal);
+                float nextDuration = totalDuration * (float)(i + 1) / (float)CritRetaliate.tierTotal;
+                int nextTier = Mathf.RoundToInt((i + 1) * buffsPerTier);
+                for(int n = 0; n < nextTier - lastTier; n++)
+                {
+                    victimBody.AddTimedBuff(CritRetaliate.temporaryCritBuff.buffIndex, nextDuration);
+                }
+                lastTier = nextTier;
             }
-            //victimBody.AddTimedBuffAuthority(watchCritBuff.buffIndex, duration);
+            victimBody.AddTimedBuff(CritRetaliate.hiddenGuaranteedCritBuff.buffIndex, totalDuration * CritRetaliate.guaranteeDurationBase);
         }
     }
 }

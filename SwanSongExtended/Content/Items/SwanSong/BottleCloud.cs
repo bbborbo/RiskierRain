@@ -103,7 +103,7 @@ namespace SwanSongExtended.Items
             if (!GetCloudReady(body))
                 return false;
 
-            JumpAPI.SetJumpPowerForCurrentJump(vBonus: BottleCloud.verticalBonusOnCloudJump);
+            JumpAPI.ProposeJumpPowerBonusForCurrentJump(vBonus: BottleCloud.verticalBonusOnCloudJump);
 
             SetCloudCooldown(body, cloudCooldown);
 
@@ -126,7 +126,7 @@ namespace SwanSongExtended.Items
             if (hurtboxBuffer.Count <= 0)
                 return false;
 
-            JumpAPI.SetJumpPowerForCurrentJump(vBonus: BottleCloud.verticalBonusOnCloudJump);
+            JumpAPI.ProposeJumpPowerBonusForCurrentJump(vBonus: BottleCloud.verticalBonusOnCloudJump);
 
             SetCloudCooldown(body, cloudCooldownOnStun);
 

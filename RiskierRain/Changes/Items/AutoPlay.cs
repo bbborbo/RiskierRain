@@ -41,7 +41,7 @@ namespace RiskierRain.Changes
 				if (slowDuration > 0)
 					healthComponent.body.AddTimedBuffAuthority(RoR2Content.Buffs.Slow50.buffIndex, slowDuration);
 
-				if (forceMultiplier <= 0)
+				if (true)//forceMultiplier <= 0)
 					return forceIn;
 
 				float baseForce = 0;
@@ -69,7 +69,7 @@ namespace RiskierRain.Changes
 
 		#region nkuhana
 		public static float opinionDamageMultiplier = 3.5f; //2.5f
-		public static float opinionForceMultiplier = 2f; //0f
+		public static float opinionForceMultiplier = 0.5f; //0f
 		public static float opinionSlowDuration = 3f; //0f
 		public static float opinionProcCoeff = 0.75f; //0.2f
 		public static void ChangeNkuhana()
@@ -101,7 +101,7 @@ namespace RiskierRain.Changes
 		#endregion
 
 		#region little disciple
-		public static float discipleForceMultiplier = 5f; //0f
+		public static float discipleForceMultiplier = 0.5f; //0f
 		public static float discipleSlowDuration = 3f; //0f
 		public static float discipleProcCoeff = 0.4f; //1.0f
 		public static void ChangeDisciple()
@@ -115,7 +115,7 @@ namespace RiskierRain.Changes
 			LanguageAPI.Add("ITEM_SPRINTWISP_DESC",
 				$"Fire a <style=cIsDamage>tracking wisp</style> " +
 				$"for <style=cIsDamage>300% damage</style> " +
-				$"that <style=cIsUtility>pushes and slows</style> enemies for 3 seconds. " +
+				$"that <style=cIsUtility>slows</style> enemies for 3 seconds. " +
 				$"Fires every <style=cIsUtility>1</style><style=cStack>(-50% per stack)</style> seconds " +
 				$"while sprinting. Fire rate increases with <style=cIsUtility>movement speed</style>.");
 		}

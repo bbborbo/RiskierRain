@@ -30,23 +30,23 @@ namespace SwanSongExtended.Modules
                 {
                     default:
                         break;
-                    case EliteTiers.Tier1:
+                    case EliteTiers.Common:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
                         break;
-                    case EliteTiers.Tier1AndHalf:
+                    case EliteTiers.Uncommon:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
                         break;
-                    case EliteTiers.Tier2:
+                    case EliteTiers.Rare:
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[5].eliteTypes, eliteDef.eliteDef);
                         break;
-                    case EliteTiers.StormT1:
+                    case EliteTiers.Storm:
                         HG.ArrayUtils.ArrayAppend(ref StormsCore.StormEliteT1.eliteTypes, eliteDef.eliteDef);
                         break;
-                    case EliteTiers.StormT2:
+                    case EliteTiers.StormBoss:
                         HG.ArrayUtils.ArrayAppend(ref StormsCore.StormEliteT2.eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.Lunar:
@@ -69,11 +69,11 @@ namespace SwanSongExtended.Modules
         }
         public enum EliteTiers
         {
-            Tier1,
-            Tier1AndHalf,
-            Tier2,
-            StormT1,
-            StormT2,
+            Common,
+            Uncommon,
+            Rare,
+            Storm,
+            StormBoss,
             Lunar,
             Other
         }

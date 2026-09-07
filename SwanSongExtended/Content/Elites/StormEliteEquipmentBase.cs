@@ -24,7 +24,7 @@ namespace SwanSongExtended.Elites
         public override float EliteHealthModifier => 0f;
 
         public override float EliteDamageModifier => 0f;
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.Common;
 
         public EliteDef HonorEliteDef;
 

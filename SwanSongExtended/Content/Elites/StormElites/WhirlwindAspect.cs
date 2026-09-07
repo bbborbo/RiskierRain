@@ -80,7 +80,7 @@ namespace SwanSongExtended.Elites
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
 
         //VERY important
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT1;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.Storm;
 
         public override string EliteAffixToken => "AFFIX_SQUALL";
 

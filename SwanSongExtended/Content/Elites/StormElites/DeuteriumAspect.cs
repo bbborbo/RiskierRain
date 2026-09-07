@@ -43,7 +43,7 @@ namespace SwanSongExtended.Elites
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         public override string EliteRampTextureName { get; set; } = "texRampLeeching";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormT2;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.StormBoss;
         //public override CombatDirector.EliteTierDef[] CanAppearInEliteTiers => new CombatDirector.EliteTierDef[1] { RiskierRainContent.StormT2 };
 
         public override bool CanDrop { get; } = false;

@@ -60,7 +60,7 @@ namespace SwanSongExtended.Elites
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matFrenzied.mat");
         public override string EliteRampTextureName { get; set; } = "texRampFrenzied";
-        public override EliteTiers EliteTier { get; set; } = EliteTiers.Tier1AndHalf;
+        public override EliteTiers EliteTier { get; set; } = EliteTiers.Uncommon;
 
         public override bool CanDrop { get; } = false;
 

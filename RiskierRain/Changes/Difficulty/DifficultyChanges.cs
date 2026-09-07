@@ -87,25 +87,62 @@ namespace RiskierRain.Changes
         #endregion
         #region potential protection
         public static bool potentialProtectionVisibility = true;
-        public static float potentialProtectionDuration = 4;
+        public static bool potentialProtectionLimitedTime = false;
+        public static float potentialProtectionDurationUnlimited = 1;
+        public static float potentialProtectionDurationLimited = 4;
         public static void AddPotentialProtection()
         {
-            On.RoR2.UI.PickupPickerPanel.Awake += CommandOrPotentialArmor;
-            void CommandOrPotentialArmor(On.RoR2.UI.PickupPickerPanel.orig_Awake orig, RoR2.UI.PickupPickerPanel self)
+            BuffIndex GetBuffIndex()
             {
-                RoR2.LocalUser user = RoR2.LocalUserManager.GetFirstLocalUser();
-                RoR2.CharacterBody body = user.cachedBody;
-                body.AddTimedBuffAuthority(GetBuffIndex(), potentialProtectionDuration);
-                orig(self);
+                if (potentialProtectionVisibility == true)
+                    return RoR2.RoR2Content.Buffs.Immune.buffIndex;
+                return RoR2.RoR2Content.Buffs.HiddenInvincibility.buffIndex;
+            }
 
-                BuffIndex GetBuffIndex()
+            if (potentialProtectionLimitedTime == false)
+            {
+                On.RoR2.NetworkUIPromptController.SetParticipantMaster += PickupPickerPanelProtection;
+
+                void PickupPickerPanelProtection(On.RoR2.NetworkUIPromptController.orig_SetParticipantMaster orig, NetworkUIPromptController self, CharacterMaster newParticipantMaster)
                 {
-                    if (potentialProtectionVisibility == true)
-                        return RoR2.RoR2Content.Buffs.Immune.buffIndex;
-                    return RoR2.RoR2Content.Buffs.HiddenInvincibility.buffIndex;
+                    if (NetworkServer.active)
+                    {
+                        if (newParticipantMaster != self.currentParticipantMaster)
+                        {
+                            CharacterBody body = self.currentParticipantMaster.GetBody();
+                            if (body != null && body.HasBuff(GetBuffIndex()))
+                            {
+                                body.RemoveBuff(GetBuffIndex());
+                                body.ClearTimedBuffs(GetBuffIndex());
+                                body.AddTimedBuff(GetBuffIndex(), potentialProtectionDurationUnlimited);
+                            }
+                        }
+                        if (newParticipantMaster != null)
+                        {
+                            CharacterBody body = newParticipantMaster.GetBody();
+                            if (body != null && body.isPlayerControlled)
+                                body.AddBuff(GetBuffIndex());
+                        }
+                    }
+
+                    orig(self, newParticipantMaster);
                 }
-            };
+            }
+            else
+            {
+                On.RoR2.UI.PickupPickerPanel.Awake += CommandOrPotentialArmor;
+
+                void CommandOrPotentialArmor(On.RoR2.UI.PickupPickerPanel.orig_Awake orig, RoR2.UI.PickupPickerPanel self)
+                {
+                    RoR2.LocalUser user = RoR2.LocalUserManager.GetFirstLocalUser();
+                    RoR2.CharacterBody body = user.cachedBody;
+                    if(body.isPlayerControlled)
+                        body.AddTimedBuffAuthority(GetBuffIndex(), potentialProtectionDurationLimited);
+                    orig(self);
+                };
+            }
         }
+
         #endregion
         #region pity charge / teleporter overcharge
         public static void AddPityCharge()

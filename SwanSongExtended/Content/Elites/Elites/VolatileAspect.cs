@@ -68,9 +68,9 @@ namespace SwanSongExtended.Elites
 
         public override string EliteModifier => "Volatile";
 
-        public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject EliteEquipmentModel => LoadDropPrefab();
 
-        public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EliteEquipmentIcon => LoadItemIcon();
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matVolatile.mat");
         public override string EliteRampTextureName { get; set; } = "texRampVolatile";
@@ -79,8 +79,7 @@ namespace SwanSongExtended.Elites
 
         public override float Cooldown { get; } = 0f;
 
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion();
-        public override Color EliteBuffColor => new Color(1.0f, 0.6f, 0.0f, 1.0f);
+        public override Sprite EliteBuffIcon => LoadBuffIcon("texBuffAffixVolatile"); //Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteIce/texBuffAffixWhite.tif").WaitForCompletion().AsSprite();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

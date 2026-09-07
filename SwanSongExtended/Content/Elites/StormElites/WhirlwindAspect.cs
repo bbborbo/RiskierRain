@@ -93,14 +93,11 @@ namespace SwanSongExtended.Elites
         public override string EliteEquipmentFullDescription => "";
 
         public override string EliteEquipmentLore => "";
+        public override GameObject EliteEquipmentModel => LoadDropPrefab();
 
-        public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override Sprite EliteEquipmentIcon => LoadItemIcon();
 
-        public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-
-
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteHaunted/texBuffAffixHaunted.tif").WaitForCompletion();
-        public override Color EliteBuffColor => Color.gray;
+        public override Sprite EliteBuffIcon => LoadBuffIcon("texBuffAffixSquall"); //Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteHaunted/texBuffAffixHaunted.tif").WaitForCompletion().AsSprite();
 
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         public override string EliteRampTextureName { get; set; } = "texRampHowling";

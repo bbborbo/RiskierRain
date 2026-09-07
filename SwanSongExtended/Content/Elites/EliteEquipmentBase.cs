@@ -94,9 +94,9 @@ namespace SwanSongExtended.Elites
         /// </summary>
         public BuffDef EliteBuffDef;
 
-        public abstract Texture2D EliteBuffIcon { get; }
+        public abstract Sprite EliteBuffIcon { get; }
 
-        public virtual Color EliteBuffColor { get; set; } = new Color32(255, 255, 255, byte.MaxValue);
+        public virtual Color EliteBuffColor { get; set; } = Color.white;
 
         /// <summary>
         /// If not overriden, the elite cannot spawn in any defined tier. Use EliteTier for vanilla elites.
@@ -135,12 +135,7 @@ namespace SwanSongExtended.Elites
         protected virtual void CreateEliteEquipment()
         {
             //elite buff
-            Sprite iconSprite = null;
-            if (EliteBuffIcon != null)
-            {
-                iconSprite = Sprite.Create(EliteBuffIcon, new Rect(0.0f, 0.0f, EliteBuffIcon.width, EliteBuffIcon.height), new Vector2(0.5f, 0.5f));
-            }
-            EliteBuffDef = Content.CreateAndAddBuff("bd" + EliteAffixToken, iconSprite, EliteBuffColor, false, false);
+            EliteBuffDef = Content.CreateAndAddBuff("bd" + EliteAffixToken, EliteBuffIcon, EliteBuffColor, false, false);
 
             //elite def
             EliteDef = ScriptableObject.CreateInstance<EliteDef>();
@@ -416,5 +411,7 @@ namespace SwanSongExtended.Elites
             => SwanSongPlugin.TryLoadFromBundle<GameObject>($"Assets/Models/DisplayPrefabs/Equipment/{prefabName}.prefab", bundle) ?? Resources.Load<GameObject>("prefabs/NullModel");
         public static Sprite LoadItemIcon(string spriteName = "", AssetBundle bundle = null, bool fallBackOnWrench = false)
             => SwanSongPlugin.TryLoadSpriteFromBundle($"Assets/Textures/Icons/Equipment/{spriteName}.png", bundle, fallBackOnWrench);
+        public static Sprite LoadBuffIcon(string spriteName = "", AssetBundle bundle = null, bool fallBackOnWrench = false)
+            => SwanSongPlugin.TryLoadSpriteFromBundle($"Assets/Textures/Icons/Buff/{spriteName}.png", bundle, fallBackOnWrench);
     }
 }

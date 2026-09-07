@@ -51,7 +51,7 @@ namespace SwanSongExtended.Elites
         public override GameObject EliteEquipmentModel => LoadDropPrefab();// LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
 
         public override Sprite EliteEquipmentIcon => LoadItemIcon();// LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion();
+        public override Sprite EliteBuffIcon => LoadBuffIcon("texBuffAffixGlass"); //Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion().AsSprite();
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

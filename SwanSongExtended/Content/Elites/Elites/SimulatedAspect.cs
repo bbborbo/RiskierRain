@@ -41,13 +41,11 @@ namespace SwanSongExtended.Elites
 
         public override float EliteDamageModifier => 2f; //voidtouched 0.7f, t1 1.5f/2f
 
-        public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
+        public override GameObject EliteEquipmentModel => LoadDropPrefab();
 
-        public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EliteEquipmentIcon => LoadItemIcon();
 
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion();
-
-        public override Color EliteBuffColor => new Color(0.4f, 0.0f, 0.4f, 1.0f);
+        public override Sprite EliteBuffIcon => LoadBuffIcon("texBuffAffixSimulated"); //Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion().AsSprite();
 
         public override EliteTiers EliteTier { get; set; } = EliteTiers.Other;
         public override string EliteRampTextureName { get; set; } = "texRampLeeching";

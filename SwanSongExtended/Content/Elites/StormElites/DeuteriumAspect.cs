@@ -32,15 +32,12 @@ namespace SwanSongExtended.Elites
         public override float EliteHealthModifier => 9f;
 
         public override float EliteDamageModifier => 4.5f;
+        public override GameObject EliteEquipmentModel => LoadDropPrefab();
 
-        public override GameObject EliteEquipmentModel => LegacyResourcesAPI.Load<GameObject>("prefabs/NullModel");
-
-        public override Sprite EliteEquipmentIcon => LegacyResourcesAPI.Load<Sprite>("textures/miscicons/texWIPIcon");
+        public override Sprite EliteEquipmentIcon => LoadItemIcon();
 
 
-        public override Texture2D EliteBuffIcon => Addressables.LoadAssetAsync<Texture2D>("RoR2/Base/EliteLightning/texBuffAffixBlue.tif").WaitForCompletion();
-        public override Color EliteBuffColor => Color.blue;
-
+        public override Sprite EliteBuffIcon => LoadBuffIcon("texBuffAffixDeuterium");
         //public override Material EliteOverlayMaterial { get; set; } = RiskierRainPlugin.mainAssetBundle.LoadAsset<Material>(RiskierRainPlugin.eliteMaterialsPath + "matLeeching.mat");
         public override string EliteRampTextureName { get; set; } = "texRampLeeching";
         public override EliteTiers EliteTier { get; set; } = EliteTiers.StormBoss;

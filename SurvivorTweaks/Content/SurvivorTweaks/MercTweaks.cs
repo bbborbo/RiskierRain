@@ -60,6 +60,8 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float eviscProcCoefficient = 0.4f; //1f
         [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Duration", "Vanilla is 2", 2f)]
         public static float eviscDuration = 2f; //2f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Lingering Invincibility Duration", "Vanilla is 0.6", 0.25f)]
+        public static float eviscLingeringInvincibilityDuration = 0.25f; //0.6f
 
         [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Base Cooldown", "Expressed in seconds. Vanilla is 6", 9f)]
         public static float windsCooldown = 9f; //6f
@@ -203,9 +205,13 @@ namespace SurvivorTweaks.SurvivorTweaks
         #region special
         private void DoSpecial(SkillFamily family)
         {
-            SkillDef evisc = family.variants[0].skillDef;
-            evisc.baseRechargeInterval = eviscCooldown;
+            SurvivorTweaksPlugin.LoadAsync<SkillDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Merc.MercBodyEvis_asset, (evisSkill) =>
+            {
+                evisSkill.isCooldownBlockedUntilManuallyReset = true;
+                evisSkill.baseRechargeInterval = eviscCooldown;
+            });
 
+            On.EntityStates.Merc.EvisDash.OnExit += EvisDashOnExit;
             On.EntityStates.Merc.Evis.OnEnter += EvisOnEnter;
             On.EntityStates.Merc.Evis.OnExit += EvisOnExit;
 
@@ -223,16 +229,25 @@ namespace SurvivorTweaks.SurvivorTweaks
             }
         }
 
+        private void EvisDashOnExit(On.EntityStates.Merc.EvisDash.orig_OnExit orig, EvisDash self)
+        {
+            orig(self);
+            self.skillLocator.special.SetBlockedCooldownSkillState(false);
+        }
+
         private void EvisOnEnter(On.EntityStates.Merc.Evis.orig_OnEnter orig, EntityStates.Merc.Evis self)
         {
             EntityStates.Merc.Evis.duration = eviscDuration;
             EntityStates.Merc.Evis.procCoefficient = eviscProcCoefficient;
+            self.skillLocator.special.SetBlockedCooldownSkillState(true);
             orig(self);
         }
 
         private void EvisOnExit(On.EntityStates.Merc.Evis.orig_OnExit orig, EntityStates.Merc.Evis self)
         {
+            Evis.lingeringInvincibilityDuration = eviscLingeringInvincibilityDuration;
             orig(self);
+            self.skillLocator.special.SetBlockedCooldownSkillState(false);
         }
         #endregion
     }

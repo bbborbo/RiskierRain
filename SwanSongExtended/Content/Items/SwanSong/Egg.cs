@@ -115,6 +115,8 @@ namespace SwanSongExtended.Items
         {
             if (damageReport.attackerBody == null)
                 return;
+            if (damageReport.victimBody == null || damageReport.victimBody.healthComponent.globalDeathEventChanceCoefficient < 1)
+                return;
 
             int eggCount = Util.GetItemCountForTeam(damageReport.attackerTeamIndex, this.ItemsDef.itemIndex, true, false);
             if (eggCount <= 0)

@@ -88,7 +88,7 @@ namespace RiskierRain.Changes
         #region potential protection
         public static bool potentialProtectionVisibility = true;
         public static bool potentialProtectionLimitedTime = false;
-        public static float potentialProtectionDurationUnlimited = 1;
+        public static float potentialProtectionDurationUnlimited = 0.5f;
         public static float potentialProtectionDurationLimited = 4;
         public static void AddPotentialProtection()
         {
@@ -102,18 +102,24 @@ namespace RiskierRain.Changes
             if (potentialProtectionLimitedTime == false)
             {
                 On.RoR2.NetworkUIPromptController.SetParticipantMaster += PickupPickerPanelProtection;
+                On.RoR2.NetworkUIPromptController.OnControlEnd += (orig, self) =>
+                {
+                    orig(self);
+                    self.ClearParticipant();
+                };
 
                 void PickupPickerPanelProtection(On.RoR2.NetworkUIPromptController.orig_SetParticipantMaster orig, NetworkUIPromptController self, CharacterMaster newParticipantMaster)
                 {
                     if (NetworkServer.active)
                     {
-                        if (newParticipantMaster != self.currentParticipantMaster)
+                        if (newParticipantMaster != self.currentParticipantMaster && self.currentParticipantMaster != null)
                         {
                             CharacterBody body = self.currentParticipantMaster.GetBody();
                             if (body != null && body.HasBuff(GetBuffIndex()))
                             {
-                                body.RemoveBuff(GetBuffIndex());
                                 body.ClearTimedBuffs(GetBuffIndex());
+                                while(body.HasBuff(GetBuffIndex()))
+                                    body.RemoveBuff(GetBuffIndex());
                                 body.AddTimedBuff(GetBuffIndex(), potentialProtectionDurationUnlimited);
                             }
                         }
@@ -121,7 +127,12 @@ namespace RiskierRain.Changes
                         {
                             CharacterBody body = newParticipantMaster.GetBody();
                             if (body != null && body.isPlayerControlled)
+                            {
+                                body.ClearTimedBuffs(GetBuffIndex());
+                                while (body.HasBuff(GetBuffIndex()))
+                                    body.RemoveBuff(GetBuffIndex());
                                 body.AddBuff(GetBuffIndex());
+                            }
                         }
                     }
 

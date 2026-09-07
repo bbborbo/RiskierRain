@@ -47,7 +47,7 @@ namespace RiskierRain.Changes
 
         private static int FixScaledCost(On.RoR2.Run.orig_GetDifficultyScaledCost_int orig, Run self, int baseCost)
         {
-            if(Stage.instance != null)
+            if(Stage.instance != null && Stage.instance.entryDifficultyCoefficient != 0)
                 return self.GetDifficultyScaledCost(baseCost, Stage.instance.entryDifficultyCoefficient);
             return orig(self, baseCost);
         }

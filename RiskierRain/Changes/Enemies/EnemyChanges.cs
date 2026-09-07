@@ -417,7 +417,7 @@ namespace RiskierRain.Changes
         #endregion
 
         #region solus extractor
-        public static float extractorDuplicateDelay = 7.5f;//20f
+        public static float extractorDuplicateDelay = 8f;//20f
         private static void ChangeSolusExtractor()
         {
             On.EntityStates.ExtractorUnit.DuplicateItem.OnEnter += (orig, self) =>

@@ -109,6 +109,10 @@ namespace SwanSongExtended
         {
             return (d * 100f).ToString() + "%";
         }
+        public static Sprite AsSprite(this Texture2D tex)
+        {
+            return Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        }
         public static void AddPersistentListener(this CombatDirector.OnSpawnedServer unityEvent, UnityAction<GameObject> action)
         {
             unityEvent.m_PersistentCalls.AddListener(new PersistentCall

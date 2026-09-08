@@ -43,9 +43,9 @@ namespace SwanSongExtended.Storms
         public static EliteTierDef StormEliteT2;
         public static BuffDef StormEliteWeak;
         public static float stormDirectorCreditStimulus = 35f;
-        public static float stormDirectorCreditGainMultiplier = 0.3f;
-        public static float stormDirectorSpawnIntervalMin = 22.5f; //12.5f
-        public static float stormDirectorSpawnIntervalMax = 37.5f; //22.5f
+        public static float stormDirectorCreditGainMultiplier = 0.4f;
+        public static float stormDirectorSpawnIntervalMin = 20f; //12.5f
+        public static float stormDirectorSpawnIntervalMax = 30f; //22.5f
         public static int stormEliteHealthGateCountBase = 1;
         public static int stormEliteHealthGateCountPerSize = 1;
         public static float stormEliteHealthGateDurationBase = 2.0f;

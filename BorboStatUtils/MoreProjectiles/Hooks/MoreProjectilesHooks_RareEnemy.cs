@@ -95,7 +95,7 @@ namespace RainrotSharedUtils.MoreProjectiles
         public static void MissileArtifact_VagrantTrackingBomb(On.EntityStates.VagrantMonster.FireTrackingBomb.orig_FireBomb orig, EntityStates.VagrantMonster.FireTrackingBomb self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireTrackingBomb.bombDamageCoefficient, FireTrackingBomb.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, FireTrackingBomb.bombDamageCoefficient, FireTrackingBomb.projectilePrefab);
         }
         #endregion
         public static void MissileArtifact_GreaterWispFireCannons(On.EntityStates.GreaterWispMonster.FireCannons.orig_OnEnter orig, EntityStates.GreaterWispMonster.FireCannons self)
@@ -140,7 +140,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                     damage = self.damageStat * self.damageCoefficient,
                     crit = Util.CheckRoll(self.characterBody.crit, self.characterBody.master)
                 };
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
             }
         }
 
@@ -246,7 +246,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
         }
 
@@ -296,7 +296,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 aimRay.origin = self.aimRay.origin;
                 aimRay.direction = forward;
 
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
             self.characterBody.AddSpreadBloom(FireTarball.spreadBloomValue);
         }
@@ -328,7 +328,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                     fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
                     ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
-                    MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                    MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
                 }
                 self.hasAttacked = true;
                 EntityState.Destroy(self.rightHandChargeEffect);
@@ -373,7 +373,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 fireProjectileInfo.crit = Util.CheckRoll(self.critStat, self.characterBody.master);
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, missileSpread);
             }
             Util.PlaySound(SeekingBomb.spinDownSoundString, self.gameObject);
             self.PlayCrossfade("Gesture", "BombStop", 0.2f);
@@ -427,7 +427,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 Ray aimRay = new Ray();
                 aimRay.origin = position;
                 aimRay.direction = forward;
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
 
@@ -471,7 +471,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                     aimRay.origin = fireProjectileInfo.position;
                     aimRay.direction = self.currentRotation * Vector3.forward;
 
-                    MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, missileSpread, axis);
+                    MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, missileSpread, axis);
 
                     self.currentRotation *= self.deltaRotation;
                 }

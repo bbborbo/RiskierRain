@@ -106,21 +106,6 @@ namespace SwanSongExtended
         public static bool acridLungeLoaded => ModLoaded("Withor.AcridBiteLunge");
         public static bool ucrLoaded => ModLoaded("HIFU.UltimateCustomRun");
         public static bool fabricatorsLoaded => ModLoaded(FabricatorStandalone.FabricatorPlugin.guid);
-
-        public static bool IsMissileArtifactEnabled()
-        {
-            if (ModLoaded(MissileReworkPlugin.guid))
-            {
-                return GetMissileArtifactEnabled();
-            }
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static bool GetMissileArtifactEnabled()
-        {
-            return RunArtifactManager.instance.IsArtifactEnabled(MissileReworkPlugin.MissileArtifact);
-        }
         #endregion
 
         void Awake()

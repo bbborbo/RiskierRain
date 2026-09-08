@@ -81,7 +81,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                         crit = Util.CheckRoll(self.critStat, self.characterBody.master)
                     };
                     Vector3 axis = Vector3.Cross(Vector3.up, aimRay.direction);
-                    MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
+                    MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread, axis);
                 }
             });
         }
@@ -89,14 +89,14 @@ namespace RainrotSharedUtils.MoreProjectiles
         public static void MissileArtifact_ChildSpark(On.EntityStates.ChildMonster.SparkBallFire.orig_FireBomb orig, EntityStates.ChildMonster.SparkBallFire self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, SparkBallFire.bombDamageCoefficient, SparkBallFire.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, SparkBallFire.bombDamageCoefficient, SparkBallFire.projectilePrefab);
         }
         #endregion
         public static void MissileArtifact_LemurianFireball(On.EntityStates.LemurianMonster.FireFireball.orig_OnEnter orig, EntityStates.LemurianMonster.FireFireball self)
         {
             orig(self);
             if (MoreProjectilesModule.UseExpensiveProjectiles)
-                MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireFireball.damageCoefficient, FireFireball.projectilePrefab);
+                MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, FireFireball.damageCoefficient, FireFireball.projectilePrefab);
         }
 
         public static void MissileArtifact_GupDeathEnter(On.EntityStates.Gup.BaseSplitDeath.orig_OnEnter orig, EntityStates.Gup.BaseSplitDeath self)

@@ -97,7 +97,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 orig(self);
                 if (self is EntityStates.Croco.FireDiseaseProjectile)
                     return;
-                FireWarfareProjectilesSimple(self.characterBody, self.damageStat, self.projectilePrefab);
+                FireWarfareFlankProjectilesSimple(self.characterBody, self.damageStat, self.projectilePrefab);
             };
             //huntress arrow
             IL.EntityStates.Huntress.HuntressWeapon.FireSeekingArrow.FireOrbArrow += MissileArtifact_FireHuntressSeekingArrow;
@@ -138,12 +138,12 @@ namespace RainrotSharedUtils.MoreProjectiles
             #endregion
         }
 
-        public static void FireWarfareProjectilesSimple(CharacterBody body, float damageCoefficient, string assetGuid)
+        public static void FireWarfareFlankProjectilesSimple(CharacterBody body, float damageCoefficient, string assetGuid)
         {
             GameObject projectilePrefab = Addressables.LoadAssetAsync<GameObject>(assetGuid).WaitForCompletion();
-            FireWarfareProjectilesSimple(body, damageCoefficient, projectilePrefab);
+            FireWarfareFlankProjectilesSimple(body, damageCoefficient, projectilePrefab);
         }
-        public static void FireWarfareProjectilesSimple(CharacterBody body, float damageCoefficient, GameObject projectilePrefab)
+        public static void FireWarfareFlankProjectilesSimple(CharacterBody body, float damageCoefficient, GameObject projectilePrefab)
         {
             if (body.hasEffectiveAuthority && IsMoreProjectilesActiveForBody(body))
             {
@@ -159,16 +159,16 @@ namespace RainrotSharedUtils.MoreProjectiles
                     crit = Util.CheckRoll(body.crit, body.master)
                 };
 
-                FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
             }
         }
-        internal static void FireWarfareProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread)
+        public static void FireWarfareFlankProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread)
         {
             Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
             Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
-            FireWarfareProjectiles(aimRay, fireProjectileInfo, spread, axis);
+            FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, spread, axis);
         }
-        internal static void FireWarfareProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread, Vector3 axis)
+        public static void FireWarfareFlankProjectiles(Ray aimRay, FireProjectileInfo fireProjectileInfo, float spread, Vector3 axis)
         {
             fireProjectileInfo.rotation = Util.QuaternionSafeLookRotation(Quaternion.AngleAxis(spread, axis) * aimRay.direction);
             ProjectileManager.instance.FireProjectile(fireProjectileInfo);

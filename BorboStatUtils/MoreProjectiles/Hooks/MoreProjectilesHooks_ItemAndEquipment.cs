@@ -61,7 +61,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                             damage = damage,
                             crit = crit
                         };
-                        MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                        MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
                     }
                 });
         }
@@ -73,7 +73,7 @@ namespace RainrotSharedUtils.MoreProjectiles
             {
                 if (orig(self))
                 {
-                    MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
+                    MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, 40, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BFG.BeamSphere_prefab);
                     return true;
                 }
                 return false;
@@ -83,7 +83,7 @@ namespace RainrotSharedUtils.MoreProjectiles
             {
                 if (orig(self))
                 {
-                    MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
+                    MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Blackhole.GravSphere_prefab);
                     return true;
                 }
                 return false;
@@ -93,7 +93,7 @@ namespace RainrotSharedUtils.MoreProjectiles
             {
                 if (orig(self) && MoreProjectilesModule.UseExpensiveProjectiles)
                 {
-                    MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
+                    MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, 1, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Molotov.MolotovClusterProjectile_prefab);
                     return true;
                 }
                 return false;
@@ -104,7 +104,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 if (orig(self) && MoreProjectilesModule.UseExpensiveProjectiles)
                 {
                     if (self.characterBody && self.characterBody.master && !self.characterBody.master.IsDeployableLimited(DeployableSlot.GummyClone))
-                        MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
+                        MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, 0, RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GummyClone.GummyCloneProjectile_prefab);
                     return true;
                 }
                 return false;

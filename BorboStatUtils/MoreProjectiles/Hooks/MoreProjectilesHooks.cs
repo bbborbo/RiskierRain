@@ -141,7 +141,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                         if(!isVertical)
                             axis = Vector3.Cross(aimRay.direction, axis);
 
-                        MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, spread, axis);
+                        MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, spread, axis);
                         return;
                     }
                 }

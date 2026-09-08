@@ -59,32 +59,32 @@ namespace RainrotSharedUtils.MoreProjectiles
         public static void MissileArtifact_SeekerPunch(On.EntityStates.Seeker.SpiritPunch.orig_FireGauntlet orig, EntityStates.Seeker.SpiritPunch self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
         }
         public static void MissileArtifact_SonSurvivorSpike(On.EntityStates.FalseSon.LunarSpikes.orig_FireLunarSpike orig, EntityStates.FalseSon.LunarSpikes self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
         }
         public static void MissileArtifact_LodrPylon(On.EntityStates.Loader.ThrowPylon.orig_OnEnter orig, EntityStates.Loader.ThrowPylon self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, ThrowPylon.damageCoefficient, ThrowPylon.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, ThrowPylon.damageCoefficient, ThrowPylon.projectilePrefab);
         }
         public static void MissileArtifact_ArtiBolts(On.EntityStates.Mage.Weapon.FireFireBolt.orig_FireGauntlet orig, EntityStates.Mage.Weapon.FireFireBolt self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
         }
         public static void MissileArtifact_CaptainTazer(On.EntityStates.Captain.Weapon.FireTazer.orig_Fire orig, EntityStates.Captain.Weapon.FireTazer self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, FireTazer.damageCoefficient, FireTazer.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, FireTazer.damageCoefficient, FireTazer.projectilePrefab);
         }
         public static void MissileArtifact_ViendSecondary(On.EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase.orig_FireProjectiles orig, EntityStates.VoidSurvivor.Weapon.FireMegaBlasterBase self)
         {
             orig(self);
-            MoreProjectilesModule.FireWarfareProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
+            MoreProjectilesModule.FireWarfareFlankProjectilesSimple(self.characterBody, self.damageCoefficient, self.projectilePrefab);
         }
         #endregion
         public static void MissileArtifact_ChefCleaver(On.EntityStates.Chef.Dice.orig_OnEnter orig, EntityStates.Chef.Dice self)
@@ -162,7 +162,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                 };
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
-                MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
 
                 self.characterBody.characterMotor.ApplyForce(-self.selfKnockbackForce * aimRay.direction, false, false);
             }
@@ -197,7 +197,7 @@ namespace RainrotSharedUtils.MoreProjectiles
                             self.ModifyProjectile(ref fireProjectileInfo);
                             ProjectileManager.instance.FireProjectile(fireProjectileInfo);
 
-                            MoreProjectilesModule.FireWarfareProjectiles(aimRay, fireProjectileInfo, projectileSpread);
+                            MoreProjectilesModule.FireWarfareFlankProjectiles(aimRay, fireProjectileInfo, projectileSpread);
                         }
                         if (self.characterMotor)
                         {

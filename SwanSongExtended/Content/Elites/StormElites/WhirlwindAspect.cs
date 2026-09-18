@@ -43,7 +43,7 @@ namespace SwanSongExtended.Elites
         /// <summary>
         /// -1 is permanent
         /// </summary>
-        public static float strippedDuration = -1;
+        public static float strippedDuration = 20;
 
         public static int   howlingEmpoweredArmor => SurgingAspect.surgingEmpoweredArmor;
         public static float howlingEmpoweredMoveSpeed = 0.8f;
@@ -1009,7 +1009,7 @@ namespace SwanSongExtended.Elites
                 default(ProcChainMask), victim: body.healthComponent.lastHitAttacker,
                 missileDamage, Util.CheckRoll(body.crit),
                 WhirlwindAspect.howlWindMissilePrefab,
-                DamageColorIndex.Item, addMissileProc: true);
+                DamageColorIndex.Item, addMissileProc: false);
         }
     }
 }

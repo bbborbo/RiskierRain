@@ -78,8 +78,32 @@ namespace SwanSongExtended.Items
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
         private static ItemDef GetItemDef() => Chicken.instance.ItemsDef;
         public int duration = 120;
+        int cachedMochaCount = 0;
 
         private void Start()
+        {
+            SetMochaTime(duration);
+        }
+
+        public override void OnInventoryRefresh()
+        {
+            base.OnInventoryRefresh();
+
+            if (stack == 0 /*&& !body.inventory.inventoryDisabled*/)
+            {
+                //body.ClearTimedBuffs(Mocha.mochaBuffActive);
+                //body.RemoveBuff(Mocha.mochaBuffInactive);
+                return;
+            }
+
+            if (cachedMochaCount < stack)
+            {
+                SetMochaTime(duration);
+            }
+            cachedMochaCount = stack;
+        }
+
+        private void SetMochaTime(float duration)
         {
             body.AddTimedBuff(Chicken.foodPoisoning, duration);
         }

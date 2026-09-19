@@ -73,7 +73,7 @@ namespace SwanSongExtended
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SwanSongExtended";
-        public const string version = "0.1.0";
+        public const string version = "0.2.0";
         public const string expansionName = "Swan Song";
         public const string expansionName2 = "Secrets of the Scug";
         public const string expansionToken = "EXPANSION2R4R";

@@ -218,6 +218,23 @@ namespace SwanSongExtended.Storms
                 this.stormController = base.GetComponent<StormController>();
             }
 
+            public void SetStormDirectorIncome(float strength)
+            {
+                if (this.stormController.combatDirector == null)
+                    return;
+                float tpModifier = 1f;
+                if(TeleporterInteraction.instance.isCharging)
+                    tpModifier = 0.5f;
+                this.stormController.combatDirector.creditMultiplier = StormsCore.stormDirectorCreditGainMultiplier * strength * tpModifier;
+            }
+            public void StormDirectorStimulus(float strength)
+            {
+                if (this.stormController.combatDirector == null)
+                    return;
+                this.stormController.combatDirector.monsterCredit += strength;
+                this.stormController.combatDirector.monsterSpawnTimer = 0;
+            }
+
             /// <summary>
             /// Run Delta Time is used in place of Time.fixedDeltaTime to account for time skips and time freezes in the storm cycle
             /// </summary>
@@ -279,8 +296,7 @@ namespace SwanSongExtended.Storms
                 if (stormController.combatDirector.enabled)
                     return;
                 stormController.combatDirector.enabled = true;
-                stormController.combatDirector.monsterCredit += StormsCore.stormDirectorCreditStimulus;
-                stormController.combatDirector.monsterSpawnTimer = 0;
+                StormDirectorStimulus(StormsCore.stormDirectorCreditStimulus * Stage.instance.entryDifficultyCoefficient);
             }
             public float GetStormIntensityIncrement()
             {
@@ -315,6 +331,7 @@ namespace SwanSongExtended.Storms
             private float waveTimer;
             float stormStrength = 0;
             float stormStrengthIncreaseCountdown = 0;
+            float stormEliteStimulusCountdown = -1;
 
             public override void OnEnter()
             {
@@ -336,12 +353,20 @@ namespace SwanSongExtended.Storms
                 this.meteorWaves = new List<MeteorStormController.MeteorWave>();
                 //On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor += MeteorWave_GetNextMeteor;
 
+                TeleporterInteraction.onTeleporterFinishGlobal += StartStormEliteStimulusCountdown;
+
                 EnableDirector();
+            }
+
+            private void StartStormEliteStimulusCountdown(TeleporterInteraction obj)
+            {
+                stormEliteStimulusCountdown = 10;
             }
 
             public override void OnExit()
             {
                 base.OnExit();
+                TeleporterInteraction.onTeleporterFinishGlobal -= StartStormEliteStimulusCountdown;
                 //On.RoR2.MeteorStormController.MeteorWave.GetNextMeteor -= MeteorWave_GetNextMeteor;
             }
             public override void FixedUpdate()
@@ -355,6 +380,13 @@ namespace SwanSongExtended.Storms
                     stormStrengthIncreaseCountdown += StormsCore.stormStrengthIncreaseTimerSeconds;
                     stormStrength += GetStormIntensityIncrement();
                     BroadcastStormIntensifyMessage(stormType);
+                }
+                SetStormDirectorIncome(stormStrength);
+                if(stormEliteStimulusCountdown > 0)
+                {
+                    stormEliteStimulusCountdown -= GetRunDeltaTime();
+                    if (stormEliteStimulusCountdown <= 0)
+                        StormDirectorStimulus(StormsCore.stormDirectorCreditStimulus * Stage.instance.entryDifficultyCoefficient);
                 }
 
                 //thisa is just for meteor stuff; we can make it work for the other storsm when they start existing lol.

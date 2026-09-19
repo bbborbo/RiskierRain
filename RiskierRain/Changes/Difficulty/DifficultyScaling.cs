@@ -50,7 +50,7 @@ namespace RiskierRain.Changes
         /// <summary>
         /// exponential
         /// </summary>
-        public static float difficultyIncreasePerMinuteBase = 1.0f; //1f
+        public static float difficultyIncreasePerMinuteBase = 1.01f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
         /// this determines the value used by monsoon but other difficulties will have lower/higher amount depending on their scaling value
@@ -267,7 +267,7 @@ namespace RiskierRain.Changes
 
         #region rewards
         static float goldRewardMultiplierGlobal = 0.35f;
-        static float expRewardMultiplierGlobal = 0.4f;
+        static float expRewardMultiplierGlobal = 0.25f;
         static float compensationForStartingLevel = 1.0f;
         private static void ChangeEnemyRewards()
         {

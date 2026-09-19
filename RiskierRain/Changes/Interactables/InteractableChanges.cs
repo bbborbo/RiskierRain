@@ -500,6 +500,8 @@ namespace RiskierRain.Changes
         {
             if (settings.SceneDirectorInteractableCredits == 0)
                 return;
+            if (Run.instance && Run.instance.loopClearCount > 0)
+                return;
             settings.SceneDirectorInteractableCredits = (int)(settings.SceneDirectorInteractableCredits + interactableCreditsAdd);
         }
         #endregion

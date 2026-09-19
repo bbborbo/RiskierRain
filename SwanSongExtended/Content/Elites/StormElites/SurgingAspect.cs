@@ -41,7 +41,7 @@ namespace SwanSongExtended.Elites
         public static float waveProjectileDuration = 1.5f; //3f
         public static float waveProjectileCount = 5f; //12f
         public static float waveProjectileBaseDamage = 8f;
-        public static float waveProjectileDamageLevel = 0.3f;
+        public static float waveProjectileDamageLevel = 0.5f;
         public static float waveProjectileProcCoefficient = 2.0f;
         public static float waveProjectileForce = 150f;
         public static int cannonballBouncesMin = 1;
@@ -62,7 +62,7 @@ namespace SwanSongExtended.Elites
         public static float teleportDelay = 0.7f;
         public static float teleportWaveDelay = 0.3f;
         public static float teleportEffectDuration = 1.0f;
-        public static float teleportStaggerDuration = 4f;
+        public static float teleportStaggerDuration = 3.33f;
 
         public static int surgingEmpoweredArmor = 300;
         public static float surgingEmpoweredMoveSpeed = 0.8f;

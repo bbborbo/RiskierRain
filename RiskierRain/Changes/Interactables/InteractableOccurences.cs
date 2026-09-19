@@ -90,6 +90,7 @@ namespace RiskierRain.Changes
 
         private static bool IsStageOne(DirectorAPI.Stage stage)
         {
+            return DirectorAPI.VanillaStageToSceneDefs[stage][0].stageOrder == 1;
             return stage == DirectorAPI.Stage.TitanicPlains
                 || stage == DirectorAPI.Stage.DistantRoost
                 || stage == DirectorAPI.Stage.SiphonedForest;
@@ -97,12 +98,14 @@ namespace RiskierRain.Changes
 
         private static bool IsStageThree(DirectorAPI.Stage stage)
         {
+            return DirectorAPI.VanillaStageToSceneDefs[stage][0].stageOrder == 3;
             return stage == DirectorAPI.Stage.RallypointDelta
                 || stage == DirectorAPI.Stage.ScorchedAcres
                 || stage == DirectorAPI.Stage.SulfurPools;
         }
         private static bool IsStageFive(DirectorAPI.Stage stage)
         {
+            return DirectorAPI.VanillaStageToSceneDefs[stage][0].stageOrder == 5;
             return stage == DirectorAPI.Stage.SkyMeadow
                 || stage == DirectorAPI.Stage.HelminthHatchery;
         }

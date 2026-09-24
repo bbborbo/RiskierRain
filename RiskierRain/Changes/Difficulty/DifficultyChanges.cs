@@ -101,42 +101,46 @@ namespace RiskierRain.Changes
 
             if (potentialProtectionLimitedTime == false)
             {
-                On.RoR2.NetworkUIPromptController.SetParticipantMaster += PickupPickerPanelProtection;
+                On.RoR2.NetworkUIPromptController.SetParticipantMasterId += (orig, self, newMasterObjectInstanceId) =>
+                {
+                    CharacterMaster current = self.currentParticipantMaster;
+                    orig(self, newMasterObjectInstanceId);
+                    PickupPickerPanelProtection(current, self.currentParticipantMaster);
+                };
                 On.RoR2.NetworkUIPromptController.OnControlEnd += (orig, self) =>
                 {
                     orig(self);
                     self.ClearParticipant();
                 };
 
-                void PickupPickerPanelProtection(On.RoR2.NetworkUIPromptController.orig_SetParticipantMaster orig, NetworkUIPromptController self, CharacterMaster newParticipantMaster)
+                void PickupPickerPanelProtection(CharacterMaster currentParticipantMaster, CharacterMaster newParticipantMaster)
                 {
-                    if (NetworkServer.active)
+                    if (NetworkServer.active == false)
+                        return;
+
+                    if (currentParticipantMaster != null && newParticipantMaster != currentParticipantMaster)
                     {
-                        if (newParticipantMaster != self.currentParticipantMaster && self.currentParticipantMaster != null)
+                        CharacterBody body = currentParticipantMaster.GetBody();
+                        if (body != null && body.HasBuff(GetBuffIndex()))
                         {
-                            CharacterBody body = self.currentParticipantMaster.GetBody();
-                            if (body != null && body.HasBuff(GetBuffIndex()))
-                            {
-                                body.ClearTimedBuffs(GetBuffIndex());
-                                while(body.HasBuff(GetBuffIndex()))
-                                    body.RemoveBuff(GetBuffIndex());
-                                body.AddTimedBuff(GetBuffIndex(), potentialProtectionDurationUnlimited);
-                            }
-                        }
-                        if (newParticipantMaster != null)
-                        {
-                            CharacterBody body = newParticipantMaster.GetBody();
-                            if (body != null && body.isPlayerControlled)
-                            {
-                                body.ClearTimedBuffs(GetBuffIndex());
-                                while (body.HasBuff(GetBuffIndex()))
-                                    body.RemoveBuff(GetBuffIndex());
-                                body.AddBuff(GetBuffIndex());
-                            }
+                            body.ClearTimedBuffs(GetBuffIndex());
+                            while(body.HasBuff(GetBuffIndex()))
+                                body.RemoveBuff(GetBuffIndex());
+                            body.AddTimedBuff(GetBuffIndex(), potentialProtectionDurationUnlimited);
                         }
                     }
 
-                    orig(self, newParticipantMaster);
+                    if (newParticipantMaster != null)
+                    {
+                        CharacterBody body = newParticipantMaster.GetBody();
+                        if (body != null && body.isPlayerControlled)
+                        {
+                            body.ClearTimedBuffs(GetBuffIndex());
+                            while (body.HasBuff(GetBuffIndex()))
+                                body.RemoveBuff(GetBuffIndex());
+                            body.AddBuff(GetBuffIndex());
+                        }
+                    }
                 }
             }
             else

@@ -20,10 +20,12 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         [AutoConfig("Ability Tweaks (Primary) : Double Tap : Damage Coefficient", "Expressed as a percentage (eg 1.4 is 140%). Vanilla is 1", 1.4f)]
         public static float primaryDamageCoeff = 1.4f; //1.0f
+        [AutoConfig("Ability Tweaks (Primary) : Double Tap : Spread Bloom Value", "Vanilla is 0.3", 0.4f)]
+        public static float primaryBloomValue = 0.4f; //0.3f
         [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Left)", "Expressed in seconds. Vanilla is 0.167", 0.16f)]
-        public static float primaryDurationLeft = 0.16f; //0.167f
+        public static float primaryDurationLeft = 0.14f; //0.167f
         [AutoConfig("Ability Tweaks (Primary) : Double Tap : Base Attack Duration (Right)", "Expressed in seconds. Vanilla is 0.167", 0.24f)]
-        public static float primaryDurationRight = 0.24f; //0.167f
+        public static float primaryDurationRight = 0.22f; //0.167f
 
         public static GameObject phaseRoundPrefab;
         [AutoConfig("Ability Tweaks (Secondary) : Phase Round : Damage Coefficient", "Expressed as a percentage (eg 5.0 is 500%). Vanilla is 1.0", 5f)]
@@ -50,6 +52,10 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float rollAspdBuff = 0.6f;
         [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Attack Speed Duration", "Expressed in seconds. Vanilla is 0", 1f)]
         public static float rollAspdDuration = 1f;
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Jump Power", "Bonus jump power after rolling. Vanilla is 0", 0.25f)]
+        public static float rollJumpPower = 0.25f;
+        [AutoConfig("Ability Tweaks (Utility) : Tactical Dive (Roll) : Recoil Multiplier", "Recoil multiplier after rolling. Vanilla is 1", 0f)]
+        public static float rollRecoilMultiplier = 0f;
 
         [AutoConfig("Ability Tweaks (Utility) : Tactical Slide : Base Max Stock", "Vanilla is 1", 1)]
         public static int slideStock = 1; //1
@@ -116,6 +122,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         private void FirePistol2_OnEnter(On.EntityStates.Commando.CommandoWeapon.FirePistol2.orig_OnEnter orig, FirePistol2 self)
         {
             FirePistol2.damageCoefficient = primaryDamageCoeff;
+            FirePistol2.spreadBloomValue = primaryBloomValue;
             orig(self);
             self.duration = (self.pistol % 2 == 0 ? primaryDurationLeft : primaryDurationRight) / self.attackSpeedStat;
         }
@@ -214,6 +221,34 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"Hold to <style=cIsUtility>slide</style> on the ground. " +
                 $"While sliding, jump to <style=cIsUtility>dash</style> in another direction. " +
                 $"You can <style=cIsDamage>fire while sliding</style>.");
+
+            On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
+            On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
+        }
+
+        public static void OnAddSpreadBloom(On.RoR2.CharacterBody.orig_AddSpreadBloom orig, CharacterBody self, float value)
+        {
+            if (self.HasBuff(CommonAssets.commandoRollBuff))
+            {
+                if (rollRecoilMultiplier <= 0)
+                    return;
+                value *= rollRecoilMultiplier;
+            }
+            orig(self, value);
+        }
+
+        public static void OnAddRecoil(On.EntityStates.BaseState.orig_AddRecoil orig, EntityStates.BaseState self, float verticalMin, float verticalMax, float horizontalMin, float horizontalMax)
+        {
+            if (self.HasBuff(CommonAssets.commandoRollBuff))
+            {
+                if (rollRecoilMultiplier <= 0)
+                    return;
+                verticalMin *= rollRecoilMultiplier;
+                verticalMax *= rollRecoilMultiplier;
+                horizontalMin *= rollRecoilMultiplier;
+                horizontalMax *= rollRecoilMultiplier;
+            }
+            orig(self, verticalMin, verticalMax, horizontalMin, horizontalMax);
         }
 
 
@@ -282,6 +317,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             if (sender.HasBuff(CommonAssets.commandoRollBuff))
             {
                 args.attackSpeedMultAdd += rollAspdBuff;
+                args.jumpPowerMultAdd += rollJumpPower;
             }
         }
 

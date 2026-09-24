@@ -27,8 +27,10 @@ namespace SurvivorTweaks.SurvivorTweaks
         public float baseRegen = 1f; //1f
         [AutoConfig("Mercenary : Base Armor Stat", "Vanilla is 20", 0)]
         public int baseArmor = 0; //20
-        [AutoConfig("Mercenary : Base Maximum Health Stat", "Scales 30% per level. Vanilla is 110", 110f)]
-        public float baseHealth = 110f; //20
+        [AutoConfig("Mercenary : Base Maximum Health Stat", "Scales 30% per level. Vanilla is 110", 90f)]
+        public float baseHealth = 90f; //110
+        [AutoConfig("Mercenary : Base Maximum Health Stat", "Scales 20% per level. Vanilla is 12", 11f)]
+        public float baseDamage = 11f; //12
         [AutoConfig("Keywords : Exacting : Additive Damage", "Attack Speed is additive to Mercenary's damage damage if true, multiplicative if false. Vanilla is N/A", true)]
         public static bool attackSpeedDamageAdditive = true;
 
@@ -50,21 +52,21 @@ namespace SurvivorTweaks.SurvivorTweaks
         [AutoConfig("Ability Tweaks (Utility) : Blinding Assault (Fast Dash) : Damage Coefficient", "Expressed as a percent (eg 3.0 is 300%). Vanilla is 3", 3f)]
         public static float fastDashDamageCoefficient = 3f;//3f
         [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Base Cooldown", "Expressed in seconds. Vanilla is 8", 11f)]
-        public static float focusDashCooldown = 11f; //8f
+        public static float focusDashCooldown = 8f; //8f
         [AutoConfig("Ability Tweaks (Utility) : Focused Assault (Slow Dash) : Damage Coefficient", "Expressed as a percent (eg 6.0 is 600%). Vanilla is 7", 6f)]
         public static float focusDashDamageCoefficient = 6f;//7f
 
-        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Base Cooldown", "Expressed in seconds. Vanilla is 6", 10f)]
-        public static float eviscCooldown = 10f; //6f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Base Cooldown", "Expressed in seconds. Vanilla is 6", 6f)]
+        public static float eviscCooldown = 6f; //6f
         [AutoConfig("Ability Tweaks (Special) : Eviscerate : Proc Coefficient Per Slice", "Vanilla is 1", 0.4f)]
         public static float eviscProcCoefficient = 0.4f; //1f
-        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Duration", "Vanilla is 2", 2f)]
-        public static float eviscDuration = 2f; //2f
+        [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Duration", "Vanilla is 1.3", 1.75f)]
+        public static float eviscDuration = 1.75f; //2f
         [AutoConfig("Ability Tweaks (Special) : Eviscerate : Slice State Lingering Invincibility Duration", "Vanilla is 0.6", 0.25f)]
         public static float eviscLingeringInvincibilityDuration = 0.25f; //0.6f
 
-        [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Base Cooldown", "Expressed in seconds. Vanilla is 6", 9f)]
-        public static float windsCooldown = 9f; //6f
+        [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Base Cooldown", "Expressed in seconds. Vanilla is 6", 6f)]
+        public static float windsCooldown = 6f; //6f
         [AutoConfig("Ability Tweaks (Special) : Slicing Winds : Proc Coefficient Per Slice", "Vanilla is 1", 0.7f)]
         public static float windsProcCoefficient = 0.7f; //1f
         public override string survivorName => "Mercenary";
@@ -85,6 +87,8 @@ namespace SurvivorTweaks.SurvivorTweaks
                 body.levelRegen = baseRegen * 0.2f;
                 body.baseMaxHealth = baseHealth;
                 body.levelMaxHealth = baseHealth * 0.3f;
+                body.baseDamage = baseDamage;
+                body.levelDamage = baseDamage * 0.2f;
 
                 DoPrimary(primary);
                 DoSecondary(secondary);

@@ -69,9 +69,8 @@ namespace SurvivorTweaks.Modules
 
             GetStatCoefficients += CommonAssetStats;
             On.RoR2.CharacterBody.RecalculateStats += RecalcStats_Stats;
-            On.EntityStates.BaseState.AddRecoil += OnAddRecoil;
-            On.RoR2.CharacterBody.AddSpreadBloom += OnAddSpreadBloom;
         }
+
 
         public static void AddBanditExecutionBuffs()
         {
@@ -89,20 +88,6 @@ namespace SurvivorTweaks.Modules
             lightsoutExecutionDebuff = Content.CreateAndAddBuff("bdLightsOutExecute", null, Color.black, false, true);
             lightsoutExecutionDebuff.flags |= BuffDef.Flags.ExcludeFromNoxiousThorns;
             lightsoutExecutionDebuff.isHidden = true;
-        }
-
-        public static void OnAddSpreadBloom(On.RoR2.CharacterBody.orig_AddSpreadBloom orig, CharacterBody self, float value)
-        {
-            if (self.HasBuff(commandoRollBuff))
-                return;
-            orig(self, value);
-        }
-
-        public static void OnAddRecoil(On.EntityStates.BaseState.orig_AddRecoil orig, EntityStates.BaseState self, float verticalMin, float verticalMax, float horizontalMin, float horizontalMax)
-        {
-            if (self.HasBuff(commandoRollBuff))
-                return;
-            orig(self, verticalMin, verticalMax, horizontalMin, horizontalMax);
         }
         public static void AddCommanderRollBuff()
         {

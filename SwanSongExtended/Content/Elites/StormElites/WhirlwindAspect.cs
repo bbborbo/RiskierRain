@@ -121,7 +121,7 @@ namespace SwanSongExtended.Elites
                 "bdWindEliteStripped",
                 null,//Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texBuffSlow50Icon_tif).WaitForCompletion(),
                 Color.grey,
-                canStack: false,
+                canStack: true,
                 isDebuff: true,
                 isHidden: false
                 );

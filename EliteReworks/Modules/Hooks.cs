@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static MoreStats.OnHit;
+using static RainrotSharedUtils.Extensions;
 
 namespace FruityElites.Modules
 {
@@ -26,21 +27,9 @@ namespace FruityElites.Modules
         {
             orig(self);
 
-            if (GetInvincible(self))
+            if (self.IsInvincibleOrInvisible())
             {
                 DelayOutOfCombat(self, self.outOfDangerStopwatch - Time.fixedDeltaTime);
-            }
-
-            bool GetInvincible(CharacterBody self)
-            {
-                return 
-                    self.HasBuff(RoR2Content.Buffs.HiddenInvincibility) 
-                    || self.HasBuff(RoR2Content.Buffs.Immune) 
-                    || self.HasBuff(RoR2Content.Buffs.Intangible) 
-                    || self.HasBuff(DLC2Content.Buffs.HiddenRejectAllDamage)
-                    || self.HasBuff(RoR2Content.Buffs.Cloak)
-                    || (self.TryGetComponent(out CharacterModel model) == true && model.invisibilityCount > 0)
-                    ;
             }
         }
 

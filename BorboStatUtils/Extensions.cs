@@ -20,5 +20,26 @@ namespace RainrotSharedUtils
                 entryStopwatchValue = Mathf.Floor(Stage.instance.entryStopwatchValue);
             return stopwatch - entryStopwatchValue;
         }
+        public static bool IsInvincible(this CharacterBody self)
+        {
+            return
+                self.HasBuff(RoR2Content.Buffs.HiddenInvincibility)
+                || self.HasBuff(RoR2Content.Buffs.Immune)
+                || self.HasBuff(RoR2Content.Buffs.Intangible)
+                || self.HasBuff(DLC2Content.Buffs.HiddenRejectAllDamage)
+                ;
+        }
+        public static bool IsInvincibleOrInvisible(this CharacterBody self)
+        {
+            return self.IsInvincible()
+                || self.IsInvisible()
+                ;
+        }
+        public static bool IsInvisible(this CharacterBody self)
+        {
+            return self.HasBuff(RoR2Content.Buffs.Cloak)
+                || (self.TryGetComponent(out CharacterModel model) == true && model.invisibilityCount > 0)
+                ;
+        }
     }
 }

@@ -45,6 +45,7 @@ namespace RiskierRain.Changes
                 EntityStates.Drone.DroneJunk.Surprise.itemsToDropCoefficient = junkDroneDropCoefficient;
                 EntityStates.Drone.DroneJunk.Surprise.maxItemCount = junkDroneDropsMax;
                 EntityStates.Drone.DroneJunk.Surprise.extraItemsPerTier = junkDroneDropsPerTier;
+                orig(self);
             };
         }
         #endregion

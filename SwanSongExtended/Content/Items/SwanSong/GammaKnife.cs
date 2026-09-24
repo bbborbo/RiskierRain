@@ -34,7 +34,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "GAMMAKNIFE";
 
-        public override string ItemPickupDesc => $"Killing champions permanently increases attack speed and temporarily increases Luck. " +
+        public override string ItemPickupDesc => $"Killing champions permanently reduces cooldowns and temporarily guarantees Critical Strikes. " +
             $"{VoidColor("Corrupts all Obsidian Scalpels.")}";
 
         public override string ItemFullDescription => $"Killing a <style=cIsDamage>Champion</style> increases your <style=cIsDamage>Critical Strike chance</style> by " +

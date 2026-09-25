@@ -17,8 +17,8 @@ namespace FruityElites.EliteReworks
 {
     class VoidtouchedReworks : EliteReworkBase<VoidtouchedReworks>
     {
-        [AutoConfig("On-Death : Projectile Min Travel Time", "Expressed in seconds", 0.2f)]
-        public static float singularityMinimumTravelTime = 0.3f;
+        [AutoConfig("On-Death : Projectile Min Travel Time", "Expressed in seconds", 0.8f)]
+        public static float singularityMinimumTravelTime = 0.8f;
         [AutoConfig("On-Death : Projectile Max Travel Distance", "Expressed in meters", 60f)]
         public static float singularityMaximumTravelDistance = 60f;
         [AutoConfig("On-Death : Projectile Max Horizontal Speed", "Expressed in meters per second", 20f)]

@@ -30,7 +30,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemFullDescription => $"Activating your <style=cIsUtility>Utility skill</style> " +
             $"also increases your {UtilityColor("movement speed")} by {UtilityColor(boostPerSecond.AsPercent())} {StackText("+" + boostPerSecond.AsPercent())} per second of the skill's {UtilityColor("base cooldown")}. " +
-            $"Lasts for {UtilityColor(boostDuration.ToString() + " seconds")}.";
+            $"Lasts for {UtilityColor(boostDuration.ToString() + " seconds")}. {VoidColor("Corrupts all Utility Knives.")}";
 
         public override string ItemLore => "";
 

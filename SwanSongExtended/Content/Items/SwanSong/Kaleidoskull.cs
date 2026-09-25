@@ -13,7 +13,7 @@ namespace SwanSongExtended.Items
 {
     public class Kaleidoskull : ItemBase<Kaleidoskull>
     {
-        public static Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>> buffsToProcs = new Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>>();
+        public static Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>> buffsToProcs;
         public static int critChance = 5;
         public static int debuffCountBase = 1;
         public static int debuffCountStack = 1;
@@ -44,6 +44,17 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             base.Init();
+            buffsToProcs = new Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>>();
+        }
+
+        public override void Hooks()
+        {
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += KaleidoskullCrit;
+            On.RoR2.BuffCatalog.Init += KaleidoskullBuffStuff;
+        }
+
+        private void KaleidoskullBuffStuff(On.RoR2.BuffCatalog.orig_Init orig)
+        {
             buffsToProcs.Add(RoR2Content.Buffs.OnFire, InflictBurn);
             buffsToProcs.Add(DLC1Content.Buffs.StrongerBurn, InflictBurn);
             buffsToProcs.Add(RoR2Content.Buffs.Bleeding, (damageInfo, attacker, victim) =>
@@ -119,10 +130,6 @@ namespace SwanSongExtended.Items
             }
         }
 
-        public override void Hooks()
-        {
-            On.RoR2.GlobalEventManager.ProcessHitEnemy += KaleidoskullCrit;
-        }
         public override void PostInit()
         {
             base.PostInit();

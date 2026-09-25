@@ -8,6 +8,8 @@ using UnityEngine;
 using RoR2.Skills;
 using RoR2.ExpansionManagement;
 using RoR2.Items;
+using UnityEngine.Networking;
+
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
@@ -28,7 +30,7 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Casting your Utility skill grants a temporary barrier.";
 
         public override string ItemFullDescription => $"Activating your <style=cIsUtility>Utility skill</style> " +
-            $"also grants you <style=cIsHealing>a temporary barrier</style> " +
+            $"also grants you a <style=cIsHealing>temporary barrier</style> " +
             $"for <style=cIsHealing>{Tools.ConvertDecimal(castBarrierBase)}</style> of your maximum health " +
             $"<style=cStack>(+{Tools.ConvertDecimal(castBarrierStack)} per stack)</style> " +
             $"per second of the skill's <style=cIsUtility>base cooldown</style>.";
@@ -58,7 +60,7 @@ namespace SwanSongExtended.Items
         }
         public static void GiveUtilityBarrier(CharacterBody body, float skillBaseCooldown)
         {
-            if (body.healthComponent)
+            if (body.healthComponent && NetworkServer.active)
             {
                 //body is nullchecked by getcount automatically
                 float itemCount = UtilityBelt.instance.GetCount(body);
@@ -94,7 +96,7 @@ namespace SwanSongExtended.Items
             {
                 float effectiveCooldown = skill.baseRechargeInterval;
                 if (skill.rechargeStock > 1)
-                    effectiveCooldown /= skill.rechargeStock;
+                    effectiveCooldown /= (float)skill.rechargeStock;
 
                 UtilityBelt.GiveUtilityBarrier(body, effectiveCooldown);
             }

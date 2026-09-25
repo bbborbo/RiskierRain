@@ -28,8 +28,6 @@ namespace SwanSongExtended.Components
         {
             if (dropTable == null || !canActivate)
                 return;
-            Debug.Log("AAAAAAAAAAAAAHHHHHHHHHHHHHHH");
-            
             UniquePickup pickup = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
             dropTable.GenerateWeightedSelection();

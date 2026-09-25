@@ -13,6 +13,7 @@ namespace SwanSongExtended.Items
 {
     public class Kaleidoskull : ItemBase<Kaleidoskull>
     {
+        public override bool isEnabled => base.isEnabled;
         public static Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>> buffsToProcs;
         public static int critChance = 5;
         public static int debuffCountBase = 1;
@@ -21,7 +22,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "KALEIDOSKULL";
 
-        public override string ItemPickupDesc => "Critical Strikes inflict a random debuff.";
+        public override string ItemPickupDesc => "Critical Strikes inflict a random debuff. <style=cIsVoid>Corrupts all Predatory Instincts.</style>";
 
         public override string ItemFullDescription => $"Gain {DamageColor(critChance + "% critical chance")}. {DamageColor("Critical strikes")} randomly {DamageColor("Ignite")} or {UtilityColor("Frost")}. " +
             $"Additionally inflict {UtilityColor(debuffCountBase.ToString())} {StackText("+" + debuffCountStack)} random debuffs. {VoidColor("Corrupts all Predatory Instincts.")}";
@@ -55,9 +56,10 @@ namespace SwanSongExtended.Items
 
         private void KaleidoskullBuffStuff(On.RoR2.BuffCatalog.orig_Init orig)
         {
+            orig();
             buffsToProcs.Add(RoR2Content.Buffs.OnFire, InflictBurn);
             buffsToProcs.Add(DLC1Content.Buffs.StrongerBurn, InflictBurn);
-            buffsToProcs.Add(RoR2Content.Buffs.Bleeding, (damageInfo, attacker, victim) =>
+            buffsToProcs.Add(RoR2Content.Buffs.Blight, (damageInfo, attacker, victim) =>
             {
                 DotController.InflictDot(victim.gameObject, damageInfo.attacker, damageInfo.inflictedHurtbox, DotController.DotIndex.Blight, 5f * damageInfo.procCoefficient);
             });
@@ -83,7 +85,7 @@ namespace SwanSongExtended.Items
             });
             buffsToProcs.Add(DLC2Content.Buffs.Frost, (damageInfo, attacker, victim) =>
             {
-                victim.AddTimedBuff(DLC2Content.Buffs.Frost, 6f, 6);
+                victim.AddTimedBuff(DLC2Content.Buffs.Frost, 6f, 5);
             });
             buffsToProcs.Add(DLC2Content.Buffs.lunarruin, (damageInfo, attacker, victim) =>
             {
@@ -142,7 +144,7 @@ namespace SwanSongExtended.Items
             orig(self, damageInfo, victim);
             if (NetworkServer.active == false)
                 return;
-            if (damageInfo.procCoefficient <= 0)
+            if (damageInfo.procCoefficient <= 0 || damageInfo.crit == false)
                 return;
 
             if(damageInfo.attacker && damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody) && victim.TryGetComponent(out CharacterBody victimBody))

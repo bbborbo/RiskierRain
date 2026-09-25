@@ -12,6 +12,7 @@ using RoR2.Items;
 using UnityEngine.Networking;
 using static SwanSongExtended.Modules.Language.Styling;
 using SwanSongExtended.Modules;
+using UnityEngine.AddressableAssets;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -22,11 +23,11 @@ namespace SwanSongExtended.Items
         public static BuffDef boostBuff;
         public static float boostDuration = 2.5f;
         public static float boostPerSecond = 0.04f;
-        public override string ItemName => "Slipstream";
+        public override string ItemName => "Mobius Stream";
 
         public override string ItemLangTokenName => "VOIDUTILITYBELT";
 
-        public override string ItemPickupDesc => "Casting your Utility skill grants an additional burst of movement speed.";
+        public override string ItemPickupDesc => "Casting your Utility skill grants an additional burst of movement speed. <style=cIsVoid>Corrupts all Utility Knives.</style>";
 
         public override string ItemFullDescription => $"Activating your <style=cIsUtility>Utility skill</style> " +
             $"also increases your {UtilityColor("movement speed")} by {UtilityColor(boostPerSecond.AsPercent())} {StackText("+" + boostPerSecond.AsPercent())} per second of the skill's {UtilityColor("base cooldown")}. " +
@@ -48,7 +49,7 @@ namespace SwanSongExtended.Items
         }
         public override void Init()
         {
-            boostBuff = Content.CreateAndAddBuff("bdVoidUtilityBeltBoost", null, Color.magenta, false, false, isHidden: false);
+            boostBuff = Content.CreateAndAddBuff("bdVoidUtilityBeltBoost", Addressables.LoadAssetAsync<Texture2D>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texMovespeedBuffIcon_tif).WaitForCompletion().AsSprite(), Color.magenta, false, false, isHidden: false);
             base.Init();
         }
 

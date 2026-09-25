@@ -16,12 +16,12 @@ namespace SwanSongExtended.Items
     class MiniAmethyst : ItemBase<MiniAmethyst>
     {
         public override bool isEnabled => true;
-        public static float equipmentCooldownFractionToGiveAsRecharge = 0.08f;
+        public static float equipmentCooldownFractionToGiveAsRecharge = 0.10f;
         public static float minRechargePerAbility = 2f;
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Amethyst Fragment";
 
-        public override string ItemLangTokenName => "AMETHYST";
+        public override string ItemLangTokenName => "MINIAMETHYST";
 
         public override string ItemPickupDesc => "Activating your Equipment reduces your ability cooldowns.";
 
@@ -62,7 +62,6 @@ namespace SwanSongExtended.Items
 
             foreach(NetworkUser user in NetworkUser.readOnlyInstancesList)
             {
-                Transform t = currentStage.GetPlayerSpawnTransform();
                 CharacterMaster master = null;
                 if (user.isLocalPlayer && user.masterObject)
                 {
@@ -70,7 +69,8 @@ namespace SwanSongExtended.Items
                 }
                 if(GetCount(master) > 0)
                 {
-                    SpawnEquipmentBarrelNearby(t);
+                    GameObject t = master.GetBodyObject() ?? master.gameObject;
+                    SpawnEquipmentBarrelNearby(t.transform);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace SwanSongExtended.Items
                             : DirectorPlacementRule.PlacementMode.Random,
                     spawnOnTarget = t,
                     minDistance = 5f,
-                    maxDistance = 30f
+                    maxDistance = 10f
                 };
 
                 InteractableSpawnCard spawnCard = Addressables.LoadAssetAsync<InteractableSpawnCard>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_EquipmentBarrel.iscEquipmentBarrel_asset).WaitForCompletion();
@@ -117,18 +117,19 @@ namespace SwanSongExtended.Items
                     SkillLocator skillLocator = body.skillLocator;
                     if(skillLocator != null)
                     {
-                        foreach(GenericSkill skill in skillLocator.AllSkills)
-                        {
-                            float? overflow = GetOverflowFromSkillSlot(skill, recharge);
-                            if (overflow != null)
-                            {
-                                totalRecharge += recharge + overflow.Value;
-                                totalAbilities++;
-                            }
-                        }
-
-                        float delta = Mathf.Max(totalRecharge / (float)totalAbilities, minRechargePerAbility * amethystCount);
-                        skillLocator.DeductCooldownFromAllSkillsServer(delta);
+                        //foreach(GenericSkill skill in skillLocator.AllSkills)
+                        //{
+                        //    float? overflow = GetOverflowFromSkillSlot(skill, recharge);
+                        //    if (overflow != null)
+                        //    {
+                        //        totalRecharge += recharge + overflow.Value;
+                        //        totalAbilities++;
+                        //    }
+                        //}
+                        //
+                        //float delta = Mathf.Max(totalRecharge / (float)totalAbilities, minRechargePerAbility * amethystCount);
+                        //float delta = Mathf.Max(totalRecharge / (float)totalAbilities, minRechargePerAbility * amethystCount);
+                        skillLocator.DeductCooldownFromAllSkillsServer(recharge);
                     }
                 }
             }

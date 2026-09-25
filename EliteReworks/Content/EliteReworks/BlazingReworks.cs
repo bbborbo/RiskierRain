@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using R2API.Networking.Interfaces;
 using R2API.Networking;
+using RainrotSharedUtils;
 
 namespace FruityElites.EliteReworks
 {
@@ -71,10 +72,16 @@ namespace FruityElites.EliteReworks
 
         [AutoConfig("Passive : Flame Aura Range", "Maximum range of flame aura, added to body radius. Expressed in meters. Vanilla is N/A", 18f)]
         public static float flameAuraRange = 18f;
-        [AutoConfig("Passive : Flame Aura Growth Per Second", "Expressed as a fraction of max range (eg 0.25 is 25% is 4 seconds for full range). Vanilla is N/A", 0.25f)]
+        [AutoConfig("Passive : Flame Aura Growth Per Second", "How much to expand aura range while out of danger. Expressed as a fraction of max range (eg 0.25 is 25% is 4 seconds for full range). Vanilla is N/A", 0.25f)]
         public static float flameAuraGrowthPerSecond = 0.25f;
+        [AutoConfig("Passive : Flame Aura Shrink Per Second", "How much to shrink aura range while invincible. Expressed as a fraction of max range (eg 0.33 is 33% is 3 seconds for full range). Vanilla is N/A", 0.33f)]
+        public static float flameAuraShrinkPerSecond = 0.33f;
         [AutoConfig("Passive : Flame Aura Damage Interval", "Duration in seconds between ticks of damage (0.5 is 2 burns per second). Vanilla is N/A", 0.5f)]
         public static float flameAuraDamageInterval = 0.5f;
+        [AutoConfig("Passive : Flame Aura Warning Damage Multiplier", "Damage multiplier of burn stacks applied when victim is below the burn stack threshold. Vanilla is N/A", 0.5f)]
+        public static float flameAuraWarningDamage = 0.5f;
+        [AutoConfig("Passive : Flame Aura Warning Stack Threshold", "If the victim of the blazing elite has this many stacks of burn or fewer, the applied stacks of burn will deal reduced damage. Vanilla is N/A", 2)]
+        public static int flameAuraWarningThreshold = 2;
 
         [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 5f)]
         public static float flameAuraIgniteTotalDamageBase = 5f;
@@ -252,6 +259,7 @@ namespace FruityElites.EliteReworks
 
         float flameAuraMaxRange => body.bestFitRadius + BlazingReworks.flameAuraRange;
         float flameAuraGrowthPerSecond => flameAuraMaxRange * BlazingReworks.flameAuraGrowthPerSecond;
+        float flameAuraShrinkPerSecond => flameAuraMaxRange * BlazingReworks.flameAuraShrinkPerSecond;
         float flameAuraDamageInterval => BlazingReworks.flameAuraDamageInterval / body.attackSpeed;
         private const float rangeIndicatorScale = 2;
         private const float auraScale = 1;
@@ -339,10 +347,19 @@ namespace FruityElites.EliteReworks
         {
             if ((body.outOfDanger || currentRange >= minRange) && currentRange < flameAuraMaxRange)
             {
-                if (currentRange < minRange)
-                    damageStopwatch = flameAuraDamageInterval;
+                if(body.IsInvincible())
+                {
+                    if(currentRange > 0)
+                        SetAuraRange(MathF.Max(0, currentRange - flameAuraShrinkPerSecond * Time.deltaTime));
+                    return;
+                }
+                if(currentRange < flameAuraMaxRange)
+                {
+                    if (currentRange < minRange)
+                        damageStopwatch = flameAuraDamageInterval;
 
-                SetAuraRange(MathF.Min(flameAuraMaxRange, currentRange + flameAuraGrowthPerSecond * Time.deltaTime));
+                    SetAuraRange(MathF.Min(flameAuraMaxRange, currentRange + flameAuraGrowthPerSecond * Time.deltaTime));
+                }
             }
         }
 
@@ -364,13 +381,16 @@ namespace FruityElites.EliteReworks
 
                         foreach(HurtBox target in enemies)
                         {
-                            bool isResistAoe = target.healthComponent.body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ResistantToAOE);
+                            HealthComponent hc = target.healthComponent;
+                            CharacterBody body = hc.body;
+                            bool isResistAoe = body.bodyFlags.HasFlag(CharacterBody.BodyFlags.ResistantToAOE);
+                            bool isWarningStack = body.GetBuffCount(RoR2Content.Buffs.OnFire) + body.GetBuffCount(DLC1Content.Buffs.StrongerBurn) <= BlazingReworks.flameAuraWarningThreshold;
                             InflictDotInfo inflictDotInfo = new InflictDotInfo
                             {
                                 attackerObject = body.gameObject,
-                                victimObject = target.healthComponent.gameObject,
+                                victimObject = hc.gameObject,
                                 totalDamage = new float?(isResistAoe ? totalDamage * 0.33f : totalDamage),
-                                damageMultiplier = 1f,
+                                damageMultiplier = isWarningStack ? BlazingReworks.flameAuraWarningDamage : 1f,
                                 dotIndex = DotController.DotIndex.Burn,
                                 maxStacksFromAttacker = null
                             };

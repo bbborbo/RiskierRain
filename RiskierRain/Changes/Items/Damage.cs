@@ -539,18 +539,19 @@ namespace RiskierRain.Changes
         public static float genesisLoopProcCoeff = 0.75f; //1.0f
         public static void ChangeGenesisLoop()
         {
-            EntityStates.VagrantNovaItem.DetonateState.blastProcCoefficient = 0.3f;
+            EntityStates.VagrantNovaItem.DetonateState.blastProcCoefficient = genesisLoopProcCoeff;
+            On.EntityStates.VagrantNovaItem.ChargeState.OnEnter += (orig, self) =>
+            {
+                orig(self);
+                self.duration = 3;
+            };
+            return;
             EntityStates.VagrantNovaItem.DetonateState.blastDamageCoefficient = genesisLoopDamageCoeff;
             LanguageAPI.Add("ITEM_NOVAONLOWHEALTH_DESC",
                 $"Falling below <style=cIsHealth>25% health</style> causes you to explode, " +
                 $"dealing <style=cIsDamage>{Tools.ConvertDecimal(genesisLoopDamageCoeff)} base damage</style>. " +
                 $"Recharges every <style=cIsUtility>30 / (2 <style=cStack>+1 per stack</style>) seconds</style>.");
 
-            On.EntityStates.VagrantNovaItem.ChargeState.OnEnter += (orig, self) =>
-            {
-                orig(self);
-                self.duration = 3;
-            };
         }
         #endregion
 

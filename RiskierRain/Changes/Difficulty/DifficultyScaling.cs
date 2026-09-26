@@ -46,11 +46,11 @@ namespace RiskierRain.Changes
         /// <summary>
         /// exponential
         /// </summary>
-        public static float difficultyIncreasePerMinutePerDifficulty = 0.01f; //0f
+        public static float difficultyIncreasePerMinutePerDifficulty = 0.015f; //0f
         /// <summary>
         /// exponential
         /// </summary>
-        public static float difficultyIncreasePerMinuteBase = 1.01f; //1f
+        public static float difficultyIncreasePerMinuteBase = 0.99f; //1f
         /// <summary>
         /// exponential. increases the difficulty and difficulty scaling by this amount for each stach
         /// this determines the value used by monsoon but other difficulties will have lower/higher amount depending on their scaling value
@@ -230,7 +230,7 @@ namespace RiskierRain.Changes
 
             float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
             {
-                float timeFactor = Mathf.Pow(difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * scalingValue, timeInMinutes);
+                float timeFactor = Mathf.Pow(Mathf.Max(1, difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty) * scalingValue, timeInMinutes);
                 return timeFactor;
             }
             float GetStageDifficultyFactor(int stageClearCount, float scalingValue)

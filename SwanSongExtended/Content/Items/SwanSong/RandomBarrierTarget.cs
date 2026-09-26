@@ -27,8 +27,8 @@ namespace SwanSongExtended.Items
         public static Material harpoonTargetMaterial;
         public override bool isEnabled => true; 
 
-        public static float harpoonBarrierBase = 12;
-        public static float harpoonBarrierStack = 12;
+        public static float harpoonBarrierBase = 8;
+        public static float harpoonBarrierStack = 8;
         public static float harpoonTargetTime = 4;
         public static float harpoonDecayReduction = 0.2f;
         public static float harpoonCritChanceBase = 20f;
@@ -138,6 +138,20 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
             GetMoreStatCoefficients += HarpoonDecay;
             //IL.RoR2.HealthComponent.TakeDamageProcess += HarpoonCritReroll;
             On.RoR2.HealthComponent.TakeDamageProcess += HarpoonRerollCrit;
+            GlobalEventManager.onCharacterDeathGlobal += HarpoonOnKill;
+        }
+
+        private void HarpoonOnKill(DamageReport damageReport)
+        {
+            if(damageReport.victimBody && damageReport.victimBody.HasBuff(harpoonDebuff))
+            {
+                int stack = GetCount(damageReport.attackerBody);
+                if (stack > 0)
+                {
+                    float barrierGrant = RandomBarrierTarget.harpoonBarrierBase + RandomBarrierTarget.harpoonBarrierStack * (stack - 1);
+                    damageReport.attackerBody.healthComponent.AddBarrierAuthority(barrierGrant * damageReport.damageInfo.procCoefficient);
+                }
+            }
         }
 
         private void HarpoonRerollCrit(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)

@@ -11,14 +11,14 @@ namespace SwanSongExtended.Equipment
 {
     public class TheMachine : EquipmentBase<TheMachine>
     {
-        public static float baseDamageBoost = 0.03f;
-        public static float baseMspdBoost = 0.04f;
+        public static float baseDamageBoost = 0.05f;
+        public static float baseMspdBoost = 0.05f;
         public static float baseCdrBoost = 0.05f;
-        public static int baseArmorBoost = 4;
+        public static int baseArmorBoost = 5;
         public static float baseShieldBoost = 8;
-        public static float baseBarrierBoost = 0.02f;
+        public static float baseBarrierBoost = 0.05f;
         public static float baseLuckBoost = 0.05f;
-        public static float baseRegenBoost = 0.2f;
+        public static float baseRegenBoost = 0.5f;
         public static int tier3ScrapValue = 4;
         public static int tierBossScrapValue = 3;
         public static int tier2ScrapValue = 2;

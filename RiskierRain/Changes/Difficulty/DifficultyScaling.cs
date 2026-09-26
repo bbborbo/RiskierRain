@@ -230,7 +230,7 @@ namespace RiskierRain.Changes
 
             float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
             {
-                float timeFactor = Mathf.Pow(Mathf.Max(1, difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty) * scalingValue, timeInMinutes);
+                float timeFactor = Mathf.Pow(Mathf.Max(1, difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * scalingValue), timeInMinutes);
                 return timeFactor;
             }
             float GetStageDifficultyFactor(int stageClearCount, float scalingValue)

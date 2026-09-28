@@ -45,6 +45,24 @@ namespace RiskierRain.Changes
             AddMonsoonScalingStats();
             ChangeEclipse();
 
+            #region difficulty descriptions
+            drizzleDesc +=
+                $"\n>Starting Difficulty: <style=cIsHealing>Easy</style>" +
+                $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +
+                $"\n>{Tier2EliteName} Elites: <style=cIsHealing>Stage {Tier2EliteMinimumStageDrizzle}</style>" +
+                $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
+
+            rainstormDesc +=
+                $"\n>Starting Difficulty: Medium" +
+                $"\n>{Tier2EliteName} Elites: Stage {Tier2EliteMinimumStageRainstorm}" +
+                $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
+
+            monsoonDesc +=
+                $"\n>Starting Difficulty: <style=cIsHealth>Hard</style>" +
+                $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
+                $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
+            #endregion
+
             //directors
             ChangeDirectorStats();
             DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
@@ -258,6 +276,8 @@ namespace RiskierRain.Changes
         #endregion
 
         #region directors
+        public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
+        public static float difficultySpawnRateFactor = 0.4f;//0.4f, additive
         /// <summary>
         /// elite bias is inversed (lower bias = more elites)
         /// </summary>
@@ -283,6 +303,9 @@ namespace RiskierRain.Changes
         /// unused
         /// </summary>
         public static float teleBossCreditMultiplierStage1 = 0.5f;//1f
+        /// <summary>
+        /// Elite Bias, Credit Income
+        /// </summary>
         public static void ChangeDirectorStats()
         {
             GameObject baseDirector = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/Director.prefab").WaitForCompletion();
@@ -305,11 +328,35 @@ namespace RiskierRain.Changes
             }
             On.RoR2.CombatDirector.Awake += AdjustTpDirectors;
             On.RoR2.CombatDirector.SetNextSpawnAsBoss += FixBossDirectorCredits;
+            IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
             //On.RoR2.TeleporterInteraction.Awake += AdjustDirectorsForTeleporter;
             //GameObject teleporterDefault = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.Teleporter1_prefab).WaitForCompletion();
             //GameObject teleporterLunar = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Teleporters.LunarTeleporter_Variant_prefab).WaitForCompletion();
             //AdjustTeleporterDirectors(teleporterLunar.GetComponents<CombatDirector>());
 
+        }
+        public static void DirectorCreditGainChanges(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _));
+            c.Index--;
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, 1 - playerSpawnRateFactor);
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _));
+            c.Index--;
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, playerSpawnRateFactor);
+
+            c.GotoNext(MoveType.After,
+                x => x.MatchLdcR4(out _),
+                x => x.MatchStloc(out _),
+                x => x.MatchLdcR4(out _));
+            c.Index--;
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, difficultySpawnRateFactor);
         }
 
         private static void FixBossDirectorCredits(On.RoR2.CombatDirector.orig_SetNextSpawnAsBoss orig, CombatDirector self)

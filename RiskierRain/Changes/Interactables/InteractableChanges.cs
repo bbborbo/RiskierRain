@@ -39,6 +39,7 @@ namespace RiskierRain.Changes
             BloodShrineRewardRework();
             ChangeHalcyoniteShrine();
             ChangeCombatShrine();
+            ChangeHalcyonBeacon();
 
             //interactable gold costs
             ChestRebalance();
@@ -275,6 +276,47 @@ namespace RiskierRain.Changes
             if (shelter)
             {
                 shelter.enabled = true;
+            }
+        }
+        #endregion
+
+        #region halcyon beacon
+        public static float halcyonBeaconMonsterCredit = 40;
+        private static void ChangeHalcyonBeacon()
+        {
+            On.EntityStates.Interactables.GoldBeacon.Ready.OnEnter += HalcyonBeaconSummons;
+        }
+
+        private static void HalcyonBeaconSummons(On.EntityStates.Interactables.GoldBeacon.Ready.orig_OnEnter orig, EntityStates.Interactables.GoldBeacon.Ready self)
+        {
+            orig(self);
+            if(self.outer.TryGetComponent(out PurchaseInteraction interaction))
+            {
+                Interactor interactor = interaction.lastActivator;
+
+                GameObject squadDirectorObject = UnityEngine.Object.Instantiate<GameObject>(
+                    Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MonstersOnShrineUse.MonstersOnShrineUseEncounter_prefab).WaitForCompletion()
+                    , self.transform.position, Quaternion.identity);
+                NetworkServer.Spawn(squadDirectorObject);
+                CombatDirector combatDirector = squadDirectorObject.GetComponent<CombatDirector>();
+                if (combatDirector && Stage.instance)
+                {
+                    GameObject gameObject2 = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Encounters/MonstersOnShrineUseEncounter");
+                    float monsterCredit = halcyonBeaconMonsterCredit * Stage.instance.entryDifficultyCoefficient;
+                    DirectorCard directorCard = combatDirector.SelectMonsterCardForCombatShrine(monsterCredit);
+                    if (directorCard != null)
+                    {
+                        combatDirector.CombatShrineActivation(interactor, monsterCredit, directorCard);
+                        EffectData effectData = new EffectData
+                        {
+                            origin = self.transform.position,
+                            rotation = self.transform.rotation
+                        };
+                        EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineCombat.CombatShrineSpawnEffect_prefab).WaitForCompletion(), effectData, true);
+                        return;
+                    }
+                    NetworkServer.Destroy(squadDirectorObject);
+                }
             }
         }
         #endregion

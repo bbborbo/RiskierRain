@@ -62,55 +62,14 @@ namespace RiskierRain.Changes
         public static float difficultyIncreasePerLoop = 1.2f; //1.0f, exponential
         public static float playerBaseDifficultyFactor = 0.2f;//0.3f, linear
         public static float playerScalingDifficultyFactor = 0.2f;//0.2f, exponential
-        public static float playerSpawnRateFactor = 0.5f;//0.5f, linear
-        public static float difficultySpawnRateFactor = 0.4f;//0.4f, additive
+        /// <summary>
+        /// Scaling Rates, 
+        /// </summary>
         public static void ChangeDifficultyCoefficientCalculation()
         {
             Run.ambientLevelCap = ambientLevelCap;
             //IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += AmbientLevelChanges;
             On.RoR2.Run.RecalculateDifficultyCoefficentInternal += DifficultyCoefficientChanges;
-            IL.RoR2.CombatDirector.DirectorMoneyWave.Update += DirectorCreditGainChanges;
-
-            drizzleDesc +=
-                $"\n>Starting Difficulty: <style=cIsHealing>Easy</style>" +
-                $"\n>Max Enemy Level: <style=cIsHealing>{ambientLevelCapDrizzle - ambientLevelCap}</style> " +
-                $"\n>{Tier2EliteName} Elites: <style=cIsHealing>Stage {Tier2EliteMinimumStageDrizzle}</style>" +
-                $"\n>Teleporter Visuals: <style=cIsHealing>+{Tools.ConvertDecimal(easyTeleParticleRadius / normalTeleParticleRadius - 1)}</style> ";
-
-            rainstormDesc +=
-                $"\n>Starting Difficulty: Medium" +
-                $"\n>{Tier2EliteName} Elites: Stage {Tier2EliteMinimumStageRainstorm}" +
-                $"\n>Teleporter Visuals: +{Tools.ConvertDecimal(normalTeleParticleRadius / normalTeleParticleRadius - 1)} ";
-
-            monsoonDesc +=
-                $"\n>Starting Difficulty: <style=cIsHealth>Hard</style>" +
-                $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
-                $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
-        }
-
-
-        public static void DirectorCreditGainChanges(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdcR4(out _));
-            c.Index--;
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, 1 - playerSpawnRateFactor);
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdcR4(out _));
-            c.Index--;
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, playerSpawnRateFactor);
-
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdcR4(out _),
-                x => x.MatchStloc(out _),
-                x => x.MatchLdcR4(out _));
-            c.Index--;
-            c.Remove();
-            c.Emit(OpCodes.Ldc_R4, difficultySpawnRateFactor);
         }
 
         /// <summary>

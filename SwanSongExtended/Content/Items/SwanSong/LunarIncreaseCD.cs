@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
 {
     class LunarIncreaseCD : ItemBase<LunarIncreaseCD>
     {
-        public override bool isEnabled => false;
+        public override bool isEnabled => true;
         GameObject lunarShardProjectile;// => EntityStates.BrotherMonster.Weapon.FireLunarShards.projectilePrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/LunarShardProjectile.prefab");
         GameObject lunarShardMuzzleFlash => EntityStates.BrotherMonster.Weapon.FireLunarShards.muzzleFlashEffectPrefab;//LegacyResourcesAPI.Load<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab");
         

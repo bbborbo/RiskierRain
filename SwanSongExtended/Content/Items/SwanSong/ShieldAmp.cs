@@ -73,7 +73,7 @@ namespace SwanSongExtended.Items
             if (damageInfo.attacker && damageInfo.damageType.IsDamageSourceSkillBased && NetworkServer.active)
             {
                 CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if(attackerBody != null && attackerBody.IsInvincible())
+                if(attackerBody != null && !attackerBody.IsInvincible())
                 {
                     int stack = GetCount(attackerBody);
                     if (stack > 0)

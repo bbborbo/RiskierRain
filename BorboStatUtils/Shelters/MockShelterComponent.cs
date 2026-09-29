@@ -18,29 +18,37 @@ namespace RainrotSharedUtils.Shelters
         float age = 0;
         bool hasStartedShrink = false;
 
+        void Start()
+        {
+            //if the starting scale is say [20,20,20] but the radius is 30, then baseScale will be [0.66,0.66,0.66], which will maintain consistent scaling
+            if (areaIndicatorReference)
+                baseScale = areaIndicatorReference.transform.localScale / startingRadius;
+            SetSize(startingRadius);
+        }
+
         void FixedUpdate()
         {
             if (age >= durationForMaxShrink)
                 return;
             age += Time.fixedDeltaTime;
-            if(age > durationBeforeShrink)
+
+            if(age < durationBeforeShrink)
             {
-                if (!hasStartedShrink)
-                {
-                    hasStartedShrink = true;
-                    //if the starting scale is say [20,20,20] but the radius is 30, then baseScale will be [0.66,0.66,0.66], which will maintain consistent scaling
-                    if(areaIndicatorReference)
-                        baseScale = areaIndicatorReference.transform.localScale / startingRadius;
-                }
-                if (age >= durationForMaxShrink)
-                {
-                    SetSize(endRadius);
-                    return;
-                }
-                float delta = (age - durationBeforeShrink) / durationForMaxShrink;
-                float radius = Mathf.Lerp(startingRadius, endRadius, delta);
-                SetSize(radius);
+                return;
             }
+
+            if (!hasStartedShrink)
+            {
+                hasStartedShrink = true;
+            }
+            if (age >= durationForMaxShrink)
+            {
+                SetSize(endRadius);
+                return;
+            }
+            float delta = (age - durationBeforeShrink) / durationForMaxShrink;
+            float radius = Mathf.Lerp(startingRadius, endRadius, delta);
+            SetSize(radius);
         }
 
         private void SetSize(float radius)

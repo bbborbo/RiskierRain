@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using R2API;
@@ -36,6 +37,13 @@ namespace BetterSoulCost
                 "If true, soul penalties will increase exponentially to approximate consistent health loss, rather than hyperbolically.");
             RoR2Application.onLoad += FixSoulPayCost;
             IL.RoR2.ShrineColossusAccessBehavior.OnInteraction += ShapingShrineSoulSpread;
+        }
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            string s = $"{modName}: {methodName} IL hook failed!";
+            if (breakpointNumber >= 0)
+                s += $" (breakpoint {breakpointNumber})";
+            Debug.LogError(s);
         }
 
         private void ShapingShrineSoulSpread(ILContext il)
@@ -79,39 +87,60 @@ namespace BetterSoulCost
         private void FixSoulPayCost()
         {
             CostTypeDef ctd = CostTypeCatalog.GetCostTypeDef(CostTypeIndex.SoulCost);
-            var method = ctd.payCost.Method;
-            ILHook hook = new ILHook(method, FixSoulCost);
+            var payCost = ctd.payCost.Method;
+            var isAffordable = ctd.isAffordable.Method;
+            ILHook hook = new ILHook(payCost, FixSoulCost);
+            ILHook hook2 = new ILHook(isAffordable, FixSoulCostAfford);
+        }
+
+        private void FixSoulCostAfford(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            c.Emit(OpCodes.Ldc_I4, 1);
+            c.Emit(OpCodes.Ret);
         }
 
         private void FixSoulCost(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            bool b = c.TryGotoNext(MoveType.Before,
+            int minHealthLoc = 0;
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt<HealthComponent>("get_fullCombinedHealth"))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchStloc(out minHealthLoc)
+                );
+            if(b1 == false)
+            {
+                DebugBreakpoint(nameof(FixSoulCost), 1);
+                return;
+            }
+            c.EmitDelegate<Func<float, float>>((_) => 0);
+
+            bool b2 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
                 );
-            if (b)
+            if (b2 == false)
             {
-                c.Remove();
-                c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) =>
+                DebugBreakpoint(nameof(FixSoulCost), 2);
+                return;
+            }
+            c.Remove();
+            c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) =>
+            {
+                if (buffCount > 0)
                 {
-                    if (buffCount > 0)
-                    {
-                        //for (int i = 0; i < buffCount; i++)
-                        //{
-                        //    body.AddBuff((BuffIndex)buffIndex);
-                        //}
-                        int buffsToAdd = buffCount;
+                    //for (int i = 0; i < buffCount; i++)
+                    //{
+                    //    body.AddBuff((BuffIndex)buffIndex);
+                    //}
+                    int buffsToAdd = buffCount;
 
-                        float curseAmt = buffCount * 0.1f;
-                        AddSoulCostToBody(body, (BuffIndex)buffIndex, curseAmt);
-                    }
-                });
-            }
-            else
-            {
-                Debug.LogError("Could not hook void cradle paycost");
-            }
+                    float curseAmt = buffCount * 0.1f;
+                    AddSoulCostToBody(body, (BuffIndex)buffIndex, curseAmt);
+                }
+            });
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BossDropRework.Modules;
 using R2API;
 using RoR2;
 using RoR2.Audio;
@@ -14,9 +15,6 @@ namespace BossDropRework
 {
     public partial class BossDropReworkPlugin : BaseUnityPlugin
     {
-        public static BuffDef NoBossDropsBuff;
-        public static BuffDef YesBossDropsBuff;
-
         public static float trophyHunterMaxHealthDamage => trophyHunterCurseCount / (100f + trophyHunterCurseCount);
         public static int trophyHunterCurseCount = 33;
         public static int trophyHunterDebuffDuration = 999;
@@ -40,7 +38,7 @@ namespace BossDropRework
 
         private void TricornDropChance(CharacterBody victim, CharacterBody attacker, ref float dropChance)
         {
-            if (victim.HasBuff(NoBossDropsBuff) && dropChance != 0)
+            if (victim.HasBuff(CommonAssets.NoBossDropsBuff) && dropChance != 0)
             {
                 dropChance = 100;
             }
@@ -101,7 +99,7 @@ namespace BossDropRework
 
                                 DropItem(attackerBody, enemyBody, attackerBody.master, 100);
 
-                                enemyBody.AddBuff(NoBossDropsBuff);
+                                enemyBody.AddBuff(CommonAssets.NoBossDropsBuff);
                                 for (int i = 0; i < trophyHunterCurseCount; i++)
                                 {
                                     enemyBody.AddBuff(RoR2Content.Buffs.PermanentCurse);
@@ -113,7 +111,7 @@ namespace BossDropRework
                             }
                             else
                             {
-                                enemyBody.AddBuff(YesBossDropsBuff);
+                                enemyBody.AddBuff(CommonAssets.YesBossDropsBuff);
                                 enemyBody.master.TrueKill(base.gameObject, null, default(DamageTypeCombo));
                             }
                         }

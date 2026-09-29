@@ -86,6 +86,9 @@ namespace FruityElites.EliteReworks
             CharacterBody attackerBody = damageReport.attackerBody;
             if (victimBody != null && attackerBody != null)
             {
+                if (victimBody.healthComponent.globalDeathEventChanceCoefficient < 1)
+                    return;
+
                 if (victimBody.HasBuff(RoR2Content.Buffs.AffixBlue))
                 {
                     int maxStrikeCount = Mathf.CeilToInt(overloadingSmiteCountBase + victimBody.bestFitRadius * overloadingSmiteCountPerRadius);

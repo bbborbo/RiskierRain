@@ -18,6 +18,7 @@ using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using UnityEngine.AddressableAssets;
 using On.EntityStates.CaptainSupplyDrop;
 using RainrotSharedUtils.Shelters;
+using EntityStates.Interactables.GoldBeacon;
 
 namespace RiskierRain.Changes
 {
@@ -39,6 +40,7 @@ namespace RiskierRain.Changes
             BloodShrineRewardRework();
             ChangeHalcyoniteShrine();
             ChangeCombatShrine();
+            ChangeHalcyonBeacon();
 
             //interactable gold costs
             ChestRebalance();
@@ -142,6 +144,8 @@ namespace RiskierRain.Changes
         private static void BloodShrineRewardRework()
         {
             IL.RoR2.ShrineBloodBehavior.AddShrineStack += ShrineBloodReward;
+
+            LanguageAPI.Add("SHRINE_BLOOD_NAME", "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to the price of a common chest.");
             //On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
         }
 
@@ -275,6 +279,57 @@ namespace RiskierRain.Changes
             if (shelter)
             {
                 shelter.enabled = true;
+            }
+        }
+        #endregion
+
+        #region halcyon beacon
+        public static float halcyonBeaconMonsterCreditTier1 = 30;
+        public static float halcyonBeaconMonsterCreditTier2 = 50;
+        public static float halcyonBeaconMonsterCreditTier3 = 100;
+        private static void ChangeHalcyonBeacon()
+        {
+            On.EntityStates.Interactables.GoldBeacon.Ready.OnEnter += HalcyonBeaconSummons;
+        }
+
+        private static void HalcyonBeaconSummons(On.EntityStates.Interactables.GoldBeacon.Ready.orig_OnEnter orig, EntityStates.Interactables.GoldBeacon.Ready self)
+        {
+            orig(self);
+            //if (NotReady.count == 0)
+            //    return;
+            if(self.outer.TryGetComponent(out PurchaseInteraction interaction))
+            {
+                Interactor interactor = interaction.lastActivator;
+
+                GameObject squadDirectorObject = UnityEngine.Object.Instantiate<GameObject>(
+                    Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MonstersOnShrineUse.MonstersOnShrineUseEncounter_prefab).WaitForCompletion()
+                    , self.transform.position, Quaternion.identity);
+                NetworkServer.Spawn(squadDirectorObject);
+                CombatDirector combatDirector = squadDirectorObject.GetComponent<CombatDirector>();
+                combatDirector.goldRewardCoefficient = 0.75f;
+                if (combatDirector && Stage.instance)
+                {
+                    float tier = Mathf.Ceil((float)Ready.count / 3f);
+                    float monsterCredit = halcyonBeaconMonsterCreditTier1;
+                    if (tier == 2)
+                        monsterCredit = halcyonBeaconMonsterCreditTier2;
+                    if (tier == 3)
+                        monsterCredit = halcyonBeaconMonsterCreditTier3;
+                    monsterCredit *= Stage.instance.entryDifficultyCoefficient;
+                    DirectorCard directorCard = combatDirector.SelectMonsterCardForCombatShrine(monsterCredit);
+                    if (directorCard != null)
+                    {
+                        combatDirector.CombatShrineActivation(interactor, monsterCredit, directorCard);
+                        EffectData effectData = new EffectData
+                        {
+                            origin = self.transform.position,
+                            rotation = self.transform.rotation
+                        };
+                        EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ShrineCombat.CombatShrineSpawnEffect_prefab).WaitForCompletion(), effectData, true);
+                        return;
+                    }
+                    NetworkServer.Destroy(squadDirectorObject);
+                }
             }
         }
         #endregion

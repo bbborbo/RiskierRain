@@ -381,7 +381,7 @@ namespace RainrotSharedUtils.MoreProjectiles
 
         public static void MissileArtifact_TitanRock(On.RoR2.TitanRockController.orig_Fire orig, TitanRockController self)
         {
-            if (!MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.ownerCharacterBody))
+            if (self.ownerCharacterBody == null || MoreProjectilesModule.IsMoreProjectilesActiveForBody(self.ownerCharacterBody) == false)
             {
                 orig(self);
                 return;

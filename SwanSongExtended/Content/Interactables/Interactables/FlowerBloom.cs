@@ -100,6 +100,16 @@ namespace SwanSongExtended.Interactables
             if (Run.instance.stageClearCount <= 0)
                 return;
 
+            if (self.interactableCredit == 0)
+                return;
+            //SceneDef currentScene = Stage.instance.sceneDef;
+            //if (currentScene.preventStageAdvanceCounter
+            //    || currentScene.sceneType == SceneType.Intermission
+            //    || currentScene.sceneType == SceneType.Cutscene
+            //    || currentScene.sceneType == SceneType.UntimedStage
+            //    || currentScene.sceneType == SceneType.Junk)
+            //    return;
+
             this.rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
             if (this.rng.RangeInt(0, 100) >= bloomChance)
                 return;

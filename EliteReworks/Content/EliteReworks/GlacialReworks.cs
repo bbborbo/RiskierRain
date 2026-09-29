@@ -29,6 +29,9 @@ namespace FruityElites.EliteReworks
         {
             frozenExplosionPrefab = obj.InstantiateClone("FruityGlacialImpactEffect", false);
             frozenExplosionPrefab.transform.localScale *= glacialFrostRadius / 3f;
+            Transform ring = frozenExplosionPrefab.transform.GetChild(0).Find("AreaIndicatorRing, Billboard");
+            if (ring != null)
+                ring.transform.localScale *= glacialFrostRadius / 3f;
             //if(frozenExplosionPrefab.TryGetComponent(out ShakeEmitter se))
             //{
             //    UnityEngine.Object.Destroy(se);
@@ -61,7 +64,7 @@ namespace FruityElites.EliteReworks
                 return;
             if(damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody) && attackerBody.HasBuff(RoR2Content.Buffs.AffixWhite))
             {
-                EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(frozenExplosionPrefab).WaitForCompletion(), 
+                EffectManager.SpawnEffect(frozenExplosionPrefab, 
                     new EffectData
                 {
                     origin = damageInfo.position,

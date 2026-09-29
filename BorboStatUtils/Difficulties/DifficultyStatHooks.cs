@@ -18,9 +18,10 @@ namespace RainrotSharedUtils.Difficulties
 {
     internal static class DifficultyStatHooks
     {
-        [SystemInitializer(typeof(CombatDirector))]
-        internal static void FixEliteSpawn()
+
+        public static void FixEliteSpawn(On.RoR2.CombatDirector.orig_Init orig)
         {
+            orig();
             foreach (CombatDirector.EliteTierDef etd in CombatDirector.eliteTiers) //EliteAPI.VanillaEliteTiers)//
             {
                 List<EliteDef> eliteDefs = etd.eliteTypes.ToList();
@@ -60,7 +61,6 @@ namespace RainrotSharedUtils.Difficulties
 
             bool GetForceNextSpawnAsElite()
             {
-                Debug.LogError($"Force next spawn as elite [{forceNextSpawnAsElite}] [not implemented]");
                 return false;// forceNextSpawnAsElite;
             }
             bool IsPastMinimumStage(bool isTier2)

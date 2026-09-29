@@ -73,7 +73,7 @@ namespace SwanSongExtended.Items
             if (damageInfo.attacker && damageInfo.damageType.IsDamageSourceSkillBased && NetworkServer.active)
             {
                 CharacterBody attackerBody = damageInfo.attacker.GetComponent<CharacterBody>();
-                if(attackerBody != null && attackerBody.IsInvincible())
+                if(attackerBody != null && !attackerBody.IsInvincible())
                 {
                     int stack = GetCount(attackerBody);
                     if (stack > 0)
@@ -95,16 +95,6 @@ namespace SwanSongExtended.Items
                 }
             }
             orig(self, damageInfo);
-
-            bool GetInvincible(CharacterBody self)
-            {
-                return
-                    self.HasBuff(RoR2Content.Buffs.HiddenInvincibility)
-                    || self.HasBuff(RoR2Content.Buffs.Immune)
-                    || self.HasBuff(RoR2Content.Buffs.Intangible)
-                    || self.HasBuff(DLC2Content.Buffs.HiddenRejectAllDamage)
-                    ;
-            }
         }
 
         public static void DrainShield(HealthComponent healthComponent, float shieldToDrain)

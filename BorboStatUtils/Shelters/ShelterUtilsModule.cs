@@ -129,7 +129,7 @@ namespace RainrotSharedUtils.Shelters
 
             orig(self);
         }
-
+        /// <param name="stupidBullshit">scale multiplier</param>
         public static void MakeMockShelter(GameObject indicator, float startRadius, float endRadius, float stupidBullshit = 1)
         {
             if (!UseGlobalShelters)

@@ -362,13 +362,14 @@ namespace SwanSongExtended
         /// </summary>
         public static int CountOverspillTriangular(float totalValue, float incrementor = 1f)
         {
-            int count = 0;
-            while (totalValue > 0)
+            int overspillCount = 1;
+            float currentTri = 1;
+            while(currentTri < totalValue)
             {
-                count++;
-                totalValue -= incrementor * count;
+                overspillCount++;
+                currentTri += (float)overspillCount * incrementor;
             }
-            return count;
+            return overspillCount;
         }
         /// <summary>
         /// with default values:
@@ -382,6 +383,21 @@ namespace SwanSongExtended
         /// </summary>
         public static int CountOverspillFibonacci(float totalValue, float thresholdScale = 1f, int startingIndex = 1)
         {
+            int overspillCount = 0;
+            float lastFib = 1;
+            float currentFib = 1;
+            while(currentFib * thresholdScale < totalValue || startingIndex > 0)
+            {
+                if (startingIndex > 0)
+                    startingIndex--;
+                else
+                    overspillCount++;
+                currentFib += lastFib;
+                lastFib = currentFib - lastFib;
+            }
+            return overspillCount;
+
+            //idk what this deranged stuff is
             int lastIncrementor = 1;
             int currentIncrementor = 1;
             int count = 0;

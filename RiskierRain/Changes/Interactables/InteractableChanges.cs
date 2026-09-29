@@ -144,6 +144,8 @@ namespace RiskierRain.Changes
         private static void BloodShrineRewardRework()
         {
             IL.RoR2.ShrineBloodBehavior.AddShrineStack += ShrineBloodReward;
+
+            LanguageAPI.Add("SHRINE_BLOOD_NAME", "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to the price of a common chest.");
             //On.RoR2.ShrineBloodBehavior.Start += ShrineBloodBehavior_Start;
         }
 

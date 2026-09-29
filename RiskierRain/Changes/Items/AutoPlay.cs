@@ -307,7 +307,7 @@ namespace RiskierRain.Changes
 			c.Emit(OpCodes.Ldloc, countLoc);
 			c.EmitDelegate<Func<float, int, float>>((currentDamage, itemCount) =>
 			{
-				float newDamage = voidsentBaseRange + voidsentDamageStack * (itemCount - 1);
+				float newDamage = voidsentDamageBase + voidsentDamageStack * (itemCount - 1);
 
 				return newDamage;
 			});

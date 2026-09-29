@@ -707,18 +707,28 @@ namespace RiskierRain.Changes
         #endregion
 
         #region faraday spurs
-        public static float faradayMaxMoveSpeed = 0.8f; //1.6f
-        public static float faradayMaxJumpStrength = 1.5f; //2.0f
+        public static float faradayMaxMoveSpeed = 1.2f; //1.6f
+        public static float faradayMaxJumpStrength = 2.0f; //2.0f
         public static float faradayChargeIncreaseBase = 1.5f; //1.0f
         public static float faradayChargeIncreaseStack = 0.5f; //0.0f
-        public static float faradayDamageBase = 8f; //4.0f
-        public static float faradayDamageStack = 5f; //2.5f
+        public static float faradayDamageBase = 20f; //4.0f
+        public static float faradayDamageStack = 10f; //2.5f
         public static int faradayRequiredCharge = 34; //25
         public static int faradayMaxDischarge = 67; //100
         public static bool faradayPreventDoubleDischarge = true;
         private static float faradayChargeIncreaseStackInverse => faradayChargeIncreaseStack / (1 + faradayChargeIncreaseStack);
         public static void ChangeFaraday()
         {
+            RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset, ItemTier.Tier3, FixFuelCellIcon);
+            void FixFuelCellIcon(ItemDef itemDef)
+            {
+                if (CoreModules.Assets.retierAssetBundle.Contains("Assets/Icons/Faraday_Spur.png"))
+                {
+                    Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Faraday_Spur.png");
+                    if (sprite)
+                        itemDef.pickupIconSprite = sprite;
+                }
+            }
             LanguageAPI.Add("ITEM_JUMPDAMAGESTRIKE_PICKUP",
                 $"Moving around builds up movement speed and jump height. " +
                 $"At {faradayRequiredCharge}% charge or higher, jump to discharge into an electric blast.");

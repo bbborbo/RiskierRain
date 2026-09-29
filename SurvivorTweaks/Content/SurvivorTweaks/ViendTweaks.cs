@@ -269,7 +269,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                     foreach (BuffIndex buffType in BuffCatalog.debuffBuffIndices)
                     {
                         BuffDef buffDef = BuffCatalog.GetBuffDef(buffType);
-                        if (buffDef.isCooldown || buffDef.isHidden)
+                        if (buffDef.isCooldown || buffDef.isHidden || !buffDef.isDebuff)
                             continue;
                         debuffCount += self.characterBody.GetBuffCount(buffType);
                     }

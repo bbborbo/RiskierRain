@@ -55,6 +55,24 @@ namespace SwanSongExtended.Changes
         {
             //IL.RoR2.HealthComponent.TakeDamageProcess += BonusDamageAgainstGilded;
             On.RoR2.HealthComponent.TakeDamageProcess += GildedDamageBonus;
+            IL.RoR2.GlobalEventManager.OnCharacterDeath += RemoveGhor;
+        }
+
+        public static void RemoveGhor(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", nameof(RoR2Content.Items.BonusGoldPackOnKill)),
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
+                );
+            if (!b)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveGhor));
+                return;
+            }
+            c.Emit(OpCodes.Pop);
+            c.Emit(OpCodes.Ldc_I4_0);
         }
 
         private void BonusDamageAgainstGilded(ILContext il)

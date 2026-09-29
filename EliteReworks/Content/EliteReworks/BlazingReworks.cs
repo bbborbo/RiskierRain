@@ -83,12 +83,16 @@ namespace FruityElites.EliteReworks
         [AutoConfig("Passive : Flame Aura Warning Stack Threshold", "If the victim of the blazing elite has this many stacks of burn or fewer, the applied stacks of burn will deal reduced damage. Vanilla is N/A", 2)]
         public static int flameAuraWarningThreshold = 2;
 
-        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 5f)]
-        public static float flameAuraIgniteTotalDamageBase = 5f;
+        [AutoConfig("Passive : Flame Aura Ignite Damage Base", "Total starting damage of ignite stacks added by flame aura. Vanilla is N/A", 7.5f)]
+        public static float flameAuraIgniteTotalDamageBase = 7.5f;
         [AutoConfig("Passive : Flame Aura Ignite Damage Level", 
             "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.4f)]
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;
 
+        [AutoConfig("Passive : Knockback Resistance Multiplier (External Sources)", "Multiplier applied to knockback received from external sources (damage from players). Vanilla is 1", 0.2f)]
+        public static float knockbackResistExternal = 0.2f;
+        [AutoConfig("Passive : Knockpack Resistance Multiplier (Self)", "Multiplier applied to self-knockback. Vanilla is 1", 0.2f)]
+        public static float knockbackResistInternal = 1.0f;
 
         public static float fireTrailDPS = 80f; //1.5f
         public static float fireTrailBaseRadius = 6f; //3f
@@ -210,6 +214,29 @@ namespace FruityElites.EliteReworks
             On.RoR2.CharacterBody.AddOrRemoveEliteItemBehavior += AddBlazingItemBehavior;
             GetStatCoefficients += AccelerantStats;
             GetMoreStatCoefficients += AccelerantMoreStats;
+            On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
+            On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
+        }
+
+        private void RemoveDamageForce(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            if (self && self.body && self.body.HasBuff(RoR2Content.Buffs.AffixRed))
+            {
+                damageInfo.force *= knockbackResistExternal;
+            }
+
+            orig(self, damageInfo);
+        }
+
+        private void ConditionalRemoveSelfForce(On.RoR2.CharacterMotor.orig_ApplyForce orig, CharacterMotor self, Vector3 force, bool alwaysApply, bool disableAirControlUntilCollision)
+        {
+            CharacterBody body = self.body;
+            if (body != null && body.HasBuff(RoR2Content.Buffs.AffixRed))
+            {
+                force *= knockbackResistInternal;
+            }
+
+            orig(self, force, alwaysApply, disableAirControlUntilCollision);
         }
 
         private void AccelerantMoreStats(CharacterBody sender, MoreStatHookEventArgs args)

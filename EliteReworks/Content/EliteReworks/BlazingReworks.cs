@@ -89,13 +89,10 @@ namespace FruityElites.EliteReworks
             "Amount to scale ignite stacks added by flame aura. Expressed as a percentage of base value (eg 0.4 is 40% per level). Vanilla is N/A", 0.4f)]
         public static float flameAuraIgniteTotalDamageLevel = 0.4f;
 
-<<<<<<< Updated upstream
-=======
         [AutoConfig("Passive : Knockback Resistance Multiplier (External Sources)", "Multiplier applied to knockback received from external sources (damage from players). Vanilla is 1", 0.2f)]
         public static float knockbackResistExternal = 0.2f;
         [AutoConfig("Passive : Knockpack Resistance Multiplier (Self)", "Multiplier applied to self-knockback. Vanilla is 1", 1.0f)]
         public static float knockbackResistInternal = 1.0f;
->>>>>>> Stashed changes
 
         public static float fireTrailDPS = 80f; //1.5f
         public static float fireTrailBaseRadius = 6f; //3f

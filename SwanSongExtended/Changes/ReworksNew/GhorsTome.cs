@@ -21,7 +21,7 @@ namespace SwanSongExtended.Changes
     public class GhorsTome : ReworkBase<GhorsTome>
     {
         ModdedProcType GildedDamageBonusMask;
-        public static float gildedDamageMultiplierBase = 1f;
+        public static float gildedDamageMultiplierBase = 0.5f;
         public static float gildedDamageMultiplierStack = 0.5f;
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset;
 
@@ -29,7 +29,7 @@ namespace SwanSongExtended.Changes
 
         public override string ItemPickupDesc => "Every elite you touch turns into gold.";
 
-        public override string ItemFullDesc => $"Deal +{} damage to Gilded elites. Contacting any Elite enemy instantly transmutates it into a Gilded elite, triggering all on-kill effects. Does not affect Boss enemies.";
+        public override string ItemFullDesc => $"Deal +{gildedDamageMultiplierBase.AsPercent()} damage to Gilded elites. Contacting any Elite enemy instantly transmutates it into a Gilded elite, triggering all on-kill effects. Does not affect Boss enemies.";
 
         public override void Init()
         {

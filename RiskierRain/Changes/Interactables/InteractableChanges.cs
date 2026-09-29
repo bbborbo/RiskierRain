@@ -18,6 +18,7 @@ using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using UnityEngine.AddressableAssets;
 using On.EntityStates.CaptainSupplyDrop;
 using RainrotSharedUtils.Shelters;
+using EntityStates.Interactables.GoldBeacon;
 
 namespace RiskierRain.Changes
 {
@@ -281,7 +282,9 @@ namespace RiskierRain.Changes
         #endregion
 
         #region halcyon beacon
-        public static float halcyonBeaconMonsterCredit = 40;
+        public static float halcyonBeaconMonsterCreditTier1 = 30;
+        public static float halcyonBeaconMonsterCreditTier2 = 50;
+        public static float halcyonBeaconMonsterCreditTier3 = 100;
         private static void ChangeHalcyonBeacon()
         {
             On.EntityStates.Interactables.GoldBeacon.Ready.OnEnter += HalcyonBeaconSummons;
@@ -290,6 +293,8 @@ namespace RiskierRain.Changes
         private static void HalcyonBeaconSummons(On.EntityStates.Interactables.GoldBeacon.Ready.orig_OnEnter orig, EntityStates.Interactables.GoldBeacon.Ready self)
         {
             orig(self);
+            //if (NotReady.count == 0)
+            //    return;
             if(self.outer.TryGetComponent(out PurchaseInteraction interaction))
             {
                 Interactor interactor = interaction.lastActivator;
@@ -299,10 +304,16 @@ namespace RiskierRain.Changes
                     , self.transform.position, Quaternion.identity);
                 NetworkServer.Spawn(squadDirectorObject);
                 CombatDirector combatDirector = squadDirectorObject.GetComponent<CombatDirector>();
+                combatDirector.goldRewardCoefficient = 0.75f;
                 if (combatDirector && Stage.instance)
                 {
-                    GameObject gameObject2 = LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/Encounters/MonstersOnShrineUseEncounter");
-                    float monsterCredit = halcyonBeaconMonsterCredit * Stage.instance.entryDifficultyCoefficient;
+                    float tier = Mathf.Ceil((float)Ready.count / 3f);
+                    float monsterCredit = halcyonBeaconMonsterCreditTier1;
+                    if (tier == 2)
+                        monsterCredit = halcyonBeaconMonsterCreditTier2;
+                    if (tier == 3)
+                        monsterCredit = halcyonBeaconMonsterCreditTier3;
+                    monsterCredit *= Stage.instance.entryDifficultyCoefficient;
                     DirectorCard directorCard = combatDirector.SelectMonsterCardForCombatShrine(monsterCredit);
                     if (directorCard != null)
                     {

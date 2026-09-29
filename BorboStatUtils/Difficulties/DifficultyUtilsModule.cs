@@ -296,6 +296,7 @@ namespace RainrotSharedUtils.Difficulties
             IL.RoR2.Run.RecalculateDifficultyCoefficentInternal += RecalculateDifficultyCoefficient_DifficultyStats;
             On.RoR2.TeleporterInteraction.BaseTeleporterState.OnEnter += TeleporterParticleScale;
             IL.RoR2.TeleporterInteraction.ChargingState.OnEnter += CompensateBossCredits;
+            On.RoR2.CombatDirector.Init += FixEliteSpawn;
 
             ILHook goldRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_goldReward", (BindingFlags)(-1)), FixGoldRewards);
             ILHook expRewardFix = new ILHook(typeof(DeathRewards).GetMethod("set_expReward", (BindingFlags)(-1)), FixExpRewards);

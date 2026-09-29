@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace BossDropRework
 {
@@ -26,9 +27,12 @@ namespace BossDropRework
         private void RemoveBossItemDropsFromTeleporter(On.RoR2.BossGroup.orig_Awake orig, BossGroup self)
         {
             orig(self);
-            if (Bindings.ForceDropsFromAurelionite.Value == false)
-                if (self.name == "TitanGoldBossEncounter")
+            if (self.gameObject.name == "TitanGoldBossEncounter" || GoldshoresMissionController.instance != null)
+            {
+                if (Bindings.ForceDropsFromAurelionite.Value == false)
                     return;
+                self.dropTable = Addressables.LoadAssetAsync<PickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.dtTier2Item_asset).WaitForCompletion();
+            }
             self.bossDropChance = 0;
         }
 

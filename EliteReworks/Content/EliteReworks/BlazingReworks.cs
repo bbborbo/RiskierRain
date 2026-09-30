@@ -219,6 +219,16 @@ namespace FruityElites.EliteReworks
             GetMoreStatCoefficients += AccelerantMoreStats;
             On.RoR2.CharacterMotor.ApplyForce += ConditionalRemoveSelfForce;
             On.RoR2.HealthComponent.TakeDamageProcess += RemoveDamageForce;
+            On.RoR2.GlobalEventManager.OnCharacterDeath += BlazingAccelerateNearbyOnDeath;
+        }
+
+        private void BlazingAccelerateNearbyOnDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            orig(self, damageReport);
+            if(damageReport.victimBody.TryGetComponent(out AffixRedBehavior red))
+            {
+                red.AccelerateNearby(damageReport.attackerTeamIndex);
+            }
         }
 
         private void RemoveDamageForce(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
@@ -282,7 +292,7 @@ namespace FruityElites.EliteReworks
             }
         }
     }
-    public class AffixRedBehavior : CharacterBody.ItemBehavior, IOnTakeDamageServerReceiver, IOnKilledServerReceiver
+    public class AffixRedBehavior : CharacterBody.ItemBehavior, IOnTakeDamageServerReceiver
     {
         private static List<AffixRedBehavior> instancesList = new List<AffixRedBehavior>();
         public static ReadOnlyCollection<AffixRedBehavior> readOnlyInstancesList = new ReadOnlyCollection<AffixRedBehavior>(AffixRedBehavior.instancesList);
@@ -431,12 +441,7 @@ namespace FruityElites.EliteReworks
                 }
             }
         }
-
-        public void OnKilledServer(DamageReport damageReport)
-        {
-            AccelerateNearby(damageReport.attackerTeamIndex);
-        }
-        void AccelerateNearby(TeamIndex targetTeam)
+        public void AccelerateNearby(TeamIndex targetTeam)
         {
             //get targets
             List<HurtBox> enemies = GetNearbyTargets(flameAuraMaxRange + 2, targetTeam, false);

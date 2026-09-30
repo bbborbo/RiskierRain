@@ -1,6 +1,8 @@
 ﻿using BepInEx.Configuration;
 using R2API;
+using RainrotSharedUtils;
 using RoR2;
+using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
@@ -23,9 +25,10 @@ namespace SwanSongExtended.Scavengers
 
     public abstract class TwistedScavengerBase : SharedBase
     {
-        public static string baseTscavTokenName = "BorboTScav";
+        public static string baseTscavTokenName = "SwansongScavenger";
         MultiCharacterSpawnCard twistedScavengerSpawnCard = LegacyResourcesAPI.Load<MultiCharacterSpawnCard>("SpawnCards/CharacterSpawnCards/cscScavLunar");
 
+        public string scavFullName => string.IsNullOrWhiteSpace(ScavFullNameOverride) ? $"{ScavName} the {ScavTitle}" : ScavFullNameOverride;
         public abstract string ScavName { get; }
         public abstract string ScavTitle { get; }
         public abstract string ScavLangTokenName { get; }
@@ -33,12 +36,28 @@ namespace SwanSongExtended.Scavengers
         public virtual List<ItemDefInfo> ItemDefInfos { get; set; } = new List<ItemDefInfo>() { };
         public virtual List<ItemInfo> ItemInfos { get; set; } = new List<ItemInfo>() { };
         public virtual string ScavFullNameOverride { get; set; } = ""; //Only use if you do not wish to use the "ScavName the ScavTitle" format
+        public abstract ExpansionDef RequiredExpansion { get; }
+        public abstract float SelectionWeight { get; }
+        public override string ConfigName => "Scavengers : " + scavFullName;
+        public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
 
         public GameObject ScavObject;
         public CharacterBody ScavBody;
 
-        public abstract void PopulateItemInfos(ConfigFile config);
-        public abstract void Init(ConfigFile config);
+        public abstract void PopulateItemInfos();
+        public override void Init()
+        {
+            PopulateItemInfos();
+            GenerateTwistedScavenger();
+        }
+        public override void Lang()
+        {
+
+        }
+        public override void Hooks()
+        {
+
+        }
 
         internal void AddItemDefInfo(ItemDef itemDef, int count)
         {
@@ -66,32 +85,16 @@ namespace SwanSongExtended.Scavengers
 
         internal void GenerateTwistedScavenger()
         {
-            string fullName = (ScavFullNameOverride == "") ? $"{ScavName} the {ScavTitle}" : ScavFullNameOverride;
-            Debug.Log("Generating Twisted Scavenger: " + fullName);
-            string nameToken = baseTscavTokenName + ScavLangTokenName;
-            LanguageAPI.Add(nameToken, fullName);
+            Log.Debug("Generating Twisted Scavenger: " + scavFullName);
+            LanguageAPI.Add(ScavLangTokenName.ToUpper() + "_NAME", scavFullName);
 
-            GameObject masterObject = LegacyResourcesAPI.Load<GameObject>("prefabs/charactermasters/ScavLunar1Master").InstantiateClone($"{nameToken}Master", true);
-            GameObject bodyObject = LegacyResourcesAPI.Load<GameObject>("prefabs/characterbodies/ScavLunar1Body").InstantiateClone($"{nameToken}Body", true);
+            CharacterMaster master = TwistedScavengerUtils.CreateNewScavengerMaster(ScavLangTokenName, out ScavBody);
+            ScavObject = master.gameObject;
 
-            CharacterMaster master = masterObject.GetComponent<CharacterMaster>();
-            master.bodyPrefab = bodyObject;
-            CharacterBody body = bodyObject.GetComponent<CharacterBody>();
-            body.baseNameToken = nameToken;
+            Content.AddMasterPrefab(ScavObject);
+            Content.AddCharacterBodyPrefab(ScavBody.gameObject);
 
-
-            int count = twistedScavengerSpawnCard.masterPrefabs.Length;
-            HG.ArrayUtils.ArrayAppend<GameObject>(ref twistedScavengerSpawnCard.masterPrefabs, ref count, in masterObject);
-            //Array.Resize<GameObject>(ref twistedScavengerSpawnCard.masterPrefabs, count + 1);
-            //twistedScavengerSpawnCard.masterPrefabs[count] = masterObject;
-
-
-            foreach (GivePickupsOnStart gpos in masterObject.GetComponents<GivePickupsOnStart>())
-            {
-                gpos.enabled = false;
-            }
-
-            GivePickupsOnStart pickupComp = masterObject.AddComponent<GivePickupsOnStart>();
+            GivePickupsOnStart pickupComp = ScavObject.AddComponent<GivePickupsOnStart>();
             pickupComp.itemDefInfos = ItemDefInfos.ToArray();
             pickupComp.itemInfos = ItemInfos.ToArray();
             if (ScavEquipName != "")
@@ -99,11 +102,7 @@ namespace SwanSongExtended.Scavengers
                 pickupComp.equipmentString = ScavEquipName;
             }
 
-            Content.AddCharacterBodyPrefab(bodyObject);
-            Content.AddMasterPrefab(masterObject);
-
-            ScavBody = body;
-            ScavObject = bodyObject;
+            CustomScavengers.AddScavengerMaster(master.gameObject, SelectionWeight, RequiredExpansion);
         }
     }
 }

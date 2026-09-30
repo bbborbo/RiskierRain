@@ -45,11 +45,9 @@
     <None Include="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
     <None Include="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
     <None Include="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <None Include="Content\TwistedScavengers\BoboScav.cs" />
     <None Include="Content\TwistedScavengers\CunningScav.cs" />
     <None Include="Content\TwistedScavengers\GreedyScav.cs" />
     <None Include="Content\TwistedScavengers\SadistScav.cs" />
-    <None Include="Content\TwistedScavengers\SpeedScav.cs" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -123,11 +121,9 @@
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <Compile Remove="Content\TwistedScavengers\BoboScav.cs" />
     <Compile Remove="Content\TwistedScavengers\CunningScav.cs" />
     <Compile Remove="Content\TwistedScavengers\GreedyScav.cs" />
     <Compile Remove="Content\TwistedScavengers\SadistScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\SpeedScav.cs" />
   </ItemGroup>
 
   <ItemGroup>

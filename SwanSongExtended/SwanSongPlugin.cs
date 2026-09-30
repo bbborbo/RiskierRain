@@ -20,7 +20,6 @@ using MissileRework;
 using SwanSongExtended.Interactables;
 using SwanSongExtended.Elites;
 using SwanSongExtended.Artifacts;
-using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -125,6 +124,7 @@ namespace SwanSongExtended
             Modules.EliteModule.Init();
             Modules.Spawnlists.Init();
             Storms.StormsCore.Init();
+            Scavengers.TwistedScavengersCore.Init();
 
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
 
@@ -197,7 +197,7 @@ namespace SwanSongExtended
 
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
-            BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
+            BeginInitializing<Scavengers.TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
         }
         private void InitializeChanges()
         {

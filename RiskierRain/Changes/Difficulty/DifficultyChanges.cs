@@ -39,12 +39,6 @@ namespace RiskierRain.Changes
             //VoidFieldsTimeCost();
             ChangeEnemyRewards();
 
-            //difficulty modes
-            DifficultyUtilsModule.EnableAll();
-            RoR2Application.onLoad += AddDifficultyStats;
-            AddMonsoonScalingStats();
-            ChangeEclipse();
-
             #region difficulty descriptions
             drizzleDesc +=
                 $"\n>Starting Difficulty: <style=cIsHealing>Easy</style>" +
@@ -62,6 +56,12 @@ namespace RiskierRain.Changes
                 $"\n>{Tier2EliteName} Elites: <style=cIsHealth>Stage {Tier2EliteMinimumStageMonsoon}</style>" +
                 $"\n>Teleporter Visuals: <style=cIsHealth>{Tools.ConvertDecimal(1 - hardTeleParticleRadius / normalTeleParticleRadius)}</style> ";
             #endregion
+
+            //difficulty modes
+            DifficultyUtilsModule.EnableAll();
+            RoR2Application.onLoad += AddDifficultyStats;
+            AddMonsoonScalingStats();
+            ChangeEclipse();
 
             //directors
             ChangeDirectorStats();

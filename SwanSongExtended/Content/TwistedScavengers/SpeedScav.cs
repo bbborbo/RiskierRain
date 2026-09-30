@@ -1,32 +1,38 @@
 ﻿using BepInEx.Configuration;
-using RiskierRainContent.Items;
+using SwanSongExtended.Items;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using RoR2.ExpansionManagement;
+using UnityEngine;
 
-namespace RiskierRainContent.Scavengers
+namespace SwanSongExtended.Scavengers
 {
-    class SpeedScav : TwistedScavengerBase<SpeedScav>
+    public class SpeedScav : TwistedScavengerBase<SpeedScav>
     {
         public override string ScavName => "Baba";
 
         public override string ScavTitle => "Enlightened";
 
-        public override string ScavLangTokenName => "Speed";
+        public override string ScavLangTokenName => "ScavEnlightened";
 
         //NinjaGear.instance.EquipDef.name
         //RoR2Content.Equipment.FireBallDash.name
         //RoR2Content.Equipment.Jetpack.name
         public override string ScavEquipName => nameof(RoR2Content.Equipment.Jetpack);
 
-        public override void PopulateItemInfos(ConfigFile config)
+        public override ExpansionDef RequiredExpansion => null;
+
+        public override float SelectionWeight => 3;
+
+        public override void PopulateItemInfos()
         {
             //white
             AddItemInfo(nameof(RoR2Content.Items.Hoof), 10); // 30
-            AddItemInfo(nameof(RoR2Content.Items.SprintBonus), 5);
+            AddItemInfo(nameof(RoR2Content.Items.SprintBonus), 0);
             AddItemInfo(nameof(RoR2Content.Items.BoostAttackSpeed), 7); //3
-            AddItemDefInfo(Mocha2.instance.ItemsDef, 2); //1
+            AddItemInfo(nameof(DLC1Content.Items.AttackSpeedAndMoveSpeed), 0); //2
 
             //green
             AddItemInfo(nameof(RoR2Content.Items.Feather), 2);
@@ -44,9 +50,9 @@ namespace RiskierRainContent.Scavengers
             AddItemInfo(nameof(RoR2Content.Items.AutoCastEquipment), 0);
         }
 
-        public override void Init(ConfigFile config)
+        public override void Init()
         {
-            GenerateTwistedScavenger();
+            base.Init();
             ScavBody.baseDamage *= 0.3f;
             ScavBody.levelDamage = ScavBody.baseDamage * 0.2f;
             ScavBody.baseMaxHealth *= 0.2f;

@@ -274,10 +274,7 @@ namespace RainrotSharedUtils.Difficulties
         internal static bool _useDifficultyStats;
         public static bool UseDifficultyStats
         {
-            get
-            {
-                return _useDifficultyStats;
-            }
+            get => _useDifficultyStats;
             set
             {
                 if (value == true)

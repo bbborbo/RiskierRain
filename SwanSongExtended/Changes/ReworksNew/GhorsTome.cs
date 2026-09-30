@@ -21,13 +21,13 @@ namespace SwanSongExtended.Changes
     public class GhorsTome : ReworkBase<GhorsTome>
     {
         ModdedProcType GildedDamageBonusMask;
-        public static float gildedDamageMultiplierBase = 0.5f;
+        public static float gildedDamageMultiplierBase = 1.0f;
         public static float gildedDamageMultiplierStack = 0.5f;
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset;
 
         public override string ItemName => "Ghors Tome";
 
-        public override string ItemPickupDesc => "Every elite you touch turns into gold.";
+        public override string ItemPickupDesc => "Transmutate elites into gold on contact.";
 
         public override string ItemFullDesc => $"Deal +{gildedDamageMultiplierBase.AsPercent()} damage to Gilded elites. Contacting any Elite enemy instantly transmutates it into a Gilded elite, triggering all on-kill effects. Does not affect Boss enemies.";
 
@@ -94,7 +94,7 @@ namespace SwanSongExtended.Changes
                     int count = GetCount(attackerBody);
                     if (count > 0)
                     {
-                        damageInfo.damage *= gildedDamageMultiplierBase + gildedDamageMultiplierStack * (count - 1);
+                        damageInfo.damage *= 1 + gildedDamageMultiplierBase + gildedDamageMultiplierStack * (count - 1);
                         damageInfo.procChainMask.AddModdedProc(GildedDamageBonusMask);
                     }
                 }
@@ -110,12 +110,12 @@ namespace SwanSongExtended.Changes
         public SphereSearch sphereSearch = new SphereSearch();
 
         public float age = 0;
-        protected float timer = 1 / 8;
+        protected float timer = 0.1f;
 
         //[Min(1E-45f)]
         public float tickRate = 1f;
 
-        public float sizeCorrectionMultiplier = 4f;
+        public float sizeCorrectionMultiplier = 3f;
 
         readonly float maxTickDuration = 0.1f;
         readonly float minTickDuration = 0.1f;
@@ -126,14 +126,11 @@ namespace SwanSongExtended.Changes
             sphereSearch.mask = LayerIndex.entityPrecise.mask;
             sphereSearch.radius = body.radius * sizeCorrectionMultiplier;
             sphereSearch.queryTriggerInteraction = QueryTriggerInteraction.UseGlobal;
-
-            lerp_denominator = body.baseMoveSpeed * body.sprintingSpeedMultiplier * 2f + body.baseMoveSpeed;
         }
 
         public void FixedUpdate()
         {
-            sphereSearch.radius = Mathf.Max(6f, body.radius * sizeCorrectionMultiplier);
-            AdjustFrequencyBasedOnSpeed();
+            sphereSearch.radius = Mathf.Max(4.5f, body.radius * sizeCorrectionMultiplier);
 
             age -= Time.fixedDeltaTime;
             if (age <= 0f)

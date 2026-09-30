@@ -125,7 +125,7 @@ namespace SwanSongExtended.Items
 	public class NearbyDefenseBehavior : BaseItemBodyBehavior
 	{
 		[ItemDefAssociation(useOnServer = true, useOnClient = false)]
-		private static ItemDef GetItemDef() => CobaltShield.instance.ItemsDef;
+		private static ItemDef GetItemDef() => NearbyDefense.instance.ItemsDef;
 
 		private GameObject nearbyDamageBonusIndicator;
 

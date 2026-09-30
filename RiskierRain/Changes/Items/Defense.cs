@@ -707,7 +707,7 @@ namespace RiskierRain.Changes
         #endregion
 
         #region faraday spurs
-        public static float faradayMaxMoveSpeed = 1.2f; //1.6f
+        public static float faradayMaxMoveSpeed = 1.6f; //1.6f
         public static float faradayMaxJumpStrength = 2.0f; //2.0f
         public static float faradayChargeIncreaseBase = 1.5f; //1.0f
         public static float faradayChargeIncreaseStack = 0.5f; //0.0f

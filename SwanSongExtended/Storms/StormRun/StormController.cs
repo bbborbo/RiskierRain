@@ -223,7 +223,7 @@ namespace SwanSongExtended.Storms
                 if (this.stormController.combatDirector == null)
                     return;
                 float tpModifier = 1f;
-                if(TeleporterInteraction.instance.isCharging)
+                if(TeleporterInteraction.instance && TeleporterInteraction.instance.isCharging)
                     tpModifier = 0.5f;
                 this.stormController.combatDirector.creditMultiplier = StormsCore.stormDirectorCreditGainMultiplier * strength * tpModifier;
             }

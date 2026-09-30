@@ -92,8 +92,8 @@ namespace SwanSongExtended.Interactables
 
         public override void Init()
         {
-            LanguageAPI.Add(baseUseMessage, "<style=cShrine>You have invoked <style=cIsLunar>{1}</style> in battle.</color>");
-            LanguageAPI.Add(baseUseMessage + "_2P", "<style=cShrine>{0} has invoked <style=cIsLunar>{1}</style> in battle.</color>");
+            LanguageAPI.Add(baseUseMessage + "_2P", "<style=cShrine>You have invoked <style=cIsLunar>{1}</style> in battle.</color>");
+            LanguageAPI.Add(baseUseMessage, "<style=cShrine>{0} has invoked <style=cIsLunar>{1}</style> in battle.</color>");
             base.Init();
 
             SwanSongPlugin.BlacklistSingleItem(nameof(RoR2Content.Items.GoldOnHit));

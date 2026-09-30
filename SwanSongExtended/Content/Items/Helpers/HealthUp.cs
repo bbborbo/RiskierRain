@@ -11,6 +11,7 @@ namespace SwanSongExtended.Items
     class HealthUp : ItemBase<HealthUp>
     {
         public override bool forcePrerequisites => true;
+        public override bool IsHidden => true;
         public override string ConfigName => "";
         public override string ItemName => "HealthUp";
 

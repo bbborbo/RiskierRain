@@ -117,6 +117,7 @@ namespace SwanSongExtended
 
             CreateExpansionDef();
             CreateDifficultyDef();
+            EmergencyDirectorHooks();
             AddDeathMessages();
             RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Hooks.Init();

@@ -56,8 +56,8 @@ namespace SwanSongExtended.Elites
         /// <summary>
         /// expressed in seconds?
         /// </summary>
-        public static float squallAimDamping = 0.6f;
-        public static float squallPreFireTime = 2.0f;
+        public static float squallAimDamping = 0.45f;
+        public static float squallPreFireTime = 1.5f;
         public static float squallAimMaxSpeed = 40f;
         public static float squallBeamRadius = 1.75f;
         public static float squallPreBeamRadius = 0.75f;

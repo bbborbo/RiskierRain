@@ -37,6 +37,7 @@ namespace SwanSongExtended.Scavengers
             AddItemInfo(nameof(RoR2Content.Items.Clover), 1);
             //AddItemInfo(nameof(RoR2Content.Items.NovaOnHeal), 1);
             AddItemInfo(nameof(DLC1Content.Items.ElementalRingVoid), 1);
+            AddItemInfo(nameof(DLC1Content.Items.RandomlyLunar), 1);
         }
     }
 }

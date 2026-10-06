@@ -30,15 +30,14 @@ namespace SwanSongExtended.Scavengers
                     pickups.equipmentString = "EliteBeadEquipment";
                     pickups.ReplacePickupsOnStart((info) =>
                     {
-                        if (info.itemString == "RepeatHeal")
+                        if (info.itemString == nameof(RoR2Content.Items.RepeatHeal))
                         {
-                            info.itemString = "RandomDamageZone";
-                            return;
+                            info.itemString = nameof(RoR2Content.Items.RandomDamageZone);
                         }
-                        if (info.itemString == "Infusion")
-                        {
-                            info.itemString = "TeleportOnLowHealth";
-                        }
+                        //if (info.itemString == nameof(RoR2Content.Items.Infusion))
+                        //{
+                        //    info.itemString = nameof(DLC2Content.Items.TeleportOnLowHealth);
+                        //}
                     });
                     pickups.itemInfos.Append(new GivePickupsOnStart.ItemInfo() { itemString = nameof(DLC2Content.Items.AttackSpeedPerNearbyAllyOrEnemy), count = 3});
                 });

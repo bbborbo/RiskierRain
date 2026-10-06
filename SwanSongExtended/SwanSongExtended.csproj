@@ -18,6 +18,7 @@
     <None Include="Changes\Reworks\RegenScrapRework.cs" />
     <None Include="Changes\Reworks\ResDiscDework.cs" />
     <None Include="Changes\Reworks\SquidPolypRework.cs" />
+    <None Include="Content\Elites\StormElites\DeuteriumAspect.cs" />
     <None Include="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <None Include="Content\Interactables\Interactables\CurseStatue.cs" />
     <None Include="Content\Interactables\Interactables\FakeShrine.cs" />
@@ -94,6 +95,7 @@
     <Compile Remove="Changes\Reworks\RegenScrapRework.cs" />
     <Compile Remove="Changes\Reworks\ResDiscDework.cs" />
     <Compile Remove="Changes\Reworks\SquidPolypRework.cs" />
+    <Compile Remove="Content\Elites\StormElites\DeuteriumAspect.cs" />
     <Compile Remove="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <Compile Remove="Content\Interactables\Interactables\CurseStatue.cs" />
     <Compile Remove="Content\Interactables\Interactables\FakeShrine.cs" />

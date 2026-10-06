@@ -97,7 +97,7 @@ namespace SwanSongExtended.Scavengers
             GivePickupsOnStart pickupComp = ScavObject.AddComponent<GivePickupsOnStart>();
             pickupComp.itemDefInfos = ItemDefInfos.ToArray();
             pickupComp.itemInfos = ItemInfos.ToArray();
-            if (ScavEquipName != "")
+            if (string.IsNullOrWhiteSpace(ScavEquipName) == false)
             {
                 pickupComp.equipmentString = ScavEquipName;
             }

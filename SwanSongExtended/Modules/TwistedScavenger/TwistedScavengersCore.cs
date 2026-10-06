@@ -1,4 +1,5 @@
-﻿using R2API;
+﻿using BepInEx.Configuration;
+using R2API;
 using RainrotSharedUtils;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -15,9 +16,13 @@ namespace SwanSongExtended.Scavengers
 {
     public static class TwistedScavengersCore
     {
+        public static ConfigEntry<bool> enableScavs { get; private set; }
         public static bool ChangeVanillaScavs = true;
         public static void Init()
         {
+            enableScavs = Modules.Config.SectionEnableConfig("Twisted Scavengers");
+            if (enableScavs.Value == false)
+                return;
             CustomScavengers.UseCustomScavengers = true;
             if (ChangeVanillaScavs == true)
             {

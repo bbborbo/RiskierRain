@@ -25,6 +25,7 @@ using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using SwanSongExtended.Changes;
 using RainrotSharedUtils.Difficulties;
+using SwanSongExtended.Scavengers;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -132,6 +133,8 @@ namespace SwanSongExtended
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
 
             InitializeContent();
+            if (Modules.Config.SectionEnableConfig("Interactable Secrets").Value)
+                Secrets.AddSecrets();
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
 
@@ -184,21 +187,27 @@ namespace SwanSongExtended
             ///elites
             ///artifacts
             ///scavengers
-            BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
+            if(Modules.Config.SectionEnableConfig("Items (Reworks)").Value)
+                BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
 
-            BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
+            //if (Modules.Config.SectionEnableConfig("Items").Value)
+                BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
 
-            BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
+            //if (Modules.Config.SectionEnableConfig("Equipment").Value)
+                BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
 
             BeginInitializing<EliteEquipmentBase>(allTypes, "SwanSongElites.txt");
 
-            BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
+            //if (Modules.Config.SectionEnableConfig("Interactables").Value)
+                BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
 
-            BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
+            //if (Modules.Config.SectionEnableConfig("Artifacts").Value)
+                BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
 
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
-            BeginInitializing<Scavengers.TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
+            if (TwistedScavengersCore.enableScavs.Value == true)
+                BeginInitializing<Scavengers.TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
         }
         private void InitializeChanges()
         {
@@ -266,7 +275,6 @@ namespace SwanSongExtended
             //List<DirectorCard> directorCards = new List<DirectorCard>();
             //directorCards.Add(doubleChestDirectorCard);
             //Secrets.AddSecrets(directorCards);
-            Secrets.AddSecrets();
         }
 
         #region content initialization

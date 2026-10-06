@@ -19,7 +19,6 @@ namespace SwanSongExtended.Equipment
         static GameObject novaEffectPrefab = LegacyResourcesAPI.Load<GameObject>("prefabs/effects/JellyfishNova");
 
         #region config
-        public override string ConfigName => "Equipment : Master Ninja Gear";
 
         static bool createSmokeBomb = true;
         [AutoConfig("Smoke Bomb Radius", 13f)]

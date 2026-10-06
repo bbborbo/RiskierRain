@@ -20,7 +20,7 @@ namespace SwanSongExtended.Changes
     {
         public static bool GetOverhealReworkConfig()
         {
-            return SwanSongPlugin.GetConfigBool(true, "Reworks : Overheal Suite", "Reworks Aegis, Rejuvenation Rack, and Corpsebloom");
+            return SwanSongPlugin.GetConfigBool(true, "Suites : Overheal Reworks", "Reworks Aegis, Rejuvenation Rack, and Corpsebloom");
         }
         public override bool forcePrerequisites => true;
         public override bool GetPrerequisites()

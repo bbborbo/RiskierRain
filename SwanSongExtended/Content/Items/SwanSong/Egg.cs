@@ -19,7 +19,7 @@ namespace SwanSongExtended.Items
     {
         public static bool GetEggConfig()
         {
-            return SwanSongPlugin.GetConfigBool(true, "Egg Suite", "Enables Egg");
+            return SwanSongPlugin.GetConfigBool(true, "Suites : Egg", "Enables Egg");
         }
 
         public override bool forcePrerequisites => true;

@@ -14,6 +14,7 @@ using static SwanSongExtended.Storms.StormsCore;
 using static R2API.DamageAPI;
 using RainrotSharedUtils.Difficulties;
 using RainrotSharedUtils;
+using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Storms
 {
@@ -220,6 +221,8 @@ namespace SwanSongExtended.Storms
 
             public void SetStormDirectorIncome(float strength)
             {
+                if (EliteModule.enableStormElites.Value == false)
+                    return;
                 if (this.stormController.combatDirector == null)
                     return;
                 float tpModifier = 1f;
@@ -229,6 +232,8 @@ namespace SwanSongExtended.Storms
             }
             public void StormDirectorStimulus(float strength)
             {
+                if (EliteModule.enableStormElites.Value == false)
+                    return;
                 if (this.stormController.combatDirector == null)
                     return;
                 this.stormController.combatDirector.monsterCredit += strength;
@@ -285,6 +290,8 @@ namespace SwanSongExtended.Storms
 
             public void EnableDirector()
             {
+                if (EliteModule.enableStormElites.Value == false)
+                    return;
                 if (stormController.combatDirector == null)
                 {
                     Debug.LogError("StormController: Combat Director null!");

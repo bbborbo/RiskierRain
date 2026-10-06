@@ -17,7 +17,7 @@ namespace SwanSongExtended.Interactables
     {
         public static bool GetIchorConfig()
         {
-            return SwanSongPlugin.GetConfigBool(false, "Ichor Suite", "Enables the Ichor Husk and all three Void Ichor items");
+            return SwanSongPlugin.GetConfigBool(false, "Suites : Ichor", "Enables the Ichor Husk and all three Void Ichor items");
         }
 
         public override bool forcePrerequisites => true;

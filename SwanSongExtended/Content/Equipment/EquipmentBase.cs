@@ -24,6 +24,8 @@ namespace SwanSongExtended.Equipment
     public abstract class EquipmentBase : SharedBase
     {
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
+
+        public override string ConfigName => "Equipment : " + EquipmentName;
         public abstract string EquipmentName { get; }
         public abstract string EquipmentLangTokenName { get; }
         public abstract string EquipmentPickupDesc { get; }

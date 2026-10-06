@@ -15,7 +15,7 @@ namespace SwanSongExtended.Items
     {
         public static bool GetBloomConfig()
         {
-            return SwanSongPlugin.GetConfigBool(true, "Natures Gift", "Enables Natures Gift and Blooms");
+            return SwanSongPlugin.GetConfigBool(true, "Items : Natures Gift", "Enables Natures Gift and Blooms");
         }
         public override bool forcePrerequisites => true;
         public override bool GetPrerequisites()

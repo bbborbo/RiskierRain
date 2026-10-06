@@ -100,6 +100,9 @@ namespace SwanSongExtended.Storms
 
         public static void Init()
         {
+            stormsEnabled = Modules.Config.SectionEnableConfig("Storms").Value;
+            if (stormsEnabled == false)
+                return;
             DifficultyUtilsModule.DisplayCurrentStageTime = true;
             ShelterUtilsModule.UseGlobalShelters = true;
             RoR2Application.onLoad += AddDifficultyStats;

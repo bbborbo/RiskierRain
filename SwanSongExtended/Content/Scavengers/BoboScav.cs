@@ -27,7 +27,7 @@ namespace SwanSongExtended.Scavengers
             base.Init();
             ScavBody.baseMaxHealth *= 0.5f;
             ScavBody.levelMaxHealth = ScavBody.baseMaxHealth * 0.3f;
-            ScavBody.baseDamage *= 0.5f;
+            ScavBody.baseDamage *= 0.25f;
             ScavBody.levelDamage = ScavBody.baseDamage * 0.2f;
             ScavBody.baseAttackSpeed = 0.4f;
             ScavBody.baseMoveSpeed = 2f;
@@ -49,6 +49,7 @@ namespace SwanSongExtended.Scavengers
 
             //red
             AddItemInfo(nameof(RoR2Content.Items.BarrierOnOverHeal), 1);
+            AddItemDefInfo(NewLopper.instance.ItemsDef, 1);
 
             //yellow
             AddItemInfo(nameof(RoR2Content.Items.Pearl), 2);

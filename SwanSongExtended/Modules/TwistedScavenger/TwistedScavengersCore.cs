@@ -40,7 +40,7 @@ namespace SwanSongExtended.Scavengers
                             info.itemString = "TeleportOnLowHealth";
                         }
                     });
-                    pickups.itemInfos.Append(new GivePickupsOnStart.ItemInfo() { itemString = "DelayedDamage", count = 3});
+                    pickups.itemInfos.Append(new GivePickupsOnStart.ItemInfo() { itemString = nameof(DLC2Content.Items.AttackSpeedPerNearbyAllyOrEnemy), count = 3});
                 });
                 //wipwip the wild (explosions and glass)
                 PopulateScavenger(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ScavLunar.ScavLunar2Master_prefab, null, weight: 0.5f);
@@ -50,7 +50,7 @@ namespace SwanSongExtended.Scavengers
                 PopulateScavenger(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ScavLunar.ScavLunar4Master_prefab, null, callback: (master, body) =>
                 {
                     GivePickupsOnStart pickups = TwistedScavengerUtils.GetPickupOnStart(master);
-                    pickups.itemInfos.Append(new GivePickupsOnStart.ItemInfo() { itemString = "FireballsOnHit", count = 1 });
+                    pickups.itemInfos.Append(new GivePickupsOnStart.ItemInfo() { itemString = nameof(RoR2Content.Items.FireballsOnHit), count = 1 });
                 });
             }
         }

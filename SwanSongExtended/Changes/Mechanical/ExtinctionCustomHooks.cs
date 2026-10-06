@@ -46,6 +46,9 @@ namespace SwanSongExtended
         }
         private void CreateDifficultyDef()
         {
+            DifficultyUtilsModule.UseDifficultyStats = true;
+            DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
+            DifficultyUtilsModule.BoostTeleporterContrast = true;
             difficultyDefExtinction = new DifficultyDef(
                 scalingValue: 4,
                 nameToken: difficultyToken + "_NAME",

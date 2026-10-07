@@ -45,11 +45,11 @@ namespace SwanSongExtended.Items
 
 		static ItemDisplayRuleDict IDR = new ItemDisplayRuleDict();
 
-		public override string ItemName => "Nearby Defense";
+		public override string ItemName => "Jellyfish Necklace";
 
         public override string ItemLangTokenName => "NEARBYDEFENSE";
 
-        public override string ItemPickupDesc => "Increases armor and regen while enemies are nearby.";
+        public override string ItemPickupDesc => "Increases armor and regeneration while enemies are nearby.";
 
         public override string ItemFullDescription => $"Increases base health regeneration by " +
 			$"{HealingColor($"+{opalRegenBase} hp/s")} {StackText($"+{opalRegenBase} hp/s")} " +
@@ -65,9 +65,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+		public override GameObject ItemModel => LoadDropPrefab("mdlShieldAmp");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+		public override Sprite ItemIcon => LoadItemIcon("texIconShieldAmp");
 		public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
 		public override ItemDisplayRuleDict CreateItemDisplayRules()

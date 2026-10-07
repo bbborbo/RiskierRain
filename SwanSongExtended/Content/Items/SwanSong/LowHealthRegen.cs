@@ -23,11 +23,11 @@ namespace SwanSongExtended.Items
         public static float regenBonusBase = 2f;
         public static float regenBonusStack = 2f;
 
-        public override string ItemName => "Low Health Regen";
+        public override string ItemName => "Charming Chanterelle";
 
         public override string ItemLangTokenName => "LOWHEALTHREGEN";
 
-        public override string ItemPickupDesc => $"Increase health regen while below {threshold.AsPercent()} health.";
+        public override string ItemPickupDesc => $"Increase regeneration, but it only sprouts while below {threshold.AsPercent()} health!";
 
         public override string ItemFullDescription => $"While below {HealthColor(threshold.AsPercent() + " maximum health")}, " +
             $"increase {HealthColor("base health regeneration")} " +
@@ -39,9 +39,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.LowHealth };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlLowHealthRegen");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconLowHealthRegen");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

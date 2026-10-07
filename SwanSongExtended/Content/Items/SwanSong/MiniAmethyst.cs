@@ -34,9 +34,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.EquipmentRelated, ItemTag.AIBlacklist };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlMiniAmethyst");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconMiniAmethyst");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

@@ -1,6 +1,7 @@
 ﻿using R2API;
 using RoR2;
 using RoR2.Projectile;
+using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,13 @@ namespace SwanSongExtended.Items
 {
     public class Kaleidoskull : ItemBase<Kaleidoskull>
     {
+        private static BuffDef KaleidoskullCooldownBuff;
         public override bool isEnabled => base.isEnabled;
         public static Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>> buffsToProcs;
         public static int critChance = 5;
         public static int debuffCountBase = 1;
         public static int debuffCountStack = 1;
-        public override string ItemName => "Kaliedoskull";
+        public override string ItemName => "Kaleidoskull";
 
         public override string ItemLangTokenName => "KALEIDOSKULL";
 
@@ -33,9 +35,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Damage, ItemTag.Utility };
 
-        public override GameObject ItemModel => LoadDropPrefab();
+        public override GameObject ItemModel => LoadDropPrefab("mdlKaleidoskull");
 
-        public override Sprite ItemIcon => LoadItemIcon();
+        public override Sprite ItemIcon => LoadItemIcon("texIconKaleidoskull");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
@@ -44,6 +46,7 @@ namespace SwanSongExtended.Items
 
         public override void Init()
         {
+            KaleidoskullCooldownBuff = Content.CreateAndAddBuff("bdKaleidoskullHiddenCooldown", null, Color.black, false, false, isHidden: true);
             base.Init();
             buffsToProcs = new Dictionary<BuffDef, Action<DamageInfo, CharacterBody, CharacterBody>>();
         }
@@ -147,12 +150,31 @@ namespace SwanSongExtended.Items
             if (damageInfo.procCoefficient <= 0 || damageInfo.crit == false)
                 return;
 
-            if(damageInfo.attacker && damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody) && victim.TryGetComponent(out CharacterBody victimBody))
+            CharacterBody victimBody = victim.GetComponent<CharacterBody>();
+            if (victimBody == null || victimBody.HasBuff(KaleidoskullCooldownBuff))
+                return;
+
+            if(damageInfo.attacker && damageInfo.attacker.TryGetComponent(out CharacterBody attackerBody))
             {
                 int stack = GetCount(attackerBody);
                 if (stack <= 0)
                     return;
                 int triggerCt = debuffCountBase + debuffCountStack * (stack - 1);
+                if(damageInfo.procCoefficient < 1)
+                {
+                    float pcoInverted = 1f - damageInfo.procCoefficient;
+                    for (int i = triggerCt; i > 0; i--)
+                    {
+                        if (Util.CheckRoll0To1(pcoInverted))
+                        {
+                            triggerCt--;
+                        }
+                        if (triggerCt <= 0)
+                            triggerCt = 1;
+                    }
+                }
+
+                victimBody.AddTimedBuff(KaleidoskullCooldownBuff, 0.05f);
                 List<BuffDef> available = new List<BuffDef>();
                 bool isFrosted = false;
                 bool isBurned = false;

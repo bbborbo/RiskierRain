@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
         public static float refundChargeChanceBase = 10;
         public static float refundChargeChanceStack = 10;
         public static float refundChanceCourtesy = 5;
-        public static float endChanceMultiplier = 0.5f;
+        public static float endChanceMultiplier = 1f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Magic Quiver";
@@ -60,7 +60,7 @@ namespace SwanSongExtended.Items
                     float totalRefundChance = refundChargeChanceBase + (refundChargeChanceStack * (quiverCount - 1)) + refundChanceCourtesy;
                     float endRefundChance = Util.ConvertAmplificationPercentageIntoReductionPercentage(totalRefundChance / endChanceMultiplier) * endChanceMultiplier;
 
-                    if (Util.CheckRoll(endRefundChance, 0))
+                    if (Util.CheckRoll(endRefundChance, self.master))
                     {
                         skill.AddOneStock();
                     }

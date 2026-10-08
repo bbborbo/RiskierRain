@@ -22,7 +22,7 @@ namespace SwanSongExtended.Changes
         public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
         public const string originalItemName = "Brittle Crown";
         public static BuffDef brittleCrownCursePurchase;
-        public static int brittleCrownStealCountBase = 2;
+        public static int brittleCrownStealCountBase = 1;
         public static int brittleCrownStealCountStack = 1;
         public static float crownCommonStealSoulCost = 0.25f;
         public static float crownUncommonStealSoulCost = 0.5f;
@@ -115,10 +115,6 @@ namespace SwanSongExtended.Changes
 
         private bool PurchaseInteraction_CanBeAffordedByInteractor(On.RoR2.PurchaseInteraction.orig_CanBeAffordedByInteractor orig, RoR2.PurchaseInteraction self, RoR2.Interactor activator)
         {
-            bool canPurchase = orig.Invoke(self, activator);
-            if (canPurchase)
-                return canPurchase;
-
             CharacterBody activatorBody = null;
 
             if (self.costType == CostTypeIndex.Money && self.saleStarCompatible)
@@ -143,12 +139,11 @@ namespace SwanSongExtended.Changes
                             CounterfeitCalculations(activatorBody, crownRareStealSoulCost);
                         }
                         //self.cost = 0;
-                        canPurchase = true;
+                        return true;
                     }
                 }
             }
-
-            return canPurchase;
+            return orig.Invoke(self, activator);
         }
         public void CounterfeitCalculations(CharacterBody activator, float soulCost)
         {

@@ -184,7 +184,7 @@ namespace SwanSongExtended.Items
     public class MolotovItemBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Molotov.instance?.ItemsDef ?? null
+        private static ItemDef GetItemDef() => Molotov.instance?.ItemsDef ?? null;
 
         public void OnDamageDealtServer(DamageReport damageReport)
         {

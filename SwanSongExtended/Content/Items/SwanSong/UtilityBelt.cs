@@ -80,7 +80,7 @@ namespace SwanSongExtended.Items
     public class UtilityKnifeBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => UtilityBelt.instance?.ItemsDef ?? null
+        private static ItemDef GetItemDef() => UtilityBelt.instance?.ItemsDef ?? null;
 
         void Start()
         {

@@ -147,7 +147,7 @@ FUN-GUYS Inc. is not liable for any illness, injury, death, extended or permanen
     public class SlungusItemBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Slungus.instance?.ItemsDef ?? null
+        private static ItemDef GetItemDef() => Slungus.instance?.ItemsDef ?? null;
 
         public static float slungusBuffReapplicationTime = 1;
         float buffTimer = 0;

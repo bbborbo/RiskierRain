@@ -73,7 +73,7 @@ namespace SwanSongExtended
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SwanSongExtended";
-        public const string version = "1.1.0";
+        public const string version = "1.0.2";
         public const string expansionName = "Swan Song";
         public const string expansionName2 = "Secrets of the Scug";
         public const string expansionToken = "EXPANSION2R4R";
@@ -83,7 +83,7 @@ namespace SwanSongExtended
 
         public static SwanSongPlugin instance;
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
-        public static AssetBundle retierAssetBundle => CommonAssets.retierAssetBundle;
+        public static AssetBundle retierAssetBundle => mainAssetBundle;
 
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;

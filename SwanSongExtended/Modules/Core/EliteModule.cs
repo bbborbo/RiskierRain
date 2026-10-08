@@ -61,9 +61,13 @@ namespace SwanSongExtended.Modules
                         break;
 
                     case EliteTiers.Storm:
+                        if (StormsCore.stormsEnabled == false)
+                            break;
                         HG.ArrayUtils.ArrayAppend(ref StormsCore.StormEliteT1.eliteTypes, eliteDef.eliteDef);
                         break;
                     case EliteTiers.StormBoss:
+                        if (StormsCore.stormsEnabled == false)
+                            break;
                         HG.ArrayUtils.ArrayAppend(ref StormsCore.StormEliteT2.eliteTypes, eliteDef.eliteDef);
                         break;
                 }

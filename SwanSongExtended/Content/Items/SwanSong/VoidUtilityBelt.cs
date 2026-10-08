@@ -20,7 +20,7 @@ namespace SwanSongExtended.Items
 {
     class VoidUtilityBelt : ItemBase<VoidUtilityBelt>
     {
-        public override bool isEnabled => false;
+        public override bool isEnabled => true;
         public static BuffDef boostBuff;
         public static float boostDuration = 2.5f;
         public static float boostPerSecond = 0.04f;

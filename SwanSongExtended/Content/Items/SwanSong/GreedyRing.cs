@@ -11,31 +11,32 @@ using RoR2.Orbs;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using static SwanSongExtended.Modules.Language.Styling;
+using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended.Items
 {
     class GreedyRing : ItemBase<GreedyRing>
     {
-        public override bool isEnabled => false;
+        public override bool isEnabled => true;
         public static BuffDef greedyRingBuff;
-        public static int bonusMoney = 10;
-        public static int discountedChests = 3;
-        int discountAmountBase = 8;
-        int discountAmountStack = 2;
+        public static float greedyDurationBase = 20;
+        public static float greedyDurationStack = 0;
+        public static float greedyMoneyBase = 0.15f;
+        public static float greedyMoneyStack = 0.075f;
+        public static float greedyRegenBase = 3f;
+        public static float greedyRegenStack = 3f;
 
         public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Greedy Ring";
 
         public override string ItemLangTokenName => "BORBODISCOUNT";
 
-        public override string ItemPickupDesc => $"Get a flat discount on the first {discountedChests} chests in every stage.";
+        public override string ItemPickupDesc => $"Gain extra money and regeneration after opening chests.";
 
-        public override string ItemFullDescription => $"At the beginning of each stage, " +
-            $"receive {bonusMoney} gold " +
-            $"and a <style=cIsUtility>coupon code</style> that <style=cIsUtility>reduces the cost</style> of " +
-            $"up to <style=cIsUtility>{discountedChests}</style> chests " +
-            $"by  <style=cIsUtility>${discountAmountBase}</style> <style=cStack>(+{discountAmountStack} per stack)</style>. " +
-            $"Scales over time.";
+        public override string ItemFullDescription => $"After spending {DamageColor("money")}, gain a Rebate for {greedyDurationBase} seconds. " +
+            $"While your Rebate is active, increases income by {greedyMoneyBase.AsPercent()} {StackText(greedyMoneyStack.AsPercent())} " +
+            $"and base health regeneration by {HealingColor(greedyRegenBase + "hp/s")} {StackText(greedyRegenStack + "hp/s")}.";
 
         public override string ItemLore => @"Order: Mapel Coupon Getter (Lite)
 Tracking Number: 06***********
@@ -73,82 +74,56 @@ Of course, you can always buy the premium version for unlimited discounts~
         }
         public override void Hooks()
         {
-            On.RoR2.CharacterBody.OnInventoryChanged += AddItemBehavior;
+            GetStatCoefficients += GreedyRegen;
             MultiShopCardUtils.OnMoneyPurchase += GreedyRingRefund;
+            On.RoR2.CharacterMaster.GiveMoney += GreedyRingRebate;
+        }
+
+        private void GreedyRingRebate(On.RoR2.CharacterMaster.orig_GiveMoney orig, CharacterMaster self, uint amount)
+        {
+            if (self.hasBody)
+            {
+                CharacterBody body = self.GetBody();
+                if (body.HasBuff(greedyRingBuff))
+                {
+                    float amt = (float)amount * (1 + greedyMoneyBase);
+                    amount = (uint)amt;
+                    amt = amt - (float)amount;
+                    if (Util.CheckRoll0To1(amt, self))
+                        amount++;
+                }
+            }
+            orig(self, amount);
+        }
+
+        private void GreedyRegen(CharacterBody sender, StatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(greedyRingBuff);
+            if (buffCount <= 0)
+                return;
+
+            int stack = GetCount(sender);
+            if (stack <= 0)
+                return;
+
+            float regenBase = GetStackValue(greedyRegenBase, greedyRegenStack, stack);
+            args.baseRegenAdd += regenBase;
+            args.levelRegenAdd += regenBase * 0.2f;
         }
 
         private void GreedyRingRefund(MultiShopCardUtils.orig_OnMoneyPurchase orig, CostTypeDef.PayCostContext context)
         {
             orig(context);
             CharacterMaster activatorMaster = context.activatorMaster;
-            if (activatorMaster && activatorMaster.hasBody && context.cost != 0 && NetworkServer.active)
+            if (activatorMaster && activatorMaster.hasBody && context.cost > 0 && NetworkServer.active)
             {
                 CharacterBody body = activatorMaster.GetBody();
                 int stack = GetCount(body);
-                if (stack > 0 && body.GetBuffCount(greedyRingBuff) > 0)
+                if (stack > 0)
                 {
-                    body.RemoveBuff(greedyRingBuff);
-
-                    GoldOrb goldOrb = new GoldOrb();
-                    GameObject purchasedObject = context.purchasedObject;
-                    Vector3? vector;
-                    if (purchasedObject == null)
-                    {
-                        vector = null;
-                    }
-                    else
-                    {
-                        Transform transform = purchasedObject.transform;
-                        vector = ((transform != null) ? new Vector3?(transform.position) : null);
-                    }
-                    goldOrb.origin = (vector ?? body.corePosition);
-                    goldOrb.target = body.mainHurtBox;
-                    goldOrb.goldAmount = GetGreedyRefundAmt(stack, context.cost);
-                    OrbManager.instance.AddOrb(goldOrb);
+                    float duration = GetStackValue(greedyDurationBase, greedyDurationStack, stack);
+                    body.AddTimedBuff(greedyRingBuff, duration);
                 }
-            }
-        }
-
-        private uint GetGreedyRefundAmt(int stack, int moneyCost)
-        {
-            int greedyMaxRefund = discountAmountBase + discountAmountStack * (stack - 1);
-            int endRefund = Mathf.Min(greedyMaxRefund, moneyCost - 1);
-            return (uint)endRefund;
-        }
-
-        private void AddItemBehavior(On.RoR2.CharacterBody.orig_OnInventoryChanged orig, RoR2.CharacterBody self)
-        {
-            orig(self);
-            if (NetworkServer.active)
-            {
-                if (self.master)
-                {
-                    GreedyRingBehavior ringBehavior = self.AddItemBehavior<GreedyRingBehavior>(GetCount(self));
-                }
-            }
-        }
-    }
-
-    public class GreedyRingBehavior : CharacterBody.ItemBehavior
-    {
-        void Start()
-        {
-            body.master.GiveMoney((uint)Run.instance.GetDifficultyScaledCost(GreedyRing.bonusMoney));
-
-            if (!NetworkServer.active)
-                return;
-            for (int i = 0; i < GreedyRing.discountedChests; i++)
-            {
-                body.AddBuff(GreedyRing.greedyRingBuff);
-            }
-        }
-        void OnDestroy()
-        {
-            int buffCount = body.GetBuffCount(GreedyRing.greedyRingBuff);
-            while (buffCount > 0 && NetworkServer.active)
-            {
-                body.RemoveBuff(GreedyRing.greedyRingBuff);
-                buffCount--;
             }
         }
     }

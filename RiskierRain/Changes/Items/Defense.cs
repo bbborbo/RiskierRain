@@ -722,12 +722,9 @@ namespace RiskierRain.Changes
             RetierItemAsync(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset, ItemTier.Tier3, FixFuelCellIcon);
             void FixFuelCellIcon(ItemDef itemDef)
             {
-                if (CoreModules.Assets.retierAssetBundle.Contains("Assets/Icons/Faraday_Spur.png"))
-                {
-                    Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Faraday_Spur.png");
-                    if (sprite)
-                        itemDef.pickupIconSprite = sprite;
-                }
+                Sprite sprite = CoreModules.Assets.retierAssetBundle.LoadAsset<Sprite>("Assets/Icons/Faraday_Spur.png");
+                if (sprite)
+                    itemDef.pickupIconSprite = sprite;
             }
             LanguageAPI.Add("ITEM_JUMPDAMAGESTRIKE_PICKUP",
                 $"Moving around builds up movement speed and jump height. " +

@@ -35,26 +35,12 @@ namespace SwanSongExtended.Modules
             get
             {
                 if (_mainAssetBundle == null)
-                    _mainAssetBundle = Assets.LoadAssetBundle("itmightbebad");
+                    _mainAssetBundle = Assets.LoadAssetBundle("swansong");
                 return _mainAssetBundle;
             }
             set
             {
                 _mainAssetBundle = value;
-            }
-        }
-        private static AssetBundle _retierAssetBundle;
-        public static AssetBundle retierAssetBundle
-        {
-            get
-            {
-                if (_retierAssetBundle == null)
-                    _retierAssetBundle = Assets.LoadAssetBundle("retier");
-                return _retierAssetBundle;
-            }
-            set
-            {
-                _retierAssetBundle = value;
             }
         }
 

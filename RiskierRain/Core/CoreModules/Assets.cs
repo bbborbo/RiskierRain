@@ -30,7 +30,7 @@ namespace RiskierRain.CoreModules
             get
             {
                 if (_retierAssetBundle == null)
-                    _retierAssetBundle = AssetBundle.LoadFromFile(GetAssetBundlePath("retier2"));
+                    _retierAssetBundle = AssetBundle.LoadFromFile(GetAssetBundlePath("retierrain"));
                 return _retierAssetBundle;
             }
             set

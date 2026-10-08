@@ -80,7 +80,7 @@ namespace SwanSongExtended.Items
     public class FrozenShellBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => FrozenShell.instance.ItemsDef;
+        private static ItemDef GetItemDef() => FrozenShell.instance?.ItemsDef ?? null;
         HealthComponent healthComponent;
         BuffIndex iceBarrierBuffIndex = FrozenShell.frozenShellArmorBuff.buffIndex;
         //bool hasBuff = false;

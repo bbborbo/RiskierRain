@@ -65,9 +65,9 @@ namespace SwanSongExtended.Items
 
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing };
 
-		public override GameObject ItemModel => LoadDropPrefab("mdlShieldAmp");
+		public override GameObject ItemModel => LoadDropPrefab("mdlNearbyDefense");
 
-		public override Sprite ItemIcon => LoadItemIcon("texIconShieldAmp");
+		public override Sprite ItemIcon => LoadItemIcon("texIconNearbyDefense");
 		public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
 
 		public override ItemDisplayRuleDict CreateItemDisplayRules()
@@ -125,7 +125,7 @@ namespace SwanSongExtended.Items
 	public class NearbyDefenseBehavior : BaseItemBodyBehavior
 	{
 		[ItemDefAssociation(useOnServer = true, useOnClient = false)]
-		private static ItemDef GetItemDef() => NearbyDefense.instance.ItemsDef;
+		private static ItemDef GetItemDef() => NearbyDefense.instance?.ItemsDef ?? null;
 
 		private GameObject nearbyDamageBonusIndicator;
 

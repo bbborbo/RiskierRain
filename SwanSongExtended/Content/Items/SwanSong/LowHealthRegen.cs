@@ -29,9 +29,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => $"Increase regeneration, but it only sprouts while below {threshold.AsPercent()} health!";
 
-        public override string ItemFullDescription => $"While below {HealthColor(threshold.AsPercent() + " maximum health")}, " +
-            $"increase {HealthColor("base health regeneration")} " +
-            $"by {HealthColor($"+{regenBonusBase} hp/s")} {StackText($"+{regenBonusStack} hp/s")}.";
+        public override string ItemFullDescription => $"While below {HealingColor(threshold.AsPercent() + " maximum health")}, " +
+            $"increase {HealingColor("base health regeneration")} " +
+            $"by {HealingColor($"+{regenBonusBase} hp/s")} {StackText($"+{regenBonusStack} hp/s")}.";
 
         public override string ItemLore => "";
 
@@ -80,7 +80,7 @@ namespace SwanSongExtended.Items
     public class LowHealthRegenBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => LowHealthRegen.instance.ItemsDef;
+        private static ItemDef GetItemDef() => LowHealthRegen.instance?.ItemsDef ?? null;
         HealthComponent healthComponent;
         BuffIndex iceBarrierBuffIndex = LowHealthRegen.regenBoostBuff.buffIndex;
         //bool hasBuff = false;

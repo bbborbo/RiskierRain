@@ -19,6 +19,8 @@ namespace SwanSongExtended.Changes
 {
     public class BrittleCrown : ReworkBase<BrittleCrown>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
+        public const string originalItemName = "Brittle Crown";
         public static BuffDef brittleCrownCursePurchase;
         public static int brittleCrownStealCountBase = 2;
         public static int brittleCrownStealCountStack = 1;

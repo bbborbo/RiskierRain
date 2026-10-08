@@ -259,7 +259,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
     public class RandomBarrierTargetBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => RandomBarrierTarget.instance.ItemsDef;
+        private static ItemDef GetItemDef() => RandomBarrierTarget.instance?.ItemsDef ?? null;
         private static BuffDef buffDef => RandomBarrierTarget.harpoonDebuff;
         public static float hauntRetryTime = 2;
         float hauntCountdown = 0;

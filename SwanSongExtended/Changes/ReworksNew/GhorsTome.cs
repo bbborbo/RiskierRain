@@ -44,12 +44,9 @@ namespace SwanSongExtended.Changes
 
             item.tier = ItemTier.Tier3;
             item.deprecatedTier = ItemTier.Tier3;
-            if (assetBundle.Contains("Assets/Icons/Ghors_Tome.png"))
-            {
-                Sprite sprite = assetBundle.LoadAsset<Sprite>("Assets/Icons/Ghors_Tome.png");
-                if (sprite)
-                    itemDef.pickupIconSprite = sprite;
-            }
+            Sprite sprite = assetBundle.LoadAsset<Sprite>("Assets/Icons/Ghors_Tome.png");
+            if (sprite)
+                itemDef.pickupIconSprite = sprite;
         }
         public override void Hooks()
         {

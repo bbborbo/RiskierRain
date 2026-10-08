@@ -20,6 +20,7 @@ namespace SwanSongExtended.Items
 {
     class VoidUtilityBelt : ItemBase<VoidUtilityBelt>
     {
+        public override bool isEnabled => false;
         public static BuffDef boostBuff;
         public static float boostDuration = 2.5f;
         public static float boostPerSecond = 0.04f;
@@ -106,7 +107,7 @@ namespace SwanSongExtended.Items
     public class VoidUtilityKnifeBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => VoidUtilityBelt.instance.ItemsDef;
+        private static ItemDef GetItemDef() => VoidUtilityBelt.instance?.ItemsDef ?? null;
 
         void Start()
         {

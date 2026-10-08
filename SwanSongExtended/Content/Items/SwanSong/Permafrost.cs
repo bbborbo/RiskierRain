@@ -56,7 +56,7 @@ namespace SwanSongExtended.Items
     public class PermafrostBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Permafrost.instance.ItemsDef;
+        private static ItemDef GetItemDef() => Permafrost.instance?.ItemsDef ?? null;
 
         public void OnDamageDealtServer(DamageReport damageReport)
         {

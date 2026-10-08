@@ -41,9 +41,14 @@ namespace SwanSongExtended.Changes.ReworksNew
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>("cap")
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FoconUpdate));
+                return;
+            }
             c.EmitDelegate<Func<int, int>>((cap) =>
             {
                 return foconMaxStack;
@@ -66,21 +71,36 @@ namespace SwanSongExtended.Changes.ReworksNew
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.Before,
+            bool b1 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>(nameof(HoldoutZoneController.FocusConvergenceController.convergenceRadiusDivisor))
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FoconApplyRadius), 1);
+                return;
+            }
             c.Emit(OpCodes.Ldc_R4, foconMinRadius);
             c.Emit(OpCodes.Sub);
 
-            c.GotoNext(MoveType.After,
+            bool b2 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>(nameof(HoldoutZoneController.FocusConvergenceController.convergenceRadiusDivisor))
                 );
+            if (b2 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FoconApplyRadius), 2);
+                return;
+            }
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, 2); //foconRadiusDivisor);
 
-            c.GotoNext(MoveType.Before,
+            bool b3 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchStindR4()
                 );
+            if (b3 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FoconApplyRadius), 3);
+                return;
+            }
             c.Emit(OpCodes.Ldc_R4, foconMinRadius);
             c.Emit(OpCodes.Add);
         }
@@ -89,9 +109,14 @@ namespace SwanSongExtended.Changes.ReworksNew
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld<HoldoutZoneController.FocusConvergenceController>("convergenceChargeRateBonus")
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FoconApplyRate));
+                return;
+            }
             c.EmitDelegate<Func<float, float>>((chargeBonus) =>
             {
                 return foconChargeBonus;

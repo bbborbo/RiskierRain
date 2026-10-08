@@ -248,10 +248,15 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "MoveSpeedOnKill"),
                 x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
+            if(b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RevokeHarpoonRights));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }

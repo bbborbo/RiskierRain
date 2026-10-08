@@ -85,10 +85,16 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = 
+            c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.DLC1Content/Items", "CritDamage"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if(b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RevokeScopeRights));
+                return;
+            }
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);
         }

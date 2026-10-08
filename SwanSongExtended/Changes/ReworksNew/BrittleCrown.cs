@@ -62,10 +62,15 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "GoldOnHit"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveCrownReward));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }
@@ -74,9 +79,14 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<HealthComponent.ItemCounts>(nameof(HealthComponent.ItemCounts.goldOnHit))
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveCrownReward));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }

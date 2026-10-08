@@ -18,6 +18,7 @@
     <None Include="Changes\Reworks\RegenScrapRework.cs" />
     <None Include="Changes\Reworks\ResDiscDework.cs" />
     <None Include="Changes\Reworks\SquidPolypRework.cs" />
+    <None Include="Content\Elites\StormElites\DeuteriumAspect.cs" />
     <None Include="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <None Include="Content\Interactables\Interactables\CurseStatue.cs" />
     <None Include="Content\Interactables\Interactables\FakeShrine.cs" />
@@ -45,11 +46,9 @@
     <None Include="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
     <None Include="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
     <None Include="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <None Include="Content\TwistedScavengers\BoboScav.cs" />
-    <None Include="Content\TwistedScavengers\CunningScav.cs" />
-    <None Include="Content\TwistedScavengers\GreedyScav.cs" />
-    <None Include="Content\TwistedScavengers\SadistScav.cs" />
-    <None Include="Content\TwistedScavengers\SpeedScav.cs" />
+    <None Include="Content\Scavengers\CunningScav.cs" />
+    <None Include="Content\Scavengers\GreedyScav.cs" />
+    <None Include="Content\Scavengers\SadistScav.cs" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -96,6 +95,7 @@
     <Compile Remove="Changes\Reworks\RegenScrapRework.cs" />
     <Compile Remove="Changes\Reworks\ResDiscDework.cs" />
     <Compile Remove="Changes\Reworks\SquidPolypRework.cs" />
+    <Compile Remove="Content\Elites\StormElites\DeuteriumAspect.cs" />
     <Compile Remove="Content\Equipment\Reworks\GuillotineEquipment.cs" />
     <Compile Remove="Content\Interactables\Interactables\CurseStatue.cs" />
     <Compile Remove="Content\Interactables\Interactables\FakeShrine.cs" />
@@ -123,11 +123,9 @@
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixir.cs" />
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidElixirConsumed.cs" />
     <Compile Remove="Content\Items\Vanilla\SOTV\VoidIgnitionTank.cs" />
-    <Compile Remove="Content\TwistedScavengers\BoboScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\CunningScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\GreedyScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\SadistScav.cs" />
-    <Compile Remove="Content\TwistedScavengers\SpeedScav.cs" />
+    <Compile Remove="Content\Scavengers\CunningScav.cs" />
+    <Compile Remove="Content\Scavengers\GreedyScav.cs" />
+    <Compile Remove="Content\Scavengers\SadistScav.cs" />
   </ItemGroup>
 
   <ItemGroup>

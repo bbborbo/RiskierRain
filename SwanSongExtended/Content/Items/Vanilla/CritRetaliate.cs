@@ -108,7 +108,7 @@ namespace SwanSongExtended.Items
     public class DestroyerEmblemBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => CritRetaliate.instance.ItemsDef;
+        private static ItemDef GetItemDef() => CritRetaliate.instance?.ItemsDef ?? null;
 
         void Start()
         {

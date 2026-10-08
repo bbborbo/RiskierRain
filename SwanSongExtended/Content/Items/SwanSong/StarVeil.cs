@@ -81,7 +81,7 @@ THE SOULS OF MY ????? WILL DRINK YOUR SCREAMS LIKE NECTAR.";
     public class StarVeilBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => StarVeil.instance.ItemsDef;
+        private static ItemDef GetItemDef() => StarVeil.instance?.ItemsDef ?? null;
 
         void Start()
         {

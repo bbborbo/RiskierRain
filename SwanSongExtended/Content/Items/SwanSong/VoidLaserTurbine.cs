@@ -97,7 +97,7 @@ namespace SwanSongExtended.Items
     public class VoidTurbineBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => VoidLaserTurbine.instance.ItemsDef;
+        private static ItemDef GetItemDef() => VoidLaserTurbine.instance?.ItemsDef ?? null;
         GenericSkill primarySkill;
         GenericSkill overriddenSkill;
         SkillDef primaryOverride => VoidLaserTurbineSkill.instance.SkillDef;

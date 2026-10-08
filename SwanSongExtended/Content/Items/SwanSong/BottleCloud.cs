@@ -278,7 +278,7 @@ namespace SwanSongExtended.Items
     public class CloudBottleBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => BottleCloud.instance.ItemsDef;
+        private static ItemDef GetItemDef() => BottleCloud.instance?.ItemsDef ?? null;
 
         void OnEnable()
         {

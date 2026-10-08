@@ -34,7 +34,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.VoidBoss;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.CannotCopy };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlGoldenEgg");
 
@@ -67,7 +67,7 @@ namespace SwanSongExtended.Items
             if (count > 0)
             {
                 SpawnItem(body.transform);
-                body.inventory.RemoveItem(GoldenEgg.instance.ItemsDef);
+                body.inventory.RemoveItemPermanent(GoldenEgg.instance.ItemsDef);
             }
         }
 

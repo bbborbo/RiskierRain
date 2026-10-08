@@ -227,7 +227,7 @@ namespace RiskierRain.Changes
         #region rewards
         static float goldRewardMultiplierGlobal = 0.35f;
         static float expRewardMultiplierGlobal = 0.25f;
-        static float compensationForStartingLevel = 1.0f;
+        static float compensationForStartingLevel = 0.999f;
         private static void ChangeEnemyRewards()
         {
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;

@@ -18,6 +18,8 @@ namespace SwanSongExtended.Changes
 {
     public class ChimeraScrap : ReworkBase<ChimeraScrap>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})" ;
+        public const string originalItemName = "Regenerating Scrap";
         public static ItemDef regenScrap => ChimeraScrap.instance.itemDef;
         public static ItemDef regenScrapConsumed;
         public static int regenScrapCommonCredit = 10;

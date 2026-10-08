@@ -55,15 +55,17 @@ namespace SwanSongExtended.Modules
         /// <param name="characterName"></param>
         /// <param name="description"></param>
         /// <param name="enabledByDefault"></param>
-        public static ConfigEntry<bool> CharacterEnableConfig(string section, string characterName, string description = "", bool enabledByDefault = true)
+        public static ConfigEntry<bool> SectionEnableConfig(string sectionName, string description = "", bool enabledByDefault = true)
         {
-
             if (string.IsNullOrEmpty(description))
             {
-                description = "Set to false to disable this character and as much of its code and content as possible";
+                description = "Set to false to disable this type of content. " +
+                    "Note that this will prevent the content from appearing in-game, " +
+                    "but in some cases it will not stop the content from being generated " +
+                    "and applying hooks - use individual configs to disable these if needed.";
             }
-            return BindAndOptions<bool>(section,
-                                        "Enable " + characterName,
+            return BindAndOptions<bool>(": Full Section Config",
+                                        "Enable " + sectionName,
                                         enabledByDefault,
                                         description,
                                         true);

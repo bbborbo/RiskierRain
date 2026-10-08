@@ -11,6 +11,7 @@ using static SwanSongExtended.Modules.EliteModule;
 
 namespace SwanSongExtended.Elites
 {
+    REMEMBER TO FIX Tools.IsStormElite WHEN REENABLING DEUTERIUM ELITES
     class DeuteriumAspect : EliteEquipmentBase<DeuteriumAspect>
     {
         #region

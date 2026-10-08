@@ -20,12 +20,12 @@ using MissileRework;
 using SwanSongExtended.Interactables;
 using SwanSongExtended.Elites;
 using SwanSongExtended.Artifacts;
-using SwanSongExtended.Scavengers;
 using UnityEngine.AddressableAssets;
 using RoR2.ContentManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using SwanSongExtended.Changes;
 using RainrotSharedUtils.Difficulties;
+using SwanSongExtended.Scavengers;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -73,7 +73,7 @@ namespace SwanSongExtended
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "SwanSongExtended";
-        public const string version = "0.2.0";
+        public const string version = "1.0.2";
         public const string expansionName = "Swan Song";
         public const string expansionName2 = "Secrets of the Scug";
         public const string expansionToken = "EXPANSION2R4R";
@@ -83,7 +83,7 @@ namespace SwanSongExtended
 
         public static SwanSongPlugin instance;
         public static AssetBundle mainAssetBundle => CommonAssets.mainAssetBundle;
-        public static AssetBundle retierAssetBundle => CommonAssets.retierAssetBundle;
+        public static AssetBundle retierAssetBundle => mainAssetBundle;
 
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;
@@ -118,19 +118,22 @@ namespace SwanSongExtended
 
             CreateExpansionDef();
             CreateDifficultyDef();
+            EmergencyDirectorHooks();
             AddDeathMessages();
-            RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();
             Modules.EliteModule.Init();
             Modules.Spawnlists.Init();
             Storms.StormsCore.Init();
+            Scavengers.TwistedScavengersCore.Init();
 
             Modules.Materials.SwapShadersFromMaterialsInBundle(mainAssetBundle);
 
             ConfigManager.HandleConfigAttributes(GetType(), "SwanSong", Modules.Config.MyConfig);
 
             InitializeContent();
+            if (Modules.Config.SectionEnableConfig("Interactable Secrets").Value)
+                Secrets.AddSecrets();
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
 
@@ -183,21 +186,27 @@ namespace SwanSongExtended
             ///elites
             ///artifacts
             ///scavengers
-            BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
+            if(Modules.Config.SectionEnableConfig("Items (Reworks)").Value)
+                BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
 
-            BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
+            //if (Modules.Config.SectionEnableConfig("Items").Value)
+                BeginInitializing<ItemBase>(allTypes, "SwanSongItems.txt");
 
-            BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
+            //if (Modules.Config.SectionEnableConfig("Equipment").Value)
+                BeginInitializing<EquipmentBase>(allTypes, "SwanSongEquipment.txt");
 
             BeginInitializing<EliteEquipmentBase>(allTypes, "SwanSongElites.txt");
 
-            BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
+            //if (Modules.Config.SectionEnableConfig("Interactables").Value)
+                BeginInitializing<InteractableBase>(allTypes, "SwanSongInteractables.txt");
 
-            BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
+            //if (Modules.Config.SectionEnableConfig("Artifacts").Value)
+                BeginInitializing<ArtifactBase>(allTypes, "SwanSongArtifacts.txt");
 
             BeginInitializing<SkillBase>(allTypes, "SwanSongSkills.txt");
 
-            BeginInitializing<TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
+            if (TwistedScavengersCore.enableScavs.Value == true)
+                BeginInitializing<Scavengers.TwistedScavengerBase>(allTypes, "SwanSongScavengers.txt");
         }
         private void InitializeChanges()
         {
@@ -265,7 +274,6 @@ namespace SwanSongExtended
             //List<DirectorCard> directorCards = new List<DirectorCard>();
             //directorCards.Add(doubleChestDirectorCard);
             //Secrets.AddSecrets(directorCards);
-            Secrets.AddSecrets();
         }
 
         #region content initialization

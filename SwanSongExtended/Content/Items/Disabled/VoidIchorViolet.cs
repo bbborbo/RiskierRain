@@ -81,7 +81,7 @@ namespace SwanSongExtended.Items
     public class VioletIchorBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => VoidIchorViolet.instance.ItemsDef;
+        private static ItemDef GetItemDef() => VoidIchorViolet.instance?.ItemsDef ?? null;
 
         void Start()
         {

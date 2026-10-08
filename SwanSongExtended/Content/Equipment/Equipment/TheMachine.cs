@@ -44,8 +44,6 @@ namespace SwanSongExtended.Equipment
 
         public override bool CanBeRandomlyActivated => false;
 
-        public override string ConfigName => "The Machine";
-
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {
             return new ItemDisplayRuleDict();

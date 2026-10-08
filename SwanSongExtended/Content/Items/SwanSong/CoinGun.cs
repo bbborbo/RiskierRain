@@ -159,7 +159,7 @@ What happened to all of our gold?";
     public class CoinGunBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => CoinGun.instance.ItemsDef;
+        private static ItemDef GetItemDef() => CoinGun.instance?.ItemsDef ?? null;
         public CharacterMaster master;
         public uint currentMoney = 0;
         int fixedBaseChestCost => Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);
@@ -208,8 +208,7 @@ What happened to all of our gold?";
             currentMoney = money;
             if (CoinGun.includeDeploys)
             {
-                var deployable = master.GetComponent<Deployable>();
-                if (deployable)
+                if (master.TryGetComponent(out Deployable deployable) && deployable.ownerMaster != null)
                 {
                     uint ownerMoney = deployable.ownerMaster.money;
                     if (ownerMoney > currentMoney)

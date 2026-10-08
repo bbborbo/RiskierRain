@@ -76,7 +76,7 @@ namespace SwanSongExtended.Items
     public class RawChickenBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Chicken.instance.ItemsDef;
+        private static ItemDef GetItemDef() => Chicken.instance?.ItemsDef ?? null;
         public int duration = 120;
         int cachedMochaCount = 0;
 

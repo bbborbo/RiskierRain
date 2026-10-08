@@ -70,7 +70,7 @@ namespace SwanSongExtended.Items
     public class SpineBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => ChargedSpine.instance.ItemsDef;
+        private static ItemDef GetItemDef() => ChargedSpine.instance?.ItemsDef ?? null;
         bool hadShield = false;
         void Start()
         {

@@ -17,7 +17,6 @@ namespace SwanSongExtended.Equipment
     class BrokenZapinator : EquipmentBase
     {
         #region config
-        public override string ConfigName => "Equipment : Zapinator";
         #endregion
         BasicPickupDropTable zapinatorDropTable;
         public float itemChance = 1;

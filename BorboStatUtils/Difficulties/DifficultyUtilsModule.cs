@@ -58,7 +58,7 @@ namespace RainrotSharedUtils.Difficulties
         internal static bool _tpContrasted = false;
         public static bool CompensateRewardsForDifficultyScaling = false;
         public static bool CompensateRewardsForDifficultyBoost = false;
-        public static float BoostedRewardCompensationCoefficient = 0f;
+        public static float BoostedRewardCompensationCoefficient = 0.999f;
         public static float GoldRewardMultiplierGlobal = 1f;
         public static float ExpRewardMultiplierGlobal = 1f;
         public static float DefaultTeleParticleRadius = 1f;
@@ -274,10 +274,7 @@ namespace RainrotSharedUtils.Difficulties
         internal static bool _useDifficultyStats;
         public static bool UseDifficultyStats
         {
-            get
-            {
-                return _useDifficultyStats;
-            }
+            get => _useDifficultyStats;
             set
             {
                 if (value == true)

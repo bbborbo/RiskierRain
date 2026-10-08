@@ -101,8 +101,8 @@ namespace SwanSongExtended
                 return true;
             if (WhirlwindAspect.instance != null && body.HasBuff(WhirlwindAspect.instance.EliteBuffDef))
                 return true;
-            if (DeuteriumAspect.instance != null && body.HasBuff(DeuteriumAspect.instance.EliteBuffDef))
-                return true;
+            //if (DeuteriumAspect.instance != null && body.HasBuff(DeuteriumAspect.instance.EliteBuffDef))
+            //    return true;
             return false;
         }
         public static string AsPercent(this float d)

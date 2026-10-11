@@ -29,6 +29,8 @@ using System.Linq;
 using SwanSongExtended.Modules;
 using RoR2.Projectile;
 using static R2API.DamageAPI;
+using HG;
+using EntityStates.VoidRaidCrab;
 
 namespace SwanSongExtended.Elites
 {
@@ -693,6 +695,18 @@ namespace SwanSongExtended.Elites
         bool hasAuthority;
         private GameObject beamVfxInstance;
         private LoopSoundManager.SoundLoopPtr loopPtr;
+        protected float? beamLastDistance;
+        protected float beamCurrentDistance
+        {
+            get
+            {
+                if (this.beamLastDistance == null)
+                {
+                    return 1000;
+                }
+                return this.beamLastDistance.Value;
+            }
+        }
 
         FiringState _firingState = FiringState.Off;
         public FiringState firingState
@@ -756,6 +770,7 @@ namespace SwanSongExtended.Elites
 
             Ray beamRay = this.GetBeamRay();
             this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
+            this.beamVfxInstance.transform.localScale = new Vector3(this.beamVfxInstance.transform.localScale.x, this.beamVfxInstance.transform.localScale.y, this.beamCurrentDistance * SpinBeamAttack.vfxDistanceScaleMultiplier);
         }
 
         private void UpdateFiringState(FiringState newState)
@@ -961,6 +976,26 @@ namespace SwanSongExtended.Elites
                 isCrit = false,
                 HitEffectNormal = false
             }.Fire();
+
+            this.beamLastDistance = null;
+            this.GetBeamStopPosition(beamRay);
+        }
+        private void GetBeamStopPosition(Ray beamRay)
+        {
+            float num = float.PositiveInfinity;
+            for (int i = 0; i < HurtBox.readOnlyAttackRejectorsList.Count; i++)
+            {
+                HurtBox hurtBox = HurtBox.readOnlyAttackRejectorsList[i];
+                RaycastHit raycastHit;
+                if (hurtBox && hurtBox.collider.SphereCastApproximate(beamRay, out raycastHit, 1000, WhirlwindAspect.squallBeamRadius, 3) && raycastHit.distance < num)
+                {
+                    num = raycastHit.distance;
+                }
+            }
+            if (num != float.PositiveInfinity)
+            {
+                this.beamLastDistance = new float?(num);
+            }
         }
 
         private void DoBodyAttachment()

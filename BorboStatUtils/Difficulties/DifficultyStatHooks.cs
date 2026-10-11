@@ -19,13 +19,13 @@ namespace RainrotSharedUtils.Difficulties
 {
     internal static class DifficultyStatHooks
     {
-        public static void FixEliteSpawn(On.RoR2.Run.orig_Start orig, Run self)
+        public static void FixEliteSpawn(On.RoR2.CombatDirector.orig_Init orig)
         {
-            orig(self);
+            orig();
             if (CombatDirector.eliteTiers == null || CombatDirector.eliteTiers.Length <= 0)
             {
-                Debug.LogError("No elite tiers?");
-                return;
+                //taking a note from dot scow's elite api fix and forcing the async queue to complete. this is so dumb it rocks lol
+                _ = Addressables.LoadAssetAsync<AssetCollection>("28c1ff73384cbbc469eefc6c7ef399dd").WaitForCompletion();
             }
             foreach (CombatDirector.EliteTierDef etd in CombatDirector.eliteTiers) //EliteAPI.VanillaEliteTiers)//
             {

@@ -261,7 +261,6 @@ namespace RiskierRain.Changes
 
             IL.RoR2.Inventory.CalculateEquipmentCooldownScale += FuelCellCdr;
             IL.RoR2.Inventory.GetEquipmentSlotMaxCharges += FuelCellStock;
-            IL.RoR2.Inventory.UpdateEquipment += FuelCellStock;
 
             LanguageAPI.Add("ITEM_EQUIPMENTMAGAZINE_PICKUP",
                 $"Hold an additional equipment charge.");
@@ -274,10 +273,15 @@ namespace RiskierRain.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if(b1 == false)
+            {
+                DebugBreakpoint(nameof(FuelCellStock));
+                return;
+            }
             c.Emit(OpCodes.Ldc_I4, fuelCellStock);
             c.Emit(OpCodes.Mul);
         }
@@ -287,17 +291,19 @@ namespace RiskierRain.Changes
             ILCursor c = new ILCursor(il);
 
             int fuelCell = 0;
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine")
-                );
-            c.GotoNext(MoveType.After,
-                x => x.MatchStloc(out fuelCell)
-                );
-
-            c.GotoNext(MoveType.Before,
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"))
+            && c.TryGotoNext(MoveType.After,
+                x => x.MatchStloc(out fuelCell))
+            && c.TryGotoNext(MoveType.Before,
                 x => x.MatchLdcR4(out _),
                 x => x.MatchLdloc(fuelCell)
                 );
+            if (b1 == false)
+            {
+                DebugBreakpoint(nameof(FuelCellCdr));
+                return;
+            }
             c.Remove();
             c.Emit(OpCodes.Ldc_R4, fuelCellCooldownMultiplier);
         }

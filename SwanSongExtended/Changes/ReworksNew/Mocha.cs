@@ -23,6 +23,8 @@ namespace SwanSongExtended.Changes
 {
     public class Mocha : ReworkBase<Mocha>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
+        public const string originalItemName = "Mocha";
         public static GameObject mochaSipEffect;
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;

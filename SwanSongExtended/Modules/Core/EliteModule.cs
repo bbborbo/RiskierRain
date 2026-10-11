@@ -23,7 +23,7 @@ namespace SwanSongExtended.Modules
         {
             enableElites = Modules.Config.SectionEnableConfig("Elites");
             enableStormElites = Modules.Config.SectionEnableConfig("Storms (Elites)");
-            RoR2Application.onLoad += AddElites;
+            RoR2Application.onLoadFinished += AddElites;
         }
 
         private static void AddElites()
@@ -34,31 +34,31 @@ namespace SwanSongExtended.Modules
                 {
                     default:
                         break;
-                    case EliteTiers.Common:
-                        if (enableElites.Value == false)
-                            break;
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
-                        break;
-                    case EliteTiers.Uncommon:
-                        if (enableElites.Value == false)
-                            break;
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
-                        break;
-                    case EliteTiers.Rare:
-                        if (enableElites.Value == false)
-                            break;
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[5].eliteTypes, eliteDef.eliteDef);
-                        break;
-
-                    case EliteTiers.Lunar:
-                        if (enableElites.Value == false)
-                            break;
-                        HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[6].eliteTypes, eliteDef.eliteDef);
-                        break;
+                    //case EliteTiers.Common:
+                    //    if (enableElites.Value == false)
+                    //        break;
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[1].eliteTypes, eliteDef.eliteDef);
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[2].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
+                    //    break;
+                    //case EliteTiers.Uncommon:
+                    //    if (enableElites.Value == false)
+                    //        break;
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[3].eliteTypes, eliteDef.honorEliteDef != null ? eliteDef.honorEliteDef : eliteDef.eliteDef);
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[4].eliteTypes, eliteDef.eliteDef);
+                    //    break;
+                    //case EliteTiers.Rare:
+                    //    if (enableElites.Value == false)
+                    //        break;
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[5].eliteTypes, eliteDef.eliteDef);
+                    //    break;
+                    //
+                    //case EliteTiers.Lunar:
+                    //    if (enableElites.Value == false)
+                    //        break;
+                    //    HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[6].eliteTypes, eliteDef.eliteDef);
+                    //    break;
 
                     case EliteTiers.Storm:
                         if (StormsCore.stormsEnabled == false)

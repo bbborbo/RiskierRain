@@ -47,9 +47,14 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld("RoR2.HealthComponent/ItemCounts", "parentEgg")
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FuckPlanula));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4_0);
         }

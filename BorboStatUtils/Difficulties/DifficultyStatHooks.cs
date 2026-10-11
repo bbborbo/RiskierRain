@@ -2,6 +2,7 @@
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using RoR2;
+using RoR2.Artifacts;
 using RoR2.ContentManagement;
 using RoR2BepInExPack.Utilities;
 using System;
@@ -18,45 +19,66 @@ namespace RainrotSharedUtils.Difficulties
 {
     internal static class DifficultyStatHooks
     {
-
-        public static void FixEliteSpawn(On.RoR2.CombatDirector.orig_Init orig)
+        public static void FixEliteSpawn(On.RoR2.Run.orig_Start orig, Run self)
         {
-            orig();
+            orig(self);
+            if (CombatDirector.eliteTiers == null || CombatDirector.eliteTiers.Length <= 0)
+            {
+                Debug.LogError("No elite tiers?");
+                return;
+            }
             foreach (CombatDirector.EliteTierDef etd in CombatDirector.eliteTiers) //EliteAPI.VanillaEliteTiers)//
             {
-                List<EliteDef> eliteDefs = etd.eliteTypes.ToList();
-                //if (etd.eliteTypes.Contains(RoR2Content.Elites.Fire) && !etd.eliteTypes.Contains(DLC2Content.Elites.Aurelionite))
-                //{
-                //    etd.isAvailable = (SpawnCard.EliteRules rules) => 
-                //        !IsPastMinimumStage(false) &&
-                //        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
-                //}
-                if (etd.eliteTypes.Contains(RoR2Content.Elites.FireHonor) && !etd.eliteTypes.Contains(DLC2Content.Elites.AurelioniteHonor))
-                {
-                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                        !IsPastMinimumStage(false) &&
-                        (CombatDirector.IsEliteOnlyArtifactActive() ||
-                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
-                }
-                if (etd.eliteTypes.Contains(DLC2Content.Elites.Aurelionite))
-                {
-                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                        IsPastMinimumStage(false) &&
-                        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
-                }
-                if (etd.eliteTypes.Contains(DLC2Content.Elites.AurelioniteHonor))
-                {
-                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
-                        IsPastMinimumStage(false) &&
-                        (CombatDirector.IsEliteOnlyArtifactActive() ||
-                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
-                }
+                if (etd.eliteTypes == null || etd.eliteTypes.Length == 0)
+                    continue;
+
                 if (etd.eliteTypes.Contains(RoR2Content.Elites.Poison) || etd.eliteTypes.Contains(RoR2Content.Elites.Haunted))
                 {
+                    Debug.LogError("Rare Elite");
                     etd.isAvailable = (SpawnCard.EliteRules rules) =>
                         rules == SpawnCard.EliteRules.Default
                         && IsPastMinimumStage(true);
+                    continue;
                 }
+
+                if (ContainsElite(etd, DLC2Content.Elites.Aurelionite))
+                {
+                    Debug.LogError("Uncommon Elite");
+                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
+                        IsPastMinimumStage(false) &&
+                        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
+                    continue;
+                }
+                else if (ContainsElite(etd, RoR2Content.Elites.Fire))
+                {
+                    Debug.LogError("Common Elite");
+                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
+                        CombatDirector.NotEliteOnlyArtifactActive() && rules == SpawnCard.EliteRules.Default;
+                    continue;
+                }
+
+                if (ContainsElite(etd, DLC2Content.Elites.AurelioniteHonor))
+                {
+                    Debug.LogError("Uncommon Elite (Honor)");
+                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
+                        IsPastMinimumStage(false) &&
+                        (CombatDirector.IsEliteOnlyArtifactActive() ||
+                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
+                    continue;
+                }
+                else if (ContainsElite(etd, RoR2Content.Elites.FireHonor))
+                {
+                    Debug.LogError("Common Elite (Honor)");
+                    etd.isAvailable = (SpawnCard.EliteRules rules) =>
+                        (CombatDirector.IsEliteOnlyArtifactActive() ||
+                        (rules == SpawnCard.EliteRules.Default && GetForceNextSpawnAsElite()));
+                    continue;
+                }
+            }
+
+            bool ContainsElite(CombatDirector.EliteTierDef etd, EliteDef target)
+            {
+                return etd.eliteTypes.Any(x => x.modifierToken == target.modifierToken);
             }
 
             bool GetForceNextSpawnAsElite()
@@ -305,7 +327,7 @@ namespace RainrotSharedUtils.Difficulties
                 return;
             if (body.isElite /*|| body.baseNameToken.Contains("WORM")*/)
                 return;
-            RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng);
+            RoR2.Artifacts.EliteOnlyArtifactManager.PromoteIfHonor(memberMaster, Run.instance.spawnRng, EliteOnlyArtifactManager.eliteDefsHonor);
         }
 
         internal static void OverridePromoteIfHonor(ILContext il)

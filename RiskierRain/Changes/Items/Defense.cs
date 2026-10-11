@@ -368,8 +368,8 @@ namespace RiskierRain.Changes
         #endregion
 
         #region medkit
-        public static float medkitFlatHeal = 40; //20
-        public static float medkitPercentHeal = 0.00f; //0.05
+        public static float medkitFlatHeal = 20; //20
+        public static float medkitPercentHeal = 0.05f; //0.05
         public static void ChangeMedkit()
         {
             AIBlacklistThisItem(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
@@ -378,10 +378,11 @@ namespace RiskierRain.Changes
                 buffDef.isDebuff = true;
                 buffDef.isHidden = true;
             });
-            IL.RoR2.CharacterBody.RemoveBuff_BuffIndex += MedkitHealChange;
+            IL.RoR2.CharacterBody.RemoveBuffInternal += MedkitHealChange;
             LanguageAPI.Add("ITEM_MEDKIT_DESC",
                 $"2 seconds after getting hurt, <style=cIsHealing>heal</style> for " +
-                $" <style=cIsHealing>{medkitFlatHeal} health</style> <style=cStack>(+{medkitFlatHeal} per stack)</style>.");
+                $"<style=cIsHealing>{medkitFlatHeal}</style> <style=cStack>(+{medkitFlatHeal} per stack)</style> plus an additional " +
+                $"<style=cIsHealing>{medkitPercentHeal}</style> of <style=cIsHealing>maximum health</style>.");
         }
 
         public static void MedkitHealChange(ILContext il)

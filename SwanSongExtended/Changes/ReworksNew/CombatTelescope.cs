@@ -19,6 +19,8 @@ namespace SwanSongExtended.Changes
 {
     public class CombatTelescope : ReworkBase<CombatTelescope>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
+        public const string originalItemName = "Laser Scope";
         public static BuffDef combatTelescopeCritChance;
         public static int scopeBaseCrit = 5;
         public static int scopeStackCrit = 0;
@@ -26,7 +28,7 @@ namespace SwanSongExtended.Changes
         public static int scopeStackStationaryCrit = 0;
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_CritDamage.CritDamage_asset;
 
-        public override string ItemName => "Laser Scope (Combat Telescope)";
+        public override string ItemName => "Combat Telescope";
 
         public override string ItemPickupDesc => "Increases 'Critical Strike' chance and damage while stationary.";
 

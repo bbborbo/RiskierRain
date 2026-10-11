@@ -232,7 +232,7 @@ namespace RiskierRain.Changes
         #region attack speed affected cooldowns
         public static void RemoveAspdScalingOnCooldownsForever()
         {
-            IL.RoR2.GenericSkill.RunRecharge += FuckAspdScalingOnCooldowns;
+            IL.RoR2.GenericSkill.RunRecharge_float_bool += FuckAspdScalingOnCooldowns;
             IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
 
             void FuckAspdScalingOnCooldowns(ILContext il)

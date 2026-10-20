@@ -143,6 +143,9 @@
     <Reference Include="FabricatorStandalone">
       <HintPath>libs\FabricatorStandalone.dll</HintPath>
     </Reference>
+    <Reference Include="ProcSolver">
+      <HintPath>libs\ProcSolver.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

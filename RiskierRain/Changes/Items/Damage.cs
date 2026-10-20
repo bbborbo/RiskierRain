@@ -423,8 +423,8 @@ namespace RiskierRain.Changes
 
             bool b1 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_damage"),
-                x => x.MatchLdcR4(out _),
-                x => x.MatchLdcR4(out _)
+                x => x.MatchLdsfld(out _),
+                x => x.MatchLdsfld(out _)
                 );
             if (!b1)
             {
@@ -432,9 +432,10 @@ namespace RiskierRain.Changes
                 return;
             }
             c.Index++;
-            c.Next.Operand = shurikenBaseDamage - shurikenStackDamage;
-            c.Index++;
-            c.Next.Operand = shurikenStackDamage;
+            c.Remove();
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, shurikenBaseDamage - shurikenStackDamage);
+            c.Emit(OpCodes.Ldc_R4, shurikenStackDamage);
         }
 
         private static void ModifyShurikenAttack(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)

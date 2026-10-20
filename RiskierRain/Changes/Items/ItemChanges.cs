@@ -233,7 +233,7 @@ namespace RiskierRain.Changes
         public static void RemoveAspdScalingOnCooldownsForever()
         {
             IL.RoR2.GenericSkill.RunRecharge_float_bool += FuckAspdScalingOnCooldowns;
-            IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
+            IL.RoR2.Skills.SkillDef.GetRechargeRate += FuckAspdScalingOnCooldowns;
 
             void FuckAspdScalingOnCooldowns(ILContext il)
             {

@@ -28,8 +28,8 @@ namespace SwanSongExtended.Items
         public static float forkRecharge = 5;
         public static float forkDuration = 3;
         public static int forkAttackRequirement = 6;
-        public static float forkBaseDamageBase = 6.0f;
-        public static float forkBaseDamageStack = 4.0f;
+        public static float forkBaseDamageBase = 3.0f;
+        public static float forkBaseDamageStack = 3.0f;
         public static float forkStrikeRange = 25;
         public override string ItemName => "Copper Fork";
 

@@ -27,7 +27,7 @@ namespace SwanSongExtended.Items
         public static float firstBounceDamageBase = 0.6f;
         public static float firstBounceDamageStack = 0.2f;
         public static float lastBounceDamageCoefficient = 0.4f;
-        public static float procCoefficientPerBounce = 0.35f;
+        public static float procCoefficientPerBounce = 0.5f;
         public static float bounceRange = 60f;
         public override string ItemName => "Hypo-Threader";
 
@@ -163,6 +163,11 @@ I told you. I. Dont. FUCKING. CARE.";
         {
             orig(self, body, damageInfo, master, procCoefficient, procChainMask);
 
+            if (SwanSongPlugin.procSolverInstalled && SwanSongPlugin.GetProcRate(damageInfo) <= 0)
+            {
+                damageInfo.procChainMask.AddModdedProc(AoeOnCritProc);
+                return;
+            }
             if (damageInfo.procChainMask.HasModdedProc(AoeOnCritProc))
                 return;
             int stack = GetCount(body);
@@ -210,7 +215,7 @@ I told you. I. Dont. FUCKING. CARE.";
             chainGunOrb.isCrit = true;
             chainGunOrb.teamIndex = TeamComponent.GetObjectTeam(body.gameObject);
             chainGunOrb.attacker = body.gameObject;
-            chainGunOrb.procCoefficient = AoeOnCrit.procCoefficientPerBounce;
+            chainGunOrb.procCoefficient = procCoefficient * procCoefficientPerBounce;
             chainGunOrb.procChainMask = procChainMask;
             chainGunOrb.procChainMask.AddModdedProc(AoeOnCritProc);
             chainGunOrb.origin = damageInfo.position;

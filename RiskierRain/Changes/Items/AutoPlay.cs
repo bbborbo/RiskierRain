@@ -76,12 +76,6 @@ namespace RiskierRain.Changes
 		{
 			IL.RoR2.Orbs.DevilOrb.OnArrival += (il) => DevilOrbSlowAndForce(il, DevilOrb.EffectType.Skull, opinionSlowDuration, opinionForceMultiplier);
 			On.RoR2.Orbs.DevilOrb.Begin += (orig, self) => DevilOrbProcCoefficient(orig, self, DevilOrb.EffectType.Skull, opinionProcCoeff);
-
-			LanguageAPI.Add("ITEM_NOVAONHEAL_DESC",
-				$"Store <style=cIsHealing>100%</style> <style=cStack>(+100% per stack)</style> of healing as <style=cIsHealing>Soul Energy</style>. " +
-				$"After your <style=cIsHealing>Soul Energy</style> reaches <style=cIsHealing>10%</style> of your <style=cIsHealing>maximum health</style>, " +
-				$"<style=cIsDamage>fire a skull</style> that deals <style=cIsDamage>{Tools.ConvertDecimal(opinionDamageMultiplier)}</style> " +
-				$"of your <style=cIsHealing>Soul Energy</style> as <style=cIsDamage>damage</style>.");
 		}
 		#endregion
 

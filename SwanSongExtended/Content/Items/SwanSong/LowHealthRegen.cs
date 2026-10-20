@@ -37,7 +37,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier1;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.LowHealth };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.LowHealth, ItemTag.FoodRelated };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlLowHealthRegen");
 

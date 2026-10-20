@@ -36,7 +36,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier2;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.OnStageBeginEffect };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.OnStageBeginEffect, ItemTag.FoodRelated };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlChicken");
 

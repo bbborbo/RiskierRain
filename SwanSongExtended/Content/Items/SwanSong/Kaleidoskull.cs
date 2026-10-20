@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static SwanSongExtended.Modules.Language.Styling;
+using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended.Items
 {
@@ -55,6 +56,13 @@ namespace SwanSongExtended.Items
         {
             On.RoR2.GlobalEventManager.ProcessHitEnemy += KaleidoskullCrit;
             On.RoR2.BuffCatalog.Init += KaleidoskullBuffStuff;
+            GetStatCoefficients += KaleidoskullCritBonus;
+        }
+
+        private void KaleidoskullCritBonus(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+                args.critAdd += critChance;
         }
 
         private void KaleidoskullBuffStuff(On.RoR2.BuffCatalog.orig_Init orig)

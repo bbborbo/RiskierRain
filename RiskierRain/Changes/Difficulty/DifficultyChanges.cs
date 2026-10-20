@@ -76,6 +76,10 @@ namespace RiskierRain.Changes
                     self.goldReward = (self.shouldScale ? Run.instance.GetDifficultyScaledCost(self.baseGoldReward, Stage.instance.entryDifficultyCoefficient) : self.baseGoldReward);
                 }
             };
+
+            //quests
+            ChangeTrialDropTables();
+            ChangeTrialOfGreed();
         }
         #region oneshot protection aka osp
         public static void RemoveOspForever()

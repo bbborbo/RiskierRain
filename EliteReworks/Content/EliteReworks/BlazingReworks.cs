@@ -431,7 +431,8 @@ namespace FruityElites.EliteReworks
                                 dotIndex = DotController.DotIndex.Burn,
                                 maxStacksFromAttacker = null
                             };
-                            StrengthenBurnUtils.CheckDotForUpgrade(inv, ref inflictDotInfo);
+                            if(inv != null)
+                                StrengthenBurnUtils.CheckDotForUpgrade(inv, ref inflictDotInfo);
                             DotController.InflictDot(ref inflictDotInfo);
                         }
                     }

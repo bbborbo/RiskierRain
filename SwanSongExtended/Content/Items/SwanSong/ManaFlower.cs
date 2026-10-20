@@ -11,7 +11,7 @@ using RoR2.ExpansionManagement;
 
 namespace SwanSongExtended.Items
 {
-    class ManaFlower : ItemBase<ManaFlower>
+    public class ManaFlower : ItemBase<ManaFlower>
     {
         public static bool GetBloomConfig()
         {

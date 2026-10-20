@@ -112,7 +112,7 @@ namespace SwanSongExtended.Changes.ReworksNew
     public class HappiestMaskBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => RoR2Content.Items.GhostOnKill;
+        public static ItemDef GetItemDef() => HappyMask.instance != null ? RoR2Content.Items.GhostOnKill : null;
         public static float baseHauntRadius = 35;
         public static float baseHauntInterval = 10;
         float hauntStopwatch = 0;

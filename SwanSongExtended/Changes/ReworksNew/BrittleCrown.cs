@@ -165,7 +165,7 @@ namespace SwanSongExtended.Changes
     public class BrittleCrownBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => RoR2Content.Items.GoldOnHit;
+        public static ItemDef GetItemDef() => BrittleCrown.instance != null ? RoR2Content.Items.GoldOnHit : null;
         public void Start()
         {
             body.SetBuffCount(BrittleCrown.brittleCrownCursePurchase.buffIndex,

@@ -181,7 +181,7 @@ namespace SwanSongExtended.Changes
     public class BorboMochaBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => DLC1Content.Items.AttackSpeedAndMoveSpeed;
+        public static ItemDef GetItemDef() => Mocha.instance != null ? DLC1Content.Items.AttackSpeedAndMoveSpeed : null;
         int cachedMochaCount = 0;
         bool addingBuffs = false;
         float durationPerBuff = 1; //in seconds

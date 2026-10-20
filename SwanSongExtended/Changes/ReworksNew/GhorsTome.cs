@@ -102,7 +102,7 @@ namespace SwanSongExtended.Changes
     public class WeakenOnContactBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        public static ItemDef GetItemDef() => RoR2Content.Items.BonusGoldPackOnKill;
+        public static ItemDef GetItemDef() => GhorsTome.instance != null ? RoR2Content.Items.BonusGoldPackOnKill : null;
 
         public SphereSearch sphereSearch = new SphereSearch();
 

@@ -208,7 +208,7 @@ namespace SwanSongExtended.Changes
                     {
                         int printerCredits = GetSuperScrapPrinterCredit(self.itemTier) * regenScrapCount;
                         bool hasEnoughRegenScrap = printerCredits >= cost;
-                        return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalItemsOfTier(self.itemTier, cost - printerCredits));
+                        return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalRemovablePermanentItemsOfTier(self.itemTier, cost - printerCredits));
                     }
                 }
             }

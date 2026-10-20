@@ -28,6 +28,8 @@
     <None Include="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <None Include="Content\Interactables\QuestInteractables\SpineCharger.cs" />
     <None Include="Content\Items\Disabled\Watch2.cs" />
+    <None Include="Content\Items\Helpers\EnemyDamageUp.cs" />
+    <None Include="Content\Items\Helpers\EnemyHealthUp.cs" />
     <None Include="Content\Items\SecretsOfTheScug\Boomerang.cs" />
     <None Include="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
     <None Include="Content\Items\SecretsOfTheScug\Peashooter.cs" />
@@ -106,6 +108,8 @@
     <Compile Remove="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\SpineCharger.cs" />
     <Compile Remove="Content\Items\Disabled\Watch2.cs" />
+    <Compile Remove="Content\Items\Helpers\EnemyDamageUp.cs" />
+    <Compile Remove="Content\Items\Helpers\EnemyHealthUp.cs" />
     <Compile Remove="Content\Items\Reworks\ChimeraScrap.cs" />
     <Compile Remove="Content\Items\Reworks\ChocolateCoin.cs" />
     <Compile Remove="Content\Items\Reworks\Elixir2.cs" />

@@ -9,6 +9,7 @@ using SwanSongExtended.Items;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -23,11 +24,15 @@ namespace SwanSongExtended.Changes
         public static float sunDurationBase = 10;
         [AutoConfig("Sun Duration Stack", 5)]
         public static float sunDurationStack = 5;
+        [AutoConfig("Burn Duration Friendly", "Vanilla is 5 regardless of team", 2)]
+        public static float burnDurationFriendly = 2;
+        [AutoConfig("Burn Duration Enemy", "Vanilla is 5 regardless of team", 7.5f)]
+        public static float burnDurationEnemy = 7.5f;
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ParentEgg.ParentEgg_asset;
 
         public override string ItemName => "Planula";
 
-        public override string ItemPickupDesc => "The unmatched power of the sun!";
+        public override string ItemPickupDesc => "THE UNMATCHED POWER OF THE SUN!";
 
         public override string ItemFullDesc =>
             $"After beginning the teleporter event, " +
@@ -37,10 +42,41 @@ namespace SwanSongExtended.Changes
 
         public override void Hooks()
         {
+            IL.RoR2.GrandParentSunController.ServerFixedUpdate += FriendlySunulaDamage;
             IL.RoR2.HealthComponent.TakeDamageProcess += FuckPlanula;
             On.RoR2.TeleporterInteraction.IdleToChargingState.OnEnter += OnTeleporterEventPreStart;
             On.RoR2.TeleporterInteraction.ChargingState.OnEnter += OnTeleporterEventStart;
             On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += OnTeleporterEventUpdate;
+        }
+
+        private void FriendlySunulaDamage(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int targetBodyLoc = -1;
+            bool b1 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdloc(out targetBodyLoc),
+                x => x.MatchStfld<RoR2.OverheatSystem.OverheatInfo>(nameof(OverheatSystem.OverheatInfo.targetBody)))
+                && c.TryGotoPrev(MoveType.Before,
+                x => x.MatchStfld<RoR2.OverheatSystem.OverheatInfo>(nameof(OverheatSystem.OverheatInfo.burnTotalDamageScale))
+                );
+            if(b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FriendlySunulaDamage));
+                return;
+            }
+            c.Emit(OpCodes.Ldarg, 0);
+            c.Emit(OpCodes.Ldloc, targetBodyLoc);
+            c.EmitDelegate<Func<float, GrandParentSunController, CharacterBody, float>>((durationIn, self, targetBody) =>
+            {
+                PlanulaSunController planula = PlanulaSunController.GetPlanulaSunControllerFromSun(self);
+                if (planula == null)
+                    return durationIn;
+                TeamIndex targetTeam = targetBody.teamComponent?.teamIndex ?? TeamIndex.Neutral;
+                if (planula.activatorTeam == targetTeam)
+                    return burnDurationFriendly;
+                return burnDurationEnemy;
+            });
         }
 
         private void FuckPlanula(ILContext il)
@@ -108,13 +144,42 @@ namespace SwanSongExtended.Changes
 
     public class PlanulaSunController : MonoBehaviour
     {
+        public static PlanulaSunController GetPlanulaSunControllerFromSun(GrandParentSunController sun)
+        {
+            if (sun.ownership == null || sun.ownership.ownerObject == null)
+                return null;
+            if (PlanulaSunController.readOnlyInstancesList == null || PlanulaSunController.readOnlyInstancesList.Count <= 0)
+                return null;
+            foreach(PlanulaSunController planula in readOnlyInstancesList)
+            {
+                if (sun.gameObject == planula.sunInstance)
+                    return planula;
+            }
+            return null;
+        }
+        private static List<PlanulaSunController> instancesList = new List<PlanulaSunController>();
+        public static ReadOnlyCollection<PlanulaSunController> readOnlyInstancesList = new ReadOnlyCollection<PlanulaSunController>(instancesList);
+        public TeamIndex activatorTeam;
         public GameObject activator;
+        public CharacterMaster master;
         public HoldoutZoneController holdoutZoneController;
         Vector3 sunSpawnPosition;
         ParticleSystem beamEffectInstance;
         GameObject sunInstance;
         float sunDuration;
         float sunAge = 0;
+
+        void OnEnable()
+        {
+            instancesList.Add(this);
+            if (activator != null && activator.TryGetComponent(out master))
+                activatorTeam = master.teamIndex;
+        }
+        void OnDisable()
+        {
+            if (instancesList.Contains(this))
+                instancesList.Remove(this);
+        }
 
         public void SetSunDuration(int stack)
         {

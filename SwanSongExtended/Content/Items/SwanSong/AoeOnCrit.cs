@@ -76,6 +76,10 @@ I told you. I. Dont. FUCKING. CARE.";
             laserOrbEffect = effect.InstantiateClone("AoeOnCritLaserOrb", false);
 
             laserOrbEffect.transform.localScale *= 2;
+            if (laserOrbEffect.TryGetComponent(out VFXAttributes attributes))
+            {
+                attributes.DoNotPool = false;
+            }
             if (laserOrbEffect.TryGetComponent(out OrbEffect orbEffect))
             {
                 SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolRicochetImpactEffect_prefab, (impactEffect) =>

@@ -40,10 +40,25 @@ namespace RiskierRain.Changes
             ChangeEnigmaBlacklists();
             //kinda want to remove this but it needs a replacement
             ChangeEquipmentBlacklists();
+            ChangeSacrificeAltar();
 
             //ChangeShower();
             //ChangeTincture();
         }
+
+        #region altar of sacrifice
+        public static float altarRadius = 60;//idk wiki down :(
+        private static void ChangeSacrificeAltar()
+        {
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_SpawnAltar.SpawnAltar_prefab, (altarPrefab) =>
+            {
+                if(altarPrefab.TryGetComponent(out HoldoutZoneController holdout))
+                {
+                    holdout.baseRadius = altarRadius;
+                }
+            });
+        }
+        #endregion
 
         #region jade elephant
         public static float elephantBuffDuration = 10;

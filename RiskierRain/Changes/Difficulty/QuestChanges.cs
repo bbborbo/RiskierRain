@@ -22,7 +22,6 @@ namespace RiskierRain.Changes
             RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_OutOfCombatArmor.OutOfCombatArmor_asset,
             RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ArmorPlate.ArmorPlate_asset,
             RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset,
-            RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset,
             RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_StunChanceOnHit.StunChanceOnHit_asset
         };
         public static ItemDef[] bannedTrialItemDefs;
@@ -34,7 +33,6 @@ namespace RiskierRain.Changes
             {
                 RoR2Content.Items.Talisman,
                 RoR2Content.Items.ArmorPlate,
-                RoR2Content.Items.BonusGoldPackOnKill,
                 RoR2Content.Items.StunChanceOnHit,
                 DLC1Content.Items.HealingPotion,
                 DLC1Content.Items.PermanentDebuffOnHit,
@@ -110,7 +108,7 @@ namespace RiskierRain.Changes
 
         #endregion
         #region trial of greed
-        public static uint trialGreedRequiredMoney = 100;
+        public static uint trialGreedRequiredMoney = 175;
         public static void ChangeTrialOfGreed()
         {
             On.RoR2.Quests.TrialQuests.TrialQuestSadismMoney.OnEnter += TrialQuestSadismMoney_OnEnter;

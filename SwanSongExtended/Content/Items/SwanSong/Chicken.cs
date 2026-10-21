@@ -80,12 +80,6 @@ namespace SwanSongExtended.Items
         public int duration = 120;
         int cachedMochaCount = 0;
 
-        private void Start()
-        {
-            cachedMochaCount = stack;
-            SetMochaTime(duration, stack);
-        }
-
         public override void OnInventoryRefresh()
         {
             base.OnInventoryRefresh();

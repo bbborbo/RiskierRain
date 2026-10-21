@@ -62,6 +62,7 @@ namespace SwanSongExtended.Equipment
             CharacterMasterNotificationQueue.CustomOverrideInfo overrideInfo = new CharacterMasterNotificationQueue.CustomOverrideInfo
             {
                 titleText = "A wish is granted...",
+                descriptionText = "May it serve you well."
             };
             CharacterMasterNotificationQueue.SendCustomNotification(slot.characterBody.master, EquipDef.equipmentIndex, overrideInfo);
             EquipmentIndex value = EquipmentIndex.None;

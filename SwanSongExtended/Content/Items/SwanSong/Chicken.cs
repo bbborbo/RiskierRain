@@ -82,7 +82,8 @@ namespace SwanSongExtended.Items
 
         private void Start()
         {
-            SetMochaTime(duration);
+            cachedMochaCount = stack;
+            SetMochaTime(duration, stack);
         }
 
         public override void OnInventoryRefresh()
@@ -91,21 +92,28 @@ namespace SwanSongExtended.Items
 
             if (stack == 0 /*&& !body.inventory.inventoryDisabled*/)
             {
-                //body.ClearTimedBuffs(Mocha.mochaBuffActive);
+                cachedMochaCount = 0;
+                body.ClearTimedBuffs(Chicken.foodPoisoning);
                 //body.RemoveBuff(Mocha.mochaBuffInactive);
                 return;
             }
 
             if (cachedMochaCount < stack)
             {
-                SetMochaTime(duration);
+                SetMochaTime(duration, stack - cachedMochaCount);
             }
             cachedMochaCount = stack;
         }
-
-        private void SetMochaTime(float duration)
+        void OnDisable()
         {
-            body.AddTimedBuff(Chicken.foodPoisoning, duration);
+            cachedMochaCount = 0;
+            body.ClearTimedBuffs(Chicken.foodPoisoning);
+        }
+
+        private void SetMochaTime(float duration, int count)
+        {
+            for(int i = 0; i < count; i++)
+                body.AddTimedBuff(Chicken.foodPoisoning, duration);
         }
     }
 }

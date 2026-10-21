@@ -198,5 +198,10 @@ namespace RiskierRain
                     callback.Invoke(body);
             };
         }
+
+        public static float GetStackValue(float baseValue, float stackValue, int itemCount)
+        {
+            return baseValue + stackValue * (itemCount - 1);
+        }
     }
 }

@@ -13,6 +13,8 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 using RoR2.Items;
+using System.Linq;
+
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
@@ -38,8 +40,6 @@ namespace SwanSongExtended.Items
         public static int maxPlatinum = 10;
 
         string damageBoostPerChestPerStack = Tools.ConvertDecimal(bonusDamagePerChunk);
-
-        public override ExpansionDef RequiredExpansion => SwanSongPlugin.expansionDefSS2;
         public override string ItemName => "Coin Gun";
 
         public override string ItemLangTokenName => "ECONOMYWEAPON";
@@ -105,6 +105,13 @@ What happened to all of our gold?";
         {
             CreateBuff();
             base.Init();
+            SwanSongPlugin.LoadAsync<ExplicitPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_sadism_sad1.dtSad1RentalsExplicit_Money3_asset, (dropTable) =>
+            {
+                ExplicitPickupDropTable.PickupDefEntry entry = new ExplicitPickupDropTable.PickupDefEntry();
+                entry.pickupDef = ItemsDef;
+                entry.pickupWeight = 0.3f;
+                dropTable.pickupEntries = dropTable.pickupEntries.Append(entry).ToArray();
+            });
         }
         void CreateBuff()
         {

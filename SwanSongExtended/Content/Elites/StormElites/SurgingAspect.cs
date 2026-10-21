@@ -40,7 +40,7 @@ namespace SwanSongExtended.Elites
         public static float waveProjectileSpeed = 30f; //60f
         public static float waveProjectileDuration = 1.5f; //3f
         public static float waveProjectileCount = 5f; //12f
-        public static float waveProjectileBaseDamage = 8f;
+        public static float waveProjectileBaseDamage = 6f;
         public static float waveProjectileDamageLevel = 0.5f;
         public static float waveProjectileProcCoefficient = 2.0f;
         public static float waveProjectileForce = 150f;

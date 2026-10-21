@@ -160,6 +160,27 @@ namespace SwanSongExtended.Storms
             {
                 StormEliteWeak.iconSprite = bd.iconSprite;
             });
+            On.RoR2.TeleporterInteraction.ChargingState.OnEnter += ChargingState_OnEnter;
+        }
+
+        private static void ChargingState_OnEnter(On.RoR2.TeleporterInteraction.ChargingState.orig_OnEnter orig, TeleporterInteraction.ChargingState self)
+        {
+            bool stormDirectorActive = false;
+            CombatDirector stormDirector = null;
+            if (StormRunBehavior.instance && StormRunBehavior.instance.stormControllerInstance)
+            {
+                stormDirector = StormRunBehavior.instance.stormControllerInstance.combatDirector;
+                if(stormDirector != null)
+                {
+                    stormDirectorActive = stormDirector.enabled;
+                    stormDirector.enabled = false;
+                }
+            }
+            orig(self);
+            if(stormDirector != null && stormDirectorActive)
+            {
+                stormDirector.enabled = true;
+            }
         }
 
         private static void OnStormEliteHealthGateTriggered(CharacterBody sender)

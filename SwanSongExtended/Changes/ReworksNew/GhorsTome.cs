@@ -53,6 +53,30 @@ namespace SwanSongExtended.Changes
             //IL.RoR2.HealthComponent.TakeDamageProcess += BonusDamageAgainstGilded;
             On.RoR2.HealthComponent.TakeDamageProcess += GildedDamageBonus;
             IL.RoR2.GlobalEventManager.OnCharacterDeath += RemoveGhor;
+            On.RoR2.ItemSpawnPoint.Awake += ItemSpawnPoint_Awake;
+        }
+
+        private void ItemSpawnPoint_Awake(On.RoR2.ItemSpawnPoint.orig_Awake orig, ItemSpawnPoint self)
+        {
+            if (self.useExplicitItemDef)
+            {
+                bool banned = false;
+                if (self._explicitItemDefAddress.RuntimeKeyIsValid() && self._explicitItemDefAddress.AssetGUID == RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset)
+                {
+                    self._explicitItemDefAddress = null;
+                    banned = true;
+                }
+                else if (self._explicitItemDefReference != null && self._explicitItemDefReference == RoR2Content.Items.BonusGoldPackOnKill)
+                {
+                    banned = true;
+                }
+
+                if (banned)
+                {
+                    self._explicitItemDefReference = RoR2Content.Items.ChainLightning;
+                }
+            }
+            orig(self);
         }
 
         public static void RemoveGhor(ILContext il)

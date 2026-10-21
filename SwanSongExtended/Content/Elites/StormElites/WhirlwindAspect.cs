@@ -58,7 +58,7 @@ namespace SwanSongExtended.Elites
         /// <summary>
         /// expressed in seconds?
         /// </summary>
-        public static float squallAimDamping = 0.45f;
+        public static float squallAimDamping = 0.5f;
         public static float squallPreFireTime = 1.5f;
         public static float squallAimMaxSpeed = 40f;
         public static float squallBeamRadius = 1.75f;
@@ -153,6 +153,7 @@ namespace SwanSongExtended.Elites
                     //no need to register ghost to content pack
                     GameObject ghost = fireballGhost.InstantiateClone("HowlWindMissileGhost", false);
                     projectile.ghostPrefab = ghost;
+                    projectile.ghostPrefabAddress = null;
 
                     //if(ghost.TryGetComponent(out ParticleSystem particleSystem))
                     //{

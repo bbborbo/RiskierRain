@@ -110,26 +110,30 @@ namespace RiskierRain.Changes
         #endregion
 
         #region Gold Shrine
-        public static GameObject goldShrine = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/ShrineGoldshoresAccess/ShrineGoldshoresAccess.prefab").WaitForCompletion();
-        public static int goldShrineCost = 5;
+        public static int goldShrineCost = 2;
         public static void GoldShrineRework()
         {
-            if (goldShrine == null)
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ShrineGoldshoresAccess.ShrineGoldshoresAccess_prefab, (goldShrine) =>
             {
-                Debug.Log("goldshrine null!! uh oh!!!!");
-                return;
-            }
 
-            PurchaseInteraction goldShrineInteraction = goldShrine.GetComponent<PurchaseInteraction>();
-            if (goldShrineInteraction == null)
-            {
-                Debug.Log("goldshrine purchase thing null bwuh");
-                return;
-            }
-
-            goldShrineInteraction.costType = CostTypeIndex.LunarCoin; // gold
-            goldShrineInteraction.cost = goldShrineCost;
-
+                if(goldShrine.TryGetComponent(out PurchaseInteraction goldShrineInteraction))
+                {
+                    goldShrineInteraction.costType = CostTypeIndex.LunarCoin; // gold
+                    goldShrineInteraction.cost = goldShrineCost;
+                }
+            });
+            //if (goldShrine == null)
+            //{
+            //    Debug.Log("goldshrine null!! uh oh!!!!");
+            //    return;
+            //}
+            //
+            //PurchaseInteraction goldShrineInteraction = goldShrine.GetComponent<PurchaseInteraction>();
+            //if (goldShrineInteraction == null)
+            //{
+            //    Debug.Log("goldshrine purchase thing null bwuh");
+            //    return;
+            //}
         }
 
         #endregion

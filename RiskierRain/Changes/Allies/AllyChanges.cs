@@ -1,4 +1,7 @@
-﻿using RoR2;
+﻿using EntityStates;
+using EntityStates.Drone.DroneWeapon;
+using MonoMod.Cil;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +16,38 @@ namespace RiskierRain.Changes
             ChangeCleanupDrone();
             ChangeJunkDrone();
             ChangeMegaDrone();
+            ChangeHealingDrones();
+        }
+
+        private static void ChangeHealingDrones()
+        {
+            //healing drone
+            IL.EntityStates.Drone.DroneWeapon.HealBeam.OnEnter += NerfHealingDroneScaling;
+            //emergency drone
+            IL.EntityStates.Drone.DroneWeapon.StartHealBeam.OnEnter += NerfHealingDroneScaling;
+        }
+
+
+        private static void NerfHealingDroneScaling(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdfld<BaseState>(nameof(BaseState.damageStat))
+                );
+            if(b == false)
+            {
+                RiskierRainPlugin.DebugBreakpoint(nameof(NerfHealingDroneScaling));
+                return;
+            }
+            c.Remove();
+            c.EmitDelegate<Func<BaseState, float>>((self) =>
+            {
+                if (self.characterBody == null || self.characterBody.teamComponent == null || self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
+                    return self.damageStat;
+                float factor = (float)(5 + TeamManager.instance.GetTeamLevel(TeamIndex.Player)) / (float)(5 + Run.instance.ambientLevelFloor);
+                return self.damageStat * factor;
+            });
         }
 
         #region tc-280 prototype drone mega drone

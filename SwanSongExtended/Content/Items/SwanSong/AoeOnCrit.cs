@@ -12,6 +12,7 @@ using static SwanSongExtended.Modules.Language.Styling;
 
 using RoR2.Items;
 using SwanSongExtended.Modules;
+using RainrotSharedUtils;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -69,6 +70,29 @@ I told you. I. Dont. FUCKING. CARE.";
             //SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_DroneWeapons.ChainGunOrbEffect_prefab, (effect) =>
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolOrbEffect_prefab, CreateOrbEffect);
             base.Init();
+        }
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            CraftableDef craftThreader = ScriptableObject.CreateInstance<CraftableDef>();
+            craftThreader.name = "CRAFTABLE_" + this.ItemLangTokenName;
+            craftThreader.pickup = this.ItemsDef;
+            craftThreader.itemIndex = this.ItemsDef.itemIndex;
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
+                out RecipeIngredient yellowScrap);
+
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ChainLightning.ChainLightning_asset,
+                out RecipeIngredient ukulele);
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CritGlasses.CritGlasses_asset,
+                out RecipeIngredient glasses);
+
+            Recipe craft = CraftingUtils.MakeRecipe(ukulele, glasses);
+
+            craftThreader.recipes = new Recipe[] { craft };
+            Content.AddCraftableDef(craftThreader);
         }
 
         private void CreateOrbEffect(GameObject effect)

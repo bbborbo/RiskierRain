@@ -21,6 +21,24 @@ namespace RiskierRain.Changes
 {
     public static partial class ItemChanges
     {
+        #region dream crucible
+        public static float dreamCrucibleActivationChance = 0.167f;
+        private static void ChangeDreamCrucible()
+        {
+            On.RoR2.Items.LowHealthOrbSpawnerBehavior.GetRollChanceNormalized += LowHealthOrbSpawnerBehavior_GetRollChanceNormalized;
+            LanguageAPI.Add("ITEM_LOWHEALTHORBSPAWNER_DESC",
+                $"When another item goes on cooldown or is consumed, " +
+                $"<style=cIsUtility>{dreamCrucibleActivationChance.AsPercent()} <style=cStack>(+{dreamCrucibleActivationChance.AsPercent()} per stack)</style></style> chance " +
+                $"for <style=cIsHealing>this item to go on cooldown or be consumed instead</style>. " +
+                $"At the start of each stage, it regenerates.");
+        }
+
+        private static float LowHealthOrbSpawnerBehavior_GetRollChanceNormalized(On.RoR2.Items.LowHealthOrbSpawnerBehavior.orig_GetRollChanceNormalized orig, LowHealthOrbSpawnerBehavior self)
+        {
+            return 1f - Mathf.Pow(1f - dreamCrucibleActivationChance, (float)self.stack);
+        }
+        #endregion
+
         #region Chance Doll
         public static int chanceDollChanceBase = 30; //40
         public static int chanceDollChanceStack = 30; //10

@@ -161,28 +161,48 @@ namespace SwanSongExtended.Storms
                 StormEliteWeak.iconSprite = bd.iconSprite;
             });
             On.RoR2.TeleporterInteraction.ChargingState.OnEnter += ChargingState_OnEnter;
+            On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += ReenableStormDirector;
+        }
+
+        #region painandsuffering
+        static bool shouldReenableStormDirector = false;
+        private static void ReenableStormDirector(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, TeleporterInteraction.ChargingState self)
+        {
+            orig(self);
+            if (self.fixedAge > 5)
+            {
+                if (shouldReenableStormDirector)
+                {
+                    CombatDirector stormDirector = null;
+                    if (StormRunBehavior.instance && StormRunBehavior.instance.stormControllerInstance)
+                    {
+                        stormDirector = StormRunBehavior.instance.stormControllerInstance.combatDirector;
+                    }
+                    if(stormDirector != null)
+                    {
+                        stormDirector.enabled = true;
+                    }
+                    shouldReenableStormDirector = false;
+                }
+            }
         }
 
         private static void ChargingState_OnEnter(On.RoR2.TeleporterInteraction.ChargingState.orig_OnEnter orig, TeleporterInteraction.ChargingState self)
         {
-            bool stormDirectorActive = false;
+            shouldReenableStormDirector = false;
             CombatDirector stormDirector = null;
             if (StormRunBehavior.instance && StormRunBehavior.instance.stormControllerInstance)
             {
                 stormDirector = StormRunBehavior.instance.stormControllerInstance.combatDirector;
-                if(stormDirector != null)
+                if(stormDirector != null && stormDirector.enabled)
                 {
-                    stormDirectorActive = stormDirector.enabled;
+                    shouldReenableStormDirector = stormDirector.enabled;
                     stormDirector.enabled = false;
                 }
             }
             orig(self);
-            if(stormDirector != null && stormDirectorActive)
-            {
-                stormDirector.enabled = true;
-            }
         }
-
+        #endregion
         private static void OnStormEliteHealthGateTriggered(CharacterBody sender)
         {
             if (!NetworkServer.active)
@@ -419,7 +439,7 @@ namespace SwanSongExtended.Storms
                 if (component is CombatDirector cd && directorInstanceFound == false)
                 {
                     cd.creditMultiplier = stormDirectorCreditGainMultiplier;
-                    cd.eliteBias = 0;
+                    cd.eliteBias = float.PositiveInfinity;
                     cd.maximumNumberToSpawnBeforeSkipping = 6;
                     cd.expRewardCoefficient = 0.2f;
                     cd.goldRewardCoefficient = 0f;
@@ -427,7 +447,6 @@ namespace SwanSongExtended.Storms
                     //duration between monster waves
                     cd.minRerollSpawnInterval = stormDirectorSpawnIntervalMin;
                     cd.maxRerollSpawnInterval = stormDirectorSpawnIntervalMax;
-                    cd.eliteBias = float.PositiveInfinity;
 
                     directorInstanceFound = true;
                     cd.onSpawnedServer.AddPersistentListener(OnStormDirectorSpawnServer);

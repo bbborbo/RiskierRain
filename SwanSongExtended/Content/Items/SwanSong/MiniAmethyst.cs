@@ -15,6 +15,7 @@ namespace SwanSongExtended.Items
 {
     class MiniAmethyst : ItemBase<MiniAmethyst>
     {
+        public override bool CanBeTemporary => false;
         public override bool CanBeRental => false;
         public override bool isEnabled => true;
         public static float equipmentCooldownFractionToGiveAsRecharge = 0.10f;

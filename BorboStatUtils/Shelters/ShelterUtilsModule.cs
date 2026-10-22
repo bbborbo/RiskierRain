@@ -104,13 +104,28 @@ namespace RainrotSharedUtils.Shelters
             //mockshelters
             On.RoR2.HalcyoniteShrineInteractable.DrainConditionMet += MockShelter_Halcyon;
             On.RoR2.TeleporterInteraction.ChargingState.OnExit += MockShelter_TP;
+            On.EntityStates.TeleporterCatastrophe.DLC4.Teleporter.OverchargingState.OnExit += MockShelter_MajorCatastrophe;
 
             RoR2.Run.onRunDestroyGlobal += SheltersOnRunDestroy;
         }
 
+        private static void MockShelter_MajorCatastrophe(On.EntityStates.TeleporterCatastrophe.DLC4.Teleporter.OverchargingState.orig_OnExit orig, EntityStates.TeleporterCatastrophe.DLC4.Teleporter.OverchargingState self)
+        {
+            HoldoutZoneController zone = self.teleporterInteraction.holdoutZoneController;
+            float radius = zone.currentRadius;
+            GameObject indicator = zone.radiusIndicator.gameObject;
+            MakeMockShelter(indicator, radius, 25f);
+
+            orig(self);
+        }
 
         private static void MockShelter_TP(On.RoR2.TeleporterInteraction.ChargingState.orig_OnExit orig, TeleporterInteraction.ChargingState self)
         {
+            if (self is EntityStates.TeleporterCatastrophe.DLC4.Teleporter.ChargingState)
+            {
+                orig(self);
+                return;
+            }
             HoldoutZoneController zone = self.teleporterInteraction.holdoutZoneController;
             float radius = zone.currentRadius;
             GameObject indicator = zone.radiusIndicator.gameObject;

@@ -19,6 +19,8 @@ using SwanSongExtended.Components;
 using RoR2.Artifacts;
 using static R2API.DamageAPI;
 using System.Collections.ObjectModel;
+using SwanSongExtended.Modules;
+using System.Linq;
 
 namespace SwanSongExtended.Elites
 {
@@ -30,38 +32,60 @@ namespace SwanSongExtended.Elites
 
         public static ModdedDamageType riptideDamageType;
         public static BuffDef riptideDebuff;
+        [AutoConfig("Riptide Debuff Armor Penalty", 0)]
         public static int riptideArmorPenalty = 0;
+        [AutoConfig("Riptide Debuff Movement Speed Penalty", 1f)]
         public static float riptideMovementPenalty = 1f;
+        [AutoConfig("Riptide Debuff Duration", 1)]
         public static float riptideDuration = 1.2f;
 
         public static GameObject waveProjectilePrefab;
         public static GameObject cannonballProjectilePrefab;
-        public static float enemySurgeDashCooldown = 9f;
+        [AutoConfig("Wave Speed", 30f)]
         public static float waveProjectileSpeed = 30f; //60f
+        [AutoConfig("Wave Duration", "Expressed in seconds", 1.5f)]
         public static float waveProjectileDuration = 1.5f; //3f
-        public static float waveProjectileCount = 5f; //12f
+        [AutoConfig("Wave Count", 5)]
+        public static int waveProjectileCount = 5; //12
+        [AutoConfig("Wave Damage", 6f)]
         public static float waveProjectileBaseDamage = 6f;
+        [AutoConfig("Wave Damage Per Level", "Relative to starting damage", 0.5f)]
         public static float waveProjectileDamageLevel = 0.5f;
+        [AutoConfig("Wave Proc Coefficient", 2.0f)]
         public static float waveProjectileProcCoefficient = 2.0f;
+        [AutoConfig("Wave Force", 150f)]
         public static float waveProjectileForce = 150f;
-        public static int cannonballBouncesMin = 1;
-        /// <summary>
-        /// uses hull classification instead of body size
-        /// </summary>
-        public static int cannonballBouncesPerSize = 1;
-        public static float cannonballInitialVelocity = 50f;
+        [AutoConfig("Wave Spawn Distance", 4f)]
         public static float cannonballBlastRadius = 4f;
+
+        [AutoConfig("Cannonball Bounces (Small Enemy)", 1)]
+        public static int cannonballBouncesMin = 1;
+        [AutoConfig("Cannonball Bounces (Large Enemy)", 2)]
+        public static int cannonballBouncesPerSize = 2;
+        [AutoConfig("Cannonball Bounces (Champion)", 3)]
+        public static int cannonballBouncesMax = 3;
+        [AutoConfig("Cannonball Initial Velocity", 50f)]
+        public static float cannonballInitialVelocity = 50f;
+        [AutoConfig("Cannonball Gravity Rate", 0.25f)]
+        public static float cannonballGravityCoefficient = 0.25f;
 
         public static GameObject teleportEffect;
         public static GameObject teleportTracer;
-        public static float cannonballGravityCoefficient = 0.2f;
+        [AutoConfig("Surge Dash Cooldown", 9f)]
+        public static float enemySurgeDashCooldown = 9f;
+        [AutoConfig("Surge Dash Distance (Players)", 60f)]
         public static float teleportDistanceFromCurrent = 60;
+        [AutoConfig("Surge Dash Distance From Target Max", 10f)]
         public static float teleportDistanceFromTargetMin = 10;
         public static float teleportDistanceFromTarget = 30;
+        [AutoConfig("Surge Dash Distance From Target Per Size", 30f)]
         public static float teleportDistanceFromTargetPerSize = 0;
+        [AutoConfig("Surge Dash Delay Before Teleporting", "Expressed in seconds", 0.7f)]
         public static float teleportDelay = 0.7f;
+        [AutoConfig("Surge Dash Delay Before Waves", "Duration after teleporting before firing waves. Expressed in seconds", 0.3f)]
         public static float teleportWaveDelay = 0.3f;
-        public static float teleportEffectDuration = 1.0f;
+        public static float teleportEffectDuration => teleportDelay + teleportWaveDelay;
+        [AutoConfig("Surge Dash Stagger Duration", "Forced duration between enemy teleports. Expressed in seconds", 3.33f)]
         public static float teleportStaggerDuration = 3.33f;
 
         public static int surgingEmpoweredArmor = 300;
@@ -288,7 +312,7 @@ namespace SwanSongExtended.Elites
             GetStatCoefficients += SurgingStats;
             On.RoR2.CharacterBody.AddOrRemoveEliteItemBehavior += AddAffixBehavior;
             MoreStats.OnHit.GetHitBehavior += RiptideOnHit;
-            GlobalEventManager.onCharacterDeathGlobal += FireCannonball;
+            GlobalEventManager.onCharacterDeathServer += FireCannonball;
         }
 
         private void FireCannonball(DamageReport damageReport)
@@ -306,6 +330,11 @@ namespace SwanSongExtended.Elites
         {
             if (victimBody.healthComponent.globalDeathEventChanceCoefficient < 1)
                 return;
+            int bounces = cannonballBouncesMin;
+            if (victimBody.isChampion == true)
+                bounces = cannonballBouncesMax;
+            else if (victimBody.radius > 1.2f)
+                bounces = cannonballBouncesPerSize;
 
             Vector3 spawnPosition = victimBody.corePosition;
             Ray ray = new Ray(spawnPosition + new Vector3(0f, BombArtifactManager.maxBombStepUpDistance, 0f), Vector3.down);
@@ -329,7 +358,7 @@ namespace SwanSongExtended.Elites
                 GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(cannonballProjectilePrefab, spawnPosition, UnityEngine.Random.rotation);
 
                 CannonballController cannonball = gameObject.GetComponent<CannonballController>();
-                cannonball.maxBounces = cannonballBouncesMin + (int)victimBody.radius * (cannonballBouncesPerSize - 1);
+                cannonball.maxBounces = bounces;
                 cannonball.startPosition = spawnPosition;
                 cannonball.rb.MovePosition(spawnPosition);
 
@@ -578,7 +607,7 @@ namespace SwanSongExtended.Elites
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if (!hasAuthority || body == null)
+            if (!hasAuthority || body == null || body.healthComponent.alive == false)
                 return;
 
             cooldownTimer -= Time.deltaTime;
@@ -627,14 +656,39 @@ namespace SwanSongExtended.Elites
                 }
             }
 
-            baseAI.ForceAcquireNearestEnemyIfNoCurrentEnemy();
-            if (baseAI.currentEnemy.gameObject == null)
+            CharacterBody target = null;
+            IEnumerable<CharacterMaster> masterCandidates = CharacterMaster.instancesList
+                .Where(x => x.teamIndex == TeamIndex.Player
+                && (target = x.GetBody()) != null
+                && target.isPlayerControlled == true
+                && IsBodySheltered(body) == false
+                );
+            if (masterCandidates.Count() > 0)
             {
-                this.QuickCooldown(targetSearchCooldown);
-                return;
+                target =
+                    masterCandidates
+                    .Select(x => x.GetBody()).Where(x => x != null)
+                    .OrderBy(x => (x.corePosition - body.corePosition))
+                    .FirstOrDefault()
+                    ;
             }
 
-            if (TryPickNextTpLocation(baseAI.currentEnemy.characterBody.footPosition, out Vector3 loc) && !IsPositionSheltered(loc))
+            if (target == null)
+            {
+                target = baseAI.currentEnemy.characterBody;
+                if(target == null || IsBodySheltered(target))
+                {
+                    baseAI.ForceAcquireNearestEnemyIfNoCurrentEnemy();
+                    target = baseAI.currentEnemy.characterBody;
+                }
+                if (target == null || IsBodySheltered(target))
+                {
+                    this.QuickCooldown(targetSearchCooldown);
+                    return;
+                }
+            }
+
+            if (TryPickNextTpLocation(target.footPosition, out Vector3 loc) && !IsPositionSheltered(loc))
             {
                 SetTeleportLocation(loc);
                 this.QuickCooldown(0.3f);

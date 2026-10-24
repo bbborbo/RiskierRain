@@ -197,7 +197,7 @@ namespace RiskierRain.Changes
             IL.RoR2.HoldoutZoneController.DoUpdate += EclipseHoldoutScale;
             On.RoR2.HoldoutZoneController.Start += EclipseHoldoutDischarge;
             Stage.onServerStageBegin += EclipseItemTax;
-            GlobalEventManager.onCharacterDeathServer += EclipseDeathPizza;
+            GlobalEventManager.onCharacterDeathServer += EclipseElitePizza;
 
 
             string eclipse8Prefix = "\"You only celebrate in the light... because I allow it.\" \n\n";
@@ -218,7 +218,7 @@ namespace RiskierRain.Changes
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
         }
 
-        private static void EclipseDeathPizza(DamageReport damageReport)
+        private static void EclipseElitePizza(DamageReport damageReport)
         {
             if (Run.instance.selectedDifficulty < eclipseLevelSpiteArtifact)
                 return;

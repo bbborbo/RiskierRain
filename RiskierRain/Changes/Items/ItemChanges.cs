@@ -77,6 +77,7 @@ namespace RiskierRain.Changes
             ChangeEclipseLite();
             ChangeWarpedEcho();
             ChangeVengefulSpirit();
+            ChangeEarthboundVessel();
             #endregion
 
             #region healing
@@ -141,6 +142,55 @@ namespace RiskierRain.Changes
             FixPickupStats();
             //MakeMinionsInheritOnKillEffects();
             #endregion
+
+            On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate;
+        }
+
+        #region earthbound vessel
+        public static int earthboundVesselArmor = 10;//5
+        private static void ChangeEarthboundVessel()
+        {
+            GetStatCoefficients += EarthboundVesselArmor;
+        }
+
+        private static void EarthboundVesselArmor(CharacterBody sender, StatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(DLC4Content.Buffs.RechargeableExtraJump);
+            if(buffCount > 0)
+            {
+                args.armorAdd += (earthboundVesselArmor - 5) * buffCount;
+            }
+        }
+        #endregion
+
+        private static void RegenerateReincarnate(On.RoR2.ChampRushMissionController.orig_CompleteReaperFight orig, ChampRushMissionController self)
+        {
+            orig(self);
+            if (!NetworkServer.active)
+                return;
+            CursedBookSpellDef reincarnate = CursedBookSpellCatalog.GetCursedBookSpellDef(CursedBookSpellCatalog.FindSpellByItemIndex(DLC4Content.Items.PageDie.itemIndex));
+            foreach (PlayerCharacterMasterController controller in PlayerCharacterMasterController._instancesReadOnly)
+            {
+                CharacterMaster master = controller.master;
+                if (master == null)
+                    continue;
+                Inventory inv = master.inventory;
+                if (inv == null)
+                    continue;
+                if(reincarnate.cooldownItemDef && inv.GetItemCountPermanent(reincarnate.cooldownItemDef) > 0)
+                {
+                    inv.RemoveItemPermanent(reincarnate.cooldownItemDef, 1);
+                }
+
+                Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+                new Inventory.ItemTransformation
+                {
+                    originalItemIndex = reincarnate.consumedItemDef.itemIndex,
+                    newItemIndex = reincarnate.itemDef.itemIndex,
+                    maxToTransform = int.MaxValue,
+                    transformationType = (ItemTransformationTypeIndex)0
+                }.TryTransform(inv, out tryTransformResult);
+            }
         }
 
 

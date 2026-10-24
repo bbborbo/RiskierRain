@@ -86,6 +86,7 @@ namespace SwanSongExtended.Items
                 Color.grey, true, true);
             cloudReadyBuff.isHidden = cloudReadyBuffHidden;
             cloudNotReadyBuff.isHidden = cloudNotReadyBuffHidden;
+            cloudNotReadyBuff.isCooldown = true;
             base.Init();
         }
 

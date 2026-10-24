@@ -191,16 +191,16 @@ I told you. I. Dont. FUCKING. CARE.";
         {
             orig(self, body, damageInfo, master, procCoefficient, procChainMask);
 
-            if (SwanSongPlugin.procSolverInstalled && SwanSongPlugin.GetProcRate(damageInfo) <= 0)
-            {
-                damageInfo.procChainMask.AddModdedProc(AoeOnCritProc);
-                return;
-            }
             if (damageInfo.procChainMask.HasModdedProc(AoeOnCritProc))
                 return;
             int stack = GetCount(body);
             if (stack <= 0)
                 return;
+            if (SwanSongPlugin.procSolverInstalled && SwanSongPlugin.GetProcRate(damageInfo) <= 0)
+            {
+                damageInfo.procChainMask.AddModdedProc(AoeOnCritProc);
+                return;
+            }
             SphereSearch sphereSearch = new SphereSearch
             {
                 mask = LayerIndex.entityPrecise.mask,
@@ -227,6 +227,7 @@ I told you. I. Dont. FUCKING. CARE.";
                 .ToList();
             if (hurtBoxesList.Count <= 0)
                 return;
+            procChainMask.AddModdedProc(AoeOnCritProc);
 
             int index = 0;// UnityEngine.Random.RandomRangeInt(0, hurtBoxesList.Count);
             HurtBox target = hurtBoxesList[index];

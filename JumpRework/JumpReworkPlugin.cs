@@ -44,12 +44,14 @@ namespace JumpRework
         internal static ConfigFile CustomConfigFile { get; private set; }
         public static ConfigEntry<bool> NerfDoubleJumps { get; set; }
         public static ConfigEntry<bool> ReworkFeather { get; set; }
+        public static ConfigEntry<bool> ReworkMycelium { get; set; }
         public static ConfigEntry<bool> ReworkHeadstomper { get; set; }
         public static ConfigEntry<bool> ReworkUrn { get; set; }
 
         public static ConfigEntry<float> DoubleJumpVBonus { get; set; }
         public static ConfigEntry<float> DoubleJumpHBonus { get; set; }
         public static ConfigEntry<int> FeatherJumpCount { get; set; }
+        public static ConfigEntry<int> MyceliumJumpCount { get; set; }
         public static ConfigEntry<int> UrnJumpCount { get; set; }
         public static ConfigEntry<int> HeadstomperJumpCount { get; set; }
 
@@ -93,6 +95,12 @@ namespace JumpRework
                 true,
                 ""
                 );
+            ReworkMycelium = CustomConfigFile.Bind<bool>(
+                "Reworks",
+                "Rework Mycelium Cap",
+                true,
+                ""
+                );
             ReworkHeadstomper = CustomConfigFile.Bind<bool>(
                 "Reworks",
                 "Rework Hopoo Feather",
@@ -123,6 +131,11 @@ namespace JumpRework
             FeatherJumpCount = CustomConfigFile.Bind<int>(
                 "Jump Counts",
                 "Hopoo Feather Jump Count",
+                1,
+                "Only applies if its respective rework is enabled.");
+            MyceliumJumpCount = CustomConfigFile.Bind<int>(
+                "Jump Counts",
+                "Mycelium Jump Count",
                 1,
                 "Only applies if its respective rework is enabled.");
             HeadstomperJumpCount = CustomConfigFile.Bind<int>(
@@ -189,6 +202,17 @@ namespace JumpRework
             {
                 MiredUrnRework();
             }
+            if (ReworkUrn.Value)
+            {
+                LanguageAPI.Add("ITEM_MUSHSHOT_PICKUP", "Gain a double jump. Hitting the ground at a great enough speed creates a group of damaging spore clouds.");
+                LanguageAPI.Add("ITEM_MUSHSHOT_DESC",
+                    $"Gain <style=cIsUtility>{MyceliumJumpCount.Value}</style> jumps. " +
+                    $"<style=cIsUtility>Nullifies fall damage</style>. " +
+                    $"Hitting the ground at a <style=cIsUtility>great enough speed</style> " +
+                    $"creates <style=cIsDamage>3</style> damaging spore clouds on impact " +
+                    $"that deal <style=cIsDamage>1000%</style> <style=cStack>(+200% per stack)</style> " +
+                    $"damage each over <style=cIsUtility>10s</style>.");
+            }
         }
 
         private void JumpCounts(CharacterBody sender, MoreStatHookEventArgs args)
@@ -203,6 +227,10 @@ namespace JumpRework
                 if (inv.GetItemCountEffective(RoR2Content.Items.FallBoots) > 0 && ReworkHeadstomper.Value)
                 {
                     args.jumpCountAdd += HeadstomperJumpCount.Value;
+                }
+                if (inv.GetItemCountEffective(DLC4Content.Items.MushShot) > 0 && ReworkMycelium.Value)
+                {
+                    args.jumpCountAdd += MyceliumJumpCount.Value;
                 }
             }
         }

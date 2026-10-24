@@ -486,6 +486,11 @@ namespace SwanSongExtended.Storms
 
             void OnStormDirectorSpawnServer(GameObject masterObject)
             {
+                CharacterMaster master;
+                if (masterObject.TryGetComponent(out master) == false)
+                    return;
+                if (master.isBoss == true)
+                    return;
                 int surgingCount = AffixFloodBehavior.readOnlyInstancesList.Count;
                 int howlingCount = AffixSquallBehavior.readOnlyInstancesList.Count;
 
@@ -499,7 +504,6 @@ namespace SwanSongExtended.Storms
                 EquipmentDef eliteEquipmentDef = eliteDef.eliteEquipmentDef;
                 equipmentIndex = ((eliteEquipmentDef != null) ? eliteEquipmentDef.equipmentIndex : EquipmentIndex.None);
 
-                CharacterMaster component = masterObject.GetComponent<CharacterMaster>();
                 //GameObject bodyObject = component.GetBodyObject();
                 //if (bodyObject)
                 //{
@@ -510,7 +514,7 @@ namespace SwanSongExtended.Storms
                 //}
                 if (equipmentIndex != EquipmentIndex.None)
                 {
-                    component.inventory.SetEquipmentIndex(equipmentIndex, false);
+                    master.inventory.SetEquipmentIndex(equipmentIndex, false);
                 }
             }
         }

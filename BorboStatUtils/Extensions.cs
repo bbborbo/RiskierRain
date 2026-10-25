@@ -20,6 +20,10 @@ namespace RainrotSharedUtils
                 entryStopwatchValue = Mathf.Floor(Stage.instance.entryStopwatchValue);
             return stopwatch - entryStopwatchValue;
         }
+        public static bool IsPot(this CharacterBody self)
+        {
+            return self.bodyIndex == BodyCatalog.FindBodyIndex("ExplosivePotBody");
+        }
         public static bool IsInvincible(this CharacterBody self)
         {
             return

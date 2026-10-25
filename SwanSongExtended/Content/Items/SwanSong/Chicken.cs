@@ -36,7 +36,7 @@ namespace SwanSongExtended.Items
 
         public override ItemTier Tier => ItemTier.Tier2;
 
-        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.OnStageBeginEffect };
+        public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Healing, ItemTag.OnStageBeginEffect, ItemTag.FoodRelated };
 
         public override GameObject ItemModel => LoadDropPrefab("mdlChicken");
 
@@ -80,32 +80,34 @@ namespace SwanSongExtended.Items
         public int duration = 120;
         int cachedMochaCount = 0;
 
-        private void Start()
-        {
-            SetMochaTime(duration);
-        }
-
         public override void OnInventoryRefresh()
         {
             base.OnInventoryRefresh();
 
             if (stack == 0 /*&& !body.inventory.inventoryDisabled*/)
             {
-                //body.ClearTimedBuffs(Mocha.mochaBuffActive);
+                cachedMochaCount = 0;
+                body.ClearTimedBuffs(Chicken.foodPoisoning);
                 //body.RemoveBuff(Mocha.mochaBuffInactive);
                 return;
             }
 
             if (cachedMochaCount < stack)
             {
-                SetMochaTime(duration);
+                SetMochaTime(duration, stack - cachedMochaCount);
             }
             cachedMochaCount = stack;
         }
-
-        private void SetMochaTime(float duration)
+        void OnDisable()
         {
-            body.AddTimedBuff(Chicken.foodPoisoning, duration);
+            cachedMochaCount = 0;
+            body.ClearTimedBuffs(Chicken.foodPoisoning);
+        }
+
+        private void SetMochaTime(float duration, int count)
+        {
+            for(int i = 0; i < count; i++)
+                body.AddTimedBuff(Chicken.foodPoisoning, duration);
         }
     }
 }

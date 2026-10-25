@@ -521,23 +521,23 @@ namespace RainrotSharedUtils.MoreProjectiles
                 a = raycastHit.point;
                 flag = true;
             }
-            float magnitude = SporeGrenade.projectileVelocity;
+            float magnitude = self.projectileVelocity;
             if (flag)
             {
                 Vector3 vector = a - ray.origin;
                 Vector2 a2 = new Vector2(vector.x, vector.z);
                 float magnitude2 = a2.magnitude;
                 Vector2 vector2 = a2 / magnitude2;
-                if (magnitude2 < SporeGrenade.minimumDistance)
+                if (magnitude2 < self.minimumDistance)
                 {
-                    magnitude2 = SporeGrenade.minimumDistance;
+                    magnitude2 = self.minimumDistance;
                 }
-                if (magnitude2 > SporeGrenade.maximumDistance)
+                if (magnitude2 > self.maximumDistance)
                 {
-                    magnitude2 = SporeGrenade.maximumDistance;
+                    magnitude2 = self.maximumDistance;
                 }
-                float y = Trajectory.CalculateInitialYSpeed(SporeGrenade.timeToTarget, vector.y);
-                float num = magnitude2 / SporeGrenade.timeToTarget;
+                float y = Trajectory.CalculateInitialYSpeed(self.timeToTarget, vector.y);
+                float num = magnitude2 / self.timeToTarget;
                 Vector3 direction = new Vector3(vector2.x * num, y, vector2.y * num);
                 magnitude = direction.magnitude;
                 ray.direction = direction;
@@ -545,11 +545,11 @@ namespace RainrotSharedUtils.MoreProjectiles
             Quaternion rotation = Util.QuaternionSafeLookRotation(ray.direction + UnityEngine.Random.insideUnitSphere * 0.05f);
             FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
             {
-                projectilePrefab = SporeGrenade.projectilePrefab,
+                projectilePrefab = self.projectilePrefab,
                 position = ray.origin,
                 rotation = rotation,
                 owner = self.gameObject,
-                damage = self.damageStat * SporeGrenade.damageCoefficient,
+                damage = self.damageStat * self.damageCoefficient,
                 crit = Util.CheckRoll(self.critStat, self.characterBody.master),
                 force = 0,
                 speedOverride = magnitude

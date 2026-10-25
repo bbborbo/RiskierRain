@@ -13,6 +13,7 @@ using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
 using static SwanSongExtended.Modules.Language.Styling;
 using static R2API.RecalculateStatsAPI;
+using System.Linq;
 
 namespace SwanSongExtended.Items
 {
@@ -71,6 +72,13 @@ Of course, you can always buy the premium version for unlimited discounts~
                 true, false
                 );
             base.Init();
+            SwanSongPlugin.LoadAsync<ExplicitPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_sadism_sad1.dtSad1RentalsExplicit_Money3_asset, (dropTable) =>
+            {
+                ExplicitPickupDropTable.PickupDefEntry entry = new ExplicitPickupDropTable.PickupDefEntry();
+                entry.pickupDef = ItemsDef;
+                entry.pickupWeight = 0.3f;
+                dropTable.pickupEntries = dropTable.pickupEntries.Append(entry).ToArray();
+            });
         }
         public override void Hooks()
         {

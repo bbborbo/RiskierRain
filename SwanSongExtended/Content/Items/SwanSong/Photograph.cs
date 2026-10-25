@@ -16,6 +16,7 @@ namespace SwanSongExtended.Items
 {
     class Photograph : ItemBase<Photograph>
     {
+        public override bool CanBeRental => false;
         public static WeightedSelection<string> printerSpawncardPaths;
 
         public static BuffDef photographCritBuff;

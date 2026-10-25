@@ -188,7 +188,6 @@ namespace SurvivorTweaks.SurvivorTweaks
                         explode.bonusBlastForce = Vector3.up * 500;
                         explode.canRejectForce = false;
                         explode.lifetime = 0.01f;
-                        explode.explodeOnLifeTimeExpiration = true;
                         explode.blastProcCoefficient = 0;
                     }
 

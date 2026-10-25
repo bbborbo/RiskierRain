@@ -27,6 +27,9 @@
     <None Include="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
     <None Include="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <None Include="Content\Interactables\QuestInteractables\SpineCharger.cs" />
+    <None Include="Content\Items\Disabled\Watch2.cs" />
+    <None Include="Content\Items\Helpers\EnemyDamageUp.cs" />
+    <None Include="Content\Items\Helpers\EnemyHealthUp.cs" />
     <None Include="Content\Items\SecretsOfTheScug\Boomerang.cs" />
     <None Include="Content\Items\SecretsOfTheScug\PearWiggler.cs" />
     <None Include="Content\Items\SecretsOfTheScug\Peashooter.cs" />
@@ -63,7 +66,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RiskOfRain2.GameLibs" Version="*-*" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.5.0-r.1" />
     <PackageReference Include="MMHOOK.RoR2" Version="*" NoWarn="NU1701" />
     <PackageReference Include="RoR2BepInExPack" Version="*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">
@@ -104,6 +107,9 @@
     <Compile Remove="Content\Interactables\QuestInteractables\LunarBrandMaker.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\SpineAltar.cs" />
     <Compile Remove="Content\Interactables\QuestInteractables\SpineCharger.cs" />
+    <Compile Remove="Content\Items\Disabled\Watch2.cs" />
+    <Compile Remove="Content\Items\Helpers\EnemyDamageUp.cs" />
+    <Compile Remove="Content\Items\Helpers\EnemyHealthUp.cs" />
     <Compile Remove="Content\Items\Reworks\ChimeraScrap.cs" />
     <Compile Remove="Content\Items\Reworks\ChocolateCoin.cs" />
     <Compile Remove="Content\Items\Reworks\Elixir2.cs" />
@@ -140,6 +146,9 @@
     </Reference>
     <Reference Include="FabricatorStandalone">
       <HintPath>libs\FabricatorStandalone.dll</HintPath>
+    </Reference>
+    <Reference Include="ProcSolver">
+      <HintPath>libs\ProcSolver.dll</HintPath>
     </Reference>
   </ItemGroup>
 

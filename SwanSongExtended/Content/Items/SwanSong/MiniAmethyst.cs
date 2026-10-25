@@ -15,6 +15,8 @@ namespace SwanSongExtended.Items
 {
     class MiniAmethyst : ItemBase<MiniAmethyst>
     {
+        public override bool CanBeTemporary => false;
+        public override bool CanBeRental => false;
         public override bool isEnabled => true;
         public static float equipmentCooldownFractionToGiveAsRecharge = 0.10f;
         public static float minRechargePerAbility = 2f;
@@ -80,9 +82,7 @@ namespace SwanSongExtended.Items
                 DirectorPlacementRule placementRule = new DirectorPlacementRule
                 {
                     placementMode =
-                        SceneInfo.instance && SceneInfo.instance.approximateMapBoundMesh
-                            ? DirectorPlacementRule.PlacementMode.RandomNormalized
-                            : DirectorPlacementRule.PlacementMode.Random,
+                            DirectorPlacementRule.PlacementMode.Approximate,
                     spawnOnTarget = t,
                     minDistance = 5f,
                     maxDistance = 10f
@@ -92,6 +92,13 @@ namespace SwanSongExtended.Items
                 DirectorSpawnRequest spawnRequest = new DirectorSpawnRequest(spawnCard, placementRule, rng);
 
                 GameObject pillarObject = DirectorCore.instance.TrySpawnObject(spawnRequest);
+                if (pillarObject == null)
+                    return;
+                if (pillarObject.TryGetComponent(out PurchaseInteraction purchaseInteraction))
+                {
+                    purchaseInteraction.automaticallyScaleCostWithDifficulty = false;
+                    purchaseInteraction.Networkcost = Run.instance.GetDifficultyScaledCost(purchaseInteraction.cost, Stage.instance.entryDifficultyCoefficient);
+                }
                 //if (pillarObject)
                 //{
                 //    createdPillarObjects.Add(pillarObject);

@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RiskOfRain2.GameLibs" Version="*-*" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.5.0-r.1" />
     <PackageReference Include="MMHOOK.RoR2" Version="*" NoWarn="NU1701" />
     <PackageReference Include="RoR2BepInExPack" Version="*" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.0.8">

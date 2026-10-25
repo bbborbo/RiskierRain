@@ -11,7 +11,9 @@ namespace SwanSongExtended.Items
 {
     class EnemyDamageUp : ItemBase<EnemyDamageUp>
     {
+        public override bool isEnabled => false;
         public override bool forcePrerequisites => true;
+        public override bool IsHidden => true;
         public override string ConfigName => "";
         public override string ItemName => "Enemy Damage Up";
 

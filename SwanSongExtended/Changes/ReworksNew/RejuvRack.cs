@@ -60,10 +60,15 @@ namespace SwanSongExtended.Changes
             ILCursor c = new ILCursor(il);
 
             //void the original corpsebloom logic, we dont need it
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<HealthComponent>(nameof(HealthComponent.repeatHealComponent)),
                 x => x.MatchCallOrCallvirt(out _)
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RejuvOverheal), 1);
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4_0);
 
@@ -80,25 +85,30 @@ namespace SwanSongExtended.Changes
 
             int overhealLoc = 2;
             //jump to aegis logic, we wont delete aegis here but we need to find it
-            c.GotoNext(MoveType.After,
-                x => x.MatchLdfld("RoR2.HealthComponent/ItemCounts", "barrierOnOverHeal")
-                );
-            c.GotoPrev(MoveType.Before,
+            bool b2 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld("RoR2.HealthComponent/ItemCounts", "barrierOnOverHeal"))
+                && c.TryGotoPrev(MoveType.Before,
                 x => x.MatchLdloc(out overhealLoc),
                 x => x.MatchLdcR4(0.0f),
                 x => x.MatchBleUn(out _)
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RejuvOverheal), 2);
+                return;
+            }
             c.Emit(OpCodes.Ldloc, overhealLoc);
             c.Emit(OpCodes.Ldarg, 0); //self, healthComponent
+            c.Emit(OpCodes.Ldarg, 2); //procChainMask
             c.Emit(OpCodes.Ldarg, 3); //nonRegen
-            c.EmitDelegate<Action<float, HealthComponent, bool>>((overhealAmt, self, nonRegen) =>
+            c.EmitDelegate<Action<float, HealthComponent,ProcChainMask, bool>>((overhealAmt, self, mask, nonRegen) =>
             {
                 int rackCount = self.itemCounts.repeatHeal;
                 if (overhealAmt > 0 && nonRegen && rackCount > 0 && self.repeatHealComponent)
                 {
                     float reserveHealing = overhealAmt * (baseOverhealEfficiency + stackOverhealEfficiency * (rackCount - 1));
-                    float reserveMax = self.fullHealth * (baseReserveCapacityFraction + stackReserveCapacityFraction * (rackCount - 1));
-                    self.repeatHealComponent.AddReserve(reserveHealing, reserveMax);
+                    //float reserveMax = self.fullHealth * (baseReserveCapacityFraction + stackReserveCapacityFraction * (rackCount - 1));
+                    self.repeatHealComponent.AddReserve(reserveHealing, mask);
                 }
             });
 
@@ -130,8 +140,7 @@ namespace SwanSongExtended.Changes
         {
             RepeatHealComponent self = (mono as RepeatHealComponent);
             HealthComponent hc = self.healthComponent;
-            self.AddReserve(hc.fullHealth * reserveFillPerSecond * Time.fixedDeltaTime,
-                hc.fullHealth * (baseReserveCapacityFraction + stackReserveCapacityFraction * (hc.itemCounts.repeatHeal - 1)));
+            self.AddReserve(hc.fullHealth * reserveFillPerSecond * Time.fixedDeltaTime, default(ProcChainMask));
             if (!hc || hc.health < hc.fullHealth)
             {
                 self.healthFractionToRestorePerSecond = healthFractionToRestorePerSecond;

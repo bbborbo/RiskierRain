@@ -82,12 +82,17 @@ namespace SwanSongExtended.Changes
 			ILCursor c = new ILCursor(il);
 
 			int healthComponentLoc = 0;
-			c.GotoNext(MoveType.After,
+			bool b1 = c.TryGotoNext(MoveType.After,
 				x => x.MatchLdfld<HurtBox>(nameof(HurtBox.healthComponent)),
-				x => x.MatchStloc(out healthComponentLoc));
-
-			c.GotoNext(MoveType.After,
-				x => x.MatchLdloc(healthComponentLoc));
+				x => x.MatchStloc(out healthComponentLoc))
+				&& c.TryGotoNext(MoveType.After,
+				x => x.MatchLdloc(healthComponentLoc)
+				);
+			if (!b1)
+			{
+				SwanSongPlugin.DebugBreakpoint(nameof(RazorwireArrival));
+				return;
+			}
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<HealthComponent, LightningOrb, HealthComponent>>((hc, orb) =>
 			{
@@ -108,24 +113,33 @@ namespace SwanSongExtended.Changes
 			ILCursor c = new ILCursor(il);
 			int buffCount = 0;
 
-			c.GotoNext(MoveType.After,
+			bool b1 = c.TryGotoNext(MoveType.After,
 				x => x.MatchLdflda<HealthComponent>("itemCounts"),
-				x => x.MatchLdfld<HealthComponent.ItemCounts>("thorns")
-				);
-			c.GotoPrev(MoveType.Before,
+				x => x.MatchLdfld<HealthComponent.ItemCounts>("thorns")) 
+				&& c.TryGotoPrev(MoveType.Before,
 				x => x.MatchLdcI4(out _),
 				x => x.MatchLdcI4(out _)
 				);
+			if (!b1)
+			{
+				SwanSongPlugin.DebugBreakpoint(nameof(RazorwireBegin), 1);
+				return;
+			}
 			c.Next.Operand = razorwireTargetsBase;
 			c.Index++;
 			c.Next.Operand = razorwireTargetsStack;
 
 
-			c.GotoNext(MoveType.After,
+			bool b2 = c.TryGotoNext(MoveType.After,
 				x => x.MatchLdflda<HealthComponent>("itemCounts"),
 				x => x.MatchLdfld<HealthComponent.ItemCounts>("thorns"),
 				x => x.MatchLdcI4(0)
 				);
+			if (!b2)
+			{
+				SwanSongPlugin.DebugBreakpoint(nameof(RazorwireBegin), 2);
+				return;
+			}
 			c.Index--;
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<Int32, HealthComponent, Int32>>((itemCount, hc) =>
@@ -146,20 +160,29 @@ namespace SwanSongExtended.Changes
 				return itemCount;
 			});
 
-			c.GotoNext(MoveType.After,
+			bool b3 = c.TryGotoNext(MoveType.After,
 				x => x.MatchLdflda<HealthComponent>("itemCounts"),
-				x => x.MatchLdfld<HealthComponent.ItemCounts>("thorns")
-				);
-			c.GotoPrev(MoveType.Before,
+				x => x.MatchLdfld<HealthComponent.ItemCounts>("thorns"))
+			 && c.TryGotoPrev(MoveType.Before,
 				x => x.MatchLdcI4(out _),
 				x => x.MatchLdcI4(out _)
 				);
+			if (!b3)
+			{
+				SwanSongPlugin.DebugBreakpoint(nameof(RazorwireBegin), 3);
+				return;
+			}
 			c.Next.Operand = razorwireRangeBase;
 			c.Index++;
 			c.Next.Operand = razorwireRangeStack;
 
-			c.GotoNext(MoveType.Before,
+			bool b4 = c.TryGotoNext(MoveType.Before,
 				x => x.MatchCallOrCallvirt<OrbManager>(nameof(OrbManager.AddOrb)));
+			if (!b4)
+			{
+				SwanSongPlugin.DebugBreakpoint(nameof(RazorwireBegin));
+				return;
+			}
 			c.Emit(OpCodes.Ldarg_0);
 			c.EmitDelegate<Func<LightningOrb, HealthComponent, LightningOrb>>((razorwireOrb, hc) =>
 			{

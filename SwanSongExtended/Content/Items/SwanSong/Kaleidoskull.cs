@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using static SwanSongExtended.Modules.Language.Styling;
+using static R2API.RecalculateStatsAPI;
 
 namespace SwanSongExtended.Items
 {
@@ -20,6 +21,7 @@ namespace SwanSongExtended.Items
         public static int critChance = 5;
         public static int debuffCountBase = 1;
         public static int debuffCountStack = 1;
+        public static float debuffChance = 0.5f;
         public override string ItemName => "Kaleidoskull";
 
         public override string ItemLangTokenName => "KALEIDOSKULL";
@@ -27,7 +29,7 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Critical Strikes inflict a random debuff. <style=cIsVoid>Corrupts all Predatory Instincts.</style>";
 
         public override string ItemFullDescription => $"Gain {DamageColor(critChance + "% critical chance")}. {DamageColor("Critical strikes")} randomly {DamageColor("Ignite")} or {UtilityColor("Frost")}. " +
-            $"Additionally inflict {UtilityColor(debuffCountBase.ToString())} {StackText("+" + debuffCountStack)} random debuffs. {VoidColor("Corrupts all Predatory Instincts.")}";
+            $"Additionally has a {debuffChance.AsPercent()} chance to inflict {UtilityColor(debuffCountBase.ToString())} {StackText("+" + debuffCountStack)} random debuffs. {VoidColor("Corrupts all Predatory Instincts.")}";
 
         public override string ItemLore => "";
 
@@ -55,6 +57,13 @@ namespace SwanSongExtended.Items
         {
             On.RoR2.GlobalEventManager.ProcessHitEnemy += KaleidoskullCrit;
             On.RoR2.BuffCatalog.Init += KaleidoskullBuffStuff;
+            GetStatCoefficients += KaleidoskullCritBonus;
+        }
+
+        private void KaleidoskullCritBonus(CharacterBody sender, StatHookEventArgs args)
+        {
+            if (GetCount(sender) > 0)
+                args.critAdd += critChance;
         }
 
         private void KaleidoskullBuffStuff(On.RoR2.BuffCatalog.orig_Init orig)
@@ -103,6 +112,11 @@ namespace SwanSongExtended.Items
             {
                 DotController.DotDef dotDef = DotController.GetDotDef(DotController.DotIndex.Fracture);
                 DotController.InflictDot(victim.gameObject, damageInfo.attacker, damageInfo.inflictedHurtbox, DotController.DotIndex.Fracture, dotDef.interval);
+            });
+            buffsToProcs.Add(DLC4Content.Buffs.Haunted, (damageInfo, attacker, victim) =>
+            {
+                DotController.DotDef dotDef = DotController.GetDotDef(DotController.DotIndex.Haunt);
+                DotController.InflictDot(victim.gameObject, damageInfo.attacker, damageInfo.inflictedHurtbox, DotController.DotIndex.Haunt, dotDef.interval);
             });
 
             void InflictBurn(DamageInfo damageInfo, CharacterBody attackerBody, CharacterBody victimBody)
@@ -160,19 +174,6 @@ namespace SwanSongExtended.Items
                 if (stack <= 0)
                     return;
                 int triggerCt = debuffCountBase + debuffCountStack * (stack - 1);
-                if(damageInfo.procCoefficient < 1)
-                {
-                    float pcoInverted = 1f - damageInfo.procCoefficient;
-                    for (int i = triggerCt; i > 0; i--)
-                    {
-                        if (Util.CheckRoll0To1(pcoInverted))
-                        {
-                            triggerCt--;
-                        }
-                        if (triggerCt <= 0)
-                            triggerCt = 1;
-                    }
-                }
 
                 victimBody.AddTimedBuff(KaleidoskullCooldownBuff, 0.05f);
                 List<BuffDef> available = new List<BuffDef>();
@@ -209,6 +210,8 @@ namespace SwanSongExtended.Items
                 {
                     return;
                 }
+                if (Util.CheckRoll(debuffChance * damageInfo.procCoefficient, attackerBody.master.luck) == false)
+                    return;
                 for(int n = 0; n < triggerCt; n++)
                 {
                     BuffDef buff = available[UnityEngine.Random.Range(0, available.Count)];

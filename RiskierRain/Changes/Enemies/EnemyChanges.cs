@@ -93,38 +93,6 @@ namespace RiskierRain.Changes
             }
         }
 
-        #region enemy use equip
-
-        public static void MakeEnemiesuseEquipment()
-        {
-            Debug.Log("Enemies using equipment needs to be fixed");
-            On.RoR2.EquipmentSlot.FixedUpdate += TryUseEquip;
-        }
-
-        private static void TryUseEquip(On.RoR2.EquipmentSlot.orig_FixedUpdate orig, EquipmentSlot self)
-        {
-            orig(self);
-            if (!self.characterBody.isPlayerControlled && self.characterBody.teamComponent.teamIndex != TeamIndex.Player)
-            {
-                if (!self.characterBody.outOfCombat)
-                {
-                    //self.ExecuteIfReady(EquipmentCatalog.GetEquipmentDef(self.equipmentIndex));
-                    bool isEquipmentActivationAllowed = self.characterBody.isEquipmentActivationAllowed;
-                    if (isEquipmentActivationAllowed /**&& self.hasEffectiveAuthority*/)
-                    {
-                        if (NetworkServer.active)
-                        {
-                            self.ExecuteIfReady();
-                            return;
-                        }
-                        self.CallCmdExecuteIfReady();
-                    }
-                }
-
-            }
-        }
-        #endregion
-
         #region vagrant
         static float vagrantBaseHealth = 1600; //2100
         static GameObject vagrantPrefab;

@@ -29,6 +29,8 @@ using System.Linq;
 using SwanSongExtended.Modules;
 using RoR2.Projectile;
 using static R2API.DamageAPI;
+using HG;
+using EntityStates.VoidRaidCrab;
 
 namespace SwanSongExtended.Elites
 {
@@ -39,10 +41,12 @@ namespace SwanSongExtended.Elites
 
         public static ModdedDamageType strippingDamageType;
         public static BuffDef strippedDebuff;
+        [AutoConfig("Stripped Debuff Armor Penalty", 5)]
         public static int strippedArmorPenalty = 5;
         /// <summary>
         /// -1 is permanent
         /// </summary>
+        [AutoConfig("Stripped Debuff Duration", "-1 is permanent", 20)]
         public static float strippedDuration = 20;
 
         public static int   howlingEmpoweredArmor => SurgingAspect.surgingEmpoweredArmor;
@@ -50,23 +54,33 @@ namespace SwanSongExtended.Elites
         public static float howlingEmpoweredAtkSpeed = 0.3f;
 
         public static float playerSquallDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill;
+        [AutoConfig("Squall Damage Per Second", 40)]
         public static float squallDamagePerSecond = 40f;
+        [AutoConfig("Squall Damage Per Level", "Relative to starting damage per second", 0.4f)]
         public static float squallDamagePerLevel = 0.4f;//0.2f
+        [AutoConfig("Squall Proc Coefficient Per Tick", 0.25f)]
         public static float squallProcCoefficient = 0.25f;
-        /// <summary>
-        /// expressed in seconds?
-        /// </summary>
-        public static float squallAimDamping = 0.45f;
+        [AutoConfig("Squall Aim Delay", "Expressed in seconds", 0.5f)]
+        public static float squallAimDamping = 0.5f;
+        [AutoConfig("Squall Telegraph Duration", "Expressed in seconds", 1.5f)]
         public static float squallPreFireTime = 1.5f;
         public static float squallAimMaxSpeed = 40f;
+        [AutoConfig("Squall Beam Radius",  1.75f)]
         public static float squallBeamRadius = 1.75f;
+        [AutoConfig("Squall Telegraph Beam Radius", 0.75f)]
         public static float squallPreBeamRadius = 0.75f;
+        [AutoConfig("Squall Tick Frequency", 8f)]
         public static float squallBeamTickFrequency = 8f;
 
+        [AutoConfig("Wind Missile Damage", 6f)]
         public static float missileDamageBase = 6f;
+        [AutoConfig("Wind Missile Damage Per Level", "Relative to starting damage", 0.3f)]
         public static float missileDamagePerLevel = 0.3f;
+        [AutoConfig("Wind Missile Proc Coefficient", 0.5f)]
         public static float missileProcCoefficient = 0.5f;
+        [AutoConfig("Wind Missile Total Base", 3)]
         public static int missileCtBase = 3;
+        [AutoConfig("Wind Missile Total Per Size", 1)]
         public static int missileCtPerSize = 1;
 
         public static GameObject squallBeamVfxPrefab;
@@ -151,6 +165,7 @@ namespace SwanSongExtended.Elites
                     //no need to register ghost to content pack
                     GameObject ghost = fireballGhost.InstantiateClone("HowlWindMissileGhost", false);
                     projectile.ghostPrefab = ghost;
+                    projectile.ghostPrefabAddress = null;
 
                     //if(ghost.TryGetComponent(out ParticleSystem particleSystem))
                     //{
@@ -164,8 +179,8 @@ namespace SwanSongExtended.Elites
             {
                 missile.maxVelocity = 25;
                 missile.acceleration = 2;
-                missile.delayTimer = 0.5f;
-                missile.turbulence = 5f;
+                missile.delayTimer = 1f;
+                missile.turbulence = 15f;
             }
 
             if(howlWindMissilePrefab.TryGetComponent(out ProjectileDamage pd))
@@ -693,6 +708,18 @@ namespace SwanSongExtended.Elites
         bool hasAuthority;
         private GameObject beamVfxInstance;
         private LoopSoundManager.SoundLoopPtr loopPtr;
+        protected float? beamLastDistance;
+        protected float beamCurrentDistance
+        {
+            get
+            {
+                if (this.beamLastDistance == null)
+                {
+                    return 1000;
+                }
+                return this.beamLastDistance.Value;
+            }
+        }
 
         FiringState _firingState = FiringState.Off;
         public FiringState firingState
@@ -756,6 +783,7 @@ namespace SwanSongExtended.Elites
 
             Ray beamRay = this.GetBeamRay();
             this.beamVfxInstance.transform.SetPositionAndRotation(beamRay.origin, Quaternion.LookRotation(beamRay.direction));
+            this.beamVfxInstance.transform.localScale = new Vector3(this.beamVfxInstance.transform.localScale.x, this.beamVfxInstance.transform.localScale.y, this.beamCurrentDistance * SpinBeamAttack.vfxDistanceScaleMultiplier);
         }
 
         private void UpdateFiringState(FiringState newState)
@@ -961,6 +989,26 @@ namespace SwanSongExtended.Elites
                 isCrit = false,
                 HitEffectNormal = false
             }.Fire();
+
+            this.beamLastDistance = null;
+            this.GetBeamStopPosition(beamRay);
+        }
+        private void GetBeamStopPosition(Ray beamRay)
+        {
+            float num = float.PositiveInfinity;
+            for (int i = 0; i < HurtBox.readOnlyAttackRejectorsList.Count; i++)
+            {
+                HurtBox hurtBox = HurtBox.readOnlyAttackRejectorsList[i];
+                RaycastHit raycastHit;
+                if (hurtBox && hurtBox.collider.SphereCastApproximate(beamRay, out raycastHit, 1000, WhirlwindAspect.squallBeamRadius, 3) && raycastHit.distance < num)
+                {
+                    num = raycastHit.distance;
+                }
+            }
+            if (num != float.PositiveInfinity)
+            {
+                this.beamLastDistance = new float?(num);
+            }
         }
 
         private void DoBodyAttachment()

@@ -14,7 +14,8 @@ using static RiskierRain.RiskierRainPlugin;
 using static R2API.RecalculateStatsAPI;
 using UnityEngine.Networking;
 using MoreStats;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
+using static RiskierRain.CoreModules.Language.Styling;
 
 namespace RiskierRain.Changes
 {
@@ -46,7 +47,7 @@ namespace RiskierRain.Changes
             //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
             //RiskierRainPlugin.RetierItemAsync(RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset); //ghors
             //RiskierRainPlugin.RetierItemAsync(RoR2_Base_DeathMark.DeathMark_asset); //guess faggot
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
+            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
             //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset);//faraday
 
             RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
@@ -75,6 +76,8 @@ namespace RiskierRain.Changes
             ChangeTopazBrooch();
             ChangeEclipseLite();
             ChangeWarpedEcho();
+            ChangeVengefulSpirit();
+            ChangeEarthboundVessel();
             #endregion
 
             #region healing
@@ -117,6 +120,8 @@ namespace RiskierRain.Changes
             FixLostSeers();
             //ChangeStickyBomb();
             ReworkShuriken();
+            ChangeDormantSpirit();
+            ChangeWarHorn();
             #endregion
 
             #region economy
@@ -129,6 +134,7 @@ namespace RiskierRain.Changes
             ChangeWarbanner();
             ChangeChronobauble();
             //ChangeBottledChaos();
+            ChangeDreamCrucible();
             #endregion
 
             #region misc
@@ -136,6 +142,55 @@ namespace RiskierRain.Changes
             FixPickupStats();
             //MakeMinionsInheritOnKillEffects();
             #endregion
+
+            On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate;
+        }
+
+        #region earthbound vessel
+        public static int earthboundVesselArmor = 10;//5
+        private static void ChangeEarthboundVessel()
+        {
+            GetStatCoefficients += EarthboundVesselArmor;
+        }
+
+        private static void EarthboundVesselArmor(CharacterBody sender, StatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(DLC4Content.Buffs.RechargeableExtraJump);
+            if(buffCount > 0)
+            {
+                args.armorAdd += (earthboundVesselArmor - 5) * buffCount;
+            }
+        }
+        #endregion
+
+        private static void RegenerateReincarnate(On.RoR2.ChampRushMissionController.orig_CompleteReaperFight orig, ChampRushMissionController self)
+        {
+            orig(self);
+            if (!NetworkServer.active)
+                return;
+            CursedBookSpellDef reincarnate = CursedBookSpellCatalog.GetCursedBookSpellDef(CursedBookSpellCatalog.FindSpellByItemIndex(DLC4Content.Items.PageDie.itemIndex));
+            foreach (PlayerCharacterMasterController controller in PlayerCharacterMasterController._instancesReadOnly)
+            {
+                CharacterMaster master = controller.master;
+                if (master == null)
+                    continue;
+                Inventory inv = master.inventory;
+                if (inv == null)
+                    continue;
+                if(reincarnate.cooldownItemDef && inv.GetItemCountPermanent(reincarnate.cooldownItemDef) > 0)
+                {
+                    inv.RemoveItemPermanent(reincarnate.cooldownItemDef, 1);
+                }
+
+                Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+                new Inventory.ItemTransformation
+                {
+                    originalItemIndex = reincarnate.consumedItemDef.itemIndex,
+                    newItemIndex = reincarnate.itemDef.itemIndex,
+                    maxToTransform = int.MaxValue,
+                    transformationType = (ItemTransformationTypeIndex)0
+                }.TryTransform(inv, out tryTransformResult);
+            }
         }
 
 
@@ -232,8 +287,8 @@ namespace RiskierRain.Changes
         #region attack speed affected cooldowns
         public static void RemoveAspdScalingOnCooldownsForever()
         {
-            IL.RoR2.GenericSkill.RunRecharge += FuckAspdScalingOnCooldowns;
-            IL.RoR2.Skills.SkillDef.GetRechargeInterval += FuckAspdScalingOnCooldowns;
+            IL.RoR2.GenericSkill.RunRecharge_float_bool += FuckAspdScalingOnCooldowns;
+            IL.RoR2.Skills.SkillDef.GetRechargeRate += FuckAspdScalingOnCooldowns;
 
             void FuckAspdScalingOnCooldowns(ILContext il)
             {

@@ -13,11 +13,82 @@ using UnityEngine;
 using static RiskierRain.RiskierRainPlugin;
 using static R2API.RecalculateStatsAPI;
 using UnityEngine.Networking;
+using static RiskierRain.CoreModules.Language.Styling;
 
 namespace RiskierRain.Changes
 {
     public static partial class ItemChanges
     {
+
+        #region vengeful spirit
+        public static float vengefulSpiritHealth = 300;//90
+        public static float vengefulSpiritAttackSpeedBase = 0.3f;
+        public static float vengefulSpiritAttackSpeedStack = 0.3f;
+        public static float vengefulSpiritCdrBase = 0.15f;
+        public static float vengefulSpiritCdrStack = 0.15f;
+        private static void ChangeVengefulSpirit()
+        {
+            LanguageAPI.Add("ITEM_VENGEFULSPIRIT_PICKUP",
+                "Gain a protective spirit that absorbs 50% of all damage taken. " +
+                "After the spirit is killed, gain attack speed and reduced skill cooldowns.");
+            LanguageAPI.Add("ITEM_VENGEFULSPIRIT_DESC",
+                $"Gain <style=cIsHealing>1 <style=cStack>(+1 per stack)</style> protective spirit</style> " +
+                $"that absorbs <style=cIsHealing>50%</style> of all damage taken. " +
+                $"If the spirit is killed, become <style=cIsDamage>vengeful</style> for the rest of the stage, " +
+                $"gaining {DamageColor(vengefulSpiritAttackSpeedBase.AsPercent())} increased <style=cIsDamage>attack speed</style> {StackText("+" + vengefulSpiritAttackSpeedStack.AsPercent())} " +
+                $"and {UtilityColor(vengefulSpiritCdrBase.AsPercent())} reduced <style=cIsUtility>skill cooldowns</style> {StackText("-" + vengefulSpiritCdrStack.AsPercent())}. ");
+
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_VengefulSpirit.VengefulSpiritFollowerBody_prefab, (bodyObject) =>
+            {
+                if (bodyObject.TryGetComponent(out CharacterBody body))
+                {
+                    body.baseMaxHealth = vengefulSpiritHealth;
+                    body.levelMaxHealth = vengefulSpiritHealth * 0.3f;
+                }
+            });
+        }
+        private static void ChangeDormantSpirit()
+        {
+            GetStatCoefficients += DormantSpiritStats;
+            On.RoR2.Items.VengefulSpiritRageModeBehavior.FixedUpdate += VengefulSpiritRageModeBehavior_FixedUpdate;
+            On.RoR2.Items.VengefulSpiritRageModeBehavior.OnEnable += VengefulSpiritRageModeBehavior_OnEnable;
+            On.RoR2.Items.VengefulSpiritRageModeBehavior.OnDisable += VengefulSpiritRageModeBehavior_OnDisable;
+
+            LanguageAPI.Add("ITEM_VENGEFULSPIRITRAGEMODE_PICKUP",
+                "A dormant spirit. Gain increased attack speed and reduced cooldowns. " +
+                "At the start of each stage, it regenerates.");
+            LanguageAPI.Add("ITEM_VENGEFULSPIRITRAGEMODE_DESC",
+                $"Increases <style=cIsDamage>attack speed</style> by {DamageColor(vengefulSpiritAttackSpeedBase.AsPercent())} {StackText("+" + vengefulSpiritAttackSpeedStack.AsPercent())} " +
+                $"and reduces <style=cIsUtility>skill cooldowns</style> by {UtilityColor(vengefulSpiritCdrBase.AsPercent())} {StackText("-" + vengefulSpiritCdrStack.AsPercent())}. " +
+                $"At the start of each stage, it regenerates.");
+        }
+
+        private static void DormantSpiritStats(CharacterBody sender, StatHookEventArgs args)
+        {
+            int itemCount = sender.inventory?.GetItemCountPermanent(DLC4Content.Items.VengefulSpiritRageMode) ?? 0;
+            if (itemCount > 0)
+            {
+                args.attackSpeedMultAdd += Tools.GetStackValue(vengefulSpiritAttackSpeedBase, vengefulSpiritAttackSpeedStack, itemCount);
+                args.allSkills.cooldownMultiplier *= Mathf.Pow(1 - vengefulSpiritCdrStack, itemCount);
+            }
+        }
+
+        private static void VengefulSpiritRageModeBehavior_FixedUpdate(On.RoR2.Items.VengefulSpiritRageModeBehavior.orig_FixedUpdate orig, VengefulSpiritRageModeBehavior self)
+        {
+
+        }
+
+        private static void VengefulSpiritRageModeBehavior_OnDisable(On.RoR2.Items.VengefulSpiritRageModeBehavior.orig_OnDisable orig, VengefulSpiritRageModeBehavior self)
+        {
+
+        }
+
+        private static void VengefulSpiritRageModeBehavior_OnEnable(On.RoR2.Items.VengefulSpiritRageModeBehavior.orig_OnEnable orig, VengefulSpiritRageModeBehavior self)
+        {
+
+        }
+        #endregion
+
         #region safer spaces void bear
         public static float voidBearNewMaxCooldown = 15f;
         public static float voidBearNewMinCooldown = 3f;
@@ -368,8 +439,8 @@ namespace RiskierRain.Changes
         #endregion
 
         #region medkit
-        public static float medkitFlatHeal = 40; //20
-        public static float medkitPercentHeal = 0.00f; //0.05
+        public static float medkitFlatHeal = 20; //20
+        public static float medkitPercentHeal = 0.05f; //0.05
         public static void ChangeMedkit()
         {
             AIBlacklistThisItem(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Medkit.Medkit_asset);
@@ -378,10 +449,11 @@ namespace RiskierRain.Changes
                 buffDef.isDebuff = true;
                 buffDef.isHidden = true;
             });
-            IL.RoR2.CharacterBody.RemoveBuff_BuffIndex += MedkitHealChange;
+            IL.RoR2.CharacterBody.RemoveBuffInternal += MedkitHealChange;
             LanguageAPI.Add("ITEM_MEDKIT_DESC",
                 $"2 seconds after getting hurt, <style=cIsHealing>heal</style> for " +
-                $" <style=cIsHealing>{medkitFlatHeal} health</style> <style=cStack>(+{medkitFlatHeal} per stack)</style>.");
+                $"<style=cIsHealing>{medkitFlatHeal}</style> <style=cStack>(+{medkitFlatHeal} per stack)</style> plus an additional " +
+                $"<style=cIsHealing>{medkitPercentHeal}</style> of <style=cIsHealing>maximum health</style>.");
         }
 
         public static void MedkitHealChange(ILContext il)

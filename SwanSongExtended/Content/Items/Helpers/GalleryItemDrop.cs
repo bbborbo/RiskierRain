@@ -11,6 +11,7 @@ namespace SwanSongExtended.Items
     class GalleryItemDrop : ItemBase<GalleryItemDrop>
     {
         public override bool forcePrerequisites => true;
+        public override bool IsHidden => true;
         public override string ConfigName => "";
         public override string ItemName => "Gallery Item Drop";
 

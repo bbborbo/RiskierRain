@@ -127,9 +127,9 @@ namespace RainrotSharedUtils.MoreProjectiles
             //gup
             On.EntityStates.Gup.BaseSplitDeath.OnEnter += MissileArtifact_GupDeathEnter;
             //mithrix
-            IL.EntityStates.BrotherMonster.FistSlam.FixedUpdate += MissileArtifact_BrotherFistSlam;
-            IL.EntityStates.BrotherMonster.WeaponSlam.FixedUpdate += MissileArtifact_BrotherWeaponSlam;
-            IL.EntityStates.BrotherMonster.UltChannelState.FireWave += MissileArtifact_BrotherUltChannelState;
+            //IL.EntityStates.BrotherMonster.FistSlam.FixedUpdate += MissileArtifact_BrotherFistSlam;
+            //IL.EntityStates.BrotherMonster.WeaponSlam.FixedUpdate += MissileArtifact_BrotherWeaponSlam;
+            //IL.EntityStates.BrotherMonster.UltChannelState.FireWave += MissileArtifact_BrotherUltChannelState;
             //greater wisp
             On.EntityStates.GreaterWispMonster.FireCannons.OnEnter += MissileArtifact_GreaterWispFireCannons;
             //brass contraption

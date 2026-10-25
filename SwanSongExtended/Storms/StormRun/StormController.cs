@@ -40,7 +40,7 @@ namespace SwanSongExtended.Storms
                 return currentState.stormState;
             }
         }
-        private CombatDirector combatDirector;
+        internal CombatDirector combatDirector;
         public EntityStateMachine mainStateMachine;
         private StormController.BaseStormState currentState
         {

@@ -26,6 +26,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using SwanSongExtended.Changes;
 using RainrotSharedUtils.Difficulties;
 using SwanSongExtended.Scavengers;
+using ProcSolver;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -45,7 +46,7 @@ namespace SwanSongExtended
 
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(NegativeRegenFix.NegativeRegenFix.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(BetterSoulCost.SoulCostPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(JumpRework.JumpReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(BossDropRework.BossDropReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
@@ -104,8 +105,28 @@ namespace SwanSongExtended
         public static bool isScepterLoaded => ModLoaded("com.DestroyedClone.AncientScepter");
         public static bool autosprintLoaded => ModLoaded("com.johnedwa.RTAutoSprintEx");
         public static bool acridLungeLoaded => ModLoaded("Withor.AcridBiteLunge");
+        public static bool procSolverInstalled => ModLoaded(ProcSolverPlugin.guid);
         public static bool ucrLoaded => ModLoaded("HIFU.UltimateCustomRun");
         public static bool fabricatorsLoaded => ModLoaded(FabricatorStandalone.FabricatorPlugin.guid);
+        #endregion
+        #region utilities
+        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
+        {
+            Log.DebugBreakpoint(methodName, breakpointNumber);
+        }
+        public static float GetProcRate(DamageInfo damageInfo)
+        {
+            if (damageInfo.procCoefficient <= 0 || !procSolverInstalled)
+                return damageInfo.procCoefficient;
+
+            return _GetProcRate(damageInfo);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static float _GetProcRate(DamageInfo damageInfo)
+        {
+            return ProcSolverPlugin.GetProcRateMod(damageInfo);
+        }
         #endregion
 
         void Awake()
@@ -145,10 +166,6 @@ namespace SwanSongExtended
             new Modules.ContentPacks().Initialize();
 
             ////refer to guide on how to build and distribute your mod with the proper folders
-        }
-        public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
-        {
-            Log.DebugBreakpoint(methodName, breakpointNumber);
         }
 
         private void CreateExpansionDef()

@@ -30,10 +30,10 @@ namespace SwanSongExtended.Items
         public static int tierTotal = 10;
         [AutoConfig("Duration Fraction Of Guaranteed Crit", 0.25f)]
         public static float guaranteeDurationBase = 0.25f;
-        [AutoConfig("Base Duration Of Buffs", 4f)]
-        public static float buffDurationBase = 4f;
-        [AutoConfig("Stack Duration Of Buffs", 2f)]
-        public static float buffDurationStack = 2f;
+        [AutoConfig("Base Duration Of Buffs", 3f)]
+        public static float buffDurationBase = 3f;
+        [AutoConfig("Stack Duration Of Buffs", 1.5f)]
+        public static float buffDurationStack = 1.5f;
         #endregion
         public override string ItemName => "Destroyer Emblem";
 

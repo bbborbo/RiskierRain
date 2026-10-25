@@ -1,9 +1,11 @@
 ﻿using EntityStates;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -82,7 +84,9 @@ namespace MoreStats
                 return;
             initialized = true;
 
-            IL.EntityStates.GenericCharacterMain.ProcessJump_bool += InsertConditionalJumps;
+            IL.EntityStates.GenericCharacterMain.ProcessJump_bool += InsertConditionalJumpProc;
+            //IL.EntityStates.GenericCharacterMain.TryPerformJump += InsertJumpBonus;
+            ILHook insertJumpBonus = new ILHook(typeof(GenericCharacterMain).GetMethod("TryPerformJump", (BindingFlags)(-1)), InsertJumpBonus);
         }
 
         #region events
@@ -126,23 +130,16 @@ namespace MoreStats
         private static bool didConditionalJump = false;
         private static bool jumpInputReceived = false;
         private static bool ignoredRequirements = false;
-        private static void InsertConditionalJumps(ILContext il)
+
+        private static void InsertJumpBonus(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            c.Index = 0;
-            InsertConditionalJumpProc(c);
-            c.Index = 0;
-            InsertJumpBonus(c);
-        }
-
-        private static void InsertJumpBonus(ILCursor c)
-        {
             bool b = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<GenericCharacterMain>(nameof(GenericCharacterMain.ApplyJumpVelocity)))
                 && c.TryGotoPrev(MoveType.Before,
-                x => x.MatchLdloc(out _),
-                x => x.MatchLdloc(out _)
+                x => x.MatchLdarg(out _),
+                x => x.MatchLdarg(out _)
                 );
             if (!b)
             {
@@ -172,10 +169,31 @@ namespace MoreStats
             {
                 return bonusIn + bonusBonus;
             }
+
+
+            bool b2 = c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld<CharacterMotor>(nameof(CharacterMotor.jumpCount)),
+                x => x.MatchLdcI4(1)
+                );
+            if (!b2)
+            {
+                MoreStatsPlugin.DebugBreakpoint(nameof(InsertJumpBonus), 1);
+                return;
+            }
+            c.EmitDelegate<Func<int, int>>((jumpCountToAdd) =>
+            {
+                if (didConditionalJump)
+                {
+                    return 0;
+                }
+                return jumpCountToAdd; //which would be 1 but idk dont wanna mess with it
+            });
         }
 
-        private static void InsertConditionalJumpProc(ILCursor c)
+        private static void InsertConditionalJumpProc(ILContext il)
         {
+            ILCursor c = new ILCursor(il);
+
             c.Emit(OpCodes.Ldarg_0);
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Action<GenericCharacterMain, bool>>((self, ignoreRequirements) =>
@@ -213,24 +231,6 @@ namespace MoreStats
                     return true;
                 }
                 return false;
-            });
-
-            bool b2 = c.TryGotoNext(MoveType.After,
-                x => x.MatchLdfld<CharacterMotor>(nameof(CharacterMotor.jumpCount)),
-                x => x.MatchLdcI4(1)
-                );
-            if (!b2)
-            {
-                MoreStatsPlugin.DebugBreakpoint(nameof(InsertConditionalJumpProc), 2);
-                return;
-            }
-            c.EmitDelegate<Func<int,int>>((jumpCountToAdd) =>
-            {
-                if (didConditionalJump)
-                {
-                    return 0;
-                }
-                return jumpCountToAdd; //which would be 1 but idk dont wanna mess with it
             });
         }
 

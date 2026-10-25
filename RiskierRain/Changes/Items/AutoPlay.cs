@@ -68,7 +68,7 @@ namespace RiskierRain.Changes
 		}
 
 		#region nkuhana
-		public static float opinionDamageMultiplier = 3.5f; //2.5f
+		public static float opinionDamageMultiplier = 2.5f; //2.5f
 		public static float opinionForceMultiplier = 0.5f; //0f
 		public static float opinionSlowDuration = 3f; //0f
 		public static float opinionProcCoeff = 0.75f; //0.2f
@@ -76,27 +76,6 @@ namespace RiskierRain.Changes
 		{
 			IL.RoR2.Orbs.DevilOrb.OnArrival += (il) => DevilOrbSlowAndForce(il, DevilOrb.EffectType.Skull, opinionSlowDuration, opinionForceMultiplier);
 			On.RoR2.Orbs.DevilOrb.Begin += (orig, self) => DevilOrbProcCoefficient(orig, self, DevilOrb.EffectType.Skull, opinionProcCoeff);
-
-			IL.RoR2.HealthComponent.ServerFixedUpdate += NkuhanasBuff;
-
-			LanguageAPI.Add("ITEM_NOVAONHEAL_DESC",
-				$"Store <style=cIsHealing>100%</style> <style=cStack>(+100% per stack)</style> of healing as <style=cIsHealing>Soul Energy</style>. " +
-				$"After your <style=cIsHealing>Soul Energy</style> reaches <style=cIsHealing>10%</style> of your <style=cIsHealing>maximum health</style>, " +
-				$"<style=cIsDamage>fire a skull</style> that deals <style=cIsDamage>{Tools.ConvertDecimal(opinionDamageMultiplier)}</style> " +
-				$"of your <style=cIsHealing>Soul Energy</style> as <style=cIsDamage>damage</style>.");
-		}
-
-		private static void NkuhanasBuff(ILContext il)
-		{
-			ILCursor c = new ILCursor(il);
-
-			c.GotoNext(MoveType.Before,
-				x => x.MatchStfld<DevilOrb>(nameof(DevilOrb.damageValue))
-				);
-
-			c.Index -= 2;
-			c.Remove();
-			c.Emit(OpCodes.Ldc_R4, opinionDamageMultiplier);
 		}
 		#endregion
 

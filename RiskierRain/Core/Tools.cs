@@ -198,5 +198,25 @@ namespace RiskierRain
                     callback.Invoke(body);
             };
         }
+
+        public static float GetStackValue(float baseValue, float stackValue, int itemCount)
+        {
+            return baseValue + stackValue * (itemCount - 1);
+        }
+        public static int GetUniqueItemCountFromTag(Inventory inventory, ItemTag tag)
+        {
+            int count = 0;
+            using (List<ItemIndex>.Enumerator enumerator = inventory.itemAcquisitionOrder.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (ItemCatalog.GetItemDef(enumerator.Current).ContainsTag(tag))
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
     }
 }

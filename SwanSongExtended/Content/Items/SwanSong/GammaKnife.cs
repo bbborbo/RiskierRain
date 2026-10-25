@@ -17,6 +17,7 @@ namespace SwanSongExtended.Items
 {
     class GammaKnife : ItemBase<GammaKnife>
     {
+        public override bool CanBeRental => false;
         public override bool GetPrerequisites()
         {
             return DisposableScalpel.GetScalpelConfig();

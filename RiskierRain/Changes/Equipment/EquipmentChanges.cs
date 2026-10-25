@@ -19,6 +19,8 @@ using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 using RiskierRain.Components;
 using EntityStates.GoldGat;
+using System.Linq;
+using static RiskierRain.CoreModules.Language.Styling;
 
 namespace RiskierRain.Changes
 {
@@ -36,6 +38,8 @@ namespace RiskierRain.Changes
             ChangeOcularHud();
             ChangeGlowingMeteorite();
             ChangeCrowdfunder();
+            ChangeSacrificeAltar();
+            ChangeForgiveMePlease();
 
             ChangeEnigmaBlacklists();
             //kinda want to remove this but it needs a replacement
@@ -44,6 +48,100 @@ namespace RiskierRain.Changes
             //ChangeShower();
             //ChangeTincture();
         }
+
+        #region fmp/forgive me please
+        public static float forgiveMeRangeBase = 45f;
+        public static float forgiveMeRangeStack = 5f;
+        public static float forgiveMeDamageBase = 4f;
+        public static float forgiveMeDamageStack = 1f;
+        public static float forgiveMeDamageMax = 20f;
+        public static int forgiveMeTargetsBase = 1;
+        public static int forgiveMeTargetsStack = 1;
+        public static int forgiveMeTargetsMax = 8;
+        public static float forgiveMeProcCoefficient = 0.666f;
+        public static float forgiveMeDelay = 0.666f;
+        private static void ChangeForgiveMePlease()
+        {
+            GlobalEventManager.onDeathProcServer += ForgiveMeBuff;
+            //On.RoR2.GlobalEventManager.OnCharacterDeath += ForgiveMeBuff2;
+
+            LanguageAPI.Add("EQUIPMENT_DEATHPROJECTILE_PICKUP", "Lacerate enemies on kill. Throw a cursed doll that repeatedly triggers your 'On Kill' effects.");
+            LanguageAPI.Add("EQUIPMENT_DEATHPROJECTILE_DESC", 
+                $"On killing an enemy, lacerate {DamageColor(forgiveMeTargetsBase.ToString())} enemy within {DamageColor($"{forgiveMeRangeBase}m")} for " +
+                $"{DamageValueText(forgiveMeDamageBase)}. {UtilityColor("Slash count and damage increases with how many On-Kill effects you have.")}" +
+                $"Throw a cursed doll out that <style=cIsDamage>triggers</style> any <style=cIsDamage>On-Kill</style> effects you have, " +
+                $"up to <style=cIsUtility>8</style> times.");
+        }
+
+        private static void ForgiveMeBuff2(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        {
+            orig(self, damageReport);
+            ForgiveMeBuff(damageReport);
+        }
+
+        private static void ForgiveMeBuff(DamageReport damageReport)
+        {
+            if (NetworkServer.active == false)
+                return;
+
+            if (damageReport.attackerBody == null || damageReport.attackerBody.inventory == null)
+                return;
+
+            EquipmentSlot slot = damageReport.attackerBody.equipmentSlot;
+            if (slot == null || slot.equipmentIndex != RoR2Content.Equipment.DeathProjectile.equipmentIndex)
+                return;
+
+            int stack = Tools.GetUniqueItemCountFromTag(damageReport.attackerBody.inventory, ItemTag.OnKillEffect);
+            float radius = Tools.GetStackValue(forgiveMeRangeBase, forgiveMeRangeStack, stack);
+            float damage = Mathf.Min(forgiveMeDamageMax, Tools.GetStackValue(forgiveMeDamageBase, forgiveMeDamageStack, stack));
+            float damageValue = damage * damageReport.attackerBody.damage;
+            float targets = Mathf.Min(forgiveMeTargetsMax, Tools.GetStackValue(forgiveMeTargetsBase, forgiveMeTargetsStack, stack));
+
+            SphereSearch sphereSearch = new SphereSearch();
+            sphereSearch.radius = radius;
+            sphereSearch.origin = damageReport.damageInfo.position;
+            sphereSearch.queryTriggerInteraction = QueryTriggerInteraction.Ignore;
+            sphereSearch.mask = LayerIndex.entityPrecise.mask;
+            sphereSearch.RefreshCandidates();
+            sphereSearch.FilterCandidatesByDistinctHurtBoxEntities();
+            sphereSearch.FilterCandidatesByHurtBoxTeam(TeamMask.GetUnprotectedTeams(damageReport.attackerTeamIndex));
+            sphereSearch.OrderCandidatesByDistance();
+            HurtBox[] list = sphereSearch.GetHurtBoxes().Where(x => x.healthComponent != damageReport.victimBody.healthComponent).ToArray();
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (i >= targets + 1)
+                    break;
+                OrbManager.instance.AddOrb(new DelayedHitOrb
+                {
+                    attacker = damageReport.attacker,
+                    target = list[i],
+                    damageColorIndex = DamageColorIndex.Default,
+                    damageValue = damageValue,
+                    damageType = new DamageTypeCombo(DamageType.BleedOnHit, DamageTypeExtended.Generic, DamageSource.Equipment),
+                    isCrit = Util.CheckRoll(damageReport.attackerBody.crit),
+                    procChainMask = default(ProcChainMask),
+                    procCoefficient = forgiveMeProcCoefficient,
+                    delay = forgiveMeDelay,
+                    orbEffect = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Merc.ImpactMercFocusedAssault_prefab).WaitForCompletion(),
+                    delayedEffectPrefab = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Merc.MercFocusedAssaultOrbEffect_prefab).WaitForCompletion()
+                });
+            }
+        }
+        #endregion
+
+        #region altar of sacrifice
+        public static float altarRadius = 60;//idk wiki down :(
+        private static void ChangeSacrificeAltar()
+        {
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_SpawnAltar.SpawnAltar_prefab, (altarPrefab) =>
+            {
+                if(altarPrefab.TryGetComponent(out HoldoutZoneController holdout))
+                {
+                    holdout.baseRadius = altarRadius;
+                }
+            });
+        }
+        #endregion
 
         #region jade elephant
         public static float elephantBuffDuration = 10;

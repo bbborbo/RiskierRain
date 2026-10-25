@@ -22,7 +22,7 @@ namespace SwanSongExtended.Changes
         public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
         public const string originalItemName = "Brittle Crown";
         public static BuffDef brittleCrownCursePurchase;
-        public static int brittleCrownStealCountBase = 2;
+        public static int brittleCrownStealCountBase = 1;
         public static int brittleCrownStealCountStack = 1;
         public static float crownCommonStealSoulCost = 0.25f;
         public static float crownUncommonStealSoulCost = 0.5f;
@@ -56,16 +56,52 @@ namespace SwanSongExtended.Changes
             IL.RoR2.HealthComponent.TakeDamageProcess += RemoveCrownPenalty;
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += RemoveCrownReward;
             On.RoR2.PurchaseInteraction.CanBeAffordedByInteractor += PurchaseInteraction_CanBeAffordedByInteractor;
+            On.RoR2.CostTypeDef.PayCost_PayCostContext_PayCostResults += BrittleCrownPayCost;
+        }
+
+        private void BrittleCrownPayCost(On.RoR2.CostTypeDef.orig_PayCost_PayCostContext_PayCostResults orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults result)
+        {
+            CharacterBody activatorBody = context.activatorBody;
+            if (activatorBody && self.costTypeIndex == CostTypeIndex.Money && context.cost > 0)
+            {
+                int buffCount = context.activatorBody.GetBuffCount(brittleCrownCursePurchase);
+                if(buffCount > 0)
+                {
+                    int common = 1;
+                    int uncommon = Run.instance.GetDifficultyScaledCost(40, Stage.instance.entryDifficultyCoefficient);
+                    int rare = Run.instance.GetDifficultyScaledCost(150, Stage.instance.entryDifficultyCoefficient);
+                    int cost = context.cost;
+                    if (cost >= common && cost < uncommon)
+                    {
+                        CounterfeitCalculations(activatorBody, crownCommonStealSoulCost);
+                    }
+                    else if (cost >= uncommon && cost < rare)
+                    {
+                        CounterfeitCalculations(activatorBody, crownUncommonStealSoulCost);
+                    }
+                    else
+                    {
+                        CounterfeitCalculations(activatorBody, crownRareStealSoulCost);
+                    }
+                    context.cost = 0;
+                }
+            }
+            orig(self, context, result);
         }
 
         private void RemoveCrownReward(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "GoldOnHit"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveCrownReward));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }
@@ -74,9 +110,14 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdfld<HealthComponent.ItemCounts>(nameof(HealthComponent.ItemCounts.goldOnHit))
                 );
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveCrownReward));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }
@@ -105,40 +146,19 @@ namespace SwanSongExtended.Changes
 
         private bool PurchaseInteraction_CanBeAffordedByInteractor(On.RoR2.PurchaseInteraction.orig_CanBeAffordedByInteractor orig, RoR2.PurchaseInteraction self, RoR2.Interactor activator)
         {
-            bool canPurchase = orig.Invoke(self, activator);
-            if (canPurchase)
-                return canPurchase;
-
             CharacterBody activatorBody = null;
 
-            if (self.costType == CostTypeIndex.Money && self.saleStarCompatible)
+            if (self.costType == CostTypeIndex.Money && self.saleStarCompatible && self.cost > 0)
             {
                 if (activator.gameObject.TryGetComponent(out activatorBody))
                 {
-                    if (activatorBody.HasBuff(brittleCrownCursePurchase) && activatorBody.master.money < self.cost)
+                    if (activatorBody.HasBuff(brittleCrownCursePurchase))
                     {
-                        int common = 1;
-                        int uncommon = Run.instance.GetDifficultyScaledCost(45, Stage.instance.entryDifficultyCoefficient);
-                        int rare = Run.instance.GetDifficultyScaledCost(245, Stage.instance.entryDifficultyCoefficient);
-                        if (self.cost >= common && self.cost < uncommon)
-                        {
-                            CounterfeitCalculations(activatorBody, crownCommonStealSoulCost);
-                        }
-                        else if (self.cost >= uncommon && self.cost < rare)
-                        {
-                            CounterfeitCalculations(activatorBody, crownUncommonStealSoulCost);
-                        }
-                        else
-                        {
-                            CounterfeitCalculations(activatorBody, crownRareStealSoulCost);
-                        }
-                        //self.cost = 0;
-                        canPurchase = true;
+                        return true;
                     }
                 }
             }
-
-            return canPurchase;
+            return orig.Invoke(self, activator);
         }
         public void CounterfeitCalculations(CharacterBody activator, float soulCost)
         {
@@ -152,19 +172,36 @@ namespace SwanSongExtended.Changes
 
             if (NetworkServer.active)
             {
-                activator.AddBuff(DLC2Content.Buffs.FreeUnlocks);
+                //activator.AddBuff(DLC2Content.Buffs.FreeUnlocks);
                 activator.RemoveBuff(brittleCrownCursePurchase);
             }
         }
     }
     public class BrittleCrownBehavior : BaseItemBodyBehavior
     {
+        int stackCache = 0;
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => RoR2Content.Items.GoldOnHit;
+        public static ItemDef GetItemDef() => BrittleCrown.instance != null ? RoR2Content.Items.GoldOnHit : null;
         public void Start()
         {
+            SetBuffCount(this.stack);
+            stackCache = this.stack;
+        }
+
+        private void SetBuffCount(int s)
+        {
             body.SetBuffCount(BrittleCrown.brittleCrownCursePurchase.buffIndex,
-                BrittleCrown.brittleCrownStealCountBase + BrittleCrown.brittleCrownStealCountStack * (this.stack - 1));
+                BrittleCrown.brittleCrownStealCountBase + BrittleCrown.brittleCrownStealCountStack * (s - 1));
+        }
+
+        public override void OnInventoryRefresh()
+        {
+            base.OnInventoryRefresh();
+            if(this.stack > stackCache)
+            {
+                SetBuffCount(this.stack);
+                stackCache = this.stack;
+            }
         }
 
         public void OnDisable()

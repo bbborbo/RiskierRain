@@ -28,8 +28,8 @@ namespace SwanSongExtended.Items
         public static float forkRecharge = 5;
         public static float forkDuration = 3;
         public static int forkAttackRequirement = 6;
-        public static float forkBaseDamageBase = 6.0f;
-        public static float forkBaseDamageStack = 4.0f;
+        public static float forkBaseDamageBase = 3.0f;
+        public static float forkBaseDamageStack = 3.0f;
         public static float forkStrikeRange = 25;
         public override string ItemName => "Copper Fork";
 
@@ -94,6 +94,7 @@ With your agreement to purchase and use this product, CuCo is released of liabil
             forkRechargeBuff = Content.CreateAndAddBuff("bdForkRecharge",
                 Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texAttackIcon_png).WaitForCompletion(),
                 Color.gray, false, false);
+            forkRechargeBuff.isCooldown = true;
             forkRepeatHitBuff = Content.CreateAndAddBuff("bdForkStack",
                 Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Common_MiscIcons.texAttackIcon_png).WaitForCompletion(),
                 new Color32(255, 125, 0, 255), true, false);

@@ -23,6 +23,8 @@ namespace SwanSongExtended.Changes
 {
     public class Mocha : ReworkBase<Mocha>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
+        public const string originalItemName = "Mocha";
         public static GameObject mochaSipEffect;
         public static BuffDef mochaBuffActive;
         public static BuffDef mochaBuffInactive;
@@ -179,7 +181,7 @@ namespace SwanSongExtended.Changes
     public class BorboMochaBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => DLC1Content.Items.AttackSpeedAndMoveSpeed;
+        public static ItemDef GetItemDef() => Mocha.instance != null ? DLC1Content.Items.AttackSpeedAndMoveSpeed : null;
         int cachedMochaCount = 0;
         bool addingBuffs = false;
         float durationPerBuff = 1; //in seconds

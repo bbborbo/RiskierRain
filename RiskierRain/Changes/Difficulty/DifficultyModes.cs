@@ -17,6 +17,8 @@ using RainrotSharedUtils.Difficulties;
 using UnityEngine.AddressableAssets;
 using static MoreStats.StatHooks;
 using RiskierRain.Changes.Components;
+using EntityStates.Missions.BrotherEncounter;
+using EntityStates.BrotherMonster;
 
 namespace RiskierRain.Changes
 {
@@ -164,7 +166,7 @@ namespace RiskierRain.Changes
 
         public static DifficultyIndex eclipseLevelSpiteArtifact = DifficultyIndex.Eclipse6; //
         public static string eclipseSixDesc =
-            $"\n<mspace=0.5em>(6)</mspace> On Kill: <style=cIsHealth>Enemies drop exploding bombs</style>";
+            $"\n<mspace=0.5em>(6)</mspace> Slain Elites <style=cIsHealth>create Lunar Fissures</style>";
 
         public static DifficultyIndex eclipseLevelItemTax = DifficultyIndex.Eclipse7; //
         public static int eclipseItemTaxCount = 2;
@@ -191,10 +193,11 @@ namespace RiskierRain.Changes
             //GetStatCoefficients += this.EclipseStatBuffs;
             GetMoreStatCoefficients += EclipseStatBuffs2;
             //On.RoR2.CharacterBody.RecalculateStats += this.EclipseCdr;
-            On.RoR2.RunArtifactManager.SetArtifactEnabled += EclipseSpiteArtifact;
+            //On.RoR2.RunArtifactManager.SetArtifactEnabled += EclipseSpiteArtifact;
             IL.RoR2.HoldoutZoneController.DoUpdate += EclipseHoldoutScale;
             On.RoR2.HoldoutZoneController.Start += EclipseHoldoutDischarge;
             Stage.onServerStageBegin += EclipseItemTax;
+            GlobalEventManager.onCharacterDeathServer += EclipseElitePizza;
 
 
             string eclipse8Prefix = "\"You only celebrate in the light... because I allow it.\" \n\n";
@@ -214,6 +217,24 @@ namespace RiskierRain.Changes
             LanguageAPI.Add("ECLIPSE_8_DESCRIPTION", eclipse8Prefix + eclipseStart + eclipseOneDesc + eclipseTwoDesc + eclipseThreeDesc
                 + eclipseFourDesc + eclipseFiveDesc + eclipseSixDesc + eclipseSevenDesc + eclipseEightDesc + eclipseEnd);
         }
+
+        private static void EclipseElitePizza(DamageReport damageReport)
+        {
+            if (Run.instance.selectedDifficulty < eclipseLevelSpiteArtifact)
+                return;
+            if (damageReport.victimIsElite == false)
+                return;
+
+            BrotherUltPattern pattern = damageReport.victimIsChampion ? ThroneChannelState.ultPattern : Phase2.deathPizzaPattern;
+            BrotherUltUtils.EvaluatePattern(pattern, new BrotherUltUtils.BrotherUltContext
+            {
+                owner = damageReport.victimBody.gameObject,
+                target = damageReport.attacker,
+                originOverride = damageReport.victimBody.footPosition,
+                useOriginOverride = true
+            });
+        }
+
         private static void EclipseStatBuffs2(CharacterBody sender, MoreStatHookEventArgs args)
         {
             if (sender.teamComponent.teamIndex != TeamIndex.Player || Run.instance.selectedDifficulty <= eclipseLevelItemTax)

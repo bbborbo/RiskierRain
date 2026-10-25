@@ -57,15 +57,26 @@ namespace SwanSongExtended.Changes
             On.RoR2.Inventory.CalculateEquipmentCooldownScale += AddGestureCdi;
             On.RoR2.Inventory.GetEquipmentSlotMaxCharges += AddGestureStock;
             On.RoR2.EquipmentSlot.MyFixedUpdate += AddGestureBreak;
-            IL.RoR2.Inventory.UpdateEquipment += FixMaxStock;
+            //IL.RoR2.Inventory.UpdateEquipment += FixMaxStock;
+            On.RoR2.Inventory.GetEquipmentSlotMaxCharges += GestureMaxCharges;
+        }
+
+        private int GestureMaxCharges(On.RoR2.Inventory.orig_GetEquipmentSlotMaxCharges orig, Inventory self)
+        {
+            return orig(self) + GetGestureStockFromInventory(self);
         }
 
         private void AllowGestureUndercast(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<EquipmentSlot>("get_stock"));
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(AllowGestureUndercast));
+                return;
+            }
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<int, EquipmentSlot, int>>((stock, slot) =>
             {
@@ -81,12 +92,17 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "EquipmentMagazine"),
-                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
+                x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))) 
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchStloc(out _)
                 );
-            c.GotoNext(MoveType.Before,
-                x => x.MatchStloc(out _));
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FixMaxStock));
+                return;
+            }
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<int, Inventory, int>>((stock, inv) =>
             {
@@ -126,10 +142,15 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "AutoCastEquipment"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveGestureCdr));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }
@@ -166,10 +187,15 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdcR4(0),
                 x => x.MatchStfld<EquipmentSlot>(nameof(EquipmentSlot.bfgChargeTimer))
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(AddPreonAccumulatorBreak));
+                return;
+            }
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Action<EquipmentSlot>>((self) =>
             {
@@ -195,10 +221,15 @@ namespace SwanSongExtended.Changes
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "AutoCastEquipment"),
                 x => x.MatchCallOrCallvirt<Inventory>(nameof(Inventory.GetItemCountEffective))
                 );
+            if (!b1)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RemoveGestureAutocast));
+                return;
+            }
             c.Emit(OpCodes.Pop);
             c.Emit(OpCodes.Ldc_I4, 0);
         }

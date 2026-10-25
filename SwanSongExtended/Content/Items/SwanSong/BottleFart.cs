@@ -90,6 +90,7 @@ namespace SwanSongExtended.Items
                 Color.grey, true, true);
             fartReadyBuff.isHidden = fartReadyBuffHidden;
             fartNotReadyBuff.isHidden = fartNotReadyBuffHidden;
+            fartNotReadyBuff.isCooldown = true;
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_MiniMushroom.SporeGrenadeProjectileDotZone_prefab, CreateProjectile);
             base.Init();
         }

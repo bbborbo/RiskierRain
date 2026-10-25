@@ -212,7 +212,6 @@ namespace SwanSongExtended.Storms
             public abstract BaseCycloneState GetNextState();
             public override void OnEnter()
             {
-                Debug.LogError(cycloneState.ToString());
                 //UpdateTelegraph(false);
             }
             internal void UpdateTelegraphr(bool newValue)
@@ -380,7 +379,6 @@ namespace SwanSongExtended.Storms
                     //    return;
                     //}
 
-                    Debug.LogError("Electing leader and placing cyclone");
                     ElectLeader(randomElite);
                     CycloneController.instance.defaultConvergePosition = nodePosition;
 
@@ -525,7 +523,6 @@ namespace SwanSongExtended.Storms
                 bool fizzleOutTimePassed = base.fixedAge >= StormsCore.squallRallyTimeMax + 1;
                 if (leaderElite == null || (reelectionTimePassed && instance.accumulatedSquallTime <= squallTimeCache) || fizzleOutTimePassed)
                 {
-                    Log.Debug("PrepareSquall: Entering reelection");
                     //UpdateTelegraph(false);
                     outer.SetNextState(GetNextState());
                     return;
@@ -539,7 +536,6 @@ namespace SwanSongExtended.Storms
 
                 if (GetSquallThresholdMet())
                 {
-                    Log.Debug("PrepareSquall: Beginning to fire");
                     outer.SetNextState(new FireSquall());
                 }
 
@@ -633,7 +629,6 @@ namespace SwanSongExtended.Storms
                 base.FixedUpdate();
                 if(leaderElite == null)
                 {
-                    Log.Debug("FireSquall: Beginning reelection");
                     outer.SetNextState(new ElectLeader());
                     return;
                 }
@@ -645,7 +640,6 @@ namespace SwanSongExtended.Storms
                 float fireDuration = StormsCore.squallFireDurationMin + StormsCore.squallFireDurationBonusPerOverspill * Tools.CountOverspillTriangular(instance.squallContributorCountHighest);
                 if(base.fixedAge + instance.squallTimeFired >= fireDuration + WhirlwindAspect.squallPreFireTime)
                 {
-                    Log.Debug("End squall");
                     outer.SetNextState(GetNextState());
                 }
             }

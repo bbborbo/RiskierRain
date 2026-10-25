@@ -11,6 +11,7 @@ namespace SwanSongExtended.Items.Helpers
     class Attackspeed : ItemBase<Attackspeed>
     {
         public override bool forcePrerequisites => true;
+        public override bool IsHidden => true;
         public override string ConfigName => "";
         public override AssetBundle assetBundle => null;
         float attackSpeedBuff = 0.1f;

@@ -51,7 +51,7 @@ namespace BetterSoulCost
             ILCursor c = new ILCursor(il);
 
             c.GotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddUnmanagedBuff))
                 );
             c.Remove();
             c.EmitDelegate<Action<CharacterBody, int, int>>((body, buffIndex, buffCount) => AddSoulCostToBody(body, (BuffIndex)buffIndex, (int)buffCount * 0.1f));
@@ -79,7 +79,7 @@ namespace BetterSoulCost
                 float conversion = (buffsToAdd * buffsToAdd) / (currentHealthFraction * (10 - buffsToAdd));
                 buffsToAdd += conversion;
             }
-            body.SetBuffCount((BuffIndex)buffIndex, currentBuffCount + Mathf.CeilToInt(buffsToAdd));
+            body.AddUnmanagedBuff((BuffIndex)buffIndex, Mathf.CeilToInt(buffsToAdd));
         }
 
         #region fixes
@@ -119,7 +119,7 @@ namespace BetterSoulCost
             c.EmitDelegate<Func<float, float>>((_) => 0);
 
             bool b2 = c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.SetBuffCount))
+                x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddUnmanagedBuff))
                 );
             if (b2 == false)
             {

@@ -49,6 +49,7 @@ namespace SwanSongExtended.Items
         public virtual ExpansionDef RequiredExpansion { get; } = null;
         public virtual bool HalcyonShrineBias { get; } = false;
         public virtual bool CanBeTemporary { get; } = true;
+        public virtual bool CanBeRental { get; } = true;
 
         public override void Init()
         {
@@ -121,7 +122,7 @@ namespace SwanSongExtended.Items
             if (!tierNameString.Contains("Tier"))
                 tierNameString += "Tier";
 
-            ItemsDef = CreateNewItem(ItemLangTokenName, ItemModel, ItemIcon, Tier, ItemTags, RequiredExpansion, IsHidden);
+            ItemsDef = CreateNewItem(ItemLangTokenName, ItemModel, ItemIcon, Tier, ItemTags, RequiredExpansion, IsHidden, CanBeTemporary, CanBeRental);
 
             var itemDisplayRules = CreateItemDisplayRules();
             if (itemDisplayRules == null)
@@ -133,16 +134,16 @@ namespace SwanSongExtended.Items
         }
 
         public static ItemDef CreateNewItem(string langTokenName, GameObject modelPrefab, Sprite iconSprite, ItemTier tier, 
-            ItemTag[] itemTags = null, ExpansionDef requiredExpansion = null, bool isHidden = false, bool canBeTemporary = true)
+            ItemTag[] itemTags = null, ExpansionDef requiredExpansion = null, bool isHidden = false, bool canBeTemporary = true, bool canBeRental = true)
         {
-            ItemDef itemDef = CreateNewUntieredItem(langTokenName, iconSprite, tier, itemTags, isHidden);
+            ItemDef itemDef = CreateNewUntieredItem(langTokenName, iconSprite, tier, itemTags, isHidden, canBeTemporary, canBeRental);
             itemDef.pickupModelPrefab = modelPrefab;
             itemDef.requiredExpansion = requiredExpansion;
             return itemDef;
         }
 
         public static ItemDef CreateNewUntieredItem(string langTokenName, Sprite iconSprite, ItemTier tier = ItemTier.NoTier, 
-            ItemTag[] itemTags = null, bool isHidden = false, bool canBeTemporary = true)
+            ItemTag[] itemTags = null, bool isHidden = false, bool canBeTemporary = false, bool canBeRental = false)
         {
             ItemDef itemDef = ScriptableObject.CreateInstance<ItemDef>();
 
@@ -159,10 +160,17 @@ namespace SwanSongExtended.Items
             if(itemTags != null && itemTags.Length > 0)
             {
                 itemDef.tags = itemTags;
-                if (canBeTemporary && tier != ItemTier.Lunar)
+                if (tier != ItemTier.Lunar)
                 {
                     int i = itemDef.tags.Length;
-                    ArrayUtils.ArrayAppend(ref itemDef.tags, ref i, ItemTag.CanBeTemporary);
+                    if (canBeTemporary)
+                    {
+                        ArrayUtils.ArrayAppend(ref itemDef.tags, ref i, ItemTag.CanBeTemporary);
+                    }
+                    if (canBeRental)
+                    {
+                        ArrayUtils.ArrayAppend(ref itemDef.tags, ref i, ItemTag.CanBeRental);
+                    }
                 }
             }
 
@@ -230,6 +238,8 @@ namespace SwanSongExtended.Items
 
         public static float GetStackValue(float baseValue, float stackValue, int itemCount)
         {
+            if (itemCount == 0)
+                return 0;
             return baseValue + stackValue * (itemCount - 1);
         }
 

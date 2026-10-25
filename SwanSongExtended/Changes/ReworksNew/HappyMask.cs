@@ -95,10 +95,15 @@ namespace SwanSongExtended.Changes.ReworksNew
         {
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdsfld("RoR2.RoR2Content/Items", "GhostOnKill"),
                 x => x.MatchCallOrCallvirt<RoR2.Inventory>(nameof(RoR2.Inventory.GetItemCountEffective))
                 );
+            if(b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(RevokeHappiestMaskRights));
+                return;
+            }
             c.Emit(OpCodes.Ldc_I4, 0);
             c.Emit(OpCodes.Mul);
         }
@@ -107,7 +112,7 @@ namespace SwanSongExtended.Changes.ReworksNew
     public class HappiestMaskBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => RoR2Content.Items.GhostOnKill;
+        public static ItemDef GetItemDef() => HappyMask.instance != null ? RoR2Content.Items.GhostOnKill : null;
         public static float baseHauntRadius = 35;
         public static float baseHauntInterval = 10;
         float hauntStopwatch = 0;

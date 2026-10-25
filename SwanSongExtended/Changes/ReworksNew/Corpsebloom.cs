@@ -117,7 +117,7 @@ namespace SwanSongExtended.Changes
     public class LunarHealthDegenBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => RoR2Content.Items.RepeatHeal;
+        public static ItemDef GetItemDef() => Corpsebloom.instance != null ? RoR2Content.Items.RepeatHeal : null;
 
         HealthComponent healthComponent;
         BuffIndex luckUpBuffIndex => Corpsebloom.lunarRotBuff.buffIndex;

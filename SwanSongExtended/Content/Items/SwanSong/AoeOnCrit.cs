@@ -12,6 +12,7 @@ using static SwanSongExtended.Modules.Language.Styling;
 
 using RoR2.Items;
 using SwanSongExtended.Modules;
+using RainrotSharedUtils;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -27,7 +28,7 @@ namespace SwanSongExtended.Items
         public static float firstBounceDamageBase = 0.6f;
         public static float firstBounceDamageStack = 0.2f;
         public static float lastBounceDamageCoefficient = 0.4f;
-        public static float procCoefficientPerBounce = 0.35f;
+        public static float procCoefficientPerBounce = 0.5f;
         public static float bounceRange = 60f;
         public override string ItemName => "Hypo-Threader";
 
@@ -70,12 +71,39 @@ I told you. I. Dont. FUCKING. CARE.";
             SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolOrbEffect_prefab, CreateOrbEffect);
             base.Init();
         }
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            CraftableDef craftThreader = ScriptableObject.CreateInstance<CraftableDef>();
+            craftThreader.name = "CRAFTABLE_" + this.ItemLangTokenName;
+            craftThreader.pickup = this.ItemsDef;
+            craftThreader.itemIndex = this.ItemsDef.itemIndex;
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Scrap.ScrapYellow_asset,
+                out RecipeIngredient yellowScrap);
+
+
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_ChainLightning.ChainLightning_asset,
+                out RecipeIngredient ukulele);
+            CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_CritGlasses.CritGlasses_asset,
+                out RecipeIngredient glasses);
+
+            Recipe craft = CraftingUtils.MakeRecipe(ukulele, glasses);
+
+            craftThreader.recipes = new Recipe[] { craft };
+            Content.AddCraftableDef(craftThreader);
+        }
 
         private void CreateOrbEffect(GameObject effect)
         {
             laserOrbEffect = effect.InstantiateClone("AoeOnCritLaserOrb", false);
 
             laserOrbEffect.transform.localScale *= 2;
+            if (laserOrbEffect.TryGetComponent(out VFXAttributes attributes))
+            {
+                attributes.DoNotPool = false;
+            }
             if (laserOrbEffect.TryGetComponent(out OrbEffect orbEffect))
             {
                 SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_Drone_Tech.NanoPistolRicochetImpactEffect_prefab, (impactEffect) =>
@@ -168,6 +196,11 @@ I told you. I. Dont. FUCKING. CARE.";
             int stack = GetCount(body);
             if (stack <= 0)
                 return;
+            if (SwanSongPlugin.procSolverInstalled && SwanSongPlugin.GetProcRate(damageInfo) <= 0)
+            {
+                damageInfo.procChainMask.AddModdedProc(AoeOnCritProc);
+                return;
+            }
             SphereSearch sphereSearch = new SphereSearch
             {
                 mask = LayerIndex.entityPrecise.mask,
@@ -194,6 +227,7 @@ I told you. I. Dont. FUCKING. CARE.";
                 .ToList();
             if (hurtBoxesList.Count <= 0)
                 return;
+            procChainMask.AddModdedProc(AoeOnCritProc);
 
             int index = 0;// UnityEngine.Random.RandomRangeInt(0, hurtBoxesList.Count);
             HurtBox target = hurtBoxesList[index];
@@ -210,7 +244,7 @@ I told you. I. Dont. FUCKING. CARE.";
             chainGunOrb.isCrit = true;
             chainGunOrb.teamIndex = TeamComponent.GetObjectTeam(body.gameObject);
             chainGunOrb.attacker = body.gameObject;
-            chainGunOrb.procCoefficient = AoeOnCrit.procCoefficientPerBounce;
+            chainGunOrb.procCoefficient = procCoefficient * procCoefficientPerBounce;
             chainGunOrb.procChainMask = procChainMask;
             chainGunOrb.procChainMask.AddModdedProc(AoeOnCritProc);
             chainGunOrb.origin = damageInfo.position;

@@ -59,7 +59,23 @@ namespace SwanSongExtended.Equipment
             commandCube.GetComponent<PickupPickerController>().SetOptionsFromPickupForCommandArtifact(pickupIndex);
             NetworkServer.Spawn(commandCube);
 
-            slot.inventory.SetEquipmentIndex(EquipmentIndex.None, false);
+            CharacterMasterNotificationQueue.CustomOverrideInfo overrideInfo = new CharacterMasterNotificationQueue.CustomOverrideInfo
+            {
+                titleText = "A wish is granted...",
+                descriptionText = "May it serve you well."
+            };
+            CharacterMasterNotificationQueue.SendCustomNotification(slot.characterBody.master, EquipDef.equipmentIndex, overrideInfo);
+            EquipmentIndex value = EquipmentIndex.None;
+            if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Enigma))
+            {
+                value = EnigmaArtifactManager.RollEnigmaEquipmentServer(slot.equipmentIndex);
+            }
+            slot.SetFireEquipmentResult(new EquipmentSlot.FireEquipmentResult
+            {
+                equipmentIndexToTransformInto = new EquipmentIndex?(value),
+                cooldownOverride = new float?(BaseCooldown),
+                dontActivateOnEquipmentUseEffects = true
+            });
             return true;
         }
     }

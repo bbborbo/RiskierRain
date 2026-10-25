@@ -29,34 +29,49 @@ namespace NegativeRegenFix
             //int regenLocation = 66;
 
             //go to regen section
-            c.GotoNext(MoveType.After,
+            bool b1 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdarg(0),
                 x => x.MatchLdfld<CharacterBody>("baseRegen"),
                 x => x.MatchLdarg(0),
                 x => x.MatchLdfld<CharacterBody>("levelRegen")
                 );
+            if(b1 == false)
+            {
+                Debug.LogError("NegativeRegenFix hook failed: Breakpoint 1");
+                return;
+            }
 
             int regenMultLocation = 72;
             int endRegenLocation = 73;
 
-            c.GotoNext(MoveType.After,
+            bool b2 = c.TryGotoNext(MoveType.After,
                 x => x.MatchLdcR4(1),
                 x => x.MatchStloc(out regenMultLocation)
                 );
+            if (b2 == false)
+            {
+                Debug.LogError("NegativeRegenFix hook failed: Breakpoint 2");
+                return;
+            }
             endRegenLocation = regenMultLocation + 1;
 
-            c.GotoNext(MoveType.After,
+            bool b3 = c.TryGotoNext(MoveType.After,
                 /*x => x.MatchLdloc(regenMultLocation),
                 x => x.MatchMul(),*/
                 x => x.MatchStloc(endRegenLocation)
                 );
+            if (b3 == false)
+            {
+                Debug.LogError("NegativeRegenFix hook failed: Breakpoint 3");
+                return;
+            }
 
             c.Emit(OpCodes.Ldloc, endRegenLocation);
             c.Emit(OpCodes.Ldloc, regenMultLocation);
             c.Emit(OpCodes.Ldarg_0);
             c.EmitDelegate<Func<float, float, CharacterBody, float>>((currentRegen, regenMult, body) =>
             {
-                if (body.HasBuff(RoR2Content.Buffs.AffixEcho) || body.HasBuff(DLC1Content.Buffs.EliteEarth))
+                if (body.HasBuff(JunkContent.Buffs.AffixEcho) || body.HasBuff(DLC1Content.Buffs.EliteEarth))
                     return 0;
 
                 //calculate base regen/before items

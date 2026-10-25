@@ -25,7 +25,7 @@ namespace SwanSongExtended.Changes
         public static int regenScrapCommonCredit = 10;
         public static int regenScrapUncommonCredit = 5;
         public static int regenScrapRareCredit = 2;
-        public static int regenScrapBossCredit = 1;
+        public static int regenScrapBossCredit = 2;
         public static bool shouldSuperScrapOverBuy = false;
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_RegeneratingScrap.RegeneratingScrap_asset;
 
@@ -46,6 +46,7 @@ namespace SwanSongExtended.Changes
         {
             base.OnItemLoaded(item);
 
+            item.tags = new ItemTag[] { ItemTag.CannotDuplicate, ItemTag.InteractableRelated, ItemTag.PriorityScrap, ItemTag.Scrap, ItemTag.Utility, ItemTag.CommandArtifactBlacklist };
 
             item.tier = ItemTier.Tier3;
             item.deprecatedTier = ItemTier.Tier3;
@@ -65,9 +66,9 @@ namespace SwanSongExtended.Changes
                 LanguageAPI.Add(itemDef.nameToken,
                     ItemName + " (Consumed)");
                 LanguageAPI.Add(itemDef.pickupToken,
-                    "It has served its purpose to you.");
-                LanguageAPI.Add(itemDef.descriptionToken, 
-                    "It has served its purpose to you.");
+                    "Did you think it would come back?");
+                LanguageAPI.Add(itemDef.descriptionToken,
+                    "Did you think it would come back?");
             });
         }
         public override void PostInit()
@@ -94,9 +95,64 @@ namespace SwanSongExtended.Changes
         public override void Hooks()
         {
             On.RoR2.CostTypeDef.IsAffordable += SuperScrapIsAffordable;
-            On.RoR2.CostTypeDef.PayCost += SuperScrapPayCost;
+            On.RoR2.CostTypeDef.PayCost_PayCostContext_PayCostResults += SuperScrapPayCost;
             On.RoR2.CharacterMaster.TryRegenerateScrap += SuperScrapRegenerate;
             GetMoreStatCoefficients += ChimeraScrapCount;
+        }
+        private void SuperScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost_PayCostContext_PayCostResults orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults payCostResults)
+        {
+            Inventory activatorInventory = context.activatorInventory;
+            if(activatorInventory != null)
+            {
+                if(self.costTypeIndex == CostTypeIndex.WhiteItem || self.costTypeIndex == CostTypeIndex.GreenItem || self.costTypeIndex == CostTypeIndex.RedItem || self.costTypeIndex == CostTypeIndex.BossItem)
+                {
+                    int regenScrapCount = activatorInventory.GetItemCountEffective(regenScrap.itemIndex);
+                    if (regenScrapCount > 0)
+                    {
+                        int cost = context.cost;
+                        Inventory.ItemTransformation.TryTransformResult tryTransformResult;
+                        new Inventory.ItemTransformation
+                        {
+                            originalItemIndex = regenScrap.itemIndex,
+                            newItemIndex = regenScrapConsumed.itemIndex,
+                            maxToTransform = 1,
+                            transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Suppressed
+                        }.TryTransform(activatorInventory, out tryTransformResult);
+
+                        int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
+
+                        if (cost > printerCredit)
+                        {
+                            activatorInventory.RemoveItemPermanent(regenScrap.itemIndex, regenScrapCount - 1);
+                            int remainder = cost - printerCredit;
+                            cost = remainder;
+                            orig(self, context, payCostResults);
+                            activatorInventory.GiveItemPermanent(regenScrap.itemIndex, regenScrapCount - 1);
+                        }
+                        else if (printerCredit > cost)
+                        {
+                            SuperScrapPaymentController sspc; 
+                            if(context.purchasedObject.TryGetComponent(out sspc) == false)
+                                sspc = context.purchasedObject.AddComponent<SuperScrapPaymentController>();
+
+                            sspc.paymentCreditsRemaining = printerCredit - cost;
+                        }
+
+
+                        Inventory.ItemAndStackValues stack = new Inventory.ItemAndStackValues();
+                        stack.itemIndex = regenScrap.itemIndex;
+                        stack.stackValues = new Inventory.ItemStackValues();
+                        stack.stackValues.permanentStacks = printerCredit;
+                        stack.stackValues.totalStacks = printerCredit;
+
+                        payCostResults._itemStacksTaken.Add(stack);
+
+                        return;
+                    }
+                }
+            }
+            // this runs if only one of the other ifs are false
+            orig(self, context, payCostResults);
         }
         private void ChimeraScrapCount(CharacterBody sender, MoreStatHookEventArgs args)
         {
@@ -138,70 +194,6 @@ namespace SwanSongExtended.Changes
             return printerCredit;
         }
 
-        public static void SuperScrapPayCost2(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults result)
-        {
-            orig(self, context, result);
-        }
-        public static void SuperScrapPayCost(On.RoR2.CostTypeDef.orig_PayCost orig, CostTypeDef self, CostTypeDef.PayCostContext context, CostTypeDef.PayCostResults result)
-        {
-            int cost = context.cost;
-            Interactor activator = context.activator;
-            GameObject purchasedObject = context.purchasedObject;
-
-            CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
-            if (self.costStringFormatToken == "COST_ITEM_FORMAT" && activatorBody != null && self.itemTier != ItemTier.Lunar)
-            {
-                Inventory activatorInventory = activatorBody.inventory;
-                if (activatorInventory)
-                {
-                    int regenScrapCount = activatorInventory.GetItemCountEffective(regenScrap.itemIndex);
-                    if (regenScrapCount > 0)
-                    {
-                        CostTypeDef.PayCostResults payCostResults = new CostTypeDef.PayCostResults();
-
-                        Inventory.ItemTransformation.TryTransformResult tryTransformResult;
-                        new Inventory.ItemTransformation
-                        {
-                            originalItemIndex = regenScrap.itemIndex,
-                            newItemIndex = regenScrapConsumed.itemIndex,
-                            maxToTransform = 1,
-                            transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Suppressed
-                        }.TryTransform(activatorInventory, out tryTransformResult);
-
-                        int printerCredit = GetSuperScrapPrinterCredit(self.itemTier);
-
-                        if (cost > printerCredit)
-                        {
-                            activatorInventory.RemoveItemPermanent(regenScrap.itemIndex, regenScrapCount - 1);
-                            int remainder = cost - printerCredit;
-                            context.cost = remainder;
-                            orig(self, context, result);
-                            activatorInventory.GiveItemPermanent(regenScrap.itemIndex, regenScrapCount - 1);
-                        }
-                        else if (printerCredit > cost)
-                        {
-                            SuperScrapPaymentController sspc = purchasedObject.AddComponent<SuperScrapPaymentController>();
-
-                            sspc.paymentCreditsRemaining = printerCredit - cost;
-                        }
-
-
-                        Inventory.ItemAndStackValues stack = new Inventory.ItemAndStackValues();
-                        stack.itemIndex = regenScrap.itemIndex;
-                        stack.stackValues = new Inventory.ItemStackValues();
-                        stack.stackValues.permanentStacks = printerCredit;
-                        stack.stackValues.totalStacks = printerCredit;
-
-                        payCostResults._itemStacksTaken.Add(stack);
-
-                        return;
-                    }
-                }
-            }
-            // this runs if only one of the other ifs are false
-            orig(self, context, result);
-        }
-
         public static bool SuperScrapIsAffordable(On.RoR2.CostTypeDef.orig_IsAffordable orig, CostTypeDef self, int cost, Interactor activator)
         {
             CharacterBody activatorBody = activator.GetComponent<CharacterBody>();
@@ -215,7 +207,7 @@ namespace SwanSongExtended.Changes
                     {
                         int printerCredits = GetSuperScrapPrinterCredit(self.itemTier) * regenScrapCount;
                         bool hasEnoughRegenScrap = printerCredits >= cost;
-                        return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalItemsOfTier(self.itemTier, cost - printerCredits));
+                        return (hasEnoughRegenScrap || activatorInventory.HasAtLeastXTotalRemovablePermanentItemsOfTier(self.itemTier, cost - printerCredits));
                     }
                 }
             }

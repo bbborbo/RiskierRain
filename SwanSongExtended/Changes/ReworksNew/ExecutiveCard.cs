@@ -45,9 +45,15 @@ namespace SwanSongExtended.Changes
             // :}
             ILCursor c = new ILCursor(il);
 
-            c.GotoNext(MoveType.Before,
+            bool b1 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<Inventory>("get_currentEquipmentIndex")
                 );
+
+            if (b1 == false)
+            {
+                SwanSongPlugin.DebugBreakpoint(nameof(FreezeCard));
+                return;
+            }
             c.Remove();
             c.EmitDelegate<Func<Inventory, int>>((inv) =>
             {

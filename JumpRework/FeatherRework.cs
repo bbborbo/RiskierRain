@@ -18,8 +18,8 @@ namespace JumpRework
         public static float hopooDamageIncreasePerBuff = 0.1f;
         float featherBaseDuration = 0.75f;
         float featherStackDuration = 0.5f;
-        public static float featherJumpPowerBase = 0.15f;
-        public static float featherJumpPowerStack = 0.15f;
+        public static float featherJumpPowerBase = 0.25f;
+        public static float featherJumpPowerStack = 0.10f;
         private void FeatherRework()
         {
             OnJumpEvent += FeatherJumpPowerBoost;

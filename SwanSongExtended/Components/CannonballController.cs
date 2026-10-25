@@ -183,7 +183,7 @@ namespace SwanSongExtended.Components
 
 		public float radius;
 
-		public float bounce = 0.8f;
+		public float bounce = 1.0f;
 
 		public float minimumBounceVelocity;
 

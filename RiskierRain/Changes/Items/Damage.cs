@@ -20,6 +20,82 @@ namespace RiskierRain.Changes
 {
     public static partial class ItemChanges
     {
+
+        #region warhorn
+        public static float warhornDurationBase = 8f;
+        public static float warhornDurationStack = 4f;
+        public static float warhornRadiusBase = 40f;
+        public static float warhornRadiusStack = 0f;
+        private static void ChangeWarHorn()
+        {
+            IL.RoR2.EquipmentSlot.OnEquipmentExecuted_refEquipmentLocation_EquipmentIndex += WarhornTweaks;
+
+            LanguageAPI.Add("ITEM_ENERGIZEDONEQUIPMENTUSE_PICKUP", "Activating your Equipment gives a burst of attack speed to you and nearby allies.");
+            LanguageAPI.Add("ITEM_ENERGIZEDONEQUIPMENTUSE_DESC",
+                $"Activating your Equipment gives <style=cIsDamage>+70% attack speed</style> for " +
+                $"<style=cIsDamage>8s</style> <style=cStack>(+4s per stack)</style> " +
+                $"to you and <style=cIsDamage>all allies</style> within <style=cIsDamage>{warhornRadiusBase}m</style>.");
+        }
+
+        private static void WarhornTweaks(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+
+            int countLoc = 3;
+            bool b = c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdsfld(typeof(RoR2.RoR2Content.Items).FullName, nameof(RoR2Content.Items.EnergizedOnEquipmentUse)))
+                && c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdsfld(typeof(RoR2.RoR2Content.Buffs).FullName, nameof(RoR2Content.Buffs.Energized)),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchLdcI4(out _),
+                x => x.MatchLdloc(out countLoc)
+                );
+            //&& c.TryGotoNext(MoveType.Before,
+            //x => x.MatchStloc(out countLoc)
+            //)
+            ;
+            if (b == false)
+            {
+                DebugBreakpoint(nameof(WarhornTweaks), 1);
+                return;
+            }
+            c.Index++;
+            c.Next.Operand = warhornDurationBase;
+            c.Index++;
+            c.Next.Operand = warhornDurationStack;
+
+
+            bool b2 = c.TryGotoNext(MoveType.Before, x =>
+                x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.AddTimedBuff))
+                );
+            if (b2 == false)
+            {
+                DebugBreakpoint(nameof(WarhornTweaks), 2);
+                return;
+            }
+            c.Emit(OpCodes.Ldarg_0);
+            c.Emit(OpCodes.Ldloc, countLoc);
+            c.EmitDelegate<Action<EquipmentSlot, int>>((self, count) =>
+            {
+                IEnumerable<TeamComponent> recipients = TeamComponent.GetTeamMembers(self.teamComponent.teamIndex);
+
+                float duration = Tools.GetStackValue(warhornDurationBase, warhornDurationStack, count);
+                float radiusSqr = Mathf.Pow(Tools.GetStackValue(warhornRadiusBase, warhornRadiusStack, count), 2);
+                foreach (TeamComponent other in recipients)
+                {
+                    if (other != self.teamComponent
+                        && (other.transform.position - self.characterBody.corePosition).sqrMagnitude <= radiusSqr)
+                    {
+                        CharacterBody body = other.body;//.GetComponent<CharacterBody>();
+                        if (body)
+                        {
+                            body.AddTimedBuff(RoR2Content.Buffs.Energized, duration);
+                        }
+                    }
+                }
+            });
+        }
+        #endregion
         #region bands
         // could go with 6 base, 1 total
         static float runaldBaseDamage = 6f;
@@ -423,8 +499,8 @@ namespace RiskierRain.Changes
 
             bool b1 = c.TryGotoNext(MoveType.Before,
                 x => x.MatchCallOrCallvirt<CharacterBody>("get_damage"),
-                x => x.MatchLdcR4(out _),
-                x => x.MatchLdcR4(out _)
+                x => x.MatchLdsfld(out _),
+                x => x.MatchLdsfld(out _)
                 );
             if (!b1)
             {
@@ -432,9 +508,10 @@ namespace RiskierRain.Changes
                 return;
             }
             c.Index++;
-            c.Next.Operand = shurikenBaseDamage - shurikenStackDamage;
-            c.Index++;
-            c.Next.Operand = shurikenStackDamage;
+            c.Remove();
+            c.Remove();
+            c.Emit(OpCodes.Ldc_R4, shurikenBaseDamage - shurikenStackDamage);
+            c.Emit(OpCodes.Ldc_R4, shurikenStackDamage);
         }
 
         private static void ModifyShurikenAttack(On.RoR2.PrimarySkillShurikenBehavior.orig_FireShuriken orig, PrimarySkillShurikenBehavior self)

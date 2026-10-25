@@ -23,7 +23,7 @@ namespace SwanSongExtended.Modules
         {
             enableElites = Modules.Config.SectionEnableConfig("Elites");
             enableStormElites = Modules.Config.SectionEnableConfig("Storms (Elites)");
-            RoR2Application.onLoad += AddElites;
+            RoR2Application.onLoadFinished += AddElites;
         }
 
         private static void AddElites()
@@ -53,7 +53,7 @@ namespace SwanSongExtended.Modules
                             break;
                         HG.ArrayUtils.ArrayAppend(ref R2API.EliteAPI.VanillaEliteTiers[5].eliteTypes, eliteDef.eliteDef);
                         break;
-
+                    
                     case EliteTiers.Lunar:
                         if (enableElites.Value == false)
                             break;

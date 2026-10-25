@@ -40,14 +40,14 @@ namespace RainrotSharedUtils.Compat
         public const string version = "1.0.0";
         #endregion
         public static bool ModLoaded(string modGuid) { return !modGuid.IsNullOrWhiteSpace() && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
-        public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
+        //public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
         public static bool snowtimeLoaded => ModLoaded(SnowtimeToybox.SnowtimeToyboxMod.GUID);
         public static bool riskierLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
 
         void Awake()
         {
-            if (infernoLoaded)
-                DoInfernoCompat();
+            //if (infernoLoaded)
+            //    DoInfernoCompat();
             if (snowtimeLoaded)
                 DoSnowtimeCompat();
         }
@@ -71,44 +71,44 @@ namespace RainrotSharedUtils.Compat
             DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = legendaryStats;
         }
 
-        #region inferno
-        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private static void DoInfernoCompat()
-        {
-            DifficultyIndex difficultyDef = Inferno.Main.InfernoDiffIndex;
-
-            MoreDifficultyStats infernoStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
-            infernoStats.startingLevelBoost = Inferno.Main.LevelDiffBoost.Value;
-            infernoStats.startingDifficultyDisplay = Inferno.Main.LevelDiffBoost.Value;
-            infernoStats.ambientLevelCap = int.MaxValue;
-            infernoStats.tier2EliteStage = 4;
-            infernoStats.tier1AndHalfEliteStage = 2;
-            infernoStats.delayFirstStorm_ForSwanSong = false;
-            infernoStats.desiredStormTime_ForSwanSong = 3.5f;
-            infernoStats.desiredStormWarningTime_ForSwanSong = 1f;
-            infernoStats.stormIntensifyStrength_ForSwanSong = 0.6f;
-            DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = infernoStats;
-
-            DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
-
-            //Run.onRunSetRuleBookGlobal -= Inferno.Main.;
-            Run.onRunStartGlobal += RemoveInfernoHooks;
-        }
-
-        private static void RemoveInfernoHooks(Run obj)
-        {
-            if(riskierLoaded)
-                On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
-        }
-
-        public delegate bool orig_ChangeAmbientCap(Inferno.Main main, Run run, RuleBook ruleBook);
-        public static void InfernoAmbientCap(orig_ChangeAmbientCap orig, Inferno.Main main, Run run, RuleBook ruleBook)
-        {
-            //Hook infernoAmbientCap = new Hook(
-            //  typeof(Inferno.Main).GetMethod(nameof(Inferno.Main.ChangeAmbientCap), (BindingFlags)(-1)),
-            //  typeof(SharedUtilsCompatPlugin).GetMethod(nameof(InfernoAmbientCap), (BindingFlags)(-1))
-            //);
-        }
-        #endregion
+        //#region inferno
+        //[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        //private static void DoInfernoCompat()
+        //{
+        //    DifficultyIndex difficultyDef = Inferno.Main.InfernoDiffIndex;
+        //
+        //    MoreDifficultyStats infernoStats = DifficultyUtilsModule.GetMoreDifficultyStats(difficultyDef);
+        //    infernoStats.startingLevelBoost = Inferno.Main.LevelDiffBoost.Value;
+        //    infernoStats.startingDifficultyDisplay = Inferno.Main.LevelDiffBoost.Value;
+        //    infernoStats.ambientLevelCap = int.MaxValue;
+        //    infernoStats.tier2EliteStage = 4;
+        //    infernoStats.tier1AndHalfEliteStage = 2;
+        //    infernoStats.delayFirstStorm_ForSwanSong = false;
+        //    infernoStats.desiredStormTime_ForSwanSong = 3.5f;
+        //    infernoStats.desiredStormWarningTime_ForSwanSong = 1f;
+        //    infernoStats.stormIntensifyStrength_ForSwanSong = 0.6f;
+        //    DifficultyUtilsModule.difficultyCustomStats[difficultyDef] = infernoStats;
+        //
+        //    DifficultyUtilsModule.CompensateRewardsForDifficultyBoost = true;
+        //
+        //    //Run.onRunSetRuleBookGlobal -= Inferno.Main.;
+        //    Run.onRunStartGlobal += RemoveInfernoHooks;
+        //}
+        //
+        //private static void RemoveInfernoHooks(Run obj)
+        //{
+        //    if(riskierLoaded)
+        //        On.RoR2.Run.RecalculateDifficultyCoefficentInternal -= Inferno.Skill_Misc.Hooks.AmbientLevelBoost; 
+        //}
+        //
+        //public delegate bool orig_ChangeAmbientCap(Inferno.Main main, Run run, RuleBook ruleBook);
+        //public static void InfernoAmbientCap(orig_ChangeAmbientCap orig, Inferno.Main main, Run run, RuleBook ruleBook)
+        //{
+        //    //Hook infernoAmbientCap = new Hook(
+        //    //  typeof(Inferno.Main).GetMethod(nameof(Inferno.Main.ChangeAmbientCap), (BindingFlags)(-1)),
+        //    //  typeof(SharedUtilsCompatPlugin).GetMethod(nameof(InfernoAmbientCap), (BindingFlags)(-1))
+        //    //);
+        //}
+        //#endregion
     }
 }

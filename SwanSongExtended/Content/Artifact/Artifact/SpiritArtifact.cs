@@ -13,6 +13,7 @@ namespace SwanSongExtended.Artifacts
 {
     class SpiritArtifact : ArtifactBase<SpiritArtifact>
     {
+        public override string InternalName => nameof(SpiritArtifact);
         public override bool isEnabled => false;
         private static bool statsRecalculating = false;
         public static bool SpiritArtifactActive = false;

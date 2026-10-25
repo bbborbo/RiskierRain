@@ -11,8 +11,9 @@ namespace SwanSongExtended.Artifacts
     {
         public static bool BodyIsPot(CharacterBody body)
         {
-            return body.bodyIndex == BodyCatalog.FindBodyIndexCaseInsensitive("ExplosivePotBody");
+            return body.bodyIndex == BodyCatalog.FindBodyIndex("ExplosivePotBody");
         }
+        public override string InternalName => nameof(AwesomePotArtifact);
         public override string ArtifactName => "Volatility";
 
         public override string ArtifactDescription => "Explosive barrels and pots are Elite.";
@@ -30,12 +31,19 @@ namespace SwanSongExtended.Artifacts
 
         public override void OnArtifactDisabledServer()
         {
-            CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
+            CharacterBody.onBodyStartGlobal -= CharacterBody_onBodyStartGlobal;
+            Stage.onServerStageBegin -= Stage_onServerStageBegin;
         }
 
         public override void OnArtifactEnabledServer()
         {
             CharacterBody.onBodyStartGlobal += CharacterBody_onBodyStartGlobal;
+            Stage.onServerStageBegin += Stage_onServerStageBegin;
+        }
+
+        private void Stage_onServerStageBegin(Stage stage)
+        {
+
         }
 
         private void CharacterBody_onBodyStartGlobal(CharacterBody potBody)

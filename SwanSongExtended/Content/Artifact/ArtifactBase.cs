@@ -29,6 +29,7 @@ namespace SwanSongExtended.Artifacts
 
     public abstract class ArtifactBase : SharedBase
     {
+        public abstract string InternalName { get; }
         public override string ConfigName => "Artifacts : " + ArtifactName;
         public override AssetBundle assetBundle => SwanSongPlugin.mainAssetBundle;
         public abstract string ArtifactName { get; }
@@ -57,7 +58,7 @@ namespace SwanSongExtended.Artifacts
         {
             ArtifactDef = ScriptableObject.CreateInstance<ArtifactDef>();
             {
-                ArtifactDef.cachedName = "2r4r" + ArtifactName;
+                ArtifactDef.cachedName = InternalName+"_SwanSong";
                 ArtifactDef.nameToken = "ARTIFACT_" + ArtifactLangTokenName + "_NAME";
                 ArtifactDef.descriptionToken = "ARTIFACT_" + ArtifactLangTokenName + "_DESCRIPTION";
                 ArtifactDef.smallIconDeselectedSprite = ArtifactDeselectedIcon;

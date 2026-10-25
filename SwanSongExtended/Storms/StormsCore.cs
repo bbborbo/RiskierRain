@@ -215,7 +215,7 @@ namespace SwanSongExtended.Storms
 
         private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            if (!sender.IsStormElite())
+            if (!sender.IsStormElite() || sender.HasBuff(StormEliteWeak))
                 return;
             args.ModifyHealthGateCount(stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius - 1f) * Mathf.Max(0, stormEliteHealthGateCountPerSize));
         }

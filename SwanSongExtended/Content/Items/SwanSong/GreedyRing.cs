@@ -84,10 +84,10 @@ Of course, you can always buy the premium version for unlimited discounts~
         {
             GetStatCoefficients += GreedyRegen;
             MultiShopCardUtils.OnMoneyPurchase += GreedyRingRefund;
-            On.RoR2.CharacterMaster.GiveMoney += GreedyRingRebate;
+            On.RoR2.CharacterMaster.GiveMoney_uint_bool += GreedyRingRebate;
         }
 
-        private void GreedyRingRebate(On.RoR2.CharacterMaster.orig_GiveMoney orig, CharacterMaster self, uint amount)
+        private void GreedyRingRebate(On.RoR2.CharacterMaster.orig_GiveMoney_uint_bool orig, CharacterMaster self, uint amount, bool bypassStatManager)
         {
             if (self.hasBody)
             {
@@ -101,7 +101,7 @@ Of course, you can always buy the premium version for unlimited discounts~
                         amount++;
                 }
             }
-            orig(self, amount);
+            orig(self, amount, bypassStatManager);
         }
 
         private void GreedyRegen(CharacterBody sender, StatHookEventArgs args)

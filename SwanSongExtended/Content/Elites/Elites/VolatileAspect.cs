@@ -12,6 +12,7 @@ using UnityEngine.Networking;
 using static SwanSongExtended.Modules.EliteModule;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using RainrotSharedUtils;
 
 namespace SwanSongExtended.Elites
 {
@@ -375,7 +376,10 @@ namespace SwanSongExtended.Elites
         void FixedUpdate()
         {
             //Debug.Log("AHHH!!");
-            if(body != null && body.healthComponent != null)
+            if (body.IsPot())
+                return;
+
+            if (body != null && body.healthComponent != null)
             {
                 HealthComponent hc = body.healthComponent;
                 if (body.HasBuff(buffDef) && hc.alive && !hc.isInFrozenState && hc.globalDeathEventChanceCoefficient >= 1)// && (!body.outOfDanger || !body.outOfCombat))

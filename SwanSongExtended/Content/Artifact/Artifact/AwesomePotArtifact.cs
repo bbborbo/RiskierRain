@@ -24,6 +24,15 @@ namespace SwanSongExtended.Artifacts
 
         public override Sprite ArtifactDeselectedIcon => LoadArtifactIcon(fallBackOnWrench:true);
 
+        public override void Init()
+        {
+            base.Init();
+            if (SwanSongPlugin.modularEclipseLoaded)
+            {
+                SwanSongPlugin.ModularEclipseCompat(ArtifactDef);
+            }
+        }
+
         public override void Hooks()
         {
 

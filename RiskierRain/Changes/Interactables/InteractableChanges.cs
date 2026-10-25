@@ -253,6 +253,17 @@ namespace RiskierRain.Changes
                 }
             });
 
+            On.RoR2.HalcyoniteShrineInteractable.Awake += (orig, self) =>
+            {
+                if (NetworkServer.active)
+                {
+                    self.lowGoldCost = halcyoniteShrineLowGoldCost;
+                    self.midGoldCost = halcyoniteShrineMidGoldCost;
+                    self.maxGoldCost = halcyoniteShrineMaxGoldCost;
+                }
+                orig(self);
+            };
+
 
             RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.dtShrineHalcyoniteTier1_asset, ChangeHalcyonDropTable);
             static void ChangeHalcyonDropTable(BasicPickupDropTable dropTable)

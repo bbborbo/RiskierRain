@@ -17,7 +17,7 @@ namespace SwanSongExtended.Items
         //public static float rechargeRateIncrease = 1.5f;
         public static float baseShield = 25;
 
-        float moveSpeedIncreaseFree = 0.5f;
+        float moveSpeedIncreaseFree = 0.05f;
         float moveSpeedIncreaseBase = 0.14f;
         float moveSpeedIncreaseStack = 0.14f;
         //int armorIncreaseBase = 20;
@@ -30,8 +30,8 @@ namespace SwanSongExtended.Items
         public override string ItemPickupDesc => "Increase movement speed while shields are down.";
 
         public override string ItemFullDescription => $"Gain <style=cIsHealing>{baseShield} shield</style> <style=cStack>(+{baseShield} per stack)</style>. " +
-            $"While shields are down, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{Tools.ConvertDecimal(moveSpeedIncreaseBase)}</style> " +
-            $"<style=cStack>(+{Tools.ConvertDecimal(moveSpeedIncreaseStack)} per stack)</style>. " +
+            $"While shields are down, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{(moveSpeedIncreaseBase + moveSpeedIncreaseFree).AsPercent()}</style> " +
+            $"<style=cStack>(+{(moveSpeedIncreaseStack + moveSpeedIncreaseFree).AsPercent()} per stack)</style>. " +
             $"<style=cIsVoid>Corrupts all Paul's Goat Hoofs.</style>";
 
         public override string ItemLore => @"Order: Flower Crown
@@ -67,6 +67,8 @@ Thank you for always sending us gifts. I made some of them into this flower crow
         private void FlowerCrownStats(CharacterBody sender, StatHookEventArgs args)
         {
             int itemCount = GetCount(sender);
+            if (itemCount <= 0)
+                return;
             float speed = moveSpeedIncreaseFree * itemCount;
 
             HealthComponent hc = sender.healthComponent;

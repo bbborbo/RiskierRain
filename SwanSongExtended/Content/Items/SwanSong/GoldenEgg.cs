@@ -9,6 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static RoR2.CharacterMasterNotificationQueue;
 
 namespace SwanSongExtended.Items
 {
@@ -26,7 +27,7 @@ namespace SwanSongExtended.Items
 
         public override string ItemLangTokenName => "GOLDEN_EGG";
 
-        public override string ItemPickupDesc => "There's something inside...";
+        public override string ItemPickupDesc => "Sometimes, dreams come true...";
 
         public override string ItemFullDescription => "At the start of the next stage, one golden egg will hatch into a void item.";
 
@@ -62,26 +63,29 @@ namespace SwanSongExtended.Items
         {
             if (!NetworkServer.active)
                 return;
-         
-            int count = GetCount(body);
-            if (count > 0)
-            {
-                SpawnItem(body.transform);
-                body.inventory.RemoveItemPermanent(GoldenEgg.instance.ItemsDef);
-            }
+
+            SpawnItem(body, body.coreTransform);
         }
 
-        void SpawnItem(Transform dropletOrigin)
+        void SpawnItem(CharacterBody body, Transform dropletOrigin)
         {
+            int count = GetCount(body, true);
+            if (count <= 0)
+                return;
+
             UniquePickup pickupIndex = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
+
+            CharacterMasterNotificationQueue.SendTransformNotification(body.master, ItemsDef.itemIndex, PickupCatalog.GetPickupDef(pickupIndex.pickupIndex).itemIndex, TransformationType.CloverVoid);
+
+            body.inventory.RemoveItemPermanent(GoldenEgg.instance.ItemsDef);
 
             pickupIndex = dropTable.GeneratePickup(rng);
             PickupDropletController.CreatePickupDroplet(pickupIndex, 
                 dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), 
                 dropletOrigin.forward * 10f, 
                 isDuplicated: false,
-                isRecycled: !goldenEggDropsRecyclable
+                isRecycled: goldenEggDropsRecyclable == false
                 );
         }
     }

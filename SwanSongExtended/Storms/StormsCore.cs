@@ -207,7 +207,7 @@ namespace SwanSongExtended.Storms
         #endregion
         private static void OnStormEliteHealthGateTriggered(CharacterBody sender)
         {
-            if (!NetworkServer.active)
+            if (!NetworkServer.active || sender.HasBuff(StormEliteWeak))
                 return;
             if (sender.IsStormElite())
             {
@@ -217,7 +217,7 @@ namespace SwanSongExtended.Storms
 
         private static void StormEliteHealthGates(CharacterBody sender, MoreStatHookEventArgs args)
         {
-            if (!sender.IsStormElite() || sender.HasBuff(StormEliteWeak))
+            if (!sender.IsStormElite())
                 return;
             args.ModifyHealthGateCount(stormEliteHealthGateCountBase + Mathf.CeilToInt(sender.radius - 1f) * Mathf.Max(0, stormEliteHealthGateCountPerSize));
         }

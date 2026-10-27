@@ -74,7 +74,7 @@ namespace SwanSongExtended
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<Func<string, DamageReport, string>>((tokenIn, damageReport) =>
             {
-                if(swanSongStormDeathQuoteTokens.Count > 0 
+                if(StormsCore.stormsEnabled && swanSongStormDeathQuoteTokens.Count > 0 
                     && StormsCore.IsStormDamage(damageReport.damageInfo, damageReport.attackerBody)
                     )
                 {

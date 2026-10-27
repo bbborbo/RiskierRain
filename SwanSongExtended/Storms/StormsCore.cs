@@ -24,6 +24,8 @@ namespace SwanSongExtended.Storms
     {
         public static bool IsStormDamage(DamageInfo damageInfo, CharacterBody attackerBody = null)
         {
+            if (StormsCore.stormsEnabled == false)
+                return false;
             if (damageInfo.damageType.HasModdedDamageType(stormDamageType))
                 return true;
             if (attackerBody != null && attackerBody.IsStormElite())

@@ -64,7 +64,7 @@ namespace SwanSongExtended.Items
             if (!NetworkServer.active)
                 return;
 
-            SpawnItem(body, body.coreTransform);
+            SpawnItem(body, body.coreTransform ?? body.transform);
         }
 
         void SpawnItem(CharacterBody body, Transform dropletOrigin)
@@ -75,12 +75,12 @@ namespace SwanSongExtended.Items
 
             UniquePickup pickupIndex = UniquePickup.none;
             this.rng = new Xoroshiro128Plus(Run.instance.treasureRng.nextUlong);
+            pickupIndex = dropTable.GeneratePickup(rng);
 
             CharacterMasterNotificationQueue.SendTransformNotification(body.master, ItemsDef.itemIndex, PickupCatalog.GetPickupDef(pickupIndex.pickupIndex).itemIndex, TransformationType.CloverVoid);
 
             body.inventory.RemoveItemPermanent(GoldenEgg.instance.ItemsDef);
 
-            pickupIndex = dropTable.GeneratePickup(rng);
             PickupDropletController.CreatePickupDroplet(pickupIndex, 
                 dropletOrigin.position + (dropletOrigin.forward * 3f) + (dropletOrigin.up * 3f), 
                 dropletOrigin.forward * 10f, 

@@ -24,7 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.*" />
-    <PackageReference Include="UnityEngine.Modules" Version="2021.3.33" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.45" />
     <PackageReference Include="R2API" Version="5.0.5" />
   </ItemGroup>
 

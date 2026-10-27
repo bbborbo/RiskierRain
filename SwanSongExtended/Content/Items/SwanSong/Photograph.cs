@@ -317,6 +317,10 @@ namespace SwanSongExtended.Items
                 master = deployable.ownerMaster;
             }
         }
+        void OnDisable()
+        {
+            RefreshCritBonus();
+        }
 
         int GetMaxPrints()
         {
@@ -366,7 +370,7 @@ namespace SwanSongExtended.Items
                 return;
             }
             int count = (int)ItemBase.GetStackValue(Photograph.photographCritBase, Photograph.photographCritStack, stack);
-            body.SetBuffCount(Photograph.photographCritBuff.buffIndex, count * GetMaxPrints());
+            body.SetBuffCount(Photograph.photographCritBuff.buffIndex, count * prints);
         }
     }
 

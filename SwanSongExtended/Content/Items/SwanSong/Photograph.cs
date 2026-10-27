@@ -122,6 +122,7 @@ namespace SwanSongExtended.Items
             }
         }
 
+        #region free printer
         private void PhotographForcedPrinter(SceneDirector self)
         {
             if (!Run.instance)
@@ -239,6 +240,7 @@ namespace SwanSongExtended.Items
             //    pillarTypeSpawnCount[pillarIndex]++;
             //}
         }
+        #endregion
 
         private void PhotographCritBonus(CharacterBody sender, StatHookEventArgs args)
         {
@@ -282,22 +284,22 @@ namespace SwanSongExtended.Items
                 }
             }
 
-            int itemCount = GetCount(context.activatorInventory);
-            if (itemCount <= 0)
-                return;
-
-            float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
-            int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
-            int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
-            int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
-            if (buffCount >= maxBuff)
-                return;
-            critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
-
-            for (int i = 0; i < critBonus; i++)
-            {
-                context.activatorBody.AddBuff(photographCritBuff);
-            }
+            //int itemCount = GetCount(context.activatorInventory);
+            //if (itemCount <= 0)
+            //    return;
+            //
+            //float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
+            //int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
+            //int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
+            //int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
+            //if (buffCount >= maxBuff)
+            //    return;
+            //critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
+            //
+            //for (int i = 0; i < critBonus; i++)
+            //{
+            //    context.activatorBody.AddBuff(photographCritBuff);
+            //}
         }
     }
     public class BogosBinted : BaseItemBodyBehavior

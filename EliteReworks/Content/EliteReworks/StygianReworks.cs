@@ -32,21 +32,26 @@ namespace FruityElites.EliteReworks
                 {
                     foreach(MinionOwnership member in group.members)
                     {
-                        HealthComponent healthComponent = GetStygianMinionHealthComponent(member);
-                        if(healthComponent == null && member.TryGetComponent(out CharacterMaster master))
-                        {
-                            CharacterBody minionBody = master.GetBody();
-                            if(minionBody && minionBody.healthComponent.alive)
-                            {
-                                healthComponent = minionBody.healthComponent;
-                                if (stygianMinionHealthComponents.ContainsKey(member) == false)
-                                    stygianMinionHealthComponents.Add(member, healthComponent);
-                                else
-                                    stygianMinionHealthComponents[member] = healthComponent;
-                            }
-                        }
-                        if (healthComponent == null)
+                        if (member == null)
                             continue;
+                        HealthComponent healthComponent = GetStygianMinionHealthComponent(member);
+                        if(healthComponent == null)
+                        {
+                            if(member.TryGetComponent(out CharacterMaster master))
+                            {
+                                CharacterBody minionBody = master.GetBody();
+                                if (minionBody && minionBody.healthComponent.alive)
+                                {
+                                    healthComponent = minionBody.healthComponent;
+                                    if (stygianMinionHealthComponents.ContainsKey(member) == false)
+                                        stygianMinionHealthComponents.Add(member, healthComponent);
+                                    else
+                                        stygianMinionHealthComponents[member] = healthComponent;
+                                }
+                            }
+                            if (healthComponent == null)
+                                continue;
+                        }
                         IOnTakeDamageServerReceiver[] array3 = healthComponent.onTakeDamageReceivers;
                         for (int i = 0; i < array3.Length; i++)
                         {

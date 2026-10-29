@@ -1,5 +1,5 @@
 ﻿using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;

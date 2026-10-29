@@ -12,6 +12,7 @@ using HarmonyLib;
 using On.RoR2.Items;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
+using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Items
 {
@@ -78,21 +79,21 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             Stage.onServerStageBegin += GenerateEggRNG;
-            GlobalEventManager.onCharacterDeathGlobal += EggOnAnyDeath;
+            GlobalEventManager.onCharacterDeathServer += EggOnAnyDeath;
             GlobalEventManager.OnInteractionsGlobal += EggOnInteraction;
             RecalculateStatsAPI.GetStatCoefficients += EggStats;
         }
 
         private void EggOnInteraction(Interactor interactor, IInteractable interactable, GameObject interactableObject)
         {
-            if (!interactableObject.InteractableIsPermittedForSpawn(false))
-                return;
-
             if (!interactor.gameObject.TryGetComponent(out CharacterBody interactorBody))
                 return;
 
             int eggCount = Util.GetItemCountForTeam(interactorBody.teamComponent.teamIndex, this.ItemsDef.itemIndex, true, false);
             if (eggCount <= 0)
+                return;
+
+            if (!interactableObject.InteractableIsPermittedForSpawn(false))
                 return;
 
             float luck = 0;

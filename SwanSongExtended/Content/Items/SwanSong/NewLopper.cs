@@ -12,6 +12,7 @@ using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
 using RoR2.Items;
+using static RainrotSharedUtils.Styling;
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items

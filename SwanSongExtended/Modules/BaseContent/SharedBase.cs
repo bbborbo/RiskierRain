@@ -28,7 +28,7 @@ namespace SwanSongExtended
             ConfigManager.HandleConfigAttributes(GetType(), ConfigName, Config.MyConfig);
             Hooks();
             Lang();
-            SwanSongPlugin.onSwanSongLoaded += PostInit;
+            SwanSongPlugin.onPluginLoaded += PostInit;
         }
 
         public T Bind<T>(T defaultValue, string configName, string configDesc = "")

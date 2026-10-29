@@ -8,7 +8,7 @@ using RoR2.Orbs;
 using UnityEngine.AddressableAssets;
 using System.Linq;
 using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 using RoR2.Items;
 using SwanSongExtended.Modules;

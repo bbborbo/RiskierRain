@@ -15,6 +15,7 @@ using static RoR2.CombatDirector;
 using SwanSongExtended.States;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Elites
 {

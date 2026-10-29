@@ -18,7 +18,7 @@ using UnityEngine.AddressableAssets;
 using ThreeEyedGames;
 using RoR2.ExpansionManagement;
 using static R2API.DamageAPI;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using static MoreStats.OnHit;
 using static R2API.RecalculateStatsAPI;
 

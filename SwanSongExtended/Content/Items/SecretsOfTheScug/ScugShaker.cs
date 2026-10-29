@@ -3,7 +3,7 @@ using RoR2;
 using SwanSongExtended.Modules;
 using System;
 using UnityEngine;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using static MoreStats.OnHit;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;

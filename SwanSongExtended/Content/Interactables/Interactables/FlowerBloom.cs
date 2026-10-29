@@ -10,7 +10,7 @@ using SwanSongExtended.Modules;
 using SwanSongExtended.Components;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Interactables
 {

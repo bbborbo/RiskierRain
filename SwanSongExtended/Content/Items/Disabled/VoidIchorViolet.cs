@@ -12,7 +12,7 @@ using UnityEngine.AddressableAssets;
 using static MoreStats.OnHit;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using RoR2.Items;
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 

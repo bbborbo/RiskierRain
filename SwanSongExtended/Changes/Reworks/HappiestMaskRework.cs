@@ -16,7 +16,7 @@ using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static MoreStats.StatHooks;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended
 {

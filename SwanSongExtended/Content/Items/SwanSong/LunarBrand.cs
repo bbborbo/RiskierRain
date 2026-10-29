@@ -15,6 +15,7 @@ using UnityEngine.AddressableAssets;
 using static RoR2.DotController;
 using static R2API.DotAPI;
 using UnityEngine.Networking;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Items
 {

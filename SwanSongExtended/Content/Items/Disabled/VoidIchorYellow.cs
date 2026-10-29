@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using RoR2.ExpansionManagement;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Items
 {
@@ -59,7 +59,7 @@ namespace SwanSongExtended.Items
         public override void Hooks()
         {
             RecalculateStatsAPI.GetStatCoefficients += IchorRegenBoost;
-            SwanSongPlugin.onSwanSongLoaded += () => AddVoidItemRelationship(VoidIchorViolet.instance.ItemsDef);
+            SwanSongPlugin.onPluginLoaded += () => AddVoidItemRelationship(VoidIchorViolet.instance.ItemsDef);
         }
 
         private void IchorRegenBoost(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)

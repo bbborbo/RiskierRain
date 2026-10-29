@@ -9,7 +9,7 @@ using UnityEngine;
 using RoR2.Skills;
 using EntityStates;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Skills
 {

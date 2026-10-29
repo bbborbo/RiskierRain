@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static MoreStats.OnHit;
 using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Items

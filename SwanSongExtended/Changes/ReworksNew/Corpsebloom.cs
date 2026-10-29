@@ -13,7 +13,7 @@ using static MoreStats.StatHooks;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
 using SwanSongExtended.Artifacts;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using RoR2.Items;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]

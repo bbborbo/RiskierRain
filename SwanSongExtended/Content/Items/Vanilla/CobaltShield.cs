@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using static MoreStats.StatHooks;
 using RoR2.Items;
 [assembly: HG.Reflection.SearchableAttribute.OptIn]

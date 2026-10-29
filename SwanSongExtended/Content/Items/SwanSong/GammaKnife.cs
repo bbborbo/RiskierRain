@@ -9,7 +9,7 @@ using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using static MoreStats.OnHit;
 using static MoreStats.StatHooks;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
 

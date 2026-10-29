@@ -166,6 +166,18 @@ namespace SwanSongExtended.Storms
             On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += ReenableStormDirector;
         }
 
+        public delegate void StormDelayModifierEventHandler(StormController sender, ref float delayModifierSeconds);
+        public static event StormDelayModifierEventHandler GetStormDelayModifierSeconds;
+        internal static float GetStormTimeModifierSeconds(StormController sender)
+        {
+            float delayModifierSeconds = 0;
+            if (GetStormDelayModifierSeconds != null)
+            {
+                GetStormDelayModifierSeconds.Invoke(sender, ref delayModifierSeconds);
+            }
+            return delayModifierSeconds;
+        }
+
         #region painandsuffering
         static bool shouldReenableStormDirector = false;
         private static void ReenableStormDirector(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, TeleporterInteraction.ChargingState self)

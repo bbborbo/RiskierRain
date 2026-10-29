@@ -10,6 +10,7 @@ using static SwanSongExtended.Modules.EliteModule;
 using static RoR2.CombatDirector;
 using RoR2.ExpansionManagement;
 using SwanSongExtended.Modules;
+using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Elites
 {
@@ -258,6 +259,8 @@ namespace SwanSongExtended.Elites
 
         internal bool IsElite(CharacterBody body, BuffDef buffDef = null)
         {
+            if (body == null)
+                return false;
             if(buffDef == null)
             {
                 buffDef = EliteBuffDef;

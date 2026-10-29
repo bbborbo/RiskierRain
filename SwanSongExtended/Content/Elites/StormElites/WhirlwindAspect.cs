@@ -34,7 +34,7 @@ using EntityStates.VoidRaidCrab;
 
 namespace SwanSongExtended.Elites
 {
-    class WhirlwindAspect : T1EliteEquipmentBase<WhirlwindAspect>
+    class WhirlwindAspect : StormEliteEquipmentBase<WhirlwindAspect>
     {
         #region
         public override string ConfigName => "Elites : Storm : " + EliteModifier;

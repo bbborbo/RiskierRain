@@ -38,6 +38,31 @@ namespace RiskierRain.Changes
         }
         #endregion
 
+        public static float GetDifficultyIncreasePerMinute(DifficultyDef difficultyDef)
+        {
+            float rate = -1f;
+            if (difficultyDef.scalingValue >= 3)
+                return difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * difficultyDef.scalingValue;
+            return difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * ((difficultyDef.scalingValue - 1) * 0.5f + 2f);
+            //return Mathf.Max(difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * difficultyDef.scalingValue);
+            switch (difficultyDef.scalingValue)
+            {
+                default:
+                    if (difficultyDef.countsAsHardMode)
+                        return Mathf.Max(difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * difficultyDef.scalingValue, 1.01f);
+                    return 1.02f;
+                case 1: //drizzle
+                    return 1.02f;//1.005f
+                case 2: //rainstorm
+                    return 1.0275f;//1.02f
+                case 3: //monsoon
+                    return 1.035f;
+                case 3.5f: //typhoon
+                    return 1.0425f;
+                case 4: //extinction
+                    return 1.05f;
+            }
+        }
         #region difficulty coefficient calculation
         /// <summary>
         /// linear. increases the difficulty by this amount per minute, affected by the difficulty's scaling value
@@ -175,10 +200,11 @@ namespace RiskierRain.Changes
         }
         public static float GetDifficultyCoefficient(Run run, float timeInMinutes, int stageClearCount, out float playerBaseFactor)
         {
-            float scalingValue = GetScalingValueForDifficulty(run.selectedDifficulty);
+            DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(run.selectedDifficulty);
+            float scalingValue = difficultyDef.scalingValue;
             float baseScalingFactor = 0.0506f * baseScalingMultiplier;
 
-            float timeFactor = GetTimeDifficultyFactor(timeInMinutes, scalingValue);
+            float timeFactor = GetTimeDifficultyFactor(timeInMinutes, difficultyDef);
             float stageFactor = GetStageDifficultyFactor(stageClearCount, scalingValue);
 
             playerBaseFactor = 1 + playerBaseDifficultyFactor * (run.participatingPlayerCount - 1);
@@ -187,9 +213,9 @@ namespace RiskierRain.Changes
 
             return (playerBaseFactor + scalingFactor * timeInMinutes) * timeFactor * stageFactor;
 
-            float GetTimeDifficultyFactor(float timeInMinutes, float scalingValue)
+            float GetTimeDifficultyFactor(float timeInMinutes, DifficultyDef difficulty)
             {
-                float timeFactor = Mathf.Pow(Mathf.Max(1, difficultyIncreasePerMinuteBase + difficultyIncreasePerMinutePerDifficulty * scalingValue), timeInMinutes);
+                float timeFactor = Mathf.Pow(Mathf.Max(1, GetDifficultyIncreasePerMinute(difficulty)), timeInMinutes);
                 return timeFactor;
             }
             float GetStageDifficultyFactor(int stageClearCount, float scalingValue)

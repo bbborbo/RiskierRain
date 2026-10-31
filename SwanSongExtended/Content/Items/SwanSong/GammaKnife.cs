@@ -63,8 +63,8 @@ namespace SwanSongExtended.Items
         public override void Init()
         {
             statBoostItemDef = CreateNewUntieredItem("GAMMAKNIFESTATBOOST", LoadItemIcon("texIconGammaKnifeUsed"), isHidden: hideStatBoost);
-            string fullDesc = $"<style=cIsHealth>Permanently</style> increases your <style=cIsDamage>attack speed</style> " +
-            $"by <style=cIsDamage>{Tools.ConvertDecimal(attackSpeedBonus)}</style> and reduces your " +
+            string fullDesc = $"<style=cIsHealth>Permanently</style> increases your <style=cIsUtility>armor</style> " +
+            $"by <style=cIsUtility>{armorBonus}</style> and reduces your " +
             $"<style=cIsDamage>cooldowns</style> by <style=cIsDamage>{Tools.ConvertDecimal(cdrBonus)}</style> per stack.";
             DoLangForItem(statBoostItemDef, "Fake-Soul Butter", "Cut the skin and bend the truth...", fullDesc);
 
@@ -128,7 +128,7 @@ namespace SwanSongExtended.Items
                 int permanentBuffCount = inventory.GetItemCountEffective(statBoostItemDef);
                 if (itemCount > 0 && permanentBuffCount > 0)
                 {
-                    args.baseAttackSpeedAdd += attackSpeedBonus * permanentBuffCount;
+                    args.armorAdd += armorBonus * permanentBuffCount;
                     float cdrBoost = Mathf.Pow(1 - cdrBonus, permanentBuffCount);
                     args.allSkills.cooldownMultiplier *= cdrBoost;
                 }

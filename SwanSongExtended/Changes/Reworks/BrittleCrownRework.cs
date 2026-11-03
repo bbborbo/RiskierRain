@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine.Networking;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended
 {

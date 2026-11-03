@@ -11,7 +11,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Changes
 {

@@ -34,7 +34,7 @@ using EntityStates.VoidRaidCrab;
 
 namespace SwanSongExtended.Elites
 {
-    class WhirlwindAspect : T1EliteEquipmentBase<WhirlwindAspect>
+    class WhirlwindAspect : StormEliteEquipmentBase<WhirlwindAspect>
     {
         #region
         public override string ConfigName => "Elites : Storm : " + EliteModifier;
@@ -877,23 +877,20 @@ namespace SwanSongExtended.Elites
             base.FixedUpdate();
 
 
-            if (!NetworkServer.active)
+            if (NetworkServer.active)
             {
-                return;
+                if (missilesQueued > 0)
+                {
+                    if (missileCountdown > 0)
+                        missileCountdown -= Time.fixedDeltaTime;
+
+                    if (missileCountdown <= 0)
+                        FireMissile();
+                }
+                DoBodyAttachment();
             }
 
-            if (missilesQueued > 0)
-            {
-                if (missileCountdown > 0)
-                    missileCountdown -= Time.fixedDeltaTime;
-
-                if (missileCountdown <= 0)
-                    FireMissile();
-            }
-
-            DoBodyAttachment();
-
-            DoBeamAttackServer();
+            DoBeamAttack();
         }
 
         float beamTickTimer = 0f;
@@ -935,7 +932,7 @@ namespace SwanSongExtended.Elites
                 return currentFixedUpdatePosition;
             }
         }
-        private void DoBeamAttackServer()
+        private void DoBeamAttack()
         {
             if (squallTimer > 0)
             {
@@ -949,6 +946,9 @@ namespace SwanSongExtended.Elites
             }
 
             UpdateAimPosition(reset: false);
+
+            if (NetworkServer.active == false)
+                return;
 
             beamTickTimer -= Time.fixedDeltaTime;
             if (beamTickTimer > 0)

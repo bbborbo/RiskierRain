@@ -13,7 +13,7 @@ using static MoreStats.OnHit;
 using UnityEngine.AddressableAssets;
 using System.Collections;
 using RoR2.ExpansionManagement;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using SwanSongExtended.Modules;
 
 namespace SwanSongExtended.Items

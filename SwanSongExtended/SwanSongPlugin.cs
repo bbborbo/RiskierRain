@@ -90,7 +90,7 @@ namespace SwanSongExtended
         public static ExpansionDef expansionDefSS2;
         public static ExpansionDef expansionDefSOTS;
 
-        internal static event Action onSwanSongLoaded;
+        internal static event Action onPluginLoaded;
 
         #region asset paths
         public const string iconsPath = "";
@@ -165,7 +165,7 @@ namespace SwanSongExtended
             InitializeChanges();
             //RoR2Application.onLoad += InitializeChanges;
 
-            onSwanSongLoaded.Invoke();
+            onPluginLoaded.Invoke();
 
             Modules.Config.Save();
 
@@ -210,7 +210,7 @@ namespace SwanSongExtended
             ///elites
             ///artifacts
             ///scavengers
-            if(Modules.Config.SectionEnableConfig("Items (Reworks)").Value)
+            if(Modules.Config.SectionEnableConfig("Item Reworks").Value)
                 BeginInitializing<ReworkBase>(allTypes, "SwanSongReworks.txt");
 
             //if (Modules.Config.SectionEnableConfig("Items").Value)

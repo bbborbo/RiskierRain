@@ -382,6 +382,8 @@ namespace FruityElites.EliteReworks
 
         void Update()
         {
+            if (body.IsPot())
+                return;
             if ((body.outOfDanger || currentRange >= minRange) && currentRange < flameAuraMaxRange)
             {
                 if(body.IsInvincible())

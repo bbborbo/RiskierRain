@@ -12,7 +12,7 @@ using RoR2.EntitlementManagement;
 using RoR2.ExpansionManagement;
 using System.Collections;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using RoR2.Items;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]

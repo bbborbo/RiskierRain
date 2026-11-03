@@ -1,23 +1,56 @@
-﻿using On.RoR2.Items;
+﻿using static R2API.RecalculateStatsAPI;
+using static RainrotSharedUtils.Styling;
+using BepInEx.Configuration;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using R2API;
 using RoR2;
-using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using static R2API.RecalculateStatsAPI;
-using static SwanSongExtended.Modules.Language.Styling;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using UnityEngine.Networking;
+using RoR2.ExpansionManagement;
+using SwanSongExtended.Modules;
+using RoR2.Items;
+using System.Linq;
+using RoR2BepInExPack.GameAssetPathsBetter;
+using RoR2BepInExPack.Utilities;
+using static SwanSongExtended.Items.Photograph;
+
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 
 namespace SwanSongExtended.Items
 {
     class Photograph : ItemBase<Photograph>
     {
+        public class CharacterPrintCount
+        {
+            public void Add()
+            {
+                if (NetworkServer.active == false)
+                    return;
+                printCount++;
+            }
+            public void Reset()
+            {
+                if (NetworkServer.active == false)
+                    return;
+                printCount = 0;
+            }
+            public int printCount { get; private set; }
+        }
+        public static FixedConditionalWeakTable<CharacterMaster, CharacterPrintCount> characterPrintCounts = new FixedConditionalWeakTable<CharacterMaster, CharacterPrintCount>();
+        public static CharacterPrintCount GetPrintCountFromMaster(CharacterMaster body)
+        {
+            if (body == null)
+                return null;
+            return characterPrintCounts.GetOrCreateValue(body);
+        }
         public override bool CanBeRental => false;
         public static WeightedSelection<string> printerSpawncardPaths;
+        public static bool includeDeploys = true;
 
         public static BuffDef photographCritBuff;
         public static float photographCritFreeBase = 0f;
@@ -74,11 +107,22 @@ namespace SwanSongExtended.Items
         {
             //On.RoR2.SceneDirector.PopulateScene += SceneDirector_PopulateScene;
             RoR2.Stage.onStageStartGlobal += PhotographPrinterSpawn;
+            RoR2.Stage.onServerStageComplete += PhotographPrintCountReset;
             //RoR2.SceneDirector.onPostPopulateSceneServer += PhotographForcedPrinter;
             On.RoR2.Items.MultiShopCardUtils.OnNonMoneyPurchase += PhotographOnNonMoneyPurchase;
             GetStatCoefficients += PhotographCritBonus;
         }
 
+        private void PhotographPrintCountReset(Stage obj)
+        {
+            foreach(CharacterMaster master in CharacterMaster.instancesList)
+            {
+                CharacterPrintCount cpc = GetPrintCountFromMaster(master);
+                    if(cpc != null) cpc.Reset();
+            }
+        }
+
+        #region free printer
         private void PhotographForcedPrinter(SceneDirector self)
         {
             if (!Run.instance)
@@ -196,6 +240,7 @@ namespace SwanSongExtended.Items
             //    pillarTypeSpawnCount[pillarIndex]++;
             //}
         }
+        #endregion
 
         private void PhotographCritBonus(CharacterBody sender, StatHookEventArgs args)
         {
@@ -213,7 +258,7 @@ namespace SwanSongExtended.Items
             }
         }
 
-        private void PhotographOnNonMoneyPurchase(MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
+        private void PhotographOnNonMoneyPurchase(On.RoR2.Items.MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
         {
             PhotographOnPrinterPurchase(context);
             orig(context);
@@ -229,22 +274,106 @@ namespace SwanSongExtended.Items
                     )
                 return;
 
-            int itemCount = GetCount(context.activatorInventory);
-            if (itemCount <= 0)
-                return;
-
-            float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
-            int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
-            int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
-            int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
-            if (buffCount >= maxBuff)
-                return;
-            critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
-
-            for (int i = 0; i < critBonus; i++)
+            CharacterPrintCount cpc = GetPrintCountFromMaster(context.activatorMaster);
+            if(cpc != null)
             {
-                context.activatorBody.AddBuff(photographCritBuff);
+                cpc.Add();
+                if(context.activatorBody && context.activatorBody.TryGetComponent(out BogosBinted bogos))
+                {
+                    bogos.RefreshCritBonus(cpc.printCount);
+                }
             }
+
+            //int itemCount = GetCount(context.activatorInventory);
+            //if (itemCount <= 0)
+            //    return;
+            //
+            //float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
+            //int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
+            //int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
+            //int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
+            //if (buffCount >= maxBuff)
+            //    return;
+            //critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
+            //
+            //for (int i = 0; i < critBonus; i++)
+            //{
+            //    context.activatorBody.AddBuff(photographCritBuff);
+            //}
         }
     }
+    public class BogosBinted : BaseItemBodyBehavior
+    {
+        [ItemDefAssociation(useOnServer = true, useOnClient = false)]
+        private static ItemDef GetItemDef() => Photograph.instance?.ItemsDef ?? null;
+        CharacterMaster master;
+        bool isMinion = false;
+        float refreshTimer = 0;
+        const float refreshInterval = 10;
+        void OnEnable()
+        {
+            master = body.master;
+            if(Photograph.includeDeploys == true && body.isPlayerControlled == false && master.TryGetComponent(out Deployable deployable))
+            {
+                isMinion = true;
+                master = deployable.ownerMaster;
+            }
+        }
+        void OnDisable()
+        {
+            RefreshCritBonus();
+        }
+
+        int GetMaxPrints()
+        {
+            if (Photograph.photographMaxPrintsStack == 0)
+                return Photograph.photographMaxPrintsBase;
+            return (int)ItemBase.GetStackValue(Photograph.photographMaxPrintsBase, Photograph.photographMaxPrintsStack, stack);
+        }
+        public override void OnInventoryRefresh()
+        {
+            base.OnInventoryRefresh();
+            if(stack == 0)
+            {
+                RefreshCritBonus();
+                return;
+            }
+            GetPrintCountAndRefresh();
+        }
+
+        void FixedUpdate()
+        {
+            if (isMinion == false)
+                return;
+            if(refreshTimer > 0)
+            {
+                refreshTimer -= Time.fixedDeltaTime;
+                return;
+            }
+            refreshTimer = refreshInterval;
+            GetPrintCountAndRefresh();
+        }
+
+        public void GetPrintCountAndRefresh()
+        {
+            CharacterPrintCount cpc = GetPrintCountFromMaster(master);
+            if (cpc != null)
+            {
+                int prints = cpc.printCount;
+                RefreshCritBonus(prints);
+            }
+        }
+
+        public void RefreshCritBonus(int prints = 0)
+        {
+            if (prints == 0)
+            {
+                body.SetBuffCount(Photograph.photographCritBuff.buffIndex, 0);
+                return;
+            }
+            int count = (int)ItemBase.GetStackValue(Photograph.photographCritBase, Photograph.photographCritStack, stack);
+            body.SetBuffCount(Photograph.photographCritBuff.buffIndex, count * prints);
+        }
+    }
+
 }

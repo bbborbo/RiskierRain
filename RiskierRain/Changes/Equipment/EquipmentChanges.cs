@@ -130,7 +130,8 @@ namespace RiskierRain.Changes
         #endregion
 
         #region altar of sacrifice
-        public static float altarRadius = 60;//idk wiki down :(
+        public static float altarRadius = 50;//25
+        public static int altarPointsPerLevel = 50;//400
         private static void ChangeSacrificeAltar()
         {
             RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_SpawnAltar.SpawnAltar_prefab, (altarPrefab) =>
@@ -140,6 +141,14 @@ namespace RiskierRain.Changes
                     holdout.baseRadius = altarRadius;
                 }
             });
+            On.RoR2.SpawnAltarZoneController.Start += SpawnAltarZoneController_Start;
+        }
+
+        private static void SpawnAltarZoneController_Start(On.RoR2.SpawnAltarZoneController.orig_Start orig, SpawnAltarZoneController self)
+        {
+            orig(self);
+            if (Run.instance && Stage.instance)
+                self._adjustedPointsPerLevel = Run.instance.GetDifficultyScaledCost(altarPointsPerLevel, Stage.instance.entryDifficultyCoefficient);
         }
         #endregion
 

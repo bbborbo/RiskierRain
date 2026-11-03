@@ -15,7 +15,7 @@ using System.Linq;
 using System.Collections;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Equipment
 {

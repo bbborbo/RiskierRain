@@ -9,7 +9,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
+using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Items
 {

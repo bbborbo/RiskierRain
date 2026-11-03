@@ -13,6 +13,8 @@ using RoR2.Items;
 using SwanSongExtended.Modules;
 using RoR2.ExpansionManagement;
 using HG;
+using static RainrotSharedUtils.Styling;
+using static RainrotSharedUtils.Extensions;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 

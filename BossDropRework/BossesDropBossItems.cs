@@ -21,7 +21,7 @@ namespace BossDropRework
                 "Turn this off if you dont want that.").Value;*/
 
             On.RoR2.BossGroup.Awake += RemoveBossItemDropsFromTeleporter;
-            On.RoR2.GlobalEventManager.OnCharacterDeath += BossesDropTrophies;
+            GlobalEventManager.onCharacterDeathServer += BossesDropTrophies;
         }
 
         private void RemoveBossItemDropsFromTeleporter(On.RoR2.BossGroup.orig_Awake orig, BossGroup self)
@@ -36,10 +36,8 @@ namespace BossDropRework
             self.bossDropChance = 0;
         }
 
-        public void BossesDropTrophies(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, GlobalEventManager self, DamageReport damageReport)
+        public void BossesDropTrophies(DamageReport damageReport)
         {
-            orig(self, damageReport);
-
             if (damageReport.victimTeamIndex == TeamIndex.Player)
                 return;
 

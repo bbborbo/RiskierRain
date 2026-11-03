@@ -10,7 +10,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using RoR2.ExpansionManagement;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Equipment
 {

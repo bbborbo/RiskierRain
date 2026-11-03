@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using System.Linq;
 using static MoreStats.StatHooks;
 

@@ -10,7 +10,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static R2API.RecalculateStatsAPI;
 using static MoreStats.OnHit;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Items
 {

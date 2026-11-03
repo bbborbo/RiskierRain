@@ -10,7 +10,8 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
+using static RainrotSharedUtils.Extensions;
 using RoR2.Items;
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 

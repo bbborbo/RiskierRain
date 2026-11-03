@@ -11,7 +11,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using static MoreStats.OnHit;
 using static MoreStats.StatHooks;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended
 {

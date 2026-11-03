@@ -259,7 +259,9 @@ namespace SwanSongExtended.Storms
             }
             public bool GetTimeOverDelay(float delayTime, float delayTimeIfRunNull = -1)
             {
-                float age = GetTimeSinceStageStart(out bool b);
+                float delayModifier = StormsCore.GetStormTimeModifierSeconds(this.stormController);
+                float age = GetTimeSinceStageStart(out bool b) - delayModifier;
+                
                 if (b == false && delayTimeIfRunNull != -1)
                     return age >= delayTimeIfRunNull;
                 return age >= delayTime;
@@ -690,7 +692,7 @@ namespace SwanSongExtended.Storms
                 if (b)
                     arrivalTime += stormController.stormDelayTime;
 
-                SetCountdownTime(Mathf.Max(0, arrivalTime - age));
+                SetCountdownTime(Mathf.Max(0, arrivalTime - age - StormsCore.GetStormTimeModifierSeconds(this.stormController)));
             }
 
 

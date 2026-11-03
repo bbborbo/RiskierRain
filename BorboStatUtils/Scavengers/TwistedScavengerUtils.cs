@@ -32,10 +32,10 @@ namespace RainrotSharedUtils
     }
     public static class TwistedScavengerUtils
     {
-        public static ExpansionDef dlc1 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Common.DLC1_asset).WaitForCompletion();
-        public static ExpansionDef dlc2 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2_Common.DLC2_asset).WaitForCompletion();
-        public static ExpansionDef dlc3 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3.DLC3_asset).WaitForCompletion();
-        //public static ExpansionDef dlc4 = Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_Common.DLC1_asset).WaitForCompletion();
+        public static ExpansionDef dlc1 => SharedUtilsPlugin.dlc1;
+        public static ExpansionDef dlc2 => SharedUtilsPlugin.dlc2;
+        public static ExpansionDef dlc3 => SharedUtilsPlugin.dlc3;
+        public static ExpansionDef dlc4 => SharedUtilsPlugin.dlc4;
 
         public static GivePickupsOnStart GetPickupOnStart(CharacterMaster master)
         {

@@ -24,6 +24,8 @@ namespace SwanSongExtended.Storms
     {
         public static bool IsStormDamage(DamageInfo damageInfo, CharacterBody attackerBody = null)
         {
+            if (StormsCore.stormsEnabled == false)
+                return false;
             if (damageInfo.damageType.HasModdedDamageType(stormDamageType))
                 return true;
             if (attackerBody != null && attackerBody.IsStormElite())
@@ -164,6 +166,18 @@ namespace SwanSongExtended.Storms
             On.RoR2.TeleporterInteraction.ChargingState.FixedUpdate += ReenableStormDirector;
         }
 
+        public delegate void StormDelayModifierEventHandler(StormController sender, ref float delayModifierSeconds);
+        public static event StormDelayModifierEventHandler GetStormDelayModifierSeconds;
+        internal static float GetStormTimeModifierSeconds(StormController sender)
+        {
+            float delayModifierSeconds = 0;
+            if (GetStormDelayModifierSeconds != null)
+            {
+                GetStormDelayModifierSeconds.Invoke(sender, ref delayModifierSeconds);
+            }
+            return delayModifierSeconds;
+        }
+
         #region painandsuffering
         static bool shouldReenableStormDirector = false;
         private static void ReenableStormDirector(On.RoR2.TeleporterInteraction.ChargingState.orig_FixedUpdate orig, TeleporterInteraction.ChargingState self)
@@ -205,7 +219,7 @@ namespace SwanSongExtended.Storms
         #endregion
         private static void OnStormEliteHealthGateTriggered(CharacterBody sender)
         {
-            if (!NetworkServer.active)
+            if (!NetworkServer.active || sender.HasBuff(StormEliteWeak))
                 return;
             if (sender.IsStormElite())
             {

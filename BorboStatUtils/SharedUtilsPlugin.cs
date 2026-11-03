@@ -7,6 +7,7 @@ using RainrotSharedUtils.Frost;
 using RainrotSharedUtils.Shelters;
 using RoR2;
 using RoR2.ContentManagement;
+using RoR2.ExpansionManagement;
 using System;
 using System.Security;
 using System.Security.Permissions;
@@ -61,6 +62,10 @@ namespace RainrotSharedUtils
                 return survivorExecuteThreshold / 2;
             return survivorExecuteThreshold;
         }
+        public static ExpansionDef dlc1 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_Common.DLC1_asset).WaitForCompletion();
+        public static ExpansionDef dlc2 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2_Common.DLC2_asset).WaitForCompletion();
+        public static ExpansionDef dlc3 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3.DLC3_asset).WaitForCompletion();
+        public static ExpansionDef dlc4 => Addressables.LoadAssetAsync<ExpansionDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4.DLC4_asset).WaitForCompletion();
 
         public void Awake()
         {

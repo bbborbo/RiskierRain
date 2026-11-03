@@ -9,6 +9,7 @@ using RoR2.ExpansionManagement;
 using RoR2.EntitlementManagement;
 using SwanSongExtended.Modules;
 using HG;
+using static RainrotSharedUtils.Extensions;
 
 namespace SwanSongExtended.Items
 {

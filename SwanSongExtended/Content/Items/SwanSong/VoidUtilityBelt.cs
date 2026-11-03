@@ -10,7 +10,8 @@ using RoR2.ExpansionManagement;
 using static R2API.RecalculateStatsAPI;
 using RoR2.Items;
 using UnityEngine.Networking;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
+using static RainrotSharedUtils.Extensions;
 using SwanSongExtended.Modules;
 using UnityEngine.AddressableAssets;
 

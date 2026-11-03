@@ -237,7 +237,7 @@ namespace RiskierRain.Changes
 
         public static void ChangeHalcyoniteShrine()
         {
-            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.ShrineHalcyonite_prefab, (halcyoniteShrinePrefab) =>
+            RiskierRainPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.ShrineHalcyonite_prefab, (halcyoniteShrinePrefab) =>
             {
                 HalcyoniteShrineInteractable hsi = halcyoniteShrinePrefab.GetComponent<HalcyoniteShrineInteractable>();
                 if (hsi)
@@ -253,8 +253,24 @@ namespace RiskierRain.Changes
                 }
             });
 
+            On.RoR2.HalcyoniteShrineInteractable.Awake += (orig, self) =>
+            {
+                if (NetworkServer.active)
+                {
+                    self.lowGoldCost = halcyoniteShrineLowGoldCost;
+                    self.midGoldCost = halcyoniteShrineMidGoldCost;
+                    self.maxGoldCost = halcyoniteShrineMaxGoldCost;
+                }
+                orig(self);
+            };
 
-            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC2.dtShrineHalcyoniteTier1_asset, ChangeHalcyonDropTable);
+
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier1_asset, ChangeHalcyonDropTable);
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier1_Stage1_asset, ChangeHalcyonDropTable);
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier2_asset, ChangeHalcyonDropTable);
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier2_Stage1_asset, ChangeHalcyonDropTable);
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier3_asset, ChangeHalcyonDropTable);
+            RiskierRainPlugin.LoadAsync<BasicPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2.dtShrineHalcyoniteTier3_Stage1_asset, ChangeHalcyonDropTable);
             static void ChangeHalcyonDropTable(BasicPickupDropTable dropTable)
             {
                 dropTable.tier1Weight = halcyonTier1Weight;

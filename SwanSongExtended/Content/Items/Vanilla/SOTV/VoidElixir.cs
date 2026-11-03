@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using SwanSongExtended.Components;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using UnityEngine.AddressableAssets;
 using RainrotSharedUtils.Components;
 using UnityEngine.Networking;

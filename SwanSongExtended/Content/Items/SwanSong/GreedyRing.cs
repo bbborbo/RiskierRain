@@ -11,7 +11,7 @@ using RoR2.Orbs;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 using static R2API.RecalculateStatsAPI;
 using System.Linq;
 

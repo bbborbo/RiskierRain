@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 using static MoreStats.StatHooks;
-using static SwanSongExtended.Modules.Language.Styling;
+using static RainrotSharedUtils.Styling;
 
 namespace SwanSongExtended.Items
 {

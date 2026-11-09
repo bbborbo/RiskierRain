@@ -51,6 +51,11 @@ namespace SwanSongExtended.Items
 
             return IDR;
         }
+        public override void PostInit()
+        {
+            base.PostInit();
+            AddVoidItemRelationship(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Hoof.Hoof_asset);
+        }
 
         public override void Hooks()
         {

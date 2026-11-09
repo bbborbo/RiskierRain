@@ -426,7 +426,7 @@ namespace FruityElites.EliteReworks
                             bool isWarningStack = body.GetBuffCount(RoR2Content.Buffs.OnFire) + body.GetBuffCount(DLC1Content.Buffs.StrongerBurn) <= BlazingReworks.flameAuraWarningThreshold;
                             InflictDotInfo inflictDotInfo = new InflictDotInfo
                             {
-                                attackerObject = body.gameObject,
+                                attackerObject = this.body.gameObject,
                                 victimObject = hc.gameObject,
                                 totalDamage = new float?(isResistAoe ? totalDamage * 0.33f : totalDamage),
                                 damageMultiplier = isWarningStack ? BlazingReworks.flameAuraWarningDamage : 1f,

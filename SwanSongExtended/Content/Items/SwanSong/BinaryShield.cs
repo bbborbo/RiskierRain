@@ -24,7 +24,7 @@ namespace SwanSongExtended.Items
         //int armorIncreaseBase = 20;
         //int armorIncreaseStack = 30;
 
-        public override string ItemName => "Catalyst Carapace";
+        public override string ItemName => "Plated Pereopod";
 
         public override string ItemLangTokenName => "BINARYSHIELD";
 
@@ -35,15 +35,7 @@ namespace SwanSongExtended.Items
             $"<style=cStack>(+{(moveSpeedIncreaseStack + moveSpeedIncreaseFree).AsPercent()} per stack)</style>. " +
             $"<style=cIsVoid>Corrupts all Paul's Goat Hoofs.</style>";
 
-        public override string ItemLore => @"Order: Flower Crown
-Tracking Number: 10***********
-Estimated Delivery: 11/02/2056
-Shipping Method:  Priority/Fragile
-Shipping Address: Floor 16, Spiral Gardens, Earth
-Shipping Details:
-
-Thank you for always sending us gifts. I made some of them into this flower crown for you. Wearing it makes me feel strong, like nothing can get me down. Hopefully it does the same for you! <3
-";
+        public override string ItemLore => @"";
 
         public override ItemTier Tier => ItemTier.VoidTier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };

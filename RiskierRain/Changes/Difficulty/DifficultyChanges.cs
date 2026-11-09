@@ -15,6 +15,7 @@ using static R2API.RecalculateStatsAPI;
 using UnityEngine.Networking;
 using RainrotSharedUtils.Difficulties;
 using UnityEngine.AddressableAssets;
+using MoreStats;
 
 namespace RiskierRain.Changes
 {
@@ -38,6 +39,7 @@ namespace RiskierRain.Changes
             ChangeDifficultyCoefficientCalculation();
             //VoidFieldsTimeCost();
             ChangeEnemyRewards();
+            On.RoR2.CharacterBody.RecalculateStats += NoLevelUpHeal;
 
             #region difficulty descriptions
             drizzleDesc +=
@@ -80,6 +82,30 @@ namespace RiskierRain.Changes
             //quests
             ChangeTrialDropTables();
             ChangeTrialOfGreed();
+        }
+
+        private static void NoLevelUpHeal(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
+        {
+            float oldLevel = self.level;
+            float oldHP = self.healthComponent.health;
+            float oldShield = self.healthComponent.shield;
+            orig(self);
+            if (self.level > oldLevel)
+            {
+                MoreStatCoefficients moreStats = StatHooks.GetMoreStatsFromBody(self);
+                if (self.teamComponent.teamIndex != TeamIndex.Player && moreStats.lowestCombinedHealthFraction < 1f)
+                {
+                    if (self.healthComponent.health > oldHP)
+                    {
+                        self.healthComponent.health = oldHP;
+                    }
+
+                    if (self.healthComponent.shield > oldShield)
+                    {
+                        self.healthComponent.shield = oldShield;
+                    }
+                }
+            }
         }
         #region oneshot protection aka osp
         public static void RemoveOspForever()

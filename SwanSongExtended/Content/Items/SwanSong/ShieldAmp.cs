@@ -86,7 +86,7 @@ namespace SwanSongExtended.Items
         {
             if (NetworkServer.active == false)
                 return;
-            if (damageInfo.damageType.IsDamageSourceSkillBased == false)
+            if (damageInfo.damageType.IsDamageSourceSkillBased == false || damageInfo.procChainMask.HasModdedProc(AmpedProc) == true)
                 return;
 
             if (self.body.IsInvincible())

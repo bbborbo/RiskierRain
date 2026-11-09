@@ -80,13 +80,16 @@ namespace RainrotSharedUtils.Difficulties
             }
             bool IsPastMinimumStage(bool isTier2)
             {
-                int minStage = isTier2 ? 4 : 2;
+                int defaultStageClearCount = isTier2 ? EliteMinimumStageDefaultRare : EliteMinimumStageDefaultUncommon;
+                int minStage = defaultStageClearCount;
 
                 if (UseDifficultyStats && ValidateCachedDifficultyStats())
                 {
-                    minStage = (isTier2 ? cachedDifficultyStats.tier2EliteStage : cachedDifficultyStats.tier1AndHalfEliteStage) - 1;
+                    minStage = (isTier2 ? cachedDifficultyStats.tier2EliteStage : cachedDifficultyStats.tier1AndHalfEliteStage);
                 }
-                return Run.instance.stageClearCount >= minStage;
+                if (minStage == -1)
+                    minStage = defaultStageClearCount;
+                return Run.instance.stageClearCount >= (minStage - 1);
             }
         }
     }

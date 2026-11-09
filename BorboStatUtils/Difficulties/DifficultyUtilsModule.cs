@@ -42,8 +42,14 @@ namespace RainrotSharedUtils.Difficulties
         public bool compensateBossCredits = true;
         public int ambientLevelCap = -1;
 
-        public int tier2EliteStage = 6;
-        public int tier1AndHalfEliteStage = 3;
+        /// <summary>
+        /// Rare elites. If set to -1, use the global default stage for Rare elites
+        /// </summary>
+        public int tier2EliteStage = -1;
+        /// <summary>
+        /// Uncommon elites. If set to -1, use the global default stage for Uncommon elites
+        /// </summary>
+        public int tier1AndHalfEliteStage = -1;
         public float teleporterParticleRangeMultiplier = 1;
 
         public float desiredStormTime_ForSwanSong = -1;
@@ -62,6 +68,8 @@ namespace RainrotSharedUtils.Difficulties
         public static float GoldRewardMultiplierGlobal = 1f;
         public static float ExpRewardMultiplierGlobal = 1f;
         public static float DefaultTeleParticleRadius = 1f;
+        public static int EliteMinimumStageDefaultUncommon = 3;
+        public static int EliteMinimumStageDefaultRare = 6;
         /// <summary>
         /// Sets these to true:
         /// UseDifficultyStats, UseForceElite, BoostTeleporterContrast, CompensateRewardsForDifficultyScaling, CompensateRewardsForDifficultyBoost

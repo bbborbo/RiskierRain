@@ -54,7 +54,7 @@ namespace RiskierRain.Changes
                 float levelBoost = 0;
                 float difficultyBoost = difficultyDef.scalingValue - 1;
                 int levelCap = ambientLevelCap;
-                int tier2Stage = 5;
+                int tier2Stage = 6;
                 float teleParticleRangeMultiplier = 1;
 
                 switch (difficultyIndex)

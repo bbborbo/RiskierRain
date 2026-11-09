@@ -16,6 +16,7 @@ using UnityEngine.Networking;
 using MoreStats;
 using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using static RiskierRain.CoreModules.Language.Styling;
+using UnityEngine.AddressableAssets;
 
 namespace RiskierRain.Changes
 {
@@ -135,6 +136,7 @@ namespace RiskierRain.Changes
             ChangeChronobauble();
             //ChangeBottledChaos();
             ChangeDreamCrucible();
+            ChangeStealthkit();
             #endregion
 
             #region misc
@@ -145,23 +147,6 @@ namespace RiskierRain.Changes
 
             On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate;
         }
-
-        #region earthbound vessel
-        public static int earthboundVesselArmor = 10;//5
-        private static void ChangeEarthboundVessel()
-        {
-            GetStatCoefficients += EarthboundVesselArmor;
-        }
-
-        private static void EarthboundVesselArmor(CharacterBody sender, StatHookEventArgs args)
-        {
-            int buffCount = sender.GetBuffCount(DLC4Content.Buffs.RechargeableExtraJump);
-            if(buffCount > 0)
-            {
-                args.armorAdd += (earthboundVesselArmor - 5) * buffCount;
-            }
-        }
-        #endregion
 
         private static void RegenerateReincarnate(On.RoR2.ChampRushMissionController.orig_CompleteReaperFight orig, ChampRushMissionController self)
         {

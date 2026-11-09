@@ -14,11 +14,106 @@ using static RiskierRain.RiskierRainPlugin;
 using static R2API.RecalculateStatsAPI;
 using UnityEngine.Networking;
 using static RiskierRain.CoreModules.Language.Styling;
+using UnityEngine.AddressableAssets;
+using RainrotSharedUtils;
 
 namespace RiskierRain.Changes
 {
     public static partial class ItemChanges
     {
+        #region stealthkit
+        public static float stealthkitChanceBase = 0.05f;
+        public static float stealthkitChanceStack = 0.00f;
+        public static float stealthkitDurationBase = 3f;
+        public static float stealthkitDurationStack = 1.5f;
+        private static void ChangeStealthkit()
+        {
+            if (RiskierRainPlugin.chefOvercookedLoaded)
+            {
+                RetierItemAsync(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Phasing.Phasing_asset);
+                LoadAsync<CraftableDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_Recipes.cdNovaOnLowHealth_asset, (gloopRecipe) =>
+                {
+                    bool b1 = CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Thorns.Thorns_asset,
+                        out RecipeIngredient razorwire);
+                    bool b2 = CraftingUtils.LoadAsIngredient<ItemDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ElementalRings.IceRing_asset,
+                        out RecipeIngredient runalds);
+                    if(b1 && b2)
+                        gloopRecipe.recipes = new Recipe[] { CraftingUtils.MakeRecipe(razorwire, runalds) };
+                });
+                return;
+            }
+            On.RoR2.Items.PhasingBodyBehavior.FixedUpdate += PhasingBodyBehavior_FixedUpdate;
+            On.RoR2.Items.PhasingBodyBehavior.GetItemDef += NoPhasingBodyBehavior;
+            On.RoR2.HealthComponent.TakeDamageProcess += PhasingDamageReject;
+
+            LanguageAPI.Add("ITEM_PHASING_PICKUP", "Chance to turn invisible on taking damage.");
+            LanguageAPI.Add("ITEM_PHASING_DESC", 
+                $"{UtilityColor(stealthkitChanceBase.AsPercent())} chance to {UtilityColor("nullify")} incoming damage, " +
+                $"instead gaining <style=cIsUtility>40% movement speed</style> and <style=cIsUtility>invisibility</style> " +
+                $"for {UtilityColor(stealthkitDurationBase + " seconds")} {StackText($"{stealthkitChanceStack} seconds")}."
+                );
+        }
+
+        private static void PhasingDamageReject(On.RoR2.HealthComponent.orig_TakeDamageProcess orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            int phasing = self.itemCounts.phasing;
+            if (phasing > 0)
+            {
+                float procChance = stealthkitChanceBase + stealthkitChanceStack * (phasing - 1);
+                if (Util.CheckRoll0To1(procChance, self.body.master))
+                {
+                    damageInfo.rejected = true;
+
+                    float buffDuration = stealthkitDurationBase + stealthkitDurationStack * (phasing - 1);
+                    self.body.AddTimedBuff(RoR2Content.Buffs.Cloak, buffDuration);
+                    self.body.AddTimedBuff(RoR2Content.Buffs.CloakSpeed, buffDuration);
+
+                    EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Phasing.ProcStealthkit_prefab).WaitForCompletion(), new EffectData
+                    {
+                        origin = self.transform.position,
+                        rotation = Quaternion.identity
+                    }, true);
+                }
+            }
+            orig(self, damageInfo);
+        }
+
+        private static ItemDef NoPhasingBodyBehavior(On.RoR2.Items.PhasingBodyBehavior.orig_GetItemDef orig)
+        {
+            return null; //orig(); //
+        }
+
+        private static void PhasingBodyBehavior_FixedUpdate(On.RoR2.Items.PhasingBodyBehavior.orig_FixedUpdate orig, PhasingBodyBehavior self)
+        {
+            return;
+            if (self.body == null)
+                return;
+            HealthComponent hc = self.body.healthComponent;
+            float damageTakenThisUpdate = hc.serverDamageTakenThisUpdate;
+            float fraction = damageTakenThisUpdate / hc.fullCombinedHealth;
+            if (Util.CheckRoll0To1(fraction, self.body.master) == false)
+                return;
+
+        }
+        #endregion
+
+
+        #region earthbound vessel
+        public static int earthboundVesselArmor = 10;//5
+        private static void ChangeEarthboundVessel()
+        {
+            GetStatCoefficients += EarthboundVesselArmor;
+        }
+
+        private static void EarthboundVesselArmor(CharacterBody sender, StatHookEventArgs args)
+        {
+            int buffCount = sender.GetBuffCount(DLC4Content.Buffs.RechargeableExtraJump);
+            if (buffCount > 0)
+            {
+                args.armorAdd += (earthboundVesselArmor - 5) * buffCount;
+            }
+        }
+        #endregion
 
         #region vengeful spirit
         public static float vengefulSpiritHealth = 300;//90

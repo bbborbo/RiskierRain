@@ -55,6 +55,7 @@ namespace RiskierRain
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.HuntressBuffULTIMATE", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Wolfo.WolfFixes", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("noodleGemo.Chef_Overcooked", BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInDependency("HIFU.UltimateCustomRun", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Skell.DeathMarkChange", BepInDependency.DependencyFlags.SoftDependency)]
@@ -83,6 +84,7 @@ namespace RiskierRain
         public static bool autosprintLoaded = Tools.isLoaded("com.johnedwa.RTAutoSprintEx");
         public static bool acridLungeLoaded = Tools.isLoaded("Withor.AcridBiteLunge");
         public static bool ucrLoaded = Tools.isLoaded("HIFU.UltimateCustomRun");
+        public static bool chefOvercookedLoaded = Tools.isLoaded("noodleGemo.Chef_Overcooked");
 
         internal static ConfigFile CustomConfigFile { get; set; }
         public static ConfigEntry<bool> EnableConfig { get; set; }

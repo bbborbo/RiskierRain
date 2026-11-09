@@ -121,10 +121,20 @@ namespace FruityElites.EliteReworks
                     int hurtBoxCount = hurtBoxesList.Count;
                     if (hurtBoxCount == 0)
                     {
-                        EffectManager.SpawnEffect(OrbStorageUtility.Get("Prefabs/Effects/ImpactEffects/LightningStrikeImpact"), new EffectData
+                        //EffectManager.SpawnEffect(OrbStorageUtility.Get("Prefabs/Effects/ImpactEffects/LightningStrikeImpact"), new EffectData
+                        //{
+                        //    origin = damageReport.damageInfo.position
+                        //}, true);
+                        OrbManager.instance.AddOrb(new LightningStrikeOrb
                         {
-                            origin = damageReport.damageInfo.position
-                        }, true);
+                            attacker = attackerBody.gameObject,
+                            damageColorIndex = DamageColorIndex.Default,
+                            damageValue = 0,
+                            isCrit = damageReport.damageInfo.crit,
+                            procChainMask = procChainMask6,
+                            procCoefficient = 0.0f,
+                            target = victimBody.mainHurtBox
+                        });
                     }
                     else
                     {

@@ -40,7 +40,7 @@ namespace RiskierRain.Changes
 
         public static void Initialize()
         {
-            QuickBind(RemoveItems, ": Remove Items Pending Reworks");
+            QuickBind(RemoveItems, ": Disable Items Pending Reworks");
             void RemoveItems()
             {
                 ChangeTrialDropTables();

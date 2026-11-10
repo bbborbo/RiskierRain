@@ -71,7 +71,7 @@ namespace RiskierRain
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RiskierRain";
-        public const string version = "2.1.0";
+        public const string version = "2.1.8";
 
         public static PluginInfo PInfo { get; private set; }
         public static string dropPrefabsPath => CoreModules.Assets.dropPrefabsPath;
@@ -432,7 +432,7 @@ namespace RiskierRain
         #region config
         private void InitializeConfig()
         {
-            CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
+            CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\2R4R.cfg", true);
             CustomConfigFile.SaveOnConfigSet = false;
         }
         private void SaveConfig()

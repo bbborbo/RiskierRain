@@ -32,6 +32,10 @@ namespace RiskierRain.Changes
             {
                 shaunt.sceneType = SceneType.TimedIntermission;
             });
+            LoadAsync<SceneDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_champrush.champrush_asset, (champrush) =>
+            {
+                champrush.sceneType = SceneType.TimedIntermission;
+            });
             On.RoR2.Run.ShouldUpdateRunStopwatch += ModifyShouldUpdateRunStopwatch;
         }
 
@@ -268,9 +272,18 @@ namespace RiskierRain.Changes
         private static void ChangeEnemyRewards()
         {
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
-            DifficultyUtilsModule.BoostedRewardCompensationCoefficient = compensationForStartingLevel;
-            DifficultyUtilsModule.GoldRewardMultiplierGlobal = goldRewardMultiplierGlobal;
-            DifficultyUtilsModule.ExpRewardMultiplierGlobal = expRewardMultiplierGlobal;
+            DifficultyUtilsModule.BoostedRewardCompensationCoefficient = GetConfig<float>(compensationForStartingLevel, 
+                "Difficulty : Enemy Reward Reduction", 
+                "Reward Compensation Coefficient", 
+                "Enemy gold and EXP rewards increase over the course of a stage increase proportionally to the fixed costs of chests. " +
+                "In other words, you can buy more chests faster in the last part of a stage than in the first. " +
+                "Set to 1 for full compensation, or 0 for none. Vanilla is 0.");
+            DifficultyUtilsModule.GoldRewardMultiplierGlobal = GetConfig<float>(goldRewardMultiplierGlobal,
+                "Difficulty : Enemy Reward Reduction",
+                "Global Gold Reward Multiplier");
+            DifficultyUtilsModule.ExpRewardMultiplierGlobal = GetConfig<float>(expRewardMultiplierGlobal,
+                "Difficulty : Enemy Reward Reduction",
+                "Global EXP Reward Multiplier"); ;
         }
         #endregion
     }

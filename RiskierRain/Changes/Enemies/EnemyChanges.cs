@@ -28,7 +28,7 @@ namespace RiskierRain.Changes
         public static void Initialize()
         {
             //MakeEnemiesuseEquipment();
-            QuickBind(ChangeSpawnlists, "Enemies : All Spawnlists");
+            ChangeSpawnlists();
             QuickBind(ChangeVagrant, "Enemies : Wandering Vagrant");
             QuickBind(ChangePest, "Enemies : Blind Pest");
             QuickBind(ChangeQueen, "Enemies : Beetle Queen");

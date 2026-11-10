@@ -421,9 +421,12 @@ namespace RiskierRain
             string title = "Enable changes", 
             string desc = "Refer to the Wiki page for info on changes.")
         {
-            return CustomConfigFile.Bind<bool>(category,
-                title, defaultValue,
-                desc).Value;
+            return GetConfig<bool>(defaultValue, category, title, desc);
+        }
+
+        internal static T GetConfig<T>(T defaultValue, string category, string title, string desc = "")
+        {
+            return CustomConfigFile.Bind<T>(category, title, defaultValue, desc).Value;
         }
 
         #region config

@@ -30,16 +30,16 @@ namespace RiskierRain.Changes
         public static void Initialize()
         {
             //mechanics
-            RemoveOspForever();
-            AddPotentialProtection();
-            AddPityCharge();
+            QuickBind(RemoveOspForever, ": Remove One-Shot Protection");
+            QuickBind(AddPotentialProtection, ": Pickup Picker Panel Protection");
+            QuickBind(AddPityCharge, ": Teleporter Overcharge");
 
             //scaling
-            FreezeDifficultyScalingOnFinalLevels();
-            ChangeDifficultyCoefficientCalculation();
+            QuickBind(FreezeDifficultyScalingOnFinalLevels, "Difficulty : Time Scaling On Boss Stages");
+            QuickBind(ChangeDifficultyCoefficientCalculation, "Difficulty : Exponential Difficulty Formula");
             //VoidFieldsTimeCost();
-            ChangeEnemyRewards();
-            On.RoR2.CharacterBody.RecalculateStats += NoLevelUpHeal;
+            QuickBind(ChangeEnemyRewards, "Difficulty : Enemy Reward Reduction");
+            QuickBind(() => On.RoR2.CharacterBody.RecalculateStats += NoLevelUpHeal, ": Remove Enemy Heal On Level-Up");
 
             #region difficulty descriptions
             drizzleDesc +=
@@ -60,14 +60,22 @@ namespace RiskierRain.Changes
             #endregion
 
             //difficulty modes
-            DifficultyUtilsModule.EnableAll();
-            RoR2Application.onLoad += AddDifficultyStats;
-            AddMonsoonScalingStats();
-            ChangeEclipse();
+            QuickBind(DoDifficultyChanges, "Difficulty : Base Difficulty Modes");
+            void DoDifficultyChanges()
+            {
+                DifficultyUtilsModule.EnableAll();
+                RoR2Application.onLoad += AddDifficultyStats;
+                AddMonsoonScalingStats();
+            }
+            QuickBind(ChangeEclipse, "Difficulty : Eclipse");
 
             //directors
-            ChangeDirectorStats();
-            DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
+            QuickBind(IncreaseDirectorCredits, "Difficulty : Combat Director");
+            void IncreaseDirectorCredits()
+            {
+                ChangeDirectorStats();
+                DirectorAPI.StageSettingsActions += IncreaseStageMonsterCredits;
+            }
 
             //rewards
             On.RoR2.MoneyPickup.Start += (orig, self) =>
@@ -80,8 +88,7 @@ namespace RiskierRain.Changes
             };
 
             //quests
-            ChangeTrialDropTables();
-            ChangeTrialOfGreed();
+            QuickBind(ChangeTrialOfGreed, "Difficulty : Trial of Infernal Greed");
         }
 
         private static void NoLevelUpHeal(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

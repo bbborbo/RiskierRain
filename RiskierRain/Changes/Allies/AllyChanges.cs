@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static RiskierRain.RiskierRainPlugin;
 
 namespace RiskierRain.Changes
 {
@@ -13,10 +14,10 @@ namespace RiskierRain.Changes
     {
         public static void Initialize()
         {
-            ChangeCleanupDrone();
-            ChangeJunkDrone();
-            ChangeMegaDrone();
-            ChangeHealingDrones();
+            QuickBind(ChangeCleanupDrone, "Allies : Cleanup Drone");
+            QuickBind(ChangeJunkDrone, "Allies : Junk Drone");
+            QuickBind(ChangeMegaDrone, "Allies : TC-280 Prototype Drone");
+            QuickBind(ChangeHealingDrones, "Allies : Healing Drone");
         }
 
         private static void ChangeHealingDrones()

@@ -149,7 +149,7 @@ namespace RiskierRain
             EnemyChanges.Initialize();
             InteractableChanges.Initialize();
 
-            DoSacrificeDropLimit();
+            QuickBind(DoSacrificeDropLimit, ": Sacrifice and Sonorous Drop Limit");
 
 
             LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
@@ -408,17 +408,22 @@ namespace RiskierRain
             CoreModules.Assets.projectilePrefabs.Add(meatballNapalmPool);
         }
 
-        private bool GetConfigBool(bool defaultValue, string packetTitle, string desc = "")
+        internal static void QuickBind(Action callback, string category, 
+            string title = "Enable changes", 
+            string desc = "Refer to the Wiki page for info on changes.", 
+            bool defaultValue = true)
         {
-            if(desc != "")
-            {
-                return CustomConfigFile.Bind<bool>("Packets - See README For Details.", 
-                    packetTitle + " Packet", defaultValue, 
-                    $"The changes in this Packet will be enabled if set to true.").Value;
-            }
-            return CustomConfigFile.Bind<bool>("Packets", 
-                packetTitle + " Packet", defaultValue, 
-                "(The following changes will be enabled if set to true) " + desc).Value;
+            if (GetConfigBool(defaultValue, category, title, desc))
+                callback.Invoke();
+        }
+
+        internal static bool GetConfigBool(bool defaultValue, string category, 
+            string title = "Enable changes", 
+            string desc = "Refer to the Wiki page for info on changes.")
+        {
+            return CustomConfigFile.Bind<bool>(category,
+                title, defaultValue,
+                desc).Value;
         }
 
         #region config
@@ -426,13 +431,6 @@ namespace RiskierRain
         {
             CustomConfigFile = new ConfigFile(Paths.ConfigPath + $"\\{modName}.cfg", true);
             CustomConfigFile.SaveOnConfigSet = false;
-
-            EnableConfig = CustomConfigFile.Bind<bool>("Allow Config Options", "Enable Config", false,
-                "Set this to true to enable config options. Please keep in mind that it was not within my design intentions to play this way. " +
-                "This is primarily meant for modpack users with tons of mods installed. " +
-                "If you have any issues or feedback on my mod balance, please feel free to send in feedback with the contact info in the README or Thunderstore description.");
-
-            Debug.Log("Config initialized!");
         }
         private void SaveConfig()
         {

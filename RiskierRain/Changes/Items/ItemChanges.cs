@@ -17,6 +17,8 @@ using MoreStats;
 using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 using static RiskierRain.CoreModules.Language.Styling;
 using UnityEngine.AddressableAssets;
+using SwanSongExtended.Items;
+using System.Linq;
 
 namespace RiskierRain.Changes
 {
@@ -38,114 +40,119 @@ namespace RiskierRain.Changes
 
         public static void Initialize()
         {
-            #region rework pending / priority removal
-            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HealingPotion.HealingPotion_asset);//elixir
+            QuickBind(RemoveItems, ": Remove Items Pending Reworks");
+            void RemoveItems()
+            {
+                ChangeTrialDropTables();
 
-            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
-            //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
-            //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
-            //RiskierRainPlugin.RetierItemAsync(RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset); //ghors
-            //RiskierRainPlugin.RetierItemAsync(RoR2_Base_DeathMark.DeathMark_asset); //guess faggot
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
-            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset);//faraday
+                #region rework pending / priority removal
+                //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_BarrierOnCooldown.BarrierOnCooldown_asset);//eclipse lite
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset);//hikers boots
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HealingPotion.HealingPotion_asset);//elixir
 
-            RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
-            //RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset); //scorpion
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_DroneWeapons.DroneWeapons_asset); //sdp
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BarrageOnBoss.BarrageOnBoss_asset); //war bonds
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BoostAllStats.BoostAllStats_asset); //growth nectar
+                //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.PrimarySkillShuriken)); //shuriken
+                //RiskierRainPlugin.RetierItem(nameof(DLC1Content.Items.MoveSpeedOnKill)); //hunter's harpoon
+                //RiskierRainPlugin.RetierItem(nameof(RoR2Content.Items.Squid)); //squid polyp HAS BEEN REWORKED AND IS AWESOME NOW
+                //RiskierRainPlugin.RetierItemAsync(RoR2_Base_BonusGoldPackOnKill.BonusGoldPackOnKill_asset); //ghors
+                //RiskierRainPlugin.RetierItemAsync(RoR2_Base_DeathMark.DeathMark_asset); //guess faggot
+                //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset);//kinetic dampener
+                //RiskierRainPlugin.RetierItemAsync(RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset);//faraday
+
+                RiskierRainPlugin.RetierItemAsync(RoR2_Base_Talisman.Talisman_asset); //soulbound
+                //RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_MoreMissile.MoreMissile_asset); //icbm
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset); //scorpion
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_DroneWeapons.DroneWeapons_asset); //sdp
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BarrageOnBoss.BarrageOnBoss_asset); //war bonds
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_BoostAllStats.BoostAllStats_asset); //growth nectar
 
 
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfSpeedDoubleHealth.HalfSpeedDoubleHealth_asset); //
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfAttackSpeedHalfCooldowns.HalfAttackSpeedHalfCooldowns_asset); //
-            RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_OnLevelUpFreeUnlock.OnLevelUpFreeUnlock_asset); //longstanding solitude
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfSpeedDoubleHealth.HalfSpeedDoubleHealth_asset); //
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC1_HalfAttackSpeedHalfCooldowns.HalfAttackSpeedHalfCooldowns_asset); //
+                RiskierRainPlugin.RetierItemAsync(RoR2_DLC2_Items_OnLevelUpFreeUnlock.OnLevelUpFreeUnlock_asset); //longstanding solitude
 
-            //RiskierRainPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AutoCastEquipment/AutoCastEquipment.asset").WaitForCompletion());
-            #endregion
+                //RiskierRainPlugin.RetierItem(Addressables.LoadAssetAsync<ItemDef>("RoR2/Base/AutoCastEquipment/AutoCastEquipment.asset").WaitForCompletion());
+                #endregion
+            }
 
             #region ehp
             BaseStats.BarrierDecayStaticMaxHealthTime = 30f;// BarrierDecayRateStatic.Value; //30f
             BaseStats.BarrierHighDecayFactor = 5f;// BarrierDecayHighFactor.Value; //3f
             BaseStats.BarrierLowDecayFactor = 0.33f;// BarrierDecayLowFactor.Value; //0.5f
 
-            FreeBonusArmor();
-            ChangeSaferSpaces();
+            //FreeBonusArmor();
+            QuickBind(ChangeSaferSpaces, "Items : Safer Spaces");
             //FuckingFixInfusion();
-            ChangeTopazBrooch();
-            ChangeEclipseLite();
-            ChangeWarpedEcho();
-            ChangeVengefulSpirit();
-            ChangeEarthboundVessel();
+            QuickBind(ChangeTopazBrooch, "Items : Topaz Brooch");
+            QuickBind(ChangeEclipseLite, "Items : Eclipse Lite");
+            QuickBind(ChangeWarpedEcho, "Items : Warped Echo");
+            QuickBind(ChangeVengefulSpirit, "Items : Vengeful Spirit");
+            QuickBind(ChangeEarthboundVessel, "Items : Earthbound Vessel");
             #endregion
 
             #region healing
-            ChangeMedkit();
-            ChangeMonsterTooth();
-            ChangeBungus();
-            ChangeWeepingFungus();
-            ChangeScythe();
-            ChangeLeptonDaisy();
-            ChangeLeechingSeed();
+            QuickBind(ChangeMedkit, "Items : Medkit");
+            QuickBind(ChangeMonsterTooth, "Items : Monster Tooth");
+            QuickBind(ChangeBungus, "Items : Bustling Fungus");
+            QuickBind(ChangeWeepingFungus, "Items : Weeping Fungus");
+            QuickBind(ChangeScythe, "Items : Harvesters Scythe");
+            QuickBind(ChangeLeptonDaisy, "Items : Lepton Daisy");
+            QuickBind(ChangeLeechingSeed, "Items : Leeching Seed");
             #endregion
 
             #region mobility
             //GoatHoofNerf();
-            ChangeFaraday();
-            ChangeElusiveAntlers();
+            QuickBind(ChangeFaraday, "Items : Faraday Spur");
+            QuickBind(ChangeElusiveAntlers, "Items : Elusive Antlers");
             #endregion
 
             #region autoplay
-            ChangeNkuhana();
-            ChangeDisciple();
-            ChangeWillowisp();
-            ChangeShatterspleen();
-            ChangeFireworks();
-            ChangeVoidsent();
-            ChangeGasoline();
+            QuickBind(ChangeNkuhana, "Items : NKuhanas Opinion");
+            QuickBind(ChangeDisciple, "Items : Little Disciple");
+            QuickBind(ChangeWillowisp, "Items : Will-o-the-Wisp");
+            QuickBind(ChangeShatterspleen, "Items : Shatterspleen");
+            QuickBind(ChangeFireworks, "Items : Fireworks");
+            QuickBind(ChangeVoidsent, "Items : Voidsent Flame");
+            QuickBind(ChangeGasoline, "Items : Gasoline");
             #endregion
 
             #region damage
-            ChangeRunald();
-            ChangeKjaro();
+            QuickBind(ChangeRunald, "Items : Runalds Band");
+            QuickBind(ChangeKjaro, "Items : NKuhanas Opinion");
             //NerfCritGlasses();
-            ChangeDeathMark();
-            ChangePolylute();
-            ChangeBoxOfDynamite();
-            ChangeLuminousShot();
-            ChangeGenesisLoop();
+            QuickBind(ChangeDeathMark, "Items : Death Mark");
+            QuickBind(ChangePolylute, "Items : Polylute");
+            QuickBind(ChangeBoxOfDynamite, "Items : Box of Dynamite");
+            QuickBind(ChangeLuminousShot, "Items : Luminous Shot");
+            QuickBind(ChangeGenesisLoop, "Items : Genesis Loop");
             //ChangeJustice();
             //ChangePauldron();
-            FixLostSeers();
+            QuickBind(FixLostSeers, "Items : Lost Seers Lenses");
             //ChangeStickyBomb();
-            ReworkShuriken();
-            ChangeDormantSpirit();
-            ChangeWarHorn();
+            QuickBind(ReworkShuriken, "Items : Shuriken");
+            QuickBind(ChangeDormantSpirit, "Items : Dormant Spirit");
+            QuickBind(ChangeWarHorn, "Items : Warhorn");
             #endregion
 
             #region economy
-            ChangeChanceDoll();
-            ChangeSaleStar();
+            QuickBind(ChangeChanceDoll, "Items : Chance Doll");
+            QuickBind(ChangeSaleStar, "Items : Sale Star");
             #endregion
 
             #region utility
-            ChangeFuelCell();
-            ChangeWarbanner();
-            ChangeChronobauble();
-            //ChangeBottledChaos();
-            ChangeDreamCrucible();
-            ChangeStealthkit();
+            QuickBind(ChangeFuelCell, "Items : Fuel Cell");
+            QuickBind(ChangeWarbanner, "Items : Warbanner");
+            //QuickBind(ChangeChronobauble, "Items : Chronobauble");
+            QuickBind(ChangeDreamCrucible, "Items : Dream Crucible");
+            QuickBind(ChangeStealthkit, "Items : Old War Stealthkit");
             #endregion
 
             #region misc
-            RemoveAspdScalingOnCooldownsForever();
-            FixPickupStats();
+            QuickBind(RemoveAspdScalingOnCooldownsForever, ": Remove Attack Speed Scaling On Cooldowns");
+            QuickBind(FixPickupStats, ": Increase Pickup Droplet Pickup Range");
             //MakeMinionsInheritOnKillEffects();
             #endregion
 
-            On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate;
+            QuickBind(() => On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate, "Items : Reincarnation");
         }
 
         private static void RegenerateReincarnate(On.RoR2.ChampRushMissionController.orig_CompleteReaperFight orig, ChampRushMissionController self)
@@ -291,6 +298,102 @@ namespace RiskierRain.Changes
                 c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_0);
             }
         }
+        #endregion
+        #region trial drop tables
+        public static string[] bannedTrialItemPaths = new string[]
+        {
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_HealingPotion.HealingPotion_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_Items_ShieldBooster.ShieldBooster_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_Items_CritAtLowerElevation.CritAtLowerElevation_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Talisman.Talisman_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_PermanentDebuffOnHit.PermanentDebuffOnHit_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_OutOfCombatArmor.OutOfCombatArmor_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_ArmorPlate.ArmorPlate_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_Items_JumpDamageStrike.JumpDamageStrike_asset,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_StunChanceOnHit.StunChanceOnHit_asset
+        };
+        public static ItemDef[] bannedTrialItemDefs;
+        public static ExplicitPickupDropTable safeTrialItemDefs;
+        [SystemInitializer(typeof(ItemCatalog), typeof(PickupCatalog))]
+        private static void InitTrialBanList()
+        {
+            bannedTrialItemDefs = new ItemDef[]
+            {
+                RoR2Content.Items.Talisman,
+                RoR2Content.Items.ArmorPlate,
+                RoR2Content.Items.StunChanceOnHit,
+                DLC1Content.Items.HealingPotion,
+                DLC1Content.Items.PermanentDebuffOnHit,
+                DLC1Content.Items.OutOfCombatArmor,
+                DLC3Content.Items.ShieldBooster,
+                DLC3Content.Items.CritAtLowerElevation,
+                DLC3Content.Items.JumpDamageStrike
+            };
+            safeTrialItemDefs = ScriptableObject.CreateInstance<ExplicitPickupDropTable>();
+            safeTrialItemDefs.pickupEntries = new ExplicitPickupDropTable.PickupDefEntry[]
+            {
+                GetPickupEntry(ManaFlower.instance?.ItemsDef ?? null, 0.01f),
+                GetPickupEntry(DLC2Content.Items.LowerPricedChests, 0.2f),
+                GetPickupEntry(DLC1Content.Items.FreeChest, 0.2f),
+                GetPickupEntry(DLC1Content.Items.AttackSpeedAndMoveSpeed),
+                GetPickupEntry(RoR2Content.Items.Feather, 0.2f),
+                GetPickupEntry(RoR2Content.Items.IgniteOnKill),
+                GetPickupEntry(RoR2Content.Items.Hoof),
+                GetPickupEntry(RoR2Content.Items.Syringe)
+            };
+
+        }
+        private static ExplicitPickupDropTable.PickupDefEntry GetPickupEntry(ItemDef itemDef, float weight = 1)
+        {
+            ExplicitPickupDropTable.PickupDefEntry entry = new ExplicitPickupDropTable.PickupDefEntry();
+            entry.pickupDef = itemDef;
+            entry.pickupWeight = weight;
+            return entry;
+        }
+        public static void ChangeTrialDropTables()
+        {
+            On.RoR2.ItemSpawnPoint.Awake += ChangeDisabledTrialItems;
+
+            RiskierRainPlugin.LoadAsync<ExplicitPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_sadism_sad1.dtSad1RentalsExplicit_OpenChests_asset, (dropTable) =>
+            {
+                dropTable.pickupEntries[1] = GetPickupEntry(RoR2Content.Items.Squid, 0.3f);//stun grenade -> squid polyp
+            });
+            RiskierRainPlugin.LoadAsync<ExplicitPickupDropTable>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_sadism_sad1.dtSad1RentalsExplicit_Money3_asset, (dropTable) =>
+            {
+                dropTable.pickupEntries[0] = GetPickupEntry(RoR2Content.Items.Thorns, 0.3f);//guillotine -> razorwire
+                dropTable.pickupEntries[2].pickupDef = RoR2Content.Items.ExplodeOnDeath;//willowisp
+            });
+        }
+
+        private static void ChangeDisabledTrialItems(On.RoR2.ItemSpawnPoint.orig_Awake orig, RoR2.ItemSpawnPoint self)
+        {
+            if (self.useExplicitItemDef)
+            {
+                bool banned = false;
+                if (self._explicitItemDefAddress.RuntimeKeyIsValid())
+                {
+                    if (bannedTrialItemPaths.Contains(self._explicitItemDefAddress.AssetGUID))
+                    {
+                        banned = true;
+                    }
+                }
+                else if (self._explicitItemDefReference != null)
+                {
+                    if (bannedTrialItemDefs != null && bannedTrialItemDefs.Contains(self._explicitItemDefReference))
+                    {
+                        banned = true;
+                    }
+                }
+
+                if (banned)
+                {
+                    self.useExplicitItemDef = false;
+                    self.dropTable = safeTrialItemDefs;
+                }
+            }
+            orig(self);
+        }
+
         #endregion
     }
 }

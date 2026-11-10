@@ -24,12 +24,23 @@ namespace RiskierRain.Changes
         #region freeze on final levels
         public static void FreezeDifficultyScalingOnFinalLevels()
         {
+            LoadAsync<SceneDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2_meridian.meridian_asset, (meridian) =>
+            {
+                meridian.sceneType = SceneType.TimedIntermission;
+            });
+            LoadAsync<SceneDef>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC3_solutionalhaunt.solutionalhaunt_asset, (shaunt) =>
+            {
+                shaunt.sceneType = SceneType.TimedIntermission;
+            });
             On.RoR2.Run.ShouldUpdateRunStopwatch += ModifyShouldUpdateRunStopwatch;
         }
 
         public static bool ModifyShouldUpdateRunStopwatch(On.RoR2.Run.orig_ShouldUpdateRunStopwatch orig, Run self)
         {
+            if (SceneCatalog.mostRecentSceneDef.baseSceneName == "meridian")
+                return true;
             bool b = orig(self);
+            return b;
             //idc, if stopwatch is already frozen
             if (!b)
                 return b;

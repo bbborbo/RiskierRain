@@ -28,22 +28,22 @@ namespace RiskierRain.Changes
         public static void Initialize()
         {
             //MakeEnemiesuseEquipment();
-            ChangeSpawnlists();
-            ChangeVagrant();
-            ChangePest();
-            ChangeQueen();
-            ChangeVoidReaver();
-            ChangeBarnacle();
-            ChangeTemplar();
-            ChangeChimeraWisp();
-            ChangeGup();
-            ChangeSolusScorcher();
-            ChangeSolusProspector();
-            ChangeSolusExtractor();
-            ChangeLesserWisp();
+            QuickBind(ChangeSpawnlists, "Enemies : All Spawnlists");
+            QuickBind(ChangeVagrant, "Enemies : Wandering Vagrant");
+            QuickBind(ChangePest, "Enemies : Blind Pest");
+            QuickBind(ChangeQueen, "Enemies : Beetle Queen");
+            QuickBind(ChangeVoidReaver, "Enemies : Void Reaver");
+            QuickBind(ChangeBarnacle, "Enemies : Void Barnacle");
+            QuickBind(ChangeTemplar, "Enemies : Clay Templar");
+            QuickBind(ChangeChimeraWisp, "Enemies : Lunar Chimera Wisp");
+            QuickBind(ChangeGup, "Enemies : Gup");
+            QuickBind(ChangeSolusScorcher, "Enemies : Solus Scorcher");
+            QuickBind(ChangeSolusProspector, "Enemies : Solus Prospector");
+            QuickBind(ChangeSolusExtractor, "Enemies : Solus Extractor");
+            QuickBind(ChangeLesserWisp, "Enemies : Lesser Wisp");
 
-            ChangeSpecialBossScaling();
-            ChangeAWU();
+            QuickBind(ChangeSpecialBossScaling, ": Special Boss Scaling");
+            QuickBind(ChangeAWU, "Enemies : Alloy Worship Unit");
         }
 
         public static float bossScalingDifficultyToHealth = 0.3f;//0.4f

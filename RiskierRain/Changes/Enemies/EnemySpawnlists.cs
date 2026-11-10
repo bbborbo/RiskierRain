@@ -7,6 +7,7 @@ using static R2API.DirectorAPI;
 using RoR2;
 using UnityEngine.AddressableAssets;
 using RiskierRain.CoreModules;
+using static RiskierRain.RiskierRainPlugin;
 
 namespace RiskierRain.Changes
 {
@@ -30,24 +31,25 @@ namespace RiskierRain.Changes
 
         public static void ChangeSpawnlists()
         {
-            ChangeSpawnlistRoost();
-            ChangeSpawnlistPlains();
-            ChangeSpawnlistSiphoned();
-            ChangeSpawnlistFalls();
-            ChangeSpawnlistAbodes();
-            ChangeSpawnlistWetland();
-            ChangeSpawnlistAqueduct();
-            ChangeSpawnlistSanctuary();
-            ChangeSpawnlistPrecipice();
-            ChangeSpawnlistScorched();
-            ChangeSpawnlistRallypoint();
-            ChangeSpawnlistSulfur();
-            ChangeSpawnlistTreeborn();
-            ChangeSpawnlistAbyssal();
-            ChangeSpawnlistSirens();
-            ChangeSpawnlistGrove();
-            ChangeSpawnlistConduit();
-            ChangeSpawnlistMeadow();
+            string title = "Enable spawnlist changes";
+            QuickBind(ChangeSpawnlistRoost, "Stages : Distant Roost", title);
+            QuickBind(ChangeSpawnlistPlains, "Stages : Titanic Plains", title);
+            QuickBind(ChangeSpawnlistSiphoned, "Stages : Siphoned Forest", title);
+            QuickBind(ChangeSpawnlistFalls, "Stages : Verdant Falls", title);
+            QuickBind(ChangeSpawnlistAbodes, "Stages : Shattered Abodes", title);
+            QuickBind(ChangeSpawnlistWetland, "Stages : Wetland Aspect", title);
+            QuickBind(ChangeSpawnlistAqueduct, "Stages : Aqueduct", title);
+            QuickBind(ChangeSpawnlistSanctuary, "Stages : Aphelian Sanctuary", title);
+            QuickBind(ChangeSpawnlistPrecipice, "Stages : Pretenders Precipice", title);
+            QuickBind(ChangeSpawnlistScorched, "Stages : Scorched Acres", title);
+            QuickBind(ChangeSpawnlistRallypoint, "Stages : Rallypoint Delta", title);
+            QuickBind(ChangeSpawnlistSulfur, "Stages : Sulfur Pools", title);
+            QuickBind(ChangeSpawnlistTreeborn, "Stages : Treeborn Colony", title);
+            QuickBind(ChangeSpawnlistAbyssal, "Stages : Abyssal Depths", title);
+            QuickBind(ChangeSpawnlistSirens, "Stages : Sirens Call", title);
+            QuickBind(ChangeSpawnlistGrove, "Stages : Sundered Grove", title);
+            QuickBind(ChangeSpawnlistConduit, "Stages : Conduit Canyon", title);
+            QuickBind(ChangeSpawnlistMeadow, "Stages : Sky Meadows", title);
         }
 
         private static void ChangeSpawnlistMeadow()

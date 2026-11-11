@@ -123,7 +123,7 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
                 DoFruityBossDropHooks();
             else
             {
-                GlobalEventManager.onCharacterDeathGlobal += ScalpelOnKillHetero;
+                GlobalEventManager.onCharacterDeathServer += ScalpelOnKillHetero;
             }
         }
 
@@ -175,21 +175,20 @@ You already knew all that, though. Can’t help but wonder what you keep orderin
 			{
 				if (Util.CheckRoll(bonusDropChance))
 				{
-					ConsumeScalpel(attackerBody);
-					return true;
-				}
+					return ConsumeScalpel(attackerBody);
+                }
 			}
 			return false;
 		}
-        public static void ConsumeScalpel(CharacterBody attackerBody)
+        public static bool ConsumeScalpel(CharacterBody attackerBody)
         {
             Inventory.ItemTransformation.TryTransformResult tryTransformResult;
-            new Inventory.ItemTransformation
+            return new Inventory.ItemTransformation
             {
                 originalItemIndex = instance.ItemsDef.itemIndex,
                 newItemIndex = brokenItemDef.itemIndex,
                 maxToTransform = 1,
-                transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.Default
+                transformationType = (ItemTransformationTypeIndex)CharacterMasterNotificationQueue.TransformationType.ConsumedItem
             }.TryTransform(attackerBody.inventory, out tryTransformResult);
         }
     }

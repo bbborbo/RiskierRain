@@ -344,7 +344,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
                         HealthComponent healthComponent = hurtBoxesList[i].healthComponent;
                         CharacterBody enemyBody = healthComponent.body;
 
-                        if (!enemyBody || enemyBody.HasBuff(buffDef))
+                        if (!enemyBody || enemyBody.HasBuff(buffDef) || enemyBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Buddha) || enemyBody.IsInvincible())
                         {
                             hurtBoxesList.Remove(hurtBoxesList[i]);
                             hurtBoxCount--;

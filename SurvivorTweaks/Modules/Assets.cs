@@ -60,7 +60,6 @@ namespace SurvivorTweaks.Modules
         public static BuffDef lightsoutExecutionDebuff;
         public static void Init()
         {
-            AddAcridReworkAssets();
             AddAspdPenaltyDebuff();
             AddCommanderRollBuff();
             AddJetpackSpeedBoost();
@@ -153,22 +152,30 @@ namespace SurvivorTweaks.Modules
         #region acrid
         public static ModdedDamageType AcridFesterDamage;
         public static ModdedDamageType AcridCorrosiveDamage;
+        public static ModdedDamageType AcridInoculateDamage;
         public static BuffDef corrosionBuff;
         public static DotController.DotDef corrosionDotDef;
         public static DotController.DotIndex corrosionDotIndex;
+        public static BuffDef inoculateBuff;
+        public static DotController.DotDef inoculateDotDef;
+        public static DotController.DotIndex inoculateDotIndex;
+        public static GameObject inoculateTemporaryVisualEffectPrefab;
+        public static Material inoculateTemporaryEffectMaterial;
         public const string AcridFesterKeywordToken = "KEYWORD_FESTER";
         public const string AcridCorrosionKeywordToken = "KEYWORD_CORROSION";
         public const string AcridContagiousKeywordToken = "KEYWORD_CONTAGIOUS";
-        private static void AddAcridReworkAssets()
+        public const string AcridInoculateKeywordToken = "KEYWORD_INOCULATE";
+        internal static void AddAcridReworkAssets()
         {
             OrbAPI.AddOrb<Orbs.DiseaseOrb>();
             AcridFesterDamage = DamageAPI.ReserveDamageType();
             AcridCorrosiveDamage = DamageAPI.ReserveDamageType();
+            AcridInoculateDamage = DamageAPI.ReserveDamageType();
 
             corrosionBuff = Content.CreateAndAddBuff(
-                "AcridCorrosion", 
-                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffBleedingIcon.tif").WaitForCompletion(), 
-                Color.yellow, 
+                "AcridCorrosion",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffBleedingIcon.tif").WaitForCompletion(),
+                Color.yellow,
                 true, true);
             corrosionBuff.isDOT = true;
             corrosionDotDef = new DotController.DotDef
@@ -180,23 +187,58 @@ namespace SurvivorTweaks.Modules
             };
             corrosionDotIndex = DotAPI.RegisterDotDef(corrosionDotDef, (self, dotStack) =>
             {
+            });
 
+            inoculateBuff = Content.CreateAndAddBuff(
+                "AcridInoculate",
+                Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/texBuffBleedingIcon.tif").WaitForCompletion(),
+                Color.grey,
+                false, true);
+            inoculateBuff.isDOT = true;
+            inoculateDotDef = new DotController.DotDef
+            {
+                associatedBuff = inoculateBuff,
+                damageCoefficient = AcridTweaks.inoculateDamagePerSecond * AcridTweaks.inoculateTickInterval,
+                damageColorIndex = DamageColorIndex.DelayedDamage,
+                interval = AcridTweaks.inoculateTickInterval
+            };
+            inoculateDotIndex = DotAPI.RegisterDotDef(inoculateDotDef, customDotDamageEvaluation: (self, pendingDamage) =>
+            {
+                DamageInfo damageInfo = new DamageInfo();
+                damageInfo.attacker = pendingDamage.attackerObject;
+                damageInfo.crit = false;
+                damageInfo.damage = pendingDamage.totalDamage;
+                damageInfo.force = Vector3.zero;
+                damageInfo.inflictor = pendingDamage.attackerObject;
+                damageInfo.position = self.victimBody.corePosition;
+                damageInfo.procChainMask = pendingDamage.procChainMask;
+                damageInfo.procCoefficient = AcridTweaks.inoculateProcCoefficient;
+                damageInfo.damageColorIndex = DamageColorIndex.DeathMark;
+                damageInfo.damageType = (pendingDamage.damageType | DamageType.DoT);
+                damageInfo.dotIndex = pendingDamage.dotIndex;
+                damageInfo.inflictedHurtbox = pendingDamage.hitHurtBox;
+                self.victimHealthComponent.TakeDamage(damageInfo);
+                GlobalEventManager.instance.OnHitEnemy(damageInfo, self.victimObject);
+                GlobalEventManager.instance.OnHitAll(damageInfo, self.victimObject);
             });
 
             LanguageAPI.Add(AcridFesterKeywordToken, KeywordText("Festering",
                 $"Striking enemies {UtilityColor("resets")} the duration of {DotFilterText(AcridTweaks.festerOnlyKitDots)}."));
-            LanguageAPI.Add(AcridCorrosionKeywordToken, KeywordText("Caustic", 
+            LanguageAPI.Add(AcridCorrosionKeywordToken, KeywordText("Caustic",
                 $"Deal {DamageColor(Tools.ConvertDecimal(AcridTweaks.corrosionDamagePerSecond) + " base damage")} over {UtilityColor($"{AcridTweaks.corrosionDuration}s")}. " +
                 $"Reduce armor by {DamageColor(AcridTweaks.corrosionArmorReduction.ToString())}. <i>Corrosion can stack.</i>"));
-            LanguageAPI.Add(AcridContagiousKeywordToken, KeywordText("Contagious", 
+            LanguageAPI.Add(AcridContagiousKeywordToken, KeywordText("Contagious",
                 $"This skill transfers {TransferRateText(AcridTweaks.contagiousTransferRate)}{DotFilterText(AcridTweaks.contagiousOnlyKitDots)} " +
                 $"to nearby enemies."));
+            LanguageAPI.Add(AcridInoculateKeywordToken, KeywordText("Inoculate",
+                $"Deal {DamageColor(Tools.ConvertDecimal(AcridTweaks.inoculateDamagePerSecond) + " base damage")} over {UtilityColor($"{AcridTweaks.inoculateDuration}s")}. " +
+                $"Each tick {UtilityColor("resets")} the duration of {DotFilterText(AcridTweaks.festerOnlyKitDots)} and activates On-Hit effects."));
 
             string DotFilterText(bool isKitOnly)
             {
                 if (isKitOnly)
                     return $"all {HealingColor("Poison")}, {VoidColor("Blight")}, and {DamageColor("Corrosion")} stacks";
-                return $"{UtilityColor("every damage over time stack")}";
+                return $"{UtilityColor("every damage over time stack")}.";
             }
             string TransferRateText(float transferRate)
             {
@@ -207,6 +249,40 @@ namespace SurvivorTweaks.Modules
 
             GetStatCoefficients += CorrosionArmorReduction;
             GetHitBehavior += FesterOnHit;
+
+
+            inoculateTemporaryVisualEffectPrefab = PrefabAPI.InstantiateClone(
+                Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.CrippleEffect_prefab).WaitForCompletion(), "InoculateEffect");
+            TempVisualEffectAPI.AddTemporaryVisualEffect(inoculateTemporaryVisualEffectPrefab, condition => (condition.HasBuff(inoculateBuff) == true), false);
+
+            inoculateTemporaryEffectMaterial = UnityEngine.Object.Instantiate(Addressables.LoadAssetAsync<Material>("RoR2/Base/DeathMark/matDeathMarkFire.mat").WaitForCompletion());
+            inoculateTemporaryEffectMaterial.SetColor("_TintColor", new Color32(172, 172, 172, 255));
+            inoculateTemporaryEffectMaterial.SetTexture("_BaseTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Treebot/texTreebotRoot3Mask.png").WaitForCompletion());
+            inoculateTemporaryEffectMaterial.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>("RoR2/Base/Common/ColorRamps/texRampTritoneSmoothed.png").WaitForCompletion());
+
+            Renderer[] renderers = inoculateTemporaryVisualEffectPrefab.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in renderers)
+            {
+                Renderer smr = renderer;
+
+                if (string.Equals(renderer.name, "Mesh"))
+                {
+                    renderer.material = inoculateTemporaryEffectMaterial;
+                }
+            }
+            ParticleSystem[] particles = inoculateTemporaryVisualEffectPrefab.GetComponentsInChildren<ParticleSystem>();
+            foreach (ParticleSystem particleSystem in particles)
+            {
+                if (string.Equals(particleSystem.name, "Rings"))
+                {
+                    var main = particleSystem.main;
+                    main.startColor = new Color(.82f, .82f, .82f, 255);
+                }
+                else
+                {
+                    GameObject.Destroy(particleSystem.gameObject);
+                }
+            }
         }
 
         private static void CorrosionArmorReduction(CharacterBody sender, StatHookEventArgs args)
@@ -219,13 +295,15 @@ namespace SurvivorTweaks.Modules
 
         private static void FesterOnHit(CharacterBody attackerBody, DamageInfo damageInfo, CharacterBody victimBody)
         {
-            if (damageInfo.HasModdedDamageType(AcridFesterDamage))
+            if (damageInfo.HasModdedDamageType(AcridFesterDamage) || damageInfo.dotIndex == inoculateDotIndex)
             {
                 DotController dotController = DotController.FindDotController(victimBody.gameObject);
                 if (dotController)
                 {
                     foreach (DotController.DotStack dotStack in dotController.dotStackList)
                     {
+                        if (dotStack.dotIndex == inoculateDotIndex)
+                            continue;
                         //if fester is set to only reset acrid's dots and the dot index is not of one of acrid's dots
                         if (AcridTweaks.festerOnlyKitDots && AcridTweaks.GetKitDOTFilter(dotStack.dotIndex) == false)
                             continue;
@@ -256,6 +334,22 @@ namespace SurvivorTweaks.Modules
                     duration = AcridTweaks.corrosionDuration * damageInfo.procCoefficient,
                     damageMultiplier = 1f,
                     dotIndex = corrosionDotIndex,
+                    maxStacksFromAttacker = maxStacksFromAttacker
+                };
+                DotController.InflictDot(ref inflictDotInfo);
+            }
+            if (damageInfo.HasModdedDamageType(AcridInoculateDamage))
+            {
+                uint? maxStacksFromAttacker = 1;
+
+                InflictDotInfo inflictDotInfo = new InflictDotInfo
+                {
+                    attackerObject = damageInfo.attacker,
+                    victimObject = victimBody.gameObject,
+                    totalDamage = new float?(attackerBody.baseDamage * AcridTweaks.inoculateDamagePerSecond * AcridTweaks.inoculateDuration),
+                    duration = AcridTweaks.inoculateDuration,
+                    damageMultiplier = 1f,
+                    dotIndex = inoculateDotIndex,
                     maxStacksFromAttacker = maxStacksFromAttacker
                 };
                 DotController.InflictDot(ref inflictDotInfo);

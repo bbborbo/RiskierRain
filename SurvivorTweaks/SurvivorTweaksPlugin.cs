@@ -35,6 +35,7 @@ namespace SurvivorTweaks
     [BepInDependency(R2API.DotAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.DamageAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.OrbAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.TempVisualEffectAPI.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(MoreStats.MoreStatsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
@@ -98,7 +99,6 @@ namespace SurvivorTweaks
             Modules.Config.Init();
             Log.Init(Logger);
 
-            RainrotSharedUtils.Status.ShockUtilsModule.UseShockSparks = true;
             Modules.Language.Init();
             Modules.Hooks.Init();
             Modules.CommonAssets.Init();

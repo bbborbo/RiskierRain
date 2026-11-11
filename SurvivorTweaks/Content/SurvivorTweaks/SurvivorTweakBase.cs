@@ -4,6 +4,7 @@ using RoR2.Skills;
 using SurvivorTweaks.Modules;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -23,6 +24,18 @@ namespace SurvivorTweaks.SurvivorTweaks
     }
     public abstract class SurvivorTweakBase : SharedBase
     {
+        internal void RemoveTectonicBlast(SkillFamily skillFamily, string nameToken)
+        {
+            //List<SkillFamily.Variant> variants = new List<SkillFamily.Variant>();
+            //foreach (SkillFamily.Variant variant in mageUtility.variants)
+            //{
+            //    if (variant.skillDef.skillNameToken == "MAGE_UTILITY_ALT_NAME")
+            //        continue;
+            //    variants.Add(variant);
+            //}
+            //mageUtility.variants = variants.ToArray();
+            skillFamily.variants = skillFamily.variants.Where(x => x.skillDef.skillNameToken != nameToken).ToArray();
+        }
         public override string ConfigName => "Survivor Tweaks : " + survivorName;
         public override AssetBundle assetBundle => SurvivorTweaksPlugin.mainAssetBundle;
         public override string TOKEN_PREFIX => "";

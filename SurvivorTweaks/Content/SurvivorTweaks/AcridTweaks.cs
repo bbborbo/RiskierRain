@@ -87,6 +87,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float corrosionDamagePerSecond = 1f;
         [AutoConfig("Keywords : Caustic : Tick Interval", "Expressed in seconds", 1f)]
         public static float corrosionTickInterval = 1f;
+        [AutoConfig("Keywords : Inoculate : Base Damage Per Second", "Expressed as a percentage (eg 1.2 is 120%)", 1.2f)]
+        public static float inoculateDamagePerSecond = 1.2f;
+        [AutoConfig("Keywords : Inoculate : Tick Interval", "Expressed in seconds", 1f)]
+        public static float inoculateTickInterval = 1f;
+        [AutoConfig("Keywords : Inoculate : Status Duration", "Expressed in seconds", 12f)]
+        public static float inoculateDuration = 12f;
+        [AutoConfig("Keywords : Inoculate : Proc Coefficient", "Expressed in seconds", 1f)]
+        public static float inoculateProcCoefficient = 1f;
 
         [AutoConfig("Contagious Keyword : Transfer Rate", "Expressed as a percentage (eg 0.5 is 50%)", 0.5f)]
         public static float contagiousTransferRate = 0.5f;
@@ -144,6 +152,12 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float epidemicProjectileBlastRadius = 3f;
         [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Max Bounces", "Vanilla is 20", 20)]
         public static int epidemicMaxTargets = 20;
+        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
+        public static float breathCooldown = 18f; //10
+        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 2.4", 6.0f)]
+        public static float breathDamageCoefficient = 6f; //2.4
+        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Projectile Lifetime", "Expressed in seconds. Vanilla is 6.5", 3.5f)]
+        public static float breathLiftime = 3.5f; //6.5
         public static ModdedDamageType AcridSkillBasedDamage;
 
         public override string survivorName => "Acrid";
@@ -155,6 +169,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             base.Init();
+            CommonAssets.AddAcridReworkAssets();
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Croco.CrocoBody_prefab, (result) =>
             {
                 bodyObject = result;
@@ -172,7 +187,9 @@ namespace SurvivorTweaks.SurvivorTweaks
                 ChangeVanillaPrimary(primary);
                 ChangeVanillaSecondaries(secondary);
                 ChangeVanillaUtilities(utility);
+                RemoveTectonicBlast(utility, "CROCO_UTILITY_ALT1_NAME");
                 ChangeVanillaSpecials(special);
+                //RemoveTectonicBlast(special, "CROCO_SPECIAL_ALT_NAME");
 
                 Transform modelTransform = body.GetComponent<ModelLocator>()?.modelTransform;
                 if (modelTransform == null)
@@ -189,6 +206,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             });
 
             IL.RoR2.GlobalEventManager.ProcessHitEnemy += ChangePoisonDuration;
+
             LanguageAPI.Add("KEYWORD_POISON",
                 $"<style=cKeywordName>Poisonous</style>" +
                 $"<style=cSub>Deal damage equal to <style=cIsDamage>up to {poisonDuration}%</style> of their maximum health over {poisonDuration}s. " +
@@ -238,6 +256,12 @@ namespace SurvivorTweaks.SurvivorTweaks
             //On.RoR2.CrocoDamageTypeController.GetDamageType += CrocoDamageTypeController_GetDamageType;
             IL.EntityStates.Croco.FireSpit.OnEnter += FixSpitDamageTypes;
             On.EntityStates.Croco.Bite.AuthorityModifyOverlapAttack += FixBiteDamageTypes;
+            On.RoR2.CrocoDamageTypeController.GetDamageType += DefaultCrocoDamage;
+        }
+
+        private DamageTypeCombo DefaultCrocoDamage(On.RoR2.CrocoDamageTypeController.orig_GetDamageType orig, CrocoDamageTypeController self)
+        {
+            return DamageType.BlightOnHit;
         }
 
         private void FixBiteDamageTypes(On.EntityStates.Croco.Bite.orig_AuthorityModifyOverlapAttack orig, Bite self, OverlapAttack overlapAttack)
@@ -346,7 +370,6 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void BuffBite(On.EntityStates.Croco.Bite.orig_OnEnter orig, EntityStates.Croco.Bite self)
         {
-            Debug.Log(self.hitBoxGroupName);
             self.damageCoefficient = biteDamageCoeff;
             orig(self);
             if (!SurvivorTweaksPlugin.acridLungeLoaded)
@@ -358,7 +381,6 @@ namespace SurvivorTweaks.SurvivorTweaks
 
         private void ChangeCrocoSlashDuration(On.EntityStates.Croco.Slash.orig_OnEnter orig, EntityStates.Croco.Slash self)
         {
-            Debug.Log(self.hitBoxGroupName);
             self.baseDuration = slashDuration + 0.1f;
             self.damageCoefficient = slashDamageCoefficient;
             Slash.comboFinisherDamageCoefficient = slashDamageCoefficientFinal;
@@ -435,6 +457,76 @@ namespace SurvivorTweaks.SurvivorTweaks
                 UnityEngine.Object.Destroy(beamController);
             }
             On.EntityStates.Croco.FireSpit.OnEnter += FireSpit_OnEnter;
+
+
+            SkillDef burp = family.variants[1].skillDef;
+            burp.baseRechargeInterval = epidemicCooldown;
+            burp.keywordTokens = new string[] { CommonAssets.AcridInoculateKeywordToken };
+            LanguageAPI.Add("CROCO_SPECIAL_ALT_NAME",
+                $"Inoculating Breath");
+            LanguageAPI.Add("CROCO_SPECIAL_ALT_DESCRIPTION",
+                $"Belch a lingering cloud of toxic spores for <style=cIsDamage>600% damage</style>. All enemies hit are <style=cIsDamage>Inoculated</style>.");
+
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Croco.CrocoBreathProjectile_prefab, (breathProjectile) =>
+            {
+                if (breathProjectile.TryGetComponent(out ProjectileController pc))
+                {
+                    pc.procCoefficient = 1f;
+                }
+                if (breathProjectile.TryGetComponent(out ProjectileDotZone pdz))
+                {
+                    pdz.resetFrequency = 0.000000000000000001f;
+                    pdz.damageCoefficient = 1f;
+                    pdz.lifetime = breathLiftime;
+                    pdz.overlapProcCoefficient = 1f;
+                }
+            });
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Croco.CrocoBreathProjectileGhost_prefab, (breathProjectileGhost) =>
+            {
+                Transform gas1 = breathProjectileGhost.transform.GetChild(0);
+                if(gas1.TryGetComponent(out ParticleSystem ps))
+                {
+                    ParticleSystem.MainModule main = ps.main;
+                    main.startLifetime = breathLiftime;
+                }
+                Transform subGas = breathProjectileGhost.transform.GetChild(0);
+                if (subGas.TryGetComponent(out ParticleSystem ps2))
+                {
+                    ParticleSystem.MainModule main = ps2.main;
+                    main.startLifetime = breathLiftime;
+                }
+            });
+            IL.EntityStates.Croco.Breath.FireProjectile += Breath_FireProjectile;
+            On.EntityStates.Croco.Breath.OnEnter += Breath_OnEnter;
+        }
+
+        private void Breath_FireProjectile(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.Before,
+                x => x.MatchStfld<FireProjectileInfo>(nameof(FireProjectileInfo.damageTypeOverride))))
+            {
+                c.Index--;
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<DamageTypeCombo, EntityState, DamageTypeCombo>>((damageTypeIn, state) =>
+                {
+                    damageTypeIn.damageType = DamageType.Generic;
+                    damageTypeIn.AddModdedDamageType(CommonAssets.AcridFesterDamage);
+                    damageTypeIn.AddModdedDamageType(CommonAssets.AcridInoculateDamage);
+                    damageTypeIn.damageSource = DamageSource.Special;
+                    return damageTypeIn;
+                });
+            }
+            else
+            {
+                Debug.LogError("Acrid burp damage type hook failed!!");
+            }
+        }
+
+        private void Breath_OnEnter(On.EntityStates.Croco.Breath.orig_OnEnter orig, Breath self)
+        {
+            self.baseDamage = breathDamageCoefficient;
+            orig(self);
         }
 
         private void FireSpit_OnEnter(On.EntityStates.Croco.FireSpit.orig_OnEnter orig, FireSpit self)

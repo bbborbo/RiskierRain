@@ -18,9 +18,9 @@ namespace SwanSongExtended.Items
         public static float baseShield = 25;
         public static float stackShield = 0;
 
-        float moveSpeedIncreaseFree = 0.00f;
-        float moveSpeedIncreaseBase = 0.19f;
-        float moveSpeedIncreaseStack = 0.19f;
+        float moveSpeedIncreaseFree = 0.05f;
+        float moveSpeedIncreaseBase = 0.14f;
+        float moveSpeedIncreaseStack = 0.14f;
         //int armorIncreaseBase = 20;
         //int armorIncreaseStack = 30;
 
@@ -40,9 +40,9 @@ namespace SwanSongExtended.Items
         public override ItemTier Tier => ItemTier.VoidTier1;
         public override ItemTag[] ItemTags => new ItemTag[] { ItemTag.Utility };
 
-        public override GameObject ItemModel => LoadDropPrefab("mdlFlowerCrown");
+        public override GameObject ItemModel => LoadDropPrefab("PickupBinaryShield");
 
-        public override Sprite ItemIcon => LoadItemIcon("texIconFlowerCrown");
+        public override Sprite ItemIcon => LoadItemIcon("texIconBinaryShield");
 
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()

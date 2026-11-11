@@ -55,9 +55,9 @@ Of course, you can always buy the premium version for unlimited discounts~
         public override ItemTag[] ItemTags => new ItemTag[] 
             { ItemTag.Utility, ItemTag.AIBlacklist, ItemTag.BrotherBlacklist, ItemTag.OnStageBeginEffect, ItemTag.InteractableRelated };
 
-        public override GameObject ItemModel => LoadDropPrefab("mdlGreedyRing");
+        public override GameObject ItemModel => LoadDropPrefab("PickupGreedyRing");
 
-        public override Sprite ItemIcon => LoadItemIcon("texIconPickupITEM_BORBODISCOUNT");
+        public override Sprite ItemIcon => LoadItemIcon("texIconGreedyRing");
 
         public override ItemDisplayRuleDict CreateItemDisplayRules()
         {

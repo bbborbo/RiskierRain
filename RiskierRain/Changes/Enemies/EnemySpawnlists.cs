@@ -32,24 +32,24 @@ namespace RiskierRain.Changes
         public static void ChangeSpawnlists()
         {
             string title = "Enable spawnlist changes";
-            QuickBind(ChangeSpawnlistRoost, "Stages : Distant Roost", title);
-            QuickBind(ChangeSpawnlistPlains, "Stages : Titanic Plains", title);
-            QuickBind(ChangeSpawnlistSiphoned, "Stages : Siphoned Forest", title);
-            QuickBind(ChangeSpawnlistFalls, "Stages : Verdant Falls", title);
-            QuickBind(ChangeSpawnlistAbodes, "Stages : Shattered Abodes", title);
-            QuickBind(ChangeSpawnlistWetland, "Stages : Wetland Aspect", title);
-            QuickBind(ChangeSpawnlistAqueduct, "Stages : Aqueduct", title);
-            QuickBind(ChangeSpawnlistSanctuary, "Stages : Aphelian Sanctuary", title);
-            QuickBind(ChangeSpawnlistPrecipice, "Stages : Pretenders Precipice", title);
-            QuickBind(ChangeSpawnlistScorched, "Stages : Scorched Acres", title);
-            QuickBind(ChangeSpawnlistRallypoint, "Stages : Rallypoint Delta", title);
-            QuickBind(ChangeSpawnlistSulfur, "Stages : Sulfur Pools", title);
-            QuickBind(ChangeSpawnlistTreeborn, "Stages : Treeborn Colony", title);
-            QuickBind(ChangeSpawnlistAbyssal, "Stages : Abyssal Depths", title);
-            QuickBind(ChangeSpawnlistSirens, "Stages : Sirens Call", title);
-            QuickBind(ChangeSpawnlistGrove, "Stages : Sundered Grove", title);
-            QuickBind(ChangeSpawnlistConduit, "Stages : Conduit Canyon", title);
-            QuickBind(ChangeSpawnlistMeadow, "Stages : Sky Meadows", title);
+            QuickSection(ChangeSpawnlistRoost, "Stages : Distant Roost", title);
+            QuickSection(ChangeSpawnlistPlains, "Stages : Titanic Plains", title);
+            QuickSection(ChangeSpawnlistSiphoned, "Stages : Siphoned Forest", title);
+            QuickSection(ChangeSpawnlistFalls, "Stages : Verdant Falls", title);
+            QuickSection(ChangeSpawnlistAbodes, "Stages : Shattered Abodes", title);
+            QuickSection(ChangeSpawnlistWetland, "Stages : Wetland Aspect", title);
+            QuickSection(ChangeSpawnlistAqueduct, "Stages : Aqueduct", title);
+            QuickSection(ChangeSpawnlistSanctuary, "Stages : Aphelian Sanctuary", title);
+            QuickSection(ChangeSpawnlistPrecipice, "Stages : Pretenders Precipice", title);
+            QuickSection(ChangeSpawnlistScorched, "Stages : Scorched Acres", title);
+            QuickSection(ChangeSpawnlistRallypoint, "Stages : Rallypoint Delta", title);
+            QuickSection(ChangeSpawnlistSulfur, "Stages : Sulfur Pools", title);
+            QuickSection(ChangeSpawnlistTreeborn, "Stages : Treeborn Colony", title);
+            QuickSection(ChangeSpawnlistAbyssal, "Stages : Abyssal Depths", title);
+            QuickSection(ChangeSpawnlistSirens, "Stages : Sirens Call", title);
+            QuickSection(ChangeSpawnlistGrove, "Stages : Sundered Grove", title);
+            QuickSection(ChangeSpawnlistConduit, "Stages : Conduit Canyon", title);
+            QuickSection(ChangeSpawnlistMeadow, "Stages : Sky Meadows", title);
         }
 
         private static void ChangeSpawnlistMeadow()

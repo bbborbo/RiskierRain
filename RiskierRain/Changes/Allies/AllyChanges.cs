@@ -14,10 +14,10 @@ namespace RiskierRain.Changes
     {
         public static void Initialize()
         {
-            QuickBind(ChangeCleanupDrone, "Allies : Cleanup Drone");
-            QuickBind(ChangeJunkDrone, "Allies : Junk Drone");
-            QuickBind(ChangeMegaDrone, "Allies : TC-280 Prototype Drone");
-            QuickBind(ChangeHealingDrones, "Allies : Healing Drone");
+            QuickSection(ChangeCleanupDrone, "Allies : Cleanup Drone");
+            QuickSection(ChangeJunkDrone, "Allies : Junk Drone");
+            QuickSection(ChangeMegaDrone, "Allies : TC-280 Prototype Drone");
+            QuickSection(ChangeHealingDrones, "Allies : Healing Drone");
         }
 
         private static void ChangeHealingDrones()

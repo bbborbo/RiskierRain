@@ -29,21 +29,21 @@ namespace RiskierRain.Changes
         {
             //MakeEnemiesuseEquipment();
             ChangeSpawnlists();
-            QuickBind(ChangeVagrant, "Enemies : Wandering Vagrant");
-            QuickBind(ChangePest, "Enemies : Blind Pest");
-            QuickBind(ChangeQueen, "Enemies : Beetle Queen");
-            QuickBind(ChangeVoidReaver, "Enemies : Void Reaver");
-            QuickBind(ChangeBarnacle, "Enemies : Void Barnacle");
-            QuickBind(ChangeTemplar, "Enemies : Clay Templar");
-            QuickBind(ChangeChimeraWisp, "Enemies : Lunar Chimera Wisp");
-            QuickBind(ChangeGup, "Enemies : Gup");
-            QuickBind(ChangeSolusScorcher, "Enemies : Solus Scorcher");
-            QuickBind(ChangeSolusProspector, "Enemies : Solus Prospector");
-            QuickBind(ChangeSolusExtractor, "Enemies : Solus Extractor");
-            QuickBind(ChangeLesserWisp, "Enemies : Lesser Wisp");
+            QuickSection(ChangeVagrant, "Enemies : Wandering Vagrant");
+            QuickSection(ChangePest, "Enemies : Blind Pest");
+            QuickSection(ChangeQueen, "Enemies : Beetle Queen");
+            QuickSection(ChangeVoidReaver, "Enemies : Void Reaver");
+            QuickSection(ChangeBarnacle, "Enemies : Void Barnacle");
+            QuickSection(ChangeTemplar, "Enemies : Clay Templar");
+            QuickSection(ChangeChimeraWisp, "Enemies : Lunar Chimera Wisp");
+            QuickSection(ChangeGup, "Enemies : Gup");
+            QuickSection(ChangeSolusScorcher, "Enemies : Solus Scorcher");
+            QuickSection(ChangeSolusProspector, "Enemies : Solus Prospector");
+            QuickSection(ChangeSolusExtractor, "Enemies : Solus Extractor");
+            QuickSection(ChangeLesserWisp, "Enemies : Lesser Wisp");
 
-            QuickBind(ChangeSpecialBossScaling, ": Special Boss Scaling");
-            QuickBind(ChangeAWU, "Enemies : Alloy Worship Unit");
+            QuickSection(ChangeSpecialBossScaling, ": Special Boss Scaling");
+            QuickSection(ChangeAWU, "Enemies : Alloy Worship Unit");
         }
 
         public static float bossScalingDifficultyToHealth = 0.3f;//0.4f

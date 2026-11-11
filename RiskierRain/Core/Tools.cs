@@ -12,6 +12,10 @@ namespace RiskierRain
 {
     public static class Extensions
     {
+        public static T QuickBind<T>(this T defaultValue, string title, string desc = "")
+        {
+            return RiskierRainPlugin.QuickBind(defaultValue, title, desc);
+        }
         public static string AsPercent(this float d)
         {
             return (d * 100f).ToString() + "%";

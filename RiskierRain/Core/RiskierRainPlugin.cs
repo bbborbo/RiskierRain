@@ -149,7 +149,7 @@ namespace RiskierRain
             EnemyChanges.Initialize();
             InteractableChanges.Initialize();
 
-            QuickBind(DoSacrificeDropLimit, ": Sacrifice and Sonorous Drop Limit");
+            QuickSection(DoSacrificeDropLimit, ": Sacrifice and Sonorous Drop Limit");
 
 
             LanguageAPI.Add("DIFFICULTY_EASY_DESCRIPTION", drizzleDesc + "</style>");
@@ -408,22 +408,21 @@ namespace RiskierRain
             CoreModules.Assets.projectilePrefabs.Add(meatballNapalmPool);
         }
 
-        internal static void QuickBind(Action callback, string category, 
+        private static string LastCategory;
+        internal static void QuickSection(Action callback, string category, 
             string title = "Enable changes", 
             string desc = "Refer to the Wiki page for info on changes.", 
             bool defaultValue = true)
         {
-            if (GetConfigBool(defaultValue, category, title, desc))
-                callback.Invoke();
+            LastCategory = category;
+            if (GetConfig<bool>(defaultValue, category, title, desc))
+                if(callback != null)
+                    callback.Invoke();
         }
-
-        internal static bool GetConfigBool(bool defaultValue, string category, 
-            string title = "Enable changes", 
-            string desc = "Refer to the Wiki page for info on changes.")
+        internal static T QuickBind<T>(T defaultValue, string title, string desc = "")
         {
-            return GetConfig<bool>(defaultValue, category, title, desc);
+            return GetConfig(defaultValue, LastCategory, title, desc);
         }
-
         internal static T GetConfig<T>(T defaultValue, string category, string title, string desc = "")
         {
             return CustomConfigFile.Bind<T>(category, title, defaultValue, desc).Value;
@@ -440,6 +439,7 @@ namespace RiskierRain
             CustomConfigFile.SaveOnConfigSet = true;
             CustomConfigFile.Save();
         }
+
 
         void InitializeCoreModules()
         {

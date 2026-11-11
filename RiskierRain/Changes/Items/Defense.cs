@@ -22,7 +22,7 @@ namespace RiskierRain.Changes
     public static partial class ItemChanges
     {
         #region stealthkit
-        public static float stealthkitChanceBase = 0.05f;
+        public static float stealthkitChanceBase = 0.10f;
         public static float stealthkitChanceStack = 0.00f;
         public static float stealthkitDurationBase = 3f;
         public static float stealthkitDurationStack = 1.5f;
@@ -60,7 +60,7 @@ namespace RiskierRain.Changes
             if (phasing > 0)
             {
                 float procChance = stealthkitChanceBase + stealthkitChanceStack * (phasing - 1);
-                if (Util.CheckRoll0To1(procChance, self.body.master))
+                if (Util.CheckRoll0To1(procChance))
                 {
                     damageInfo.rejected = true;
 

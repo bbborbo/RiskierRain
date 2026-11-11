@@ -36,13 +36,78 @@ namespace RiskierRain.Changes
             {
                 champrush.sceneType = SceneType.TimedIntermission;
             });
-            On.RoR2.Run.ShouldUpdateRunStopwatch += ModifyShouldUpdateRunStopwatch;
+            On.EntityStates.Missions.ChampRush.ReaperFight.OnEnter += ReaperPause;
+            On.EntityStates.Missions.ChampRush.Aftermath.OnEnter += ReaperUnpause;
+            On.EntityStates.Missions.BrotherEncounter.Phase1.OnEnter += BrotherPause;
+            On.EntityStates.Missions.BrotherEncounter.BossDeath.OnEnter += BrotherUnpause;
+            On.EntityStates.MeridianEvent.Phase1.OnEnter += SonPause;
+            On.EntityStates.MeridianEvent.MeridianEventCleared.OnEnter += SonUnpause;
+            On.EntityStates.SolusWing2.Mission2Fight.OnEnter += WingPause;
+            On.EntityStates.SolusWing2.Mission5Death.OnEnter += WingUnpause;
+
+            //On.RoR2.Run.ShouldUpdateRunStopwatch += ModifyShouldUpdateRunStopwatch;
         }
+
+        #region but not during bosses
+        private static void WingUnpause(On.EntityStates.SolusWing2.Mission5Death.orig_OnEnter orig, EntityStates.SolusWing2.Mission5Death self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(false);
+            orig(self);
+        }
+
+        private static void WingPause(On.EntityStates.SolusWing2.Mission2Fight.orig_OnEnter orig, EntityStates.SolusWing2.Mission2Fight self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(true);
+            orig(self);
+        }
+
+        private static void SonUnpause(On.EntityStates.MeridianEvent.MeridianEventCleared.orig_OnEnter orig, EntityStates.MeridianEvent.MeridianEventCleared self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(false);
+            orig(self);
+        }
+
+        private static void SonPause(On.EntityStates.MeridianEvent.Phase1.orig_OnEnter orig, EntityStates.MeridianEvent.Phase1 self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(true);
+            orig(self);
+        }
+
+        private static void BrotherUnpause(On.EntityStates.Missions.BrotherEncounter.BossDeath.orig_OnEnter orig, EntityStates.Missions.BrotherEncounter.BossDeath self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(false);
+            orig(self);
+        }
+
+        private static void BrotherPause(On.EntityStates.Missions.BrotherEncounter.Phase1.orig_OnEnter orig, EntityStates.Missions.BrotherEncounter.Phase1 self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(true);
+            orig(self);
+        }
+
+        private static void ReaperUnpause(On.EntityStates.Missions.ChampRush.Aftermath.orig_OnEnter orig, EntityStates.Missions.ChampRush.Aftermath self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(false);
+            orig(self);
+        }
+
+        private static void ReaperPause(On.EntityStates.Missions.ChampRush.ReaperFight.orig_OnEnter orig, EntityStates.Missions.ChampRush.ReaperFight self)
+        {
+            if (Run.instance)
+                Run.instance.SetForcePauseRunStopwatch(true);
+            orig(self);
+        }
+        #endregion
 
         public static bool ModifyShouldUpdateRunStopwatch(On.RoR2.Run.orig_ShouldUpdateRunStopwatch orig, Run self)
         {
-            if (SceneCatalog.mostRecentSceneDef.baseSceneName == "meridian")
-                return true;
             bool b = orig(self);
             return b;
             //idc, if stopwatch is already frozen
@@ -272,18 +337,14 @@ namespace RiskierRain.Changes
         private static void ChangeEnemyRewards()
         {
             //On.RoR2.TeleporterInteraction.Awake += ReduceTeleDirectorReward;
-            DifficultyUtilsModule.BoostedRewardCompensationCoefficient = GetConfig<float>(compensationForStartingLevel, 
-                "Difficulty : Enemy Reward Reduction", 
+            DifficultyUtilsModule.BoostedRewardCompensationCoefficient = compensationForStartingLevel.QuickBind(
                 "Reward Compensation Coefficient", 
                 "Enemy gold and EXP rewards increase over the course of a stage increase proportionally to the fixed costs of chests. " +
                 "In other words, you can buy more chests faster in the last part of a stage than in the first. " +
-                "Set to 1 for full compensation, or 0 for none. Vanilla is 0.");
-            DifficultyUtilsModule.GoldRewardMultiplierGlobal = GetConfig<float>(goldRewardMultiplierGlobal,
-                "Difficulty : Enemy Reward Reduction",
-                "Global Gold Reward Multiplier");
-            DifficultyUtilsModule.ExpRewardMultiplierGlobal = GetConfig<float>(expRewardMultiplierGlobal,
-                "Difficulty : Enemy Reward Reduction",
-                "Global EXP Reward Multiplier"); ;
+                "Set to 1 for full compensation, or 0 for none. Vanilla is 0."
+                );
+            DifficultyUtilsModule.GoldRewardMultiplierGlobal = goldRewardMultiplierGlobal.QuickBind("Global Gold Reward Multiplier");
+            DifficultyUtilsModule.ExpRewardMultiplierGlobal = expRewardMultiplierGlobal.QuickBind("Global EXP Reward Multiplier");
         }
         #endregion
     }

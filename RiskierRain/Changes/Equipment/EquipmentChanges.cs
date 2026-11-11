@@ -29,17 +29,17 @@ namespace RiskierRain.Changes
         public static void Initialize()
         {
             //eccentric vase
-            QuickBind(() => RiskierRainPlugin.RemoveEquipmentAsync(RoR2_Base_Gateway.Gateway_asset), "Equipments : Eccentric Vase");
-            QuickBind(ChangeJadeElephant, "Equipments : Jade Elephant");
-            QuickBind(ChangeCapacitor, "Equipments : Royal Capacitor");
-            QuickBind(ChangeTheBackup, "Equipments : The Backup");
-            QuickBind(ChangeFuelArray, "Equipments : Fuel Array");
-            QuickBind(ChangeGoobo, "Equipments : Goobo Jr");
-            QuickBind(ChangeOcularHud, "Equipments : Ocular HUD");
-            QuickBind(ChangeGlowingMeteorite, "Equipments : Glowing Meteorite");
-            QuickBind(ChangeCrowdfunder, "Equipments : Crowdfunder");
-            QuickBind(ChangeSacrificeAltar, "Equipments : Totem of Sacrifice");
-            QuickBind(ChangeForgiveMePlease, "Equipments : Forgive Me Please");
+            QuickSection(() => RiskierRainPlugin.RemoveEquipmentAsync(RoR2_Base_Gateway.Gateway_asset), "Equipments : Eccentric Vase");
+            QuickSection(ChangeJadeElephant, "Equipments : Jade Elephant");
+            QuickSection(ChangeCapacitor, "Equipments : Royal Capacitor");
+            QuickSection(ChangeTheBackup, "Equipments : The Backup");
+            QuickSection(ChangeFuelArray, "Equipments : Fuel Array");
+            QuickSection(ChangeGoobo, "Equipments : Goobo Jr");
+            QuickSection(ChangeOcularHud, "Equipments : Ocular HUD");
+            QuickSection(ChangeGlowingMeteorite, "Equipments : Glowing Meteorite");
+            QuickSection(ChangeCrowdfunder, "Equipments : Crowdfunder");
+            QuickSection(ChangeSacrificeAltar, "Equipments : Totem of Sacrifice");
+            QuickSection(ChangeForgiveMePlease, "Equipments : Forgive Me Please");
 
             //ChangeEnigmaBlacklists();
             //kinda want to remove this but it needs a replacement

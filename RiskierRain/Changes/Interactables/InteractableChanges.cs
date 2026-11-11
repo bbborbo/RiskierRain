@@ -26,24 +26,24 @@ namespace RiskierRain.Changes
     {
         public static void Initialize()
         {
-            QuickBind(() => DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits, "Interactables : Scene Interactable Director");
+            QuickSection(() => DirectorAPI.StageSettingsActions += IncreaseStageInteractableCredits, "Interactables : Scene Interactable Director");
 
             //ChangeHackingCriteria();
-            QuickBind(() => DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook, "Interactables : Printer and Scrapper Occurrences");
+            QuickSection(() => DirectorAPI.InteractableActions += PrinterScrapperOccurrenceHook, "Interactables : Printer and Scrapper Occurrences");
             //DirectorAPI.InteractableActions += PrinterOccurrenceHook;
             //DirectorAPI.InteractableActions += ScrapperOccurrenceHook;
-            QuickBind(() => DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook, "Interactables : Equipment Barrel Occurrences");
-            QuickBind(() => DirectorAPI.InteractableActions += LunarPodOccurrenceHook, "Interactables : Lunar Pod Occurrences");
+            QuickSection(() => DirectorAPI.InteractableActions += EquipBarrelOccurrenceHook, "Interactables : Equipment Barrel Occurrences");
+            QuickSection(() => DirectorAPI.InteractableActions += LunarPodOccurrenceHook, "Interactables : Lunar Pod Occurrences");
             //NerfBazaarStuff();
-            QuickBind(GoldShrineRework, "Interactables : Altar of Gold");
+            QuickSection(GoldShrineRework, "Interactables : Altar of Gold");
             //ReworkSoulShrine();
-            QuickBind(BloodShrineRewardRework, "Interactables : Shrine of Blood");
-            QuickBind(ChangeHalcyoniteShrine, "Interactables : Halcyonite Shrine");
-            QuickBind(ChangeCombatShrine, "Interactables : Shrine of Combat");
-            QuickBind(ChangeHalcyonBeacon, "Interactables : Halcyon Beacon");
+            QuickSection(BloodShrineRewardRework, "Interactables : Shrine of Blood");
+            QuickSection(ChangeHalcyoniteShrine, "Interactables : Halcyonite Shrine");
+            QuickSection(ChangeCombatShrine, "Interactables : Shrine of Combat");
+            QuickSection(ChangeHalcyonBeacon, "Interactables : Halcyon Beacon");
 
             //interactable gold costs
-            QuickBind(ChestRebalance, "Interactables : Interactable Prices");
+            QuickSection(ChestRebalance, "Interactables : Interactable Prices");
             On.RoR2.Run.GetDifficultyScaledCost_int += FixScaledCost;
         }
 

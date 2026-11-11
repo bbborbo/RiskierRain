@@ -30,16 +30,16 @@ namespace RiskierRain.Changes
         public static void Initialize()
         {
             //mechanics
-            QuickBind(RemoveOspForever, ": Remove One-Shot Protection");
-            QuickBind(AddPotentialProtection, ": Pickup Picker Panel Protection");
-            QuickBind(AddPityCharge, ": Teleporter Overcharge");
+            QuickSection(RemoveOspForever, ": Remove One-Shot Protection");
+            QuickSection(AddPotentialProtection, ": Pickup Picker Panel Protection");
+            QuickSection(AddPityCharge, ": Teleporter Overcharge");
 
             //scaling
-            QuickBind(FreezeDifficultyScalingOnFinalLevels, "Difficulty : Time Scaling On Boss Stages");
-            QuickBind(ChangeDifficultyCoefficientCalculation, "Difficulty : Exponential Difficulty Formula");
+            QuickSection(FreezeDifficultyScalingOnFinalLevels, "Difficulty : Time Scaling On Boss Stages");
+            QuickSection(ChangeDifficultyCoefficientCalculation, "Difficulty : Exponential Difficulty Formula");
             //VoidFieldsTimeCost();
-            QuickBind(ChangeEnemyRewards, "Difficulty : Enemy Reward Reduction");
-            QuickBind(() => On.RoR2.CharacterBody.RecalculateStats += NoLevelUpHeal, ": Remove Enemy Heal On Level-Up");
+            QuickSection(ChangeEnemyRewards, "Difficulty : Enemy Reward Reduction");
+            QuickSection(() => On.RoR2.CharacterBody.RecalculateStats += NoLevelUpHeal, ": Remove Enemy Heal On Level-Up");
 
             #region difficulty descriptions
             drizzleDesc +=
@@ -60,17 +60,17 @@ namespace RiskierRain.Changes
             #endregion
 
             //difficulty modes
-            QuickBind(DoDifficultyChanges, "Difficulty : Base Difficulty Modes");
+            QuickSection(DoDifficultyChanges, "Difficulty : Base Difficulty Modes");
             void DoDifficultyChanges()
             {
                 DifficultyUtilsModule.EnableAll();
                 RoR2Application.onLoad += AddDifficultyStats;
                 AddMonsoonScalingStats();
             }
-            QuickBind(ChangeEclipse, "Difficulty : Eclipse");
+            QuickSection(ChangeEclipse, "Difficulty : Eclipse");
 
             //directors
-            QuickBind(IncreaseDirectorCredits, "Difficulty : Combat Director");
+            QuickSection(IncreaseDirectorCredits, "Difficulty : Combat Director");
             void IncreaseDirectorCredits()
             {
                 ChangeDirectorStats();
@@ -88,7 +88,7 @@ namespace RiskierRain.Changes
             };
 
             //quests
-            QuickBind(ChangeTrialOfGreed, "Difficulty : Trial of Infernal Greed");
+            QuickSection(ChangeTrialOfGreed, "Difficulty : Trial of Infernal Greed");
         }
 
         private static void NoLevelUpHeal(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)

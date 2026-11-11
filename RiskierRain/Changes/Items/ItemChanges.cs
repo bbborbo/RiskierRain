@@ -40,7 +40,7 @@ namespace RiskierRain.Changes
 
         public static void Initialize()
         {
-            QuickBind(RemoveItems, ": Disable Items Pending Reworks");
+            QuickSection(RemoveItems, ": Disable Items Pending Reworks");
             void RemoveItems()
             {
                 ChangeTrialDropTables();
@@ -80,79 +80,79 @@ namespace RiskierRain.Changes
             BaseStats.BarrierLowDecayFactor = 0.33f;// BarrierDecayLowFactor.Value; //0.5f
 
             //FreeBonusArmor();
-            QuickBind(ChangeSaferSpaces, "Items : Safer Spaces");
+            QuickSection(ChangeSaferSpaces, "Items : Safer Spaces");
             //FuckingFixInfusion();
-            QuickBind(ChangeTopazBrooch, "Items : Topaz Brooch");
-            QuickBind(ChangeEclipseLite, "Items : Eclipse Lite");
-            QuickBind(ChangeWarpedEcho, "Items : Warped Echo");
-            QuickBind(ChangeVengefulSpirit, "Items : Vengeful Spirit");
-            QuickBind(ChangeEarthboundVessel, "Items : Earthbound Vessel");
+            QuickSection(ChangeTopazBrooch, "Items : Topaz Brooch");
+            QuickSection(ChangeEclipseLite, "Items : Eclipse Lite");
+            QuickSection(ChangeWarpedEcho, "Items : Warped Echo");
+            QuickSection(ChangeVengefulSpirit, "Items : Vengeful Spirit");
+            QuickSection(ChangeEarthboundVessel, "Items : Earthbound Vessel");
             #endregion
 
             #region healing
-            QuickBind(ChangeMedkit, "Items : Medkit");
-            QuickBind(ChangeMonsterTooth, "Items : Monster Tooth");
-            QuickBind(ChangeBungus, "Items : Bustling Fungus");
-            QuickBind(ChangeWeepingFungus, "Items : Weeping Fungus");
-            QuickBind(ChangeScythe, "Items : Harvesters Scythe");
-            QuickBind(ChangeLeptonDaisy, "Items : Lepton Daisy");
-            QuickBind(ChangeLeechingSeed, "Items : Leeching Seed");
+            QuickSection(ChangeMedkit, "Items : Medkit");
+            QuickSection(ChangeMonsterTooth, "Items : Monster Tooth");
+            QuickSection(ChangeBungus, "Items : Bustling Fungus");
+            QuickSection(ChangeWeepingFungus, "Items : Weeping Fungus");
+            QuickSection(ChangeScythe, "Items : Harvesters Scythe");
+            QuickSection(ChangeLeptonDaisy, "Items : Lepton Daisy");
+            QuickSection(ChangeLeechingSeed, "Items : Leeching Seed");
             #endregion
 
             #region mobility
             //GoatHoofNerf();
-            QuickBind(ChangeFaraday, "Items : Faraday Spur");
-            QuickBind(ChangeElusiveAntlers, "Items : Elusive Antlers");
+            QuickSection(ChangeFaraday, "Items : Faraday Spur");
+            QuickSection(ChangeElusiveAntlers, "Items : Elusive Antlers");
             #endregion
 
             #region autoplay
-            QuickBind(ChangeNkuhana, "Items : NKuhanas Opinion");
-            QuickBind(ChangeDisciple, "Items : Little Disciple");
-            QuickBind(ChangeWillowisp, "Items : Will-o-the-Wisp");
-            QuickBind(ChangeShatterspleen, "Items : Shatterspleen");
-            QuickBind(ChangeFireworks, "Items : Fireworks");
-            QuickBind(ChangeVoidsent, "Items : Voidsent Flame");
-            QuickBind(ChangeGasoline, "Items : Gasoline");
+            QuickSection(ChangeNkuhana, "Items : NKuhanas Opinion");
+            QuickSection(ChangeDisciple, "Items : Little Disciple");
+            QuickSection(ChangeWillowisp, "Items : Will-o-the-Wisp");
+            QuickSection(ChangeShatterspleen, "Items : Shatterspleen");
+            QuickSection(ChangeFireworks, "Items : Fireworks");
+            QuickSection(ChangeVoidsent, "Items : Voidsent Flame");
+            QuickSection(ChangeGasoline, "Items : Gasoline");
             #endregion
 
             #region damage
-            QuickBind(ChangeRunald, "Items : Runalds Band");
-            QuickBind(ChangeKjaro, "Items : NKuhanas Opinion");
+            QuickSection(ChangeRunald, "Items : Runalds Band");
+            QuickSection(ChangeKjaro, "Items : NKuhanas Opinion");
             //NerfCritGlasses();
-            QuickBind(ChangeDeathMark, "Items : Death Mark");
-            QuickBind(ChangePolylute, "Items : Polylute");
-            QuickBind(ChangeBoxOfDynamite, "Items : Box of Dynamite");
-            QuickBind(ChangeLuminousShot, "Items : Luminous Shot");
-            QuickBind(ChangeGenesisLoop, "Items : Genesis Loop");
+            QuickSection(ChangeDeathMark, "Items : Death Mark");
+            QuickSection(ChangePolylute, "Items : Polylute");
+            QuickSection(ChangeBoxOfDynamite, "Items : Box of Dynamite");
+            QuickSection(ChangeLuminousShot, "Items : Luminous Shot");
+            QuickSection(ChangeGenesisLoop, "Items : Genesis Loop");
             //ChangeJustice();
             //ChangePauldron();
-            QuickBind(FixLostSeers, "Items : Lost Seers Lenses");
+            QuickSection(FixLostSeers, "Items : Lost Seers Lenses");
             //ChangeStickyBomb();
-            QuickBind(ReworkShuriken, "Items : Shuriken");
-            QuickBind(ChangeDormantSpirit, "Items : Dormant Spirit");
-            QuickBind(ChangeWarHorn, "Items : Warhorn");
+            QuickSection(ReworkShuriken, "Items : Shuriken");
+            QuickSection(ChangeDormantSpirit, "Items : Dormant Spirit");
+            QuickSection(ChangeWarHorn, "Items : Warhorn");
             #endregion
 
             #region economy
-            QuickBind(ChangeChanceDoll, "Items : Chance Doll");
-            QuickBind(ChangeSaleStar, "Items : Sale Star");
+            QuickSection(ChangeChanceDoll, "Items : Chance Doll");
+            QuickSection(ChangeSaleStar, "Items : Sale Star");
             #endregion
 
             #region utility
-            QuickBind(ChangeFuelCell, "Items : Fuel Cell");
-            QuickBind(ChangeWarbanner, "Items : Warbanner");
+            QuickSection(ChangeFuelCell, "Items : Fuel Cell");
+            QuickSection(ChangeWarbanner, "Items : Warbanner");
             //QuickBind(ChangeChronobauble, "Items : Chronobauble");
-            QuickBind(ChangeDreamCrucible, "Items : Dream Crucible");
-            QuickBind(ChangeStealthkit, "Items : Old War Stealthkit");
+            QuickSection(ChangeDreamCrucible, "Items : Dream Crucible");
+            QuickSection(ChangeStealthkit, "Items : Old War Stealthkit");
             #endregion
 
             #region misc
-            QuickBind(RemoveAspdScalingOnCooldownsForever, ": Remove Attack Speed Scaling On Cooldowns");
-            QuickBind(FixPickupStats, ": Increase Pickup Droplet Pickup Range");
+            QuickSection(RemoveAspdScalingOnCooldownsForever, ": Remove Attack Speed Scaling On Cooldowns");
+            QuickSection(FixPickupStats, ": Increase Pickup Droplet Pickup Range");
             //MakeMinionsInheritOnKillEffects();
             #endregion
 
-            QuickBind(() => On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate, "Items : Reincarnation");
+            QuickSection(() => On.RoR2.ChampRushMissionController.CompleteReaperFight += RegenerateReincarnate, "Items : Reincarnation");
         }
 
         private static void RegenerateReincarnate(On.RoR2.ChampRushMissionController.orig_CompleteReaperFight orig, ChampRushMissionController self)

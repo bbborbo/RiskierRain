@@ -133,7 +133,7 @@ namespace SwanSongExtended.Items
             //    procCoefficient = 0.0f,
             //    target = self.body.mainHurtBox
             //});
-            LightningStrikeNearby(self.body, attackerBody, amplifyDamage, damageInfo, strikeTargetsBase);
+            LightningStrikeNearby(self.body, attackerBody, damageInfo.damage, damageInfo, strikeTargetsBase);
 
             //NebulaPickup.CreateBoosterPickup(damageInfo.position, attackerBody.teamComponent.teamIndex, RainrotSharedUtils.Assets.sparkBoosterObject, 2);
         }

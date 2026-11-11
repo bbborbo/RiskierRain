@@ -23,6 +23,8 @@ namespace SwanSongExtended.Changes
 {
     public class ChocyCoin : ReworkBase<ChocyCoin>
     {
+        public override string ConfigName => $"Reworks : {originalItemName} ({this.ItemName})";
+        public const string originalItemName = "Roll of Pennies";
         public static BuffDef chocoCooldownDebuff;
         public static GameObject chocolate;
         public static float coinCooldown = 5;
@@ -36,7 +38,7 @@ namespace SwanSongExtended.Changes
 
         public override string ItemPath => RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GoldOnHurt.GoldOnHurt_asset;
 
-        public override string ItemName => $"Roll of Pennies (Chocolate Coins)";
+        public override string ItemName => $"Chocolate Coins";
 
         public override string ItemPickupDesc => "Enemies drop a treat for gold and healing. Recharges over time.";
 

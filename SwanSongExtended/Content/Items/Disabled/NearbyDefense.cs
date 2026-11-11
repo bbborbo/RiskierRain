@@ -21,7 +21,7 @@ namespace SwanSongExtended.Items
 {
     class NearbyDefense : ItemBase<NearbyDefense>
 	{
-		public override bool isEnabled => true;
+		public override bool isEnabled => false;
 		#region
 		[AutoConfig("Armor Increase Unconditional", 10)]
         public static int opalArmorBase = 10;

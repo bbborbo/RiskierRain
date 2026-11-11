@@ -150,6 +150,9 @@
     <Reference Include="ProcSolver">
       <HintPath>libs\ProcSolver.dll</HintPath>
     </Reference>
+    <Reference Include="ModularEclipse">
+      <HintPath>libs\ModularEclipse.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

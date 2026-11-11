@@ -18,6 +18,7 @@ namespace SwanSongExtended.Items
 {
     class Fuse : ItemBase<Fuse>
     {
+        public override bool isEnabled => false;
         public override string ConfigName => "Items : Fuse";
         public static GameObject fuseNovaEffectPrefab = Resources.Load<GameObject>("prefabs/effects/JellyfishNova");
         public static BuffDef fuseRecharge;

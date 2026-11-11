@@ -12,6 +12,7 @@ namespace SwanSongExtended.Artifacts
 {
     class QuickStartArtifact : ArtifactBase<QuickStartArtifact>
     {
+        public override string InternalName => nameof(QuickStartArtifact);
         public static bool GetQuickStartConfig()
         {
             return SwanSongPlugin.GetConfigBool(true, "Artifacts : the Stillborn");//instance.Bind(true, "Should This Content Be Enabled");

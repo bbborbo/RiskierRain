@@ -11,6 +11,7 @@ namespace SwanSongExtended.Artifacts
 {
     class FreeLunarArtifact : ArtifactBase<FreeLunarArtifact>
     {
+        public override string InternalName => nameof(FreeLunarArtifact);
         const int _FreeLunarBlacklist = (int)ItemTag.SacrificeBlacklist;
         public static ItemTag FreeLunarBlacklist => (ItemTag)_FreeLunarBlacklist;
         ItemDef[] itemPool;

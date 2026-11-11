@@ -11,7 +11,18 @@ namespace SurvivorTweaks.Components
 {
     public class MasterDesperadoTokenTracker : MonoBehaviour
     {
-        public int desperadoTokenCount { get; private set; }
+        public int desperadoTokenCount
+        {
+            get
+            {
+                return master.inventory.GetItemCountPermanent(BanditTweaks.banditPersistentTokenTracker);
+            }
+            set
+            {
+                int count = desperadoTokenCount;
+                master.inventory.GiveItemPermanent(BanditTweaks.banditPersistentTokenTracker.itemIndex, value - count);
+            }
+        }
         public CharacterMaster master;
 
         public static int GetMaxPersistentTokenCountFromLevel(float level)
@@ -38,10 +49,6 @@ namespace SurvivorTweaks.Components
             Stage.onServerStageComplete += OnServerStageComplete;
             if (master == null)
                 master = GetComponent<CharacterMaster>();
-            if (master != null)
-            {
-                master.onBodyStart += OnBodyStart;
-            }
         }
 
         void OnDisable()
@@ -49,8 +56,6 @@ namespace SurvivorTweaks.Components
             Stage.onServerStageComplete -= OnServerStageComplete;
             if (master == null)
                 master = GetComponent<CharacterMaster>();
-            if (master != null)
-                master.onBodyStart -= OnBodyStart;
         }
     }
 }

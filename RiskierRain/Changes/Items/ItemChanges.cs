@@ -14,7 +14,7 @@ using static RiskierRain.RiskierRainPlugin;
 using static R2API.RecalculateStatsAPI;
 using UnityEngine.Networking;
 using MoreStats;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using static RiskierRain.CoreModules.Language.Styling;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Items;

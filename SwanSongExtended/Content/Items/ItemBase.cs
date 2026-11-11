@@ -239,6 +239,8 @@ namespace SwanSongExtended.Items
 
         public static float GetStackValue(float baseValue, float stackValue, int itemCount)
         {
+            if (itemCount <= 0)
+                return 0;
             return baseValue + stackValue * (itemCount - 1);
         }
 

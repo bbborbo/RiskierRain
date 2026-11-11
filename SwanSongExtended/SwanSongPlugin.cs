@@ -53,6 +53,7 @@ namespace SwanSongExtended
 
     [BepInDependency(MissileRework.MissileReworkPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(FabricatorStandalone.FabricatorPlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(ModularEclipse.ModularEclipsePlugin.guid, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.RiskOfBrainrot.NewMoon", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.ArtificerExtended", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.Borbo.GreenAlienHead", BepInDependency.DependencyFlags.SoftDependency)]
@@ -108,6 +109,7 @@ namespace SwanSongExtended
         public static bool procSolverInstalled => ModLoaded(ProcSolverPlugin.guid);
         public static bool ucrLoaded => ModLoaded("HIFU.UltimateCustomRun");
         public static bool fabricatorsLoaded => ModLoaded(FabricatorStandalone.FabricatorPlugin.guid);
+        public static bool modularEclipseLoaded => ModLoaded(ModularEclipse.ModularEclipsePlugin.guid);
         #endregion
         #region utilities
         public static void DebugBreakpoint(string methodName, int breakpointNumber = -1)
@@ -126,6 +128,11 @@ namespace SwanSongExtended
         private static float _GetProcRate(DamageInfo damageInfo)
         {
             return ProcSolverPlugin.GetProcRateMod(damageInfo);
+        }
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static void ModularEclipseCompat(ArtifactDef artifactDef)
+        {
+            ModularEclipse.ModularEclipsePlugin.SetArtifactDefaultWhitelist(artifactDef, true);
         }
         #endregion
 

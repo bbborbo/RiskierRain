@@ -10,6 +10,7 @@ using static R2API.RecalculateStatsAPI;
 using RoR2.ExpansionManagement;
 using UnityEngine.AddressableAssets;
 using SwanSongExtended.Modules;
+using static RainrotSharedUtils.Styling;
 using RoR2.Items;
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -19,6 +20,7 @@ namespace SwanSongExtended.Items
     {
         internal static BuffDef frozenShellArmorBuff;
         internal static int freeArmor = 10;
+        internal static float freeMaxHealth = 0.08f;
         internal static int maxBonusArmor = 50; //(100 / 3)
         public static int maxBuffCount = 10;
 
@@ -29,8 +31,8 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Reduce incoming damage while at low health.";
 
-        public override string ItemFullDescription => $"<style=cIsHealing>Increase armor</style> by " +
-            $"<style=cIsHealing>{freeArmor}</style> <style=cStack>(+{freeArmor} per stack)</style>. " +
+        public override string ItemFullDescription => $"<style=cIsHealing>Increase maximum health</style> by " +
+            $"<style=cIsHealing>{freeMaxHealth.AsPercent()}</style> <style=cStack>(+{freeMaxHealth.AsPercent()} per stack)</style>. " +
             $"For every missing <style=cIsHealth>{Mathf.RoundToInt(100 / (float)maxBuffCount)}% of max health</style>, " +
             $"gain <style=cIsHealing>{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)}</style> " +
             $"<style=cStack>(+{Mathf.RoundToInt(maxBonusArmor / maxBuffCount)} per stack)</style> additional armor.";
@@ -73,7 +75,8 @@ namespace SwanSongExtended.Items
                 int buffCount = sender.GetBuffCount(frozenShellArmorBuff);
                 float fraction = (float)buffCount / (float)maxBuffCount;
                 int buffArmor = Mathf.RoundToInt((float)maxBonusArmor * fraction);
-                args.armorAdd += itemCount * (freeArmor + buffArmor);
+                args.armorAdd += itemCount * buffArmor;
+                args.healthMultAdd += itemCount * freeMaxHealth;
             }
         }
     }

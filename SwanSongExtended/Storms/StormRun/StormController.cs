@@ -687,12 +687,13 @@ namespace SwanSongExtended.Storms
                     SetHudCountdownEnabled(hud, hud.targetBodyObject != null && StormController.bossHealthBarActive == false);
                 }
 
-                float age = GetTimeSinceStageStart(out bool b);
+                float timeSinceStageStart = GetTimeSinceStageStart(out bool b);
                 float arrivalTime = stormController.stormWarningTime;
                 if (b)
                     arrivalTime += stormController.stormDelayTime;
+                timeSinceStageStart -= StormsCore.GetStormTimeModifierSeconds(this.stormController);
 
-                SetCountdownTime(Mathf.Max(0, arrivalTime - age - StormsCore.GetStormTimeModifierSeconds(this.stormController)));
+                SetCountdownTime(Mathf.Max(0, arrivalTime - timeSinceStageStart));
             }
 
 

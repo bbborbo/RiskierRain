@@ -180,6 +180,8 @@ namespace RainrotSharedUtils.Shelters
             foreach (TeamComponent teamComponent in TeamComponent.GetTeamMembers(teamIndex))
             {
                 CharacterBody body = teamComponent.body;
+                if (body == null)
+                    continue;
                 bool bodyHasStacks = self.characterBodyToStacks.ContainsKey(body);
                 //this (below) is the only line different from orig, IsBodySheltered instead of false
                 bool bodyIsSheltered = IsBodySheltered(body);

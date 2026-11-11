@@ -487,13 +487,13 @@ namespace SurvivorTweaks.SurvivorTweaks
                 if(gas1.TryGetComponent(out ParticleSystem ps))
                 {
                     ParticleSystem.MainModule main = ps.main;
-                    main.startLifetime = breathLiftime;
+                    main.startLifetime = breathLiftime * 0.8f;
                 }
                 Transform subGas = breathProjectileGhost.transform.GetChild(0);
                 if (subGas.TryGetComponent(out ParticleSystem ps2))
                 {
                     ParticleSystem.MainModule main = ps2.main;
-                    main.startLifetime = breathLiftime;
+                    main.startLifetime = breathLiftime * 0.8f;
                 }
             });
             IL.EntityStates.Croco.Breath.FireProjectile += Breath_FireProjectile;

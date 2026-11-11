@@ -30,7 +30,10 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => "Increase movement speed while shields are down.";
 
-        public override string ItemFullDescription => $"Gain <style=cIsHealing>{baseShield} shield</style>. " +
+        public override string ItemFullDescription => $"Gain <style=cIsHealing>{baseShield} shield</style> " +
+            $"and <style=cIsUtility>{(moveSpeedIncreaseFree).AsPercent()} " +
+            $"<style=cStack>(+{(moveSpeedIncreaseStack + moveSpeedIncreaseFree).AsPercent()} per stack)</style> " +
+            $"movement speed</style>. " +
             $"While shields are down, increase <style=cIsUtility>movement speed</style> by <style=cIsUtility>{(moveSpeedIncreaseBase + moveSpeedIncreaseFree).AsPercent()}</style> " +
             $"<style=cStack>(+{(moveSpeedIncreaseStack + moveSpeedIncreaseFree).AsPercent()} per stack)</style>. " +
             $"<style=cIsVoid>Corrupts all Paul's Goat Hoofs.</style>";

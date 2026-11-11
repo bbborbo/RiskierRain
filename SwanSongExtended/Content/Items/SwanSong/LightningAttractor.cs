@@ -168,7 +168,7 @@ With your agreement to purchase and use this product, CuCo is released of liabil
     {
 
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => LightningAttractor.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => LightningAttractor.GetItem();
 
         private void FixedUpdate()
         {

@@ -19,7 +19,6 @@ namespace SwanSongExtended.Items
     class FrozenShell : ItemBase<FrozenShell>
     {
         internal static BuffDef frozenShellArmorBuff;
-        internal static int freeArmor = 10;
         internal static float freeMaxHealth = 0.08f;
         internal static int maxBonusArmor = 50; //(100 / 3)
         public static int maxBuffCount = 10;
@@ -83,7 +82,7 @@ namespace SwanSongExtended.Items
     public class FrozenShellBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => FrozenShell.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => FrozenShell.GetItem();
         HealthComponent healthComponent;
         BuffIndex iceBarrierBuffIndex = FrozenShell.frozenShellArmorBuff.buffIndex;
         //bool hasBuff = false;

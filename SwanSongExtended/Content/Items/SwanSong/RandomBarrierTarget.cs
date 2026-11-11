@@ -14,6 +14,7 @@ using static MoreStats.StatHooks;
 using static RainrotSharedUtils.Styling;
 using RoR2.Items;
 using System.Linq;
+using static RainrotSharedUtils.Extensions;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -264,7 +265,7 @@ Your crystal, or should I say plastic, ball cost me more than my ENTIRE life sav
     public class RandomBarrierTargetBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => RandomBarrierTarget.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => RandomBarrierTarget.GetItem();
         private static BuffDef buffDef => RandomBarrierTarget.harpoonDebuff;
         public static float hauntRetryTime = 2;
         float hauntCountdown = 0;

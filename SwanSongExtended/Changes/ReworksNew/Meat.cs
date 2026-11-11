@@ -31,7 +31,7 @@ namespace SwanSongExtended.Changes
         {
             GetStatCoefficients += LetMeatActuallyStack;
             //IL.RoR2.CharacterBody.RecalculateStats += RemoveMeatHealth; :3
-            GlobalEventManager.onCharacterDeathGlobal += MeatRegen;
+            GlobalEventManager.onDeathProcServer += MeatRegen;
         }
 
         private void RemoveMeatHealth(ILContext il)

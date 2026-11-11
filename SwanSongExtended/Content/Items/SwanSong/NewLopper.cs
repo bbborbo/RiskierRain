@@ -111,7 +111,7 @@ Autopsy reveals degradation of internal organs predating [REDACTED]’s death. S
     public class NewLopperItemBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => NewLopper.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => NewLopper.GetItem();
         BuffIndex dangerCrit => NewLopper.dangerCritBuff.buffIndex;
         bool isLowHealth = false;
         void Start()

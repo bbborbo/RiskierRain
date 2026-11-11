@@ -1,6 +1,8 @@
 ﻿using BepInEx.Configuration;
 using BepInEx.Logging;
+using RoR2;
 using RoR2.ExpansionManagement;
+using SwanSongExtended.Changes;
 using SwanSongExtended.Modules;
 using System;
 using System.Collections.Generic;
@@ -11,12 +13,25 @@ namespace SwanSongExtended
 {
     public abstract class SharedBase
     {
+        public static ItemDef GetItem(SharedBase obj, ItemDef item)
+        {
+            if (IsLoaded(obj))
+                return item;
+            return null;
+        }
+        public static bool IsLoaded(SharedBase obj)
+        {
+            if (obj == null)
+                return false;
+            return obj.isLoaded;
+        }
         public virtual int loadOrder => 0;
         public virtual bool forcePrerequisites { get; } = false;
         public abstract string ConfigName { get; }
         public virtual bool isEnabled { get; } = true;
         public static ManualLogSource Logger => Log._logSource;
         public abstract AssetBundle assetBundle { get; }
+        private bool isLoaded = false;
 
         public abstract void Hooks();
         public abstract void Lang();
@@ -29,6 +44,7 @@ namespace SwanSongExtended
             Hooks();
             Lang();
             SwanSongPlugin.onPluginLoaded += PostInit;
+            isLoaded = true;
         }
 
         public T Bind<T>(T defaultValue, string configName, string configDesc = "")

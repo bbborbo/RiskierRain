@@ -9,6 +9,7 @@ namespace SwanSongExtended.Artifacts
 {
     public class AwesomePotArtifact : ArtifactBase<AwesomePotArtifact>
     {
+        public override bool isEnabled => false;
         public static bool BodyIsPot(CharacterBody body)
         {
             return body.bodyIndex == BodyCatalog.FindBodyIndex("ExplosivePotBody");

@@ -81,7 +81,7 @@ namespace SwanSongExtended.Items
     public class LowHealthRegenBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => LowHealthRegen.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => LowHealthRegen.GetItem();
         HealthComponent healthComponent;
         BuffIndex iceBarrierBuffIndex = LowHealthRegen.regenBoostBuff.buffIndex;
         //bool hasBuff = false;

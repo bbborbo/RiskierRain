@@ -126,7 +126,7 @@ namespace SwanSongExtended.Changes
     public class AegisDecayBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        public static ItemDef GetItemDef() => Aegis.instance != null ? RoR2Content.Items.BarrierOnOverHeal : null;
+        public static ItemDef GetItemDef() => Aegis.GetItem();
         bool decayFrozen = false;
 
         public void FixedUpdate()

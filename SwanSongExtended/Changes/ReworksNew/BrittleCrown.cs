@@ -181,7 +181,7 @@ namespace SwanSongExtended.Changes
     {
         int stackCache = 0;
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        public static ItemDef GetItemDef() => BrittleCrown.instance != null ? RoR2Content.Items.GoldOnHit : null;
+        public static ItemDef GetItemDef() => BrittleCrown.GetItem();
         public void Start()
         {
             SetBuffCount(this.stack);
@@ -190,6 +190,8 @@ namespace SwanSongExtended.Changes
 
         private void SetBuffCount(int s)
         {
+            if (BrittleCrown.instance == null || BrittleCrown.brittleCrownCursePurchase == null)
+                return;
             body.SetBuffCount(BrittleCrown.brittleCrownCursePurchase.buffIndex,
                 BrittleCrown.brittleCrownStealCountBase + BrittleCrown.brittleCrownStealCountStack * (s - 1));
         }
@@ -206,6 +208,8 @@ namespace SwanSongExtended.Changes
 
         public void OnDisable()
         {
+            if (BrittleCrown.instance == null || BrittleCrown.brittleCrownCursePurchase == null)
+                return;
             body.SetBuffCount(BrittleCrown.brittleCrownCursePurchase.buffIndex, 0);
         }
     }

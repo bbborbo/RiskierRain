@@ -91,7 +91,7 @@ namespace SwanSongExtended.Items
     public class FuseBehavior : BaseItemBodyBehavior, IOnTakeDamageServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Fuse.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => Fuse.GetItem();
         bool hadShield = false;
         void Start()
         {

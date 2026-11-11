@@ -16,6 +16,16 @@ namespace SwanSongExtended.Items
     public abstract class ItemBase<T> : ItemBase where T : ItemBase<T>
     {
         public static T instance { get; private set; }
+        public static bool IsLoaded()
+        {
+            return SharedBase.IsLoaded(instance);
+        }
+        public static ItemDef GetItem()
+        {
+            if (IsLoaded())
+                return instance.ItemsDef;
+            return null;
+        }
 
         public ItemBase()
         {

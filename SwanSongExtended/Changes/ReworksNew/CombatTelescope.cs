@@ -105,7 +105,7 @@ namespace SwanSongExtended.Changes
     public class CombatTelescopeBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => DLC1Content.Items.CritDamage;
+        public static ItemDef GetItemDef() => CombatTelescope.GetItem();
 
         public static float combatTelescopeWaitTime = 0.2f;
         private void FixedUpdate()

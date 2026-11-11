@@ -206,7 +206,7 @@ namespace SwanSongExtended.Changes
 	public class RazorwireBehavior : BaseItemBodyBehavior
 	{
 		[ItemDefAssociation(useOnServer = true, useOnClient = false)]
-		private static ItemDef GetItemDef() => RoR2Content.Items.Thorns;
+		public static ItemDef GetItemDef() => Razorwire.GetItem();
 		public static float rechargeTime = 5;
 		public static int baseRazors = 2;
 		public static int stackRazors = 1;

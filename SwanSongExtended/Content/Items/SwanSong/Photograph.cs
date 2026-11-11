@@ -305,7 +305,7 @@ namespace SwanSongExtended.Items
     public class BogosBinted : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => Photograph.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => Photograph.GetItem();
         CharacterMaster master;
         bool isMinion = false;
         float refreshTimer = 0;

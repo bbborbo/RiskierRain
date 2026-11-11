@@ -72,7 +72,7 @@ namespace SwanSongExtended.Items
     public class MagicQuiverBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => MagicQuiver.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => MagicQuiver.GetItem();
 
         void Start()
         {

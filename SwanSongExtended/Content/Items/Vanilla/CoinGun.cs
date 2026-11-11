@@ -166,7 +166,7 @@ What happened to all of our gold?";
     public class CoinGunBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = true)]
-        private static ItemDef GetItemDef() => CoinGun.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => CoinGun.GetItem();
         public CharacterMaster master;
         public uint currentMoney = 0;
         int fixedBaseChestCost => Run.instance.GetDifficultyScaledCost(CoinGun.baseGoldChunk, Stage.instance.entryDifficultyCoefficient);

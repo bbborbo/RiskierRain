@@ -10,6 +10,22 @@ namespace SwanSongExtended.Changes
     public abstract class ReworkBase<T> : ReworkBase where T : ReworkBase<T>
     {
         public static T instance { get; private set; }
+        public static bool IsLoaded()
+        {
+            return SharedBase.IsLoaded(instance);
+        }
+        public static ItemDef GetItem()
+        {
+            if (IsLoaded())
+                return instance.itemDef;
+            return null;
+        }
+        public static EquipmentDef GetEquip()
+        {
+            if (IsLoaded())
+                return instance.equipDef;
+            return null;
+        }
 
         public ReworkBase()
         {

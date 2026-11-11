@@ -35,9 +35,9 @@ namespace SwanSongExtended.Items
 
         public override string ItemPickupDesc => $"Gain extra money and regeneration after opening chests.";
 
-        public override string ItemFullDescription => $"After spending {DamageColor("money")}, gain a Rebate for {greedyDurationBase} seconds. " +
-            $"While your Rebate is active, increases income by {greedyMoneyBase.AsPercent()} {StackText(greedyMoneyStack.AsPercent())} " +
-            $"and base health regeneration by {HealingColor(greedyRegenBase + "hp/s")} {StackText(greedyRegenStack + "hp/s")}.";
+        public override string ItemFullDescription => $"After spending {DamageColor("money")}, gain a {DamageColor("Rebate")} for {greedyDurationBase} seconds. " +
+            $"While your {DamageColor("Rebate")} is active, increases income by {greedyMoneyBase.AsPercent()} {StackText("+" + greedyMoneyStack.AsPercent())} " +
+            $"and {HealingColor("base health regeneration")} by {HealingColor(greedyRegenBase + " hp/s")} {StackText($"+{greedyRegenStack} hp/s")}.";
 
         public override string ItemLore => @"Order: Mapel Coupon Getter (Lite)
 Tracking Number: 06***********

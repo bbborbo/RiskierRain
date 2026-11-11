@@ -228,7 +228,7 @@ namespace SwanSongExtended.Items
     public class FartBottleBehavior : BaseItemBodyBehavior
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => BottleFart.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => BottleFart.GetItem();
 
         void OnEnable()
         {

@@ -101,7 +101,7 @@ namespace SwanSongExtended.Items
     public class BirdBandItemBehavior : BaseItemBodyBehavior, IOnDamageDealtServerReceiver
     {
         [ItemDefAssociation(useOnServer = true, useOnClient = false)]
-        private static ItemDef GetItemDef() => BirdBand.instance?.ItemsDef ?? null;
+        private static ItemDef GetItemDef() => BirdBand.GetItem();
 
         public void OnDamageDealtServer(DamageReport damageReport)
         {

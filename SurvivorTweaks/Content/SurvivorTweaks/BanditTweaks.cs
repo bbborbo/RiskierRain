@@ -30,6 +30,7 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class BanditTweaks : SurvivorTweakBase<BanditTweaks>
     {
+        internal static ItemDef banditPersistentTokenTracker;
         public static bool noFinishersFromSkillSourcedDamage = true;
         /// <summary>
         /// skull surplus is a cosmetic buff that helps indicate when bandit is above his transferrable token limit;
@@ -128,6 +129,14 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             base.Init();
+            banditPersistentTokenTracker = ScriptableObject.CreateInstance<ItemDef>();
+            banditPersistentTokenTracker.nameToken = "ITEM_BANDITPERSISTENTTOKENTRACKER_NAME";
+            banditPersistentTokenTracker.pickupToken = "ITEM_BANDITPERSISTENTTOKENTRACKER_DESC";
+            banditPersistentTokenTracker.descriptionToken = "ITEM_BANDITPERSISTENTTOKENTRACKER_DESC";
+            banditPersistentTokenTracker.deprecatedTier = ItemTier.NoTier;
+            banditPersistentTokenTracker.hidden = true;
+            banditPersistentTokenTracker.tags = new ItemTag[] { ItemTag.CannotSteal, ItemTag.CannotCopy, ItemTag.CannotDisable, ItemTag.IgnoreForDropList };
+            Content.AddItemDef(banditPersistentTokenTracker);
             SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Bandit2.Bandit2Body_prefab, (result) =>
             {
                 bodyObject = result;
@@ -142,7 +151,6 @@ namespace SurvivorTweaks.SurvivorTweaks
                 ChangeVanillaUtilities(utility);
                 ChangeVanillaSpecials(special);
             });
-
 
             GetStatCoefficients += BanditCloakBuff;
             On.RoR2.HealthComponent.TakeDamageProcess += BanditTweaksTakeDamage;
@@ -480,6 +488,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         {
             GetMoreStatCoefficients += BanditFinisher;
             On.RoR2.CharacterBody.SetBuffCount += OnDesperadoTokenAdded;
+            CharacterBody.onBodyStartGlobal += RestoreDesperadoTokens;
 
             On.EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState.OnEnter += PrepSidearmRevolverEnter;
             IL.EntityStates.Bandit2.Weapon.BasePrepSidearmRevolverState.FixedUpdate += PrepSidearmRevolverFixedUpdate;
@@ -518,6 +527,15 @@ namespace SurvivorTweaks.SurvivorTweaks
                 $"<style=cIsDamage>+{desperadoAttackSpeedPerToken.AsPercent()}</style>, and increases the damage of <style=cIsUtility>Desperado</style> " +
                 $"by an additional <style=cIsDamage>+{desperadoDamagePerToken.AsPercent()} TOTAL damage</style>. " +
                 $"Retain up to <style=cIsUtility>{desperadoTokensPerLevel}</style> tokens per level between stages."));
+        }
+
+        private void RestoreDesperadoTokens(CharacterBody body)
+        {
+            if (body.inventory == null)
+                return;
+            int itemCount = body.inventory.GetItemCountPermanent(banditPersistentTokenTracker);
+            int buffCount = body.GetBuffCount(RoR2Content.Buffs.BanditSkull);
+            body.SetBuffCount(RoR2Content.Buffs.BanditSkull.buffIndex, Mathf.Max(buffCount, itemCount));
         }
 
         private void BanditHipFire(On.EntityStates.EntityState.orig_ModifyNextState orig, EntityState self, EntityState nextState)
@@ -676,7 +694,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             if (self.master == null || !NetworkServer.active)
                 return;
 
-            if (!self.master.TryGetComponent(out MasterDesperadoTokenTracker tracker))
+            if (self.master.TryGetComponent(out MasterDesperadoTokenTracker tracker) == false)
             {
                 tracker = self.master.gameObject.AddComponent<MasterDesperadoTokenTracker>();
                 tracker.master = self.master;

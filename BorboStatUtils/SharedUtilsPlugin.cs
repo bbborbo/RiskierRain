@@ -36,7 +36,7 @@ namespace RainrotSharedUtils
         public const string guid = "com." + teamName + "." + modName;
         public const string teamName = "RiskOfBrainrot";
         public const string modName = "RainrotSharedUtils";
-        public const string version = "1.3.6";
+        public const string version = "1.7.0";
         #endregion
 
         public const string noAttackSpeedKeywordName = "Exacting";
@@ -72,6 +72,7 @@ namespace RainrotSharedUtils
             Assets.Init();
             ShelterUtilsModule.Init();
             FrostUtilsModule.Init();
+            MacroUtils.MacroUtilsModule.Init();
             Hooks.DoHooks();
 
             LanguageAPI.Add(executeKeywordToken,

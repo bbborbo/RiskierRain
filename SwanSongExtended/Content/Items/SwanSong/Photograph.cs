@@ -18,6 +18,7 @@ using System.Linq;
 using RoR2BepInExPack.GameAssetPathsBetter;
 using RoR2BepInExPack.Utilities;
 using static SwanSongExtended.Items.Photograph;
+using static RainrotSharedUtils.MacroUtils.MacroUtilsModule;
 
 [assembly: HG.Reflection.SearchableAttribute.OptIn]
 
@@ -25,29 +26,6 @@ namespace SwanSongExtended.Items
 {
     class Photograph : ItemBase<Photograph>
     {
-        public class CharacterPrintCount
-        {
-            public void Add()
-            {
-                if (NetworkServer.active == false)
-                    return;
-                printCount++;
-            }
-            public void Reset()
-            {
-                if (NetworkServer.active == false)
-                    return;
-                printCount = 0;
-            }
-            public int printCount { get; private set; }
-        }
-        public static FixedConditionalWeakTable<CharacterMaster, CharacterPrintCount> characterPrintCounts = new FixedConditionalWeakTable<CharacterMaster, CharacterPrintCount>();
-        public static CharacterPrintCount GetPrintCountFromMaster(CharacterMaster body)
-        {
-            if (body == null)
-                return null;
-            return characterPrintCounts.GetOrCreateValue(body);
-        }
         public override bool CanBeRental => false;
         public static WeightedSelection<string> printerSpawncardPaths;
         public static bool includeDeploys = true;
@@ -107,18 +85,21 @@ namespace SwanSongExtended.Items
         {
             //On.RoR2.SceneDirector.PopulateScene += SceneDirector_PopulateScene;
             RoR2.Stage.onStageStartGlobal += PhotographPrinterSpawn;
-            RoR2.Stage.onServerStageComplete += PhotographPrintCountReset;
-            //RoR2.SceneDirector.onPostPopulateSceneServer += PhotographForcedPrinter;
             On.RoR2.Items.MultiShopCardUtils.OnNonMoneyPurchase += PhotographOnNonMoneyPurchase;
+            //RoR2.SceneDirector.onPostPopulateSceneServer += PhotographForcedPrinter;
             GetStatCoefficients += PhotographCritBonus;
         }
 
-        private void PhotographPrintCountReset(Stage obj)
+        private void PhotographOnNonMoneyPurchase(On.RoR2.Items.MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
         {
-            foreach(CharacterMaster master in CharacterMaster.instancesList)
+            orig(context);
+            MasterMacroStats cpc = GetMacroStatsFromMaster(context.activatorMaster);
+            if (cpc != null)
             {
-                CharacterPrintCount cpc = GetPrintCountFromMaster(master);
-                    if(cpc != null) cpc.Reset();
+                if (context.activatorBody && context.activatorBody.TryGetComponent(out BogosBinted bogos))
+                {
+                    bogos.RefreshCritBonus(cpc.printCountThisStage);
+                }
             }
         }
 
@@ -257,50 +238,6 @@ namespace SwanSongExtended.Items
                 args.critDamageMultAdd += buffCount * 0.01f;
             }
         }
-
-        private void PhotographOnNonMoneyPurchase(On.RoR2.Items.MultiShopCardUtils.orig_OnNonMoneyPurchase orig, CostTypeDef.PayCostContext context)
-        {
-            PhotographOnPrinterPurchase(context);
-            orig(context);
-        }
-
-        private void PhotographOnPrinterPurchase(CostTypeDef.PayCostContext context)
-        {
-            if (context.costTypeDef != CostTypeCatalog.GetCostTypeDef(CostTypeIndex.WhiteItem)
-                    && context.costTypeDef != CostTypeCatalog.GetCostTypeDef(CostTypeIndex.GreenItem)
-                    && context.costTypeDef != CostTypeCatalog.GetCostTypeDef(CostTypeIndex.RedItem)
-                    && context.costTypeDef != CostTypeCatalog.GetCostTypeDef(CostTypeIndex.BossItem)
-                    && context.costTypeDef != CostTypeCatalog.GetCostTypeDef(CostTypeIndex.LunarItemOrEquipment)
-                    )
-                return;
-
-            CharacterPrintCount cpc = GetPrintCountFromMaster(context.activatorMaster);
-            if(cpc != null)
-            {
-                cpc.Add();
-                if(context.activatorBody && context.activatorBody.TryGetComponent(out BogosBinted bogos))
-                {
-                    bogos.RefreshCritBonus(cpc.printCount);
-                }
-            }
-
-            //int itemCount = GetCount(context.activatorInventory);
-            //if (itemCount <= 0)
-            //    return;
-            //
-            //float critBonus = photographCritBase + (photographCritStack * (itemCount - 1));
-            //int maxTimes = photographMaxPrintsBase + (photographMaxPrintsStack * (itemCount - 1));
-            //int maxBuff = maxTimes * Mathf.FloorToInt(critBonus);
-            //int buffCount = context.activatorBody.GetBuffCount(photographCritBuff);
-            //if (buffCount >= maxBuff)
-            //    return;
-            //critBonus = Mathf.Min(critBonus, maxBuff - buffCount);
-            //
-            //for (int i = 0; i < critBonus; i++)
-            //{
-            //    context.activatorBody.AddBuff(photographCritBuff);
-            //}
-        }
     }
     public class BogosBinted : BaseItemBodyBehavior
     {
@@ -356,10 +293,10 @@ namespace SwanSongExtended.Items
 
         public void GetPrintCountAndRefresh()
         {
-            CharacterPrintCount cpc = GetPrintCountFromMaster(master);
+            MasterMacroStats cpc = GetMacroStatsFromMaster(master);
             if (cpc != null)
             {
-                int prints = cpc.printCount;
+                int prints = cpc.printCountThisStage;
                 RefreshCritBonus(prints);
             }
         }

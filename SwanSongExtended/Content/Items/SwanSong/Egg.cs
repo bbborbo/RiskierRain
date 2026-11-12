@@ -18,6 +18,7 @@ namespace SwanSongExtended.Items
 {
     class Egg : ItemBase<Egg>
     {
+        public override int loadOrder => -1;
         public static bool GetEggConfig()
         {
             return SwanSongPlugin.GetConfigBool(true, "Suites : Egg", "Enables Egg");

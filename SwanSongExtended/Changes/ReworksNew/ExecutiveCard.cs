@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using static RainrotSharedUtils.MacroUtils.MacroUtilsModule;
 
 namespace SwanSongExtended.Changes
 {
@@ -34,10 +35,21 @@ namespace SwanSongExtended.Changes
         }
         public override void Hooks()
         {
+            UseMultiShopMacro = true;
             IL.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
             //On.RoR2.Items.MultiShopCardUtils.OnPurchase += FreezeCard;
             On.RoR2.EquipmentSlot.UpdateTargets += CardTargetInteractables;
             On.RoR2.EquipmentSlot.PerformEquipmentAction += PerformEquipmentAction;
+            GetMacroStats += DiscountCard_GetMacroStats;
+        }
+
+        private void DiscountCard_GetMacroStats(CharacterMaster sender, MacroInventoryEventArgs args)
+        {
+            if (sender.inventory.HasEquipment(DLC1Content.Equipment.MultiShopCard.equipmentIndex))
+            {
+                args.usedShopKeyCount += 1;
+                args.usedShopKeyRangeAdd += 30f;
+            }
         }
 
         private void FreezeCard(ILContext il)
@@ -134,7 +146,7 @@ namespace SwanSongExtended.Changes
             {
                 PurchaseInteraction currentTargetInteraction = currentTargetObject?.GetComponent<PurchaseInteraction>();
                 if (currentTargetInteraction != null)
-                    currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction) && currentTargetInteraction.available;
+                    currentTargetValid = HackingMainState.PurchaseInteractionIsValidTarget(currentTargetInteraction);
 
                 Vector3 origin = aim.origin;
                 Vector3 targetPosition = currentTargetObject.transform.position;

@@ -7,14 +7,15 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using static RainrotSharedUtils.Styling;
+using static RainrotSharedUtils.MacroUtils.MacroUtilsModule;
 
 namespace SwanSongExtended.Items
 {
-    class DiscountCard : ItemBase<DiscountCard>
+    public class DiscountCard : ItemBase<DiscountCard>
     {
         public static ItemDef usedItemDef;
         public static ItemDef spentItemDef;
-        public static int cashBackValue = 25;
+        public static int cashBackValue = 20;
         private static string fullDescPartial = $"When purchasing from {UtilityColor("multishop")} terminals, " +
             $"the other terminals {UtilityColor("stay open")}, refunding {UtilityColor($"${cashBackValue}")}.";
         private static string shortDescPartial = "Shop terminals give cash back and stay open.";
@@ -56,7 +57,15 @@ namespace SwanSongExtended.Items
 
         public override void Hooks()
         {
+            UseMultiShopMacro = true;
             On.RoR2.Items.MultiShopCardUtils.OnPurchase += DiscountCardOnPurchase;
+            GetMacroStats += DiscountCard_GetMacroStats;
+        }
+
+        private void DiscountCard_GetMacroStats(CharacterMaster sender, MacroInventoryEventArgs args)
+        {
+            int count = sender.inventory.GetItemCountEffective(ItemsDef) + sender.inventory.GetItemCountEffective(usedItemDef);
+            args.usedShopPurchaseCount += count;
         }
 
         private void DiscountCardOnPurchase(MultiShopCardUtils.orig_OnPurchase orig, CostTypeDef.PayCostContext context, int moneyCost)

@@ -117,8 +117,10 @@ namespace SwanSongExtended.Storms
             //On.RoR2.HoldoutZoneController.OnEnable += RegisterHoldoutZone;
             //On.RoR2.HoldoutZoneController.OnDisable += UnregisterHoldoutZone;
 
-            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.GenericDelayBlast_prefab, CreateMeteorDelayBlast);
-            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_RandomDamageZone.DamageZoneWard_prefab, CreateCycloneWard);
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common.GenericDelayBlast_prefab, 
+                CreateMeteorDelayBlast);
+            SwanSongPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_RandomDamageZone.DamageZoneWard_prefab, 
+                CreateCycloneWard);
             
             LanguageAPI.Add($"OBJECTIVE_METEORDEFAULT_2R4R", "Meteor Storm Imminent");
             LanguageAPI.Add($"OBJECTIVE_LIGHTNING_2R4R", "Thunderstorm Imminent");
@@ -281,7 +283,7 @@ namespace SwanSongExtended.Storms
             indicator.GetChild(1).gameObject.SetActive(false);
 
             SwanSongPlugin.LoadAsync<GameObject>(
-            RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets.InfiniteTowerSafeWardAwaitingInteraction_prefab,
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets.InfiniteTowerSafeWardAwaitingInteraction_prefab,
             (itSafeWard) =>
             {
                 GameObject verticalWard = itSafeWard.transform.Find("Indicator")?.gameObject;
@@ -310,6 +312,75 @@ namespace SwanSongExtended.Storms
                 cycloneIndicator.transform.localPosition = Vector3.zero;
                 cycloneIndicator.transform.rotation = Quaternion.identity;
                 cycloneIndicator.transform.localScale = Vector3.one;
+            });
+            SwanSongPlugin.LoadAsync<GameObject>(
+            RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC2_FalseSonBoss.FalseSonFissurePillarGhost_prefab,
+            (fissurePillarGhost) =>
+            {
+                GameObject scale = fissurePillarGhost.transform.Find("Scale")?.gameObject;
+                GameObject cycloneVFx = PrefabAPI.InstantiateClone(scale, "CycloneVFXPrefab");
+
+                Transform rockParticlesFast = cycloneVFx.transform.GetChild(0);
+                if (rockParticlesFast.TryGetComponent(out ParticleSystemRenderer rpf))
+                {
+                    //rpf.enabled = false;
+                    rpf.material = UnityEngine.Object.Instantiate(rpf.material);
+                    rpf.material.SetColor("_TintColor", new Color32(244, 132, 65, 255));
+                }
+                Transform fireDirectional = rockParticlesFast.GetChild(0);
+                fireDirectional.gameObject.SetActive(false);
+                Transform rockParticlesFast1 = rockParticlesFast.GetChild(1);
+                if (rockParticlesFast1.TryGetComponent(out ParticleSystemRenderer rpf1))
+                {
+                    //rpf1.enabled = false;
+                    rpf1.material = UnityEngine.Object.Instantiate(rpf1.material);
+                    rpf1.material.SetColor("_TintColor", new Color32(115, 68, 43, 255));
+                    rpf1.material.SetColor("_EmColor", new Color32(0, 0, 0, 0));
+                    rpf1.material.SetColor("_EmissionColor", new Color32(0, 0, 0, 0));
+                    rpf1.material.SetColor("_Emission", new Color32(0, 0, 0, 0));
+                    rpf1.material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_LynxAmbusher.texRampLynx_01_png).WaitForCompletion());
+                }
+                Transform glowGradientLooping = rockParticlesFast.GetChild(2);
+                if (glowGradientLooping.TryGetComponent(out ParticleSystemRenderer ggl))
+                {
+                    ggl.material = UnityEngine.Object.Instantiate(ggl.material);
+                    ggl.material.SetColor("_TintColor", new Color32(255, 187, 111, 255));
+                    ggl.material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_DLC4_LynxAmbusher.texRampLynx_01_png).WaitForCompletion());
+                }
+                Transform glowGradientInitial = rockParticlesFast.GetChild(3);
+                glowGradientInitial.gameObject.SetActive(false);
+                Transform glowGradientPillar = rockParticlesFast.GetChild(4);
+                if(glowGradientPillar.TryGetComponent(out ParticleSystemRenderer ggp))
+                {
+                    ggp.material = UnityEngine.Object.Instantiate(ggp.material);
+                    ggp.material.SetColor("_TintColor", new Color32(99, 85, 63, 255));
+                    ggp.material.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common_ColorRamps.texRampTritone2_png).WaitForCompletion());
+                }
+                //texRampTritone2, 
+
+                //SwanSongPlugin.LoadAsync<Material>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_WardOnLevel.matWarbannerSphereIndicator2_mat, (matWarbanner) =>
+                //{
+                //    cycloneMaterial = UnityEngine.Object.Instantiate(matWarbanner);
+                //    cycloneMaterial.SetColor("_TintColor", new Color32(168, 120, 90, 110)/*(150, 110, 0, 191)*/);
+                //    cycloneMaterial.SetTexture("_RemapTex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_DLC3_conduitcanyon.texCCTreeRamp4_png).WaitForCompletion());
+                //    cycloneMaterial.SetTexture("_Cloud2Tex", Addressables.LoadAssetAsync<Texture>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common.texCloudGradient_png).WaitForCompletion());
+                //    cycloneMaterial.SetFloat("_Boost", 0.776f); //0.34
+                //    cycloneMaterial.SetFloat("_RimPower", 1.206f);
+                //    cycloneMaterial.SetFloat("_RimStrength", 0.828f);
+                //    cycloneMaterial.SetFloat("_TriplanarOn", 0);
+                //
+                //    MeshRenderer mr = cycloneIndicator.GetComponentInChildren<MeshRenderer>(includeInactive: false);
+                //    if (mr)
+                //    {
+                //        mr.sharedMaterials = new Material[1] { cycloneMaterial };
+                //        mr.material = cycloneMaterial;
+                //    }
+                //});
+
+                cycloneVFx.transform.parent = indicator;
+                cycloneVFx.transform.localPosition = Vector3.zero;
+                cycloneVFx.transform.rotation = Quaternion.identity;
+                cycloneVFx.transform.localScale = Vector3.one;
             });
         }
 

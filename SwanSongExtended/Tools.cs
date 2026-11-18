@@ -139,7 +139,9 @@ namespace SwanSongExtended
         {
             if (Run.instance == null)
                 return true;
-            return Run.instance.selectedDifficulty <= minDifficultyIndex;
+            if (Run.instance.selectedDifficulty == minDifficultyIndex)
+                return true;
+            return DifficultyCatalog.GetDifficultyDef(Run.instance.selectedDifficulty).scalingValue <= DifficultyCatalog.GetDifficultyDef(minDifficultyIndex).scalingValue;
         }
 
         #region Materials + Etc

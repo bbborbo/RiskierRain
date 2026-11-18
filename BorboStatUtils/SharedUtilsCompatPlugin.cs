@@ -4,16 +4,19 @@ using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using R2API;
 using R2API.Utils;
+using RainrotSharedUtils.Components;
 using RainrotSharedUtils.Difficulties;
 using RainrotSharedUtils.Frost;
 using RainrotSharedUtils.Shelters;
 using RoR2;
+using RoR2.Skills;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
 using UnityEngine;
+using static RainrotSharedUtils.Components.ElementCounter;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -27,6 +30,7 @@ namespace RainrotSharedUtils.Compat
     [BepInDependency(RainrotSharedUtils.SharedUtilsPlugin.guid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(Inferno.Main.PluginGUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(SnowtimeToybox.SnowtimeToyboxMod.GUID, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(Skillsmas.SkillsmasPlugin.PluginGUID, BepInDependency.DependencyFlags.SoftDependency)]
 
     [BepInPlugin(guid, modName, version)]
     [R2APISubmoduleDependency(nameof(LanguageAPI))]
@@ -42,6 +46,7 @@ namespace RainrotSharedUtils.Compat
         public static bool ModLoaded(string modGuid) { return !modGuid.IsNullOrWhiteSpace() && BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(modGuid); }
         //public static bool infernoLoaded => ModLoaded(Inferno.Main.PluginGUID);
         public static bool snowtimeLoaded => ModLoaded(SnowtimeToybox.SnowtimeToyboxMod.GUID);
+        public static bool skillsmasLoaded => ModLoaded(Skillsmas.SkillsmasPlugin.PluginGUID);
         public static bool riskierLoaded => ModLoaded("com.RiskOfBrainrot.RiskierRain");
 
         void Awake()
@@ -50,7 +55,51 @@ namespace RainrotSharedUtils.Compat
             //    DoInfernoCompat();
             if (snowtimeLoaded)
                 DoSnowtimeCompat();
+            //if (skillsmasLoaded)
+            //    DoSkillsmasCompat();
+            //Run.onRunStartGlobal += OnSkillCatalogAvailable;
+            //RoR2Application.onStart += OnSkillCatalogAvailable;
+            SkillCatalog.skillsDefined.onAvailable += OnSkillCatalogAvailable;
         }
+
+        private void OnSkillCatalogAvailable()
+        {
+            if(skillsmasLoaded == true)
+            {
+                Register("Skillsmas_FireWall", CounterElement.Fire);
+                Register("Skillsmas_FlameBomb", CounterElement.Fire);
+                Register("Skillsmas_CryoBolt"    , CounterElement.Ice);
+                Register("Skillsmas_FrostBarrier", CounterElement.Ice);
+                Register("Skillsmas_LightningPillar", CounterElement.Lightning);
+                Register("Skillsmas_RockBolt"    , CounterElement.Earth);
+                Register("Skillsmas_RockBomb"    , CounterElement.Earth);
+                Register("Skillsmas_RockMeteor"  , CounterElement.Earth);
+                Register("Skillsmas_RockPlatform", CounterElement.Earth);
+                Register("Skillsmas_WaterBolt" , CounterElement.Water);
+                Register("Skillsmas_WaterBomb" , CounterElement.Water);
+                Register("Skillsmas_WaterCloud", CounterElement.Water);
+                Register("Skillsmas_WaterWave" , CounterElement.Water);
+                Register("Skillsmas_SpikyRoots", CounterElement.Plant);
+                Register("Skillsmas_WalkingHealer", CounterElement.Robo);
+            }
+            void Register(string nameToken, CounterElement element)
+            {
+                int index = SkillCatalog.FindSkillIndexByName(nameToken);
+                Debug.Log($"{nameToken} index {index}");
+                if (index == -1)
+                    return;
+                SkillDef skill = SkillCatalog.GetSkillDef(index);
+                if(skill != null)
+                    ElementCounter.RegisterSkillElement(skill, element);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private void DoSkillsmasCompat()
+        {
+
+        }
+
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private void DoSnowtimeCompat()

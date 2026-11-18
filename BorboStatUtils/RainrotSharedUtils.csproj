@@ -35,6 +35,9 @@
     <Reference Include="SnowtimeToybox">
       <HintPath>libs\SnowtimeToybox.dll</HintPath>
     </Reference>
+    <Reference Include="Skillsmas">
+      <HintPath>libs\Skillsmas.dll</HintPath>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>libs\0Harmony.dll</HintPath>
     </Reference>

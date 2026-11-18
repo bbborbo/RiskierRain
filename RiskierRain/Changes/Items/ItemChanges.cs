@@ -218,17 +218,46 @@ namespace RiskierRain.Changes
 
         public static void FixPickupStats()
         {
-            BuffPickupRange(healPack);
-            BuffPickupRange(ammoPack);
-            BuffPickupRange(moneyPack);
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Tooth.HealPack_prefab, BuffPickupRange);
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Bandolier.AmmoPack_prefab, BuffPickupRange);
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_BonusGoldPackOnKill.BonusMoneyPack_prefab, BuffPickupRange);
+            LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Treebot.TreebotFruitPack_prefab, BuffPickupRange);
 
             On.RoR2.GravitatePickup.OnTriggerEnter += ChangeGravitateTargetBehavior;
+            On.RoR2.HealthPickup.OnTriggerStay += GhostsDontPickupHealth;
+            On.RoR2.AmmoPickup.OnTriggerStay += GhostsDontPickupAmmo;
+            On.RoR2.MoneyPickup.OnTriggerStay += GhostsDontPickupMoney;
         }
 
+        private static void GhostsDontPickupMoney(On.RoR2.MoneyPickup.orig_OnTriggerStay orig, MoneyPickup self, Collider other)
+        {
+            if (other != null && other.TryGetComponent(out CharacterBody body) && body.IsGhost())
+                return;
+            orig(self, other);
+        }
+
+        private static void GhostsDontPickupAmmo(On.RoR2.AmmoPickup.orig_OnTriggerStay orig, AmmoPickup self, Collider other)
+        {
+            if (other != null && other.TryGetComponent(out CharacterBody body) && body.IsGhost())
+                return;
+            orig(self, other);
+        }
+
+        private static void GhostsDontPickupHealth(On.RoR2.HealthPickup.orig_OnTriggerStay orig, HealthPickup self, Collider other)
+        {
+            if (other != null && other.TryGetComponent(out CharacterBody body) && body.IsGhost())
+                return;
+            orig(self, other);
+        }
+
+        /// <summary>
+        /// wholly overrides vanilla gravitate
+        /// </summary>
         private static void ChangeGravitateTargetBehavior(On.RoR2.GravitatePickup.orig_OnTriggerEnter orig, GravitatePickup self, Collider other)
         {
             if (NetworkServer.active && TeamComponent.GetObjectTeam(other.gameObject) == self.teamFilter.teamIndex)
             {
+                //if it already has a gravitate target and that target is player controlled, DO NOT CONTINUE
                 if (self.gravitateTarget)
                 {
                     if (other.gameObject.transform == self.gravitateTarget)
@@ -240,12 +269,17 @@ namespace RiskierRain.Changes
                 }
 
                 HealthComponent component = other.gameObject.GetComponent<HealthComponent>();
-                if (component != null && (self.gravitateAtFullHealth || component.health < component.fullHealth))
+                if(component != null)
                 {
-                    if (component.body.isPlayerControlled)
-                    {
-                        self.gravitateTarget = other.gameObject.transform;
+                    if (component.body.IsGhost())
                         return;
+                    if (self.gravitateAtFullHealth || component.health < component.fullHealth)
+                    {
+                        if (component.body.isPlayerControlled)
+                        {
+                            self.gravitateTarget = other.gameObject.transform;
+                            return;
+                        }
                     }
                 }
 

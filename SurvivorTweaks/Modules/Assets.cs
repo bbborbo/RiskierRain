@@ -149,6 +149,17 @@ namespace SurvivorTweaks.Modules
                 Color.yellow, false, false);
         }
 
+        #region rex
+        public const string RexRoboHealthKeyword = "Protocol";
+        public const string RexRoboHealthKeywordToken = "KEYWORD_ROBOHEALTH";
+
+        internal static void AddRexReworkAssets()
+        {
+            LanguageAPI.Add(RexRoboHealthKeywordToken, KeywordText(RexRoboHealthKeyword,
+                $"Increases {HealingColor($"maximum health")} by {HealingColor($"+{RexTweaks.roboSkillMaxHealth.AsPercent()}")}."));
+        }
+        #endregion
+
         #region acrid
         public static ModdedDamageType AcridFesterDamage;
         public static ModdedDamageType AcridCorrosiveDamage;

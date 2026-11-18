@@ -16,32 +16,36 @@ namespace SurvivorTweaks.SurvivorTweaks
 {
     class ArtiTweaks : SurvivorTweakBase<ArtiTweaks>
     {
-        [AutoConfig("Artificer : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 12)]
+        [AutoConfig(": Base Damage Stat", "Scales 20% per level. Vanilla is 12", 12)]
         public static float artiBaseDamage = 12f; //12f
+        [AutoConfig(": Acceleration Stat", "Vanilla is 40", 50)]
+        public static float artiAcceleration = 50f; //40f
 
-        [AutoConfig("Ability Tweaks (Passive) : Hover : Use Speed Boost", "Vanilla is false", true)]
+        [AutoConfig("Passive (Hover) : Use Speed Boost", "Vanilla is false", true)]
         public static bool hoverUseSpeedBoost = true;
-        [AutoConfig("Ability Tweaks (Passive) : Hover : Max Gravity", "Expressed in meters per second. Vanilla is idk", -0.2f)]
+        [AutoConfig("Passive (Hover) : Max Gravity", "Expressed in meters per second. Vanilla is idk", -0.2f)]
         public static float hoverFallSpeed = -0.2f; //idk
-        [AutoConfig("Ability Tweaks (Passive) : Hover : Speed Boost", "Additive with Goat Hoof. Expressed as a percentage (eg 0.15 is 15%)", 0.15f)]
+        [AutoConfig("Passive (Hover) : Speed Boost", "Additive with Goat Hoof. Expressed as a percentage (eg 0.15 is 15%)", 0.15f)]
         public static float jetpackSpeedPercent = 0.15f;
+        [AutoConfig("Passive (Hover) : Acceleration Penalty", "Vanilla is 0", -0.25f)]
+        public static float jetpackAccelPenalty = -0.25f;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Nanobomb : Damage Coefficient Max", "Expressed as a percentage (eg 14.0 is 1400%). Vanilla is 20", 14)]
+        [AutoConfig("Secondary (Nanobomb) : Damage Coefficient Max", "Expressed as a percentage (eg 14.0 is 1400%). Vanilla is 20", 14)]
         public static float nanobombMaxDamageCoefficient = 14f; //20f
 
-        [AutoConfig("Ability Tweaks (Utility) : Snapfreeze : Base Cooldown", "Expressed in seconds. Vanilla is 12", 8f)]
+        [AutoConfig("Utility (Snapfreeze) : Base Cooldown", "Expressed in seconds. Vanilla is 12", 8f)]
         public static float snapfreezeBaseCooldown = 8f; //12f
-        [AutoConfig("Ability Tweaks (Utility) : Snapfreeze : Projectile Scale", "Vanilla is 1", 2.5f)]
+        [AutoConfig("Utility (Snapfreeze) : Projectile Scale", "Vanilla is 1", 2.5f)]
         public static float snapfreezeColliderScale = 2.5f;//1f
-        [AutoConfig("Ability Tweaks (Utility) : Snapfreeze : Projectile Blast Radius", "Expressed in meters. Vanilla is 2.5", 4f)]
+        [AutoConfig("Utility (Snapfreeze) : Projectile Blast Radius", "Expressed in meters. Vanilla is 2.5", 4f)]
         public static float snapfreezeBlastRadius = 4f;//2.5f
-        [AutoConfig("Ability Tweaks (Utility) : Snapfreeze : Deployment Velocity", "Expressed in meters per second. Affects distance between pillar projectiles. Vanilla is 40", 50f)]
+        [AutoConfig("Utility (Snapfreeze) : eployment Velocity", "Expressed in meters per second. Affects distance between pillar projectiles. Vanilla is 40", 50f)]
         public static float snapfreezeDeploymentVelocity = 50f;//40
 
-        [AutoConfig("Ability Tweaks (Special) : Flamethrower : Total Damage Coefficient", 
+        [AutoConfig("Special (Flamethrower) : Total Damage Coefficient", 
             "Expressed as a percentage (eg 28.0 is 2800%). Vanilla is 20. To match Pre-SOTV damage, set to 34", 28)]
         public static float flamethrowerDamage = 28; //20 vanilla, 34 pre-nerf glory
-        [AutoConfig("Ability Tweaks (Special) : Flamethrower : Max Range", "Expressed in meters. Vanilla is 21", 26)]
+        [AutoConfig("Special (Flamethrower) : Max Range", "Expressed in meters. Vanilla is 21", 26)]
         public static float flamethrowerRange = 26; //21
         public override string survivorName => "Artificer";
 
@@ -51,7 +55,7 @@ namespace SurvivorTweaks.SurvivorTweaks
         public override void Init()
         {
             base.Init();
-            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Mage.MageBody_prefab, (result) =>
+            SurvivorTweaksPlugin.LoadAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Mage.MageBody_prefab, (result) =>
             {
                 bodyObject = result;
                 GetSkillsFromBodyObject(bodyObject);
@@ -59,13 +63,21 @@ namespace SurvivorTweaks.SurvivorTweaks
                 CharacterBody mageBody = bodyObject.GetComponent<CharacterBody>();
                 mageBody.baseDamage = artiBaseDamage;
                 mageBody.levelDamage = artiBaseDamage * 0.2f;
+                mageBody.acceleration = artiAcceleration;
 
                 SkillDef snapfreeze = utility.variants[0].skillDef;
                 snapfreeze.baseRechargeInterval = snapfreezeBaseCooldown;
             });
 
             #region Hover
-
+            On.RoR2.CharacterBody.RecalculateStats += (orig, self) =>
+            {
+                orig(self);
+                if (self.HasBuff(CommonAssets.jetpackSpeedBoost))
+                {
+                    self.acceleration *= (1 + jetpackAccelPenalty);
+                }
+            };
             On.EntityStates.Mage.JetpackOn.OnEnter += (orig, self) =>
             {
                 JetpackOn.hoverVelocity = hoverFallSpeed;

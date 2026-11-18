@@ -23,38 +23,38 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static bool isLoaded;
 
-        [AutoConfig("Huntress : Base Damage Stat", "Scales 20% per level. Vanilla is 12", 10f)]
+        [AutoConfig(": Base Damage", "Scales 20% per level. Vanilla is 12", 10f)]
         public static float baseDamage = 10f; //12
 
-        [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Coefficient", "Expressed as a percentage (eg 3.4 is 340%). Vanilla is 2.5", 3.4f)]
+        [AutoConfig("Secondary (Laser Glaive) : Damage Coefficient", "Expressed as a percentage (eg 3.4 is 340%). Vanilla is 2.5", 3.4f)]
         public static float glaiveBaseDamage = 3.4f; //2.5f
-        [AutoConfig("Ability Tweaks (Secondary) : Laser Glaive : Damage Multiplier Per Bounce", "Exponential. Vanilla is 1.1", 1.1f)]
+        [AutoConfig("Secondary (Laser Glaive) : Damage Multiplier Per Bounce", "Exponential. Vanilla is 1.1", 1.1f)]
         public static float glaiveBounceDamage = 1.1f; //1.1f
 
-        [AutoConfig("Ability Tweaks (Special) : Armor Boost While Aiming", 
+        [AutoConfig("Special : Armor Boost While Aiming", 
             "If true, Huntress gains a small armor boost (value unbeknownst to me) while aiming either of her Special abilities. Vanilla is false", true)]
         public static bool huntressUltProtection = true;
 
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Base Cooldown", "Expressed in seconds. Vanilla is 12", 22f)]
+        [AutoConfig("Special (Arrow Rain) : Base Cooldown", "Expressed in seconds. Vanilla is 12", 22f)]
         public static float arrowRainCooldown = 22; //12
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Area Radius", "Expressed in meters. Vanilla is 7.5", 14f)]
+        [AutoConfig("Special (Arrow Rain) : Damage Area Radius", "Expressed in meters. Vanilla is 7.5", 14f)]
         public static float arrowRainRadius = 14; // 7.5f
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Proc Coefficient", "Vanilla is 0.2", 0.3f)]
+        [AutoConfig("Special (Arrow Rain) : Tick Proc Coefficient", "Vanilla is 0.2", 0.3f)]
         public static float arrowRainProcCoeff = 0.3f; //0.2f
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Coefficient Per Second", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 3.3", 4f)]
+        [AutoConfig("Special (Arrow Rain) : Damage Coefficient Per Second", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 3.3", 4f)]
         public static float arrowRainDamageCoeffPerSecond = 4f; //3.3f
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Tick Frequency", "Expressed in ticks per second. Vanilla is 3", 4f)]
+        [AutoConfig("Special (Arrow Rain) : Tick Frequency", "Expressed in ticks per second. Vanilla is 3", 4f)]
         public static float arrowRainHitFrequency = 4f; //3f
-        [AutoConfig("Ability Tweaks (Special) : Arrow Rain : Damage Area Duration", "Maximum duration of damage area. Expressed in seconds. Vanilla is 6", 8f)]
+        [AutoConfig("Special (Arrow Rain) : Damage Area Duration", "Maximum duration of damage area. Expressed in seconds. Vanilla is 6", 8f)]
         public static float arrowRainLifetime = 8f; //6f
 
-        [AutoConfig("Ability Tweaks (Special) : Ballista : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
+        [AutoConfig("Special (Ballista) : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
         public static float ballistaCooldown = 18; //12
-        [AutoConfig("Ability Tweaks (Special) : Ballista : Damage Coefficient", "Expressed as a percentage (eg 7.0 is 700%). Vanilla is 9", 7f)]
+        [AutoConfig("Special (Ballista) : Damage Coefficient", "Expressed as a percentage (eg 7.0 is 700%). Vanilla is 9", 7f)]
         public static float ballistaDamageCoefficient = 7f; //9
-        [AutoConfig("Ability Tweaks (Special) : Ballista : Proc Coefficient", "Vanilla is 1", 2f)]
+        [AutoConfig("Special (Ballista) : Proc Coefficient", "Vanilla is 1", 2f)]
         public static float ballistaProcCoefficient = 2.0f; //1.0f
-        [AutoConfig("Ability Tweaks (Special) : Ballista : Slayer Damage Type", "If true, Ballista deals more damage to targets with lower health. Vanilla is false", true)]
+        [AutoConfig("Special (Ballista) : Slayer Damage Type", "If true, Ballista deals more damage to targets with lower health. Vanilla is false", true)]
         public static bool ballistaSlayer = true;
 
         public override string survivorName => "Huntress";

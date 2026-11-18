@@ -25,29 +25,29 @@ namespace SurvivorTweaks.SurvivorTweaks
         private static bool grenadesRequireCharge => grenadeChargeTime > 0;
         private static GameObject bubbleShieldPrefab;
 
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Base Cooldown", "Expressed in seconds. Vanilla is 0", 1.2f)]
+        [AutoConfig("Primary (Bouncing Grenade) : Base Cooldown", "Expressed in seconds. Vanilla is 0", 1.2f)]
         public static float grenadeCooldown = 1.2f;
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Damage Coefficient", "Expressed as a percentage (eg 1.3 is 130%). Vanilla is 1", 1.3f)]
+        [AutoConfig("Primary (Bouncing Grenade) : Damage Coefficient", "Expressed as a percentage (eg 1.3 is 130%). Vanilla is 1", 1.3f)]
         public static float grenadeDamage = 1.3f; //1.0f
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Projectile Stun Chance", "Expressed as a chance out of 100. Vanilla is 0", 25f)]
+        [AutoConfig("Primary (Bouncing Grenade) : Projectile Stun Chance", "Expressed as a chance out of 100. Vanilla is 0", 25f)]
         public static float grenadeStunChance = 25; //0
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Max Projectile Count", "Vanilla is 8", 3)]
+        [AutoConfig("Primary (Bouncing Grenade) : Max Projectile Count", "Vanilla is 8", 3)]
         public static int grenadeCount = 3;
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Max Charge Time", "Set to 0 to skip charge. Vanilla is 2", 0f)]
+        [AutoConfig("Primary (Bouncing Grenade) : Max Charge Time", "Set to 0 to skip charge. Vanilla is 2", 0f)]
         public static float grenadeChargeTime = 0f;
-        [AutoConfig("Ability Tweaks (Primary) : Bouncing Grenades : Base Max Stock", "Vanilla is N/A", 1)]
+        [AutoConfig("Primary (Bouncing Grenade) : Base Max Stock", "Vanilla is N/A", 1)]
         public static int grenadeStock = 1;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Arming Duration", "Expressed in seconds. Vanilla is 3", 2f)]
+        [AutoConfig("Secondary (Pressure Mines) : Arming Duration", "Expressed in seconds. Vanilla is 3", 2f)]
         public static float mineArmingDuration = 2f;//3f
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Detection Range (Armed)", "Expressed in seconds. Vanilla is 7.5", 7.5f)]
+        [AutoConfig("Secondary (Pressure Mines) : Detection Range (Armed)", "Expressed in seconds. Vanilla is 7.5", 7.5f)]
         public static float mineArmedTriggerRange = 7.5f;//7.5f
-        [AutoConfig("Ability Tweaks (Secondary) : Pressure Mines : Blast Range (Armed)", "Expressed in meters. Vanilla is 7.5", 10f)]
+        [AutoConfig("Secondary (Pressure Mines) : Blast Range (Armed)", "Expressed in meters. Vanilla is 7.5", 10f)]
         public static float mineArmedBlastRange = 10f;//7.5f
 
-        [AutoConfig("Ability Tweaks (Utility) : Bubble Shield : Shield Range", "Expressed in meters. Vanilla is 10", 15f)]
+        [AutoConfig("Utility (Bubble Shield) : Shield Range", "Expressed in meters. Vanilla is 10", 15f)]
         public static float bubbleShieldRadius = 15;//10
-        [AutoConfig("Ability Tweaks (Utility) : Bubble Shield : Kit Slow", "If true, Bubble Shield will apply Kit Slow to enemies within range. Vanilla is false", true)]
+        [AutoConfig("Utility (Bubble Shield) : Kit Slow", "If true, Bubble Shield will apply Kit Slow to enemies within range. Vanilla is false", true)]
         public static bool bubbleKitSlow = true;
         public override string survivorName => "Engineer";
 

@@ -36,91 +36,91 @@ namespace SurvivorTweaks.SurvivorTweaks
         /// skull surplus is a cosmetic buff that helps indicate when bandit is above his transferrable token limit;
         /// having this set to false just means that the regular buff is used. it does not affect the token transference mechanic
         /// </summary>
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Use Token Surplus Buff", 
+        [AutoConfig("Special (Desperado) : Use Token Surplus Buff", 
             "If true, Desperado tokens past Bandit's transferable limit will be indicated with a separate buff. " +
             "This is purely cosmetic and does not affect the token transference mechanic.", false)]
         public static bool useBanditSkullSurplus = false;
 
-        [AutoConfig("Bandit : Base Max Health Stat", "Scales 30% per level. Vanilla is 110", 110f)]
+        [AutoConfig("Base Max Health", "Scales 30% per level. Vanilla is 110", 110f)]
         public static float baseMaxHealth = 110f;//110
-        [AutoConfig("Keywords : Hemorrhage : Base Damage Coefficient", "Total damage of the DOT. Expressed as a percentage (eg 7.5 is 750%). Vanilla is 20", 7.5f)]
+        [AutoConfig("Keywords (Hemorrhage) : Base Damage Coefficient", "Total damage of the DOT. Expressed as a percentage (eg 7.5 is 750%). Vanilla is 20", 7.5f)]
         public static float hemorrhageDamageBase = 7.5f;
-        [AutoConfig("Keywords : Hemorrhage : Damage Multiplier To Full Health Enemies", "Vanilla is 1", 5f)]
+        [AutoConfig("Keywords (Hemorrhage) : Damage Multiplier To Full Health Enemies", "Vanilla is 1", 5f)]
         public static float hemorrhageDamageMaxMultiplier = 5f;
-        [AutoConfig("Keywords : Hemorrhage : Nonlethality", "Set to true for Hemorrhage to be nonlethal. Vanilla is false", true)]
+        [AutoConfig("Keywords (Hemorrhage) : Nonlethality", "Set to true for Hemorrhage to be nonlethal. Vanilla is false", true)]
         public static bool hemorrhageNonLethality = true;
         public static float hemorrhageDamageMax => Mathf.Max(0, hemorrhageDamageMaxMultiplier - 1);
 
-        [AutoConfig("Ability Tweaks (Passive) : Backstab : Use Crit Conversion", "If true, all crit chance will be converted to crit damage (like Railgunner)", false)]
+        [AutoConfig("Passive (Backstab) : Use Crit Conversion", "If true, all crit chance will be converted to crit damage (like Railgunner)", false)]
         public static bool useBanditCritConversion = false;
-        [AutoConfig("Ability Tweaks (Passive) : Stealth : Attack Speed While Stealthed", "Expressed as a percentage (eg 0.6 is 60%). Vanilla is 0", 0.6f)]
+        [AutoConfig("Passive (Stealth) : Attack Speed While Stealthed", "Expressed as a percentage (eg 0.6 is 60%). Vanilla is 0", 0.6f)]
         public static float stealthAspdBonus = 0.6f; //0
 
-        [AutoConfig("Ability Tweaks (Primary) : Burst (Shotgun) : Damage Coefficient Per Bullet", "Expressed as a percentage (eg 0.7 is 70%). Vanilla is 1", 0.7f)]
+        [AutoConfig("Primary (Burst/Shotgun) : Damage Coefficient Per Bullet", "Expressed as a percentage (eg 0.7 is 70%). Vanilla is 1", 0.7f)]
         public static float shotgunDamageCoeff = 0.7f; //1 //times 5
-        [AutoConfig("Ability Tweaks (Primary) : Blast (Rifle) : Damage Coefficient", "Expressed as a percentage (eg 2.8 is 280%). Vanilla is 3.3", 2.8f)]
+        [AutoConfig("Primary (Blast/Rifle) : Damage Coefficient", "Expressed as a percentage (eg 2.8 is 280%). Vanilla is 3.3", 2.8f)]
         public static float rifleDamageCoeff = 2.8f; // 3.3
-        [AutoConfig("Ability Tweaks (Primary) : Blast (Rifle) : Spread Bloom", "Vanilla is 0.5", 0.3f)]
+        [AutoConfig("Primary (Blast/Rifle) : Spread Bloom", "Vanilla is 0.5", 0.3f)]
         public static float rifleSpreadBloom = 0.3f; //0.5f
-        [AutoConfig("Ability Tweaks (Primary) : Base Reload Delay", "Duration to delay reloading after firing. Expressed in seconds. Vanilla is 0.25", 0.4f)]
+        [AutoConfig("Primary : Base Reload Delay", "Duration to delay reloading after firing. Expressed in seconds. Vanilla is 0.25", 0.4f)]
         public static float reloadEnterBaseDuration = 0.4f; //0.25f
-        [AutoConfig("Ability Tweaks (Primary) : Base Reload Duration", "Duration between reloading bullets. Expressed in seconds. Vanilla is 0.3", 0.5f)]
+        [AutoConfig("Primary : Base Reload Duration", "Duration between reloading bullets. Expressed in seconds. Vanilla is 0.3", 0.5f)]
         public static float reloadBaseDuration = 0.5f; //0.3f
-        [AutoConfig("Ability Tweaks (Primary) : Base Attack Duration (Minimum/Tap Shot)", "Minimum duration while mashing primary attack. Expressed in seconds. Vanilla is 0", 0.1f)]
+        [AutoConfig("Primary : Base Attack Duration (Minimum/Tap Shot)", "Minimum duration while mashing primary attack. Expressed in seconds. Vanilla is 0", 0.1f)]
         public static float primaryMinDuration = 0.1f;
-        [AutoConfig("Ability Tweaks (Primary) : Base Attack Duration (Held/Auto)", "Duration to auto fire while holding primary attack. Expressed in seconds. Vanilla is N/A", 0.325f)]
+        [AutoConfig("Primary : Base Attack Duration (Held/Auto)", "Duration to auto fire while holding primary attack. Expressed in seconds. Vanilla is N/A", 0.325f)]
         public static float primaryAutoDuration = 0.325f;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Dagger : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 3.6", 6f)]
+        [AutoConfig("Secondary (Serrated Dagger) : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 3.6", 6f)]
         public static float daggerDamageCoeff = 6f; //3.6
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Dagger : Base Cooldown", "Expressed in seconds. Vanilla is 4", 6f)]
+        [AutoConfig("Secondary (Serrated Dagger) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 6f)]
         public static float daggerCooldown = 6f; //4 
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Dagger : Lunge Force", "Vanilla is 0", 1500f)]
+        [AutoConfig("Secondary (Serrated Dagger) : Lunge Force", "Vanilla is 0", 1500f)]
         public static float daggerSelfForce = 1500f; //0
 
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Shiv : Damage Coefficient", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 2.4", 4f)]
+        [AutoConfig("Secondary (Serrated Shiv) : Damage Coefficient", "Expressed as a percentage (eg 4.0 is 400%). Vanilla is 2.4", 4f)]
         public static float shivDamageCoeff = 4f; //2.4
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Shiv : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
+        [AutoConfig("Secondary (Serrated Shiv) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
         public static float shivCooldown = 7f; //4
-        [AutoConfig("Ability Tweaks (Secondary) : Serrated Shiv : Base Max Stock", "Vanilla is 1", 2)]
+        [AutoConfig("Secondary (Serrated Shiv) : Base Max Stock", "Vanilla is 1", 2)]
         public static int shivStock = 2; //1
 
-        [AutoConfig("Ability Tweaks (Utility) : Smoke Bomb : Enter/Exit Hop Velocity", "Vanilla is 15", 13f)]
+        [AutoConfig("Utility (Smoke Bomb) : Enter/Exit Hop Velocity", "Vanilla is 15", 13f)]
         public static float stealthHopVelocity = 13f; //15
-        [AutoConfig("Ability Tweaks (Utility) : Smoke Bomb : Stealth Duration", "Expressed in seconds. Vanilla is 3", 3f)]
+        [AutoConfig("Utility (Smoke Bomb) : Stealth Duration", "Expressed in seconds. Vanilla is 3", 3f)]
         public static float stealthDuration = 3f; //3
-        [AutoConfig("Ability Tweaks (Utility) : Smoke Bomb : Base Cooldown", "Expressed in seconds. Vanilla is 6", 4f)]
+        [AutoConfig("Utility (Smoke Bomb) : Base Cooldown", "Expressed in seconds. Vanilla is 6", 4f)]
         public static float stealthCooldown = 4f; //6
 
-        [AutoConfig("Ability Tweaks (Special) : Lights Out : Damage Coefficient", "Expressed as a percentage (eg 4.5 is 450%). Vanilla is 6", 4.5f)]
+        [AutoConfig("Special (Lights Out) : Damage Coefficient", "Expressed as a percentage (eg 4.5 is 450%). Vanilla is 6", 4.5f)]
         public static float lightsOutDamage = 4.5f; //6
-        [AutoConfig("Ability Tweaks (Special) : Lights Out : Base Cooldown", "Expressed in seconds. Vanilla is 4", 8f)]
+        [AutoConfig("Special (Lights Out) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 8f)]
         public static float lightsOutCooldown = 8f; //4
 
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 6", 3.0f)]
+        [AutoConfig("Special (Desperado) : Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 6", 3.0f)]
         public static float desperadoDamage = 3f; //6
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Base Cooldown", "Expressed in seconds. Vanilla is 4", 3f)]
+        [AutoConfig("Special (Desperado) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 3f)]
         public static float desperadoCooldown = 3f; //4
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Desperado Damage Multiplier Per Token", 
+        [AutoConfig("Special (Desperado) : Desperado Damage Multiplier Per Token", 
             "Additive with bonuses from Exacting. Expressed as a percentage (eg 0.075 is 7.5%). Vanilla is 0.1", 0.075f)]
         public static float desperadoDamagePerToken = 0.075f; //0.1f
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Desperado Attack Speed Per Token",
+        [AutoConfig("Special (Desperado) : Desperado Attack Speed Per Token",
             "Additive with direct damage bonus. Expressed as a percentage (eg 0.025 is 2.5%). Vanilla is 0", 0.025f)]
         public static float desperadoAttackSpeedPerToken = 0.025f; //0f
-        [AutoConfig("Ability Tweaks (Special) : Desperado : Token Transference Rate Per Level", "Vanilla is 0", 2)]
+        [AutoConfig("Special (Desperado) : Token Transference Rate Per Level", "Vanilla is 0", 2)]
         public static int desperadoTokensPerLevel = 2;
 
-        [AutoConfig("Ability Tweaks (Special) : Finisher Debuff Duration", "Expressed in seconds. Vanilla is 0", 1.6f)]
+        [AutoConfig("Special : Finisher Debuff Duration", "Expressed in seconds. Vanilla is 0", 1.6f)]
         public static float revolverDebuffDuration = 1.6f;//0f
-        [AutoConfig("Ability Tweaks (Special) : Revolver Wind-Up Duration", "Minimum time to cast revolver Special. Expressed in seconds. Vanilla is idk", 0.8f)]
+        [AutoConfig("Special : Revolver Wind-Up Duration", "Minimum time to cast revolver Special. Expressed in seconds. Vanilla is idk", 0.8f)]
         public static float revolverDrawDuration = 0.8f; //idk
-        [AutoConfig("Ability Tweaks (Special) : Revolver Max Aim Duration", "Maximum time to cast revolver Special. Expressed in seconds. Vanilla is N/A", 5f)]
+        [AutoConfig("Special : Revolver Max Aim Duration", "Maximum time to cast revolver Special. Expressed in seconds. Vanilla is N/A", 5f)]
         public static float finisherAimDuration = 5f; //n/a
-        [AutoConfig("Ability Tweaks (Special) : Revolver Hardscope Bullet Width", "Affects aim assist. Expressed in seconds. Vanilla is idk", 1.5f)]
+        [AutoConfig("Special : Revolver Hardscope Bullet Width", "Affects aim assist. Expressed in seconds. Vanilla is idk", 1.5f)]
         public static float revolverBulletRadius = 1.5f;
-        [AutoConfig("Ability Tweaks (Special) : Revolver Hipfire Bullet Width", "Affects aim assist. Expressed in seconds. Vanilla is N/A", 3f)]
+        [AutoConfig("Special : Revolver Hipfire Bullet Width", "Affects aim assist. Expressed in seconds. Vanilla is N/A", 3f)]
         public static float revolverHipFireBulletRadius = 3.0f;
-        [AutoConfig("Ability Tweaks (Special) : Revolver Hipfire Grace Duration", "Maximum window after drawing revolver Special to gain hip fire bonus. Expressed in seconds. Vanilla is N/A", 0.25f)]
+        [AutoConfig("Special : Revolver Hipfire Grace Duration", "Maximum window after drawing revolver Special to gain hip fire bonus. Expressed in seconds. Vanilla is N/A", 0.25f)]
         public static float revolverHipFireGraceDuration = 0.25f;
 
         public override string bodyName => "Bandit2Body";

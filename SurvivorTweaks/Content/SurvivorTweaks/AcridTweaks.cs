@@ -67,96 +67,96 @@ namespace SurvivorTweaks.SurvivorTweaks
             return list;
         }
 
-        [AutoConfig("Acrid : Base Damage Stat", "Scales 20% per level. Vanilla is 15", 9f)]
+        [AutoConfig(": Base Damage Stat", "Scales 20% per level. Vanilla is 15", 9f)]
         public static float acridBaseDamage = 9; //15
-        [AutoConfig("Acrid : Base Health Regeneration Stat", "Scales 20% per level. Vanilla is 2.5", 1.0f)]
+        [AutoConfig(": Base Health Regeneration Stat", "Scales 20% per level. Vanilla is 2.5", 1.0f)]
         public static float acridBaseRegen = 1f; //2.5f
-        [AutoConfig("Acrid : Base Movement Speed Stat", "Vanilla is 7", 8.0f)]
+        [AutoConfig(": Base Movement Speed Stat", "Vanilla is 7", 8.0f)]
         public static float acridBaseMoveSpeed = 8f; //7f
-        [AutoConfig("Keywords : Poisonous : Status Duration", "Expressed in seconds. Vanilla is 10", 10f)]
+        [AutoConfig("Keywords (Poisonous) : Status Duration", "Expressed in seconds. Vanilla is 10", 10f)]
         public static float poisonDuration = 10f; //10
-        [AutoConfig("Keywords : Blighted : Status Duration", "Expressed in seconds. Vanilla is 5", 8f)]
+        [AutoConfig("Keywords (Blighted) : Status Duration", "Expressed in seconds. Vanilla is 5", 8f)]
         public static float blightDuration = 8f; //5
-        [AutoConfig("Keywords : Blighted : Base Damage Per Second", "Expressed as a percentage (eg 0.4 is 40%). Vanilla is 0.6", 0.4f)]
+        [AutoConfig("Keywords (Blighted) : Base Damage Per Second", "Expressed as a percentage (eg 0.4 is 40%). Vanilla is 0.6", 0.4f)]
         public static float blightDamagePerSecond = 0.4f; //0.6f
-        [AutoConfig("Keywords : Caustic : Status Duration", "Expressed in seconds", 5f)]
+        [AutoConfig("Keywords (Caustic) : Status Duration", "Expressed in seconds", 5f)]
         public static float corrosionDuration = 5f;
-        [AutoConfig("Keywords : Caustic : Armor Reduction Per Stack", 15)]
+        [AutoConfig("Keywords (Caustic) : Armor Reduction Per Stack", 15)]
         public static int corrosionArmorReduction = 15;
-        [AutoConfig("Keywords : Caustic : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
+        [AutoConfig("Keywords (Caustic) : Base Damage Per Second", "Expressed as a percentage (eg 1.0 is 100%)", 1f)]
         public static float corrosionDamagePerSecond = 1f;
-        [AutoConfig("Keywords : Caustic : Tick Interval", "Expressed in seconds", 1f)]
+        [AutoConfig("Keywords (Caustic) : Tick Interval", "Expressed in seconds", 1f)]
         public static float corrosionTickInterval = 1f;
-        [AutoConfig("Keywords : Inoculate : Base Damage Per Second", "Expressed as a percentage (eg 1.2 is 120%)", 1.2f)]
+        [AutoConfig("Keywords (Caustic) : Base Damage Per Second", "Expressed as a percentage (eg 1.2 is 120%)", 1.2f)]
         public static float inoculateDamagePerSecond = 1.2f;
-        [AutoConfig("Keywords : Inoculate : Tick Interval", "Expressed in seconds", 1f)]
+        [AutoConfig("Keywords (Caustic) : Tick Interval", "Expressed in seconds", 1f)]
         public static float inoculateTickInterval = 1f;
-        [AutoConfig("Keywords : Inoculate : Status Duration", "Expressed in seconds", 12f)]
+        [AutoConfig("Keywords (Caustic) : Status Duration", "Expressed in seconds", 12f)]
         public static float inoculateDuration = 12f;
-        [AutoConfig("Keywords : Inoculate : Proc Coefficient", "Expressed in seconds", 1f)]
+        [AutoConfig("Keywords (Caustic) : Proc Coefficient", "Expressed in seconds", 1f)]
         public static float inoculateProcCoefficient = 1f;
 
-        [AutoConfig("Contagious Keyword : Transfer Rate", "Expressed as a percentage (eg 0.5 is 50%)", 0.5f)]
+        [AutoConfig("Keywords (Contagious) : Transfer Rate", "Expressed as a percentage (eg 0.5 is 50%)", 0.5f)]
         public static float contagiousTransferRate = 0.5f;
-        [AutoConfig("Contagious Keyword : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", false)]
+        [AutoConfig("Keywords (Contagious) : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", false)]
         public static bool contagiousOnlyKitDots = false;
-        [AutoConfig("Festering Keyword : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", true)]
+        [AutoConfig("Keywords (Festering) : Affect Kit DOTs Only", "Affects all DOTs if true, only kit DOTs if false", true)]
         public static bool festerOnlyKitDots = true;
 
-        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Base Attack Duration", "Expressed in seconds. Vanilla is 1.5", 0.6f)]
+        [AutoConfig("Primary (Festering Wounds) : Base Attack Duration", "Expressed in seconds. Vanilla is 1.5", 0.6f)]
         public static float slashDuration = 0.6f; //1.5f
-        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 2.0", 3.0f)]
+        [AutoConfig("Primary (Festering Wounds) : Festering Wounds : Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 2.0", 3.0f)]
         public static float slashDamageCoefficient = 3f; //2f
-        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Damage Coefficient (Final)", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 4.0", 6.0f)]
+        [AutoConfig("Primary (Festering Wounds) : Festering Wounds : Damage Coefficient (Final)", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 4.0", 6.0f)]
         public static float slashDamageCoefficientFinal = 6f; //4f
-        [AutoConfig("Ability Tweaks (Primary) : Festering Wounds : Canceled By Sprinting", false)]
+        [AutoConfig("Primary (Festering Wounds) : Festering Wounds : Canceled By Sprinting", false)]
         public static bool slashCanceledBySprinting = false; //true
 
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Cooldown", "Expressed in seconds. Vanilla is 2", 5f)]
+        [AutoConfig("Secondary (Neurotoxin) : Base Cooldown", "Expressed in seconds. Vanilla is 2", 5f)]
         public static float spitCooldown = 5f; //2
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Damage Coefficient", "Expressed as a percentage (eg 1.8 is 180%). Vanilla is 2.4", 1.8f)]
+        [AutoConfig("Secondary (Neurotoxin) : Projectile Damage Coefficient", "Expressed as a percentage (eg 1.8 is 180%). Vanilla is 2.4", 1.8f)]
         public static float spitDamageCoeff = 1.8f; //2.4f
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Damage Coefficient (Boosted)", "Expressed as a percentage (eg 5.8 is 580%). Vanilla is 2.4", 5.8f)]
+        [AutoConfig("Secondary (Neurotoxin) : Projectile Damage Coefficient (Boosted)", "Expressed as a percentage (eg 5.8 is 580%). Vanilla is 2.4", 5.8f)]
         public static float spitDamageCoeffAfterDistance = 5.8f; //2.4f
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Flight Distance For Damage Boost", "Expressed in meters. Vanilla is N/A", 21f)]
+        [AutoConfig("Secondary (Neurotoxin) : Projectile Flight Distance For Damage Boost", "Expressed in meters. Vanilla is N/A", 21f)]
         public static float spitDistanceForBoost = 21f;
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Attack Duration", "Expressed in seconds. Vanilla is 0.5", 0.4f)]
+        [AutoConfig("Secondary (Neurotoxin) : Base Attack Duration", "Expressed in seconds. Vanilla is 0.5", 0.4f)]
         public static float spitDuration = 0.4f; //0.5
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Projectile Blast Radius", "Expressed in meters. Vanilla is 3", 6f)]
+        [AutoConfig("Secondary (Neurotoxin) : Projectile Blast Radius", "Expressed in meters. Vanilla is 3", 6f)]
         public static float spitBlastRadius = 6f; //3
-        [AutoConfig("Ability Tweaks (Secondary) : Neurotoxin : Base Max Stock", "Vanilla is 1", 3)]
+        [AutoConfig("Secondary (Neurotoxin) : Base Max Stock", "Vanilla is 1", 3)]
         public static int spitBaseStock = 3;
 
-        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Lunge Force", "Vanilla is 0", 8000f)]
+        [AutoConfig("Secondary (Ravenous Bite) : Lunge Force", "Vanilla is 0", 8000f)]
         public static float biteForceStrength = 8000f; //0
-        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Base Cooldown", "Expressed in seconds. Vanilla is 2", 2f)]
+        [AutoConfig("Secondary (Ravenous Bite) : Base Cooldown", "Expressed in seconds. Vanilla is 2", 2f)]
         public static float biteCooldown = 2f; //2
-        [AutoConfig("Ability Tweaks (Secondary) : Ravenous Bite : Damage Coefficient", "Expressed as a percentage (eg 4.8 is 480%). Vanilla is 3.1", 4.8f)]
+        [AutoConfig("Secondary (Ravenous Bite) : Damage Coefficient", "Expressed as a percentage (eg 4.8 is 480%). Vanilla is 3.1", 4.8f)]
         public static float biteDamageCoeff = 4.8f; //3.1f
 
-        [AutoConfig("Ability Tweaks (Utility) : Caustic Leap : Base Cooldown", "Expressed in seconds. Vanilla is 6", 7f)]
+        [AutoConfig("Utility (Caustic Leap) : Base Cooldown", "Expressed in seconds. Vanilla is 6", 7f)]
         public static float causticCooldown = 7f; //6
         public static float frenziedCooldown = 9; //10
-        [AutoConfig("Ability Tweaks (Utility) : Caustic Leap : Minimum Horizontal Launch Angle", "Vanilla is 0", -0.5f)]
+        [AutoConfig("Utility (Caustic Leap) : Minimum Horizontal Launch Angle", "Vanilla is 0", -0.5f)]
         public static float leapMinY = -0.5f; //0
 
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Base Cooldown", "Expressed in seconds. Vanilla is 10", 15f)]
+        [AutoConfig("Special (Epidemic) : Base Cooldown", "Expressed in seconds. Vanilla is 10", 15f)]
         public static float epidemicCooldown = 15f; //10
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Damage Coefficient", "Expressed as a percentage (eg 0.5 is 50%). Vanilla is 1.0", 0.5f)]
+        [AutoConfig("Special (Epidemic) : Damage Coefficient", "Expressed as a percentage (eg 0.5 is 50%). Vanilla is 1.0", 0.5f)]
         public static float epidemicDamageCoefficient = 0.5f; //1
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Initial Range", "Expressed in meters. Vanilla is 30", 80f)]
+        [AutoConfig("Special (Epidemic) : Disease Initial Range", "Expressed in meters. Vanilla is 30", 80f)]
         public static float epidemicInitialRange = 80;
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Spread Range", "Expressed in meters. Vanilla is 30", 35f)]
+        [AutoConfig("Special (Epidemic) : Disease Spread Range", "Expressed in meters. Vanilla is 30", 35f)]
         public static float epidemicSpreadRange = 35;
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Projectile Blast Radius", "Expressed in meters.", 3f)]
+        [AutoConfig("Special (Epidemic) : Projectile Blast Radius", "Expressed in meters.", 3f)]
         public static float epidemicProjectileBlastRadius = 3f;
-        [AutoConfig("Ability Tweaks (Special) : Epidemic : Disease Max Bounces", "Vanilla is 20", 20)]
+        [AutoConfig("Special (Epidemic) : Disease Max Bounces", "Vanilla is 20", 20)]
         public static int epidemicMaxTargets = 20;
-        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
+        [AutoConfig("Special (Inoculating Breath) : Base Cooldown", "Expressed in seconds. Vanilla is 12", 18f)]
         public static float breathCooldown = 18f; //10
-        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 2.4", 6.0f)]
+        [AutoConfig("Special (Inoculating Breath) : Damage Coefficient", "Expressed as a percentage (eg 6.0 is 600%). Vanilla is 2.4", 6.0f)]
         public static float breathDamageCoefficient = 6f; //2.4
-        [AutoConfig("Ability Tweaks (Special) : Inoculating Breath : Projectile Lifetime", "Expressed in seconds. Vanilla is 6.5", 3.5f)]
+        [AutoConfig("Special (Inoculating Breath) : Projectile Lifetime", "Expressed in seconds. Vanilla is 6.5", 3.5f)]
         public static float breathLiftime = 3.5f; //6.5
         public static ModdedDamageType AcridSkillBasedDamage;
 
@@ -199,6 +199,7 @@ namespace SurvivorTweaks.SurvivorTweaks
                 {
                     if(hitBoxGroups[i].groupName == "Slash")
                     {
+                        //35,27,35
                         hitBoxGroups[i].hitBoxes[0].transform.localScale = new Vector3(45, 35, 45);
                     }
                 }

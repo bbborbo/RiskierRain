@@ -29,73 +29,73 @@ namespace SurvivorTweaks.SurvivorTweaks
             RoR2BepInExPack.GameAssetPaths.Version_1_39_0.RoR2_Base_Common_VFX.OmniExplosionVFXMegaDrone_prefab
             ).WaitForCompletion();// LegacyResourcesAPI.Load<GameObject>("prefabs/effects/ExplosionDroneDeath");
 
-        [AutoConfig("Keywords : Exacting : Enable", "Vulcan Shotgun uses Exacting keyword if true. Vanilla is false", true)]
+        [AutoConfig("Keywords (Exacting) : Enable", "Vulcan Shotgun uses Exacting keyword if true. Vanilla is false", true)]
         public bool shotgunUsesExacting = true;
-        [AutoConfig("Keywords : Exacting : Additive Damage", "Attack Speed is additive to Vulcan Shotgun damage if true, multiplicative if false. Vanilla is N/A", false)]
+        [AutoConfig("Keywords (Exacting) : Additive Damage", "Attack Speed is additive to Vulcan Shotgun damage if true, multiplicative if false. Vanilla is N/A", false)]
         public bool shotgunExactingAdditive = false;
 
-        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Retier", "If true, the Microbots item will be retiered to Uncommon/Tier2/Green. Vanilla is false", true)]
+        [AutoConfig("Passive (Defensive Microbots) : Retier", "If true, the Microbots item will be retiered to Uncommon/Tier2/Green. Vanilla is false", true)]
         public static bool microbotRetier = true;
-        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Chance To Appear In Printers", "Expressed as a chance out of 100. Vanilla is 0", 2)]
+        [AutoConfig("Passive (Defensive Microbots) : Chance To Appear In Printers", "Expressed as a chance out of 100. Vanilla is 0", 2)]
         public static int microbotInPrinterChance = 2;
-        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Recharge Interval", "Expressed in seconds. Vanilla is 0.5", 1.5f)]
+        [AutoConfig("Passive (Defensive Microbots) : Eraser Recharge Interval", "Expressed in seconds. Vanilla is 0.5", 1.5f)]
         public static float microbotRechargeInterval = 1.5f; //0.5
-        [AutoConfig("Ability Tweaks (Passive) : Defensive Microbots : Eraser Range", "Expressed in meters. Vanilla is 20", 20f)]
+        [AutoConfig("Passive (Defensive Microbots) : Eraser Range", "Expressed in meters. Vanilla is 20", 20f)]
         public static float microbotEraserRange = 20f; //20
 
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Base Cooldown", "Expressed in seconds. Vanilla is 0", 2f)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Base Cooldown", "Expressed in seconds. Vanilla is 0", 2f)]
         public static float shotgunCooldown = 2f;
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Base Max Stock", "Vanilla is 1", 2)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Base Max Stock", "Vanilla is 1", 2)]
         public static int shotgunStock = 2;
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Charge Duration Max", "Expressed in seconds. Vanilla is 1.2", 0.8f)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Charge Duration Max", "Expressed in seconds. Vanilla is 1.2", 0.8f)]
         public static float shotgunChargeDuration = 0.8f; //1.2
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Wind Down Duration", "Expressed in seconds. Vanilla is 1.0", 0.2f)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Wind Down Duration", "Expressed in seconds. Vanilla is 1.0", 0.2f)]
         public static float shotgunWindDownDuration = 0.2f; //1.0
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Damage Coefficient Per Pellet", "Expressed as a percentage (eg 1.0 is 100%). Vanilla is 1.2", 1.0f)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Damage Coefficient Per Pellet", "Expressed as a percentage (eg 1.0 is 100%). Vanilla is 1.2", 1.0f)]
         public static float shotgunPelletDamageCoeff = 1f; //1.2
-        [AutoConfig("Ability Tweaks (Primary) : Vulcan Shotgun : Proc Coefficient Per Pellet", "Vanilla is 0.75", 0.5f)]
+        [AutoConfig("Primary (Vulcan Shotgun) : Proc Coefficient Per Pellet", "Vanilla is 0.75", 0.5f)]
         public static float shotgunPelletProcCoeff = 0.5f; //0.75
 
-        [AutoConfig("Ability Tweaks (Secondary) : Power Tazer : Projectile Blast Radius", "Expressed in meters. Vanilla is 2", 2f)]
+        [AutoConfig("Secondary (Power Tazer) : Projectile Blast Radius", "Expressed in meters. Vanilla is 2", 2f)]
         public static float tazerAoeRadius = 2; //2
-        [AutoConfig("Ability Tweaks (Secondary) : Power Tazer : Projectile Damage Coefficient", "Expressed as a percentage (eg 2.0 is 200%). Vanilla is 1", 2.0f)]
+        [AutoConfig("Secondary (Power Tazer) : Projectile Damage Coefficient", "Expressed as a percentage (eg 2.0 is 200%). Vanilla is 1", 2.0f)]
         public static float tazerDamage = 2f; //1
-        [AutoConfig("Ability Tweaks (Secondary) : Power Tazer : Base Cooldown", "Expressed in seconds. Vanilla is 6", 5f)]
+        [AutoConfig("Secondary (Power Tazer) : Base Cooldown", "Expressed in seconds. Vanilla is 6", 5f)]
         public static float tazerCooldown = 5; //6
-        [AutoConfig("Ability Tweaks (Secondary) : Power Tazer : Max Bounces", "Vanilla is 1", 3)]
+        [AutoConfig("Secondary (Power Tazer) : Max Bounces", "Vanilla is 1", 3)]
         public static int tazerTotalTargets = 3; //1
 
-        [AutoConfig("Ability Tweaks (Utility) : OGM-72 Diablo Strike : Strike Delay", "Expressed in seconds. Vanilla is 20", 10f)]
+        [AutoConfig("Utility (Diablo Strike) : Strike Delay", "Expressed in seconds. Vanilla is 20", 10f)]
         public static float diabloMaxDuration = 10f; //20
 
 
-        [AutoConfig("Ability Tweaks (Special) : Refresh Supply Drops", "Beacons refresh during boss fights if true. Vanilla is false", true)]
+        [AutoConfig("Special : Refresh Supply Drops", "Beacons refresh during boss fights if true. Vanilla is false", true)]
         public static bool refreshSupplyDrops = true;
 
-        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Effect Radius", "Expressed in meters. Vanilla is 10", 12f)]
+        [AutoConfig("Special (Healing Beacon) : Effect Radius", "Expressed in meters. Vanilla is 10", 12f)]
         public static float healRadius = 12; //10
-        [AutoConfig("Ability Tweaks (Special) : Healing Beacon : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.07f)]
+        [AutoConfig("Special (Healing Beacon) : Heal Fraction Per Second", "Expressed as a percentage (eg 0.07 is 7%). Vanilla is 0.1", 0.07f)]
         public static float healFractionPerSecond = 0.07f;//0.1f
 
-        [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Effect Radius", "Expressed in meters. Vanilla is idk", 12f)]
+        [AutoConfig("Special (Shock Beacon) : Effect Radius", "Expressed in meters. Vanilla is idk", 12f)]
         public static float shockRadius = 12; //12
-        [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Blast Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 0", 3.0f)]
+        [AutoConfig("Special (Shock Beacon) : Blast Damage Coefficient", "Expressed as a percentage (eg 3.0 is 300%). Vanilla is 0", 3.0f)]
         public static float shockDamageCoefficient = 3f; //0
-        [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Blast Interval", "Expressed in seconds. Vanilla is 3", 6.0f)]
+        [AutoConfig("Special (Shock Beacon) : Blast Interval", "Expressed in seconds. Vanilla is 3", 6.0f)]
         public static float shockInterval = 6f; //3
-        [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Blast Proc Coefficient", "Affects Shock effect duration. Vanilla is N/A", 1.0f)]
+        [AutoConfig("Special (Shock Beacon) : Blast Proc Coefficient", "Affects Shock effect duration. Vanilla is N/A", 1.0f)]
         public static float shockProcCoefficient = 1.0f;
-        [AutoConfig("Ability Tweaks (Special) : Shock Beacon : Blast Force", "Vanilla is 0", 500f)]
+        [AutoConfig("Special (Shock Beacon) : Blast Force", "Vanilla is 0", 500f)]
         public static float shockForce = 500f; //0
 
-        [AutoConfig("Ability Tweaks (Special) : Hacking Beacon : Effect Radius", "Expressed in meters. Vanilla is idk", 9f)]
+        [AutoConfig("Special (Hacking Beacon) : Effect Radius", "Expressed in meters. Vanilla is idk", 9f)]
         public static float hackRadius = 9;
-        [AutoConfig("Ability Tweaks (Special) : Hacking Beacon : Hack Duration", "Expressed in seconds. Vanilla is 15", 15f)]
+        [AutoConfig("Special (Hacking Beacon) : Hack Duration", "Expressed in seconds. Vanilla is 15", 15f)]
         public static float hackBaseDuration = 15; //15
 
-        [AutoConfig("Ability Tweaks (Special) : Resupply Beacon : Effect Radius", "Expressed in meters. Vanilla is N/A", 9f)]
+        [AutoConfig("Special (Resupply Beacon) : Effect Radius", "Expressed in meters. Vanilla is N/A", 9f)]
         public static float supplyRadius = 9;
-        [AutoConfig("Ability Tweaks (Special) : Resupply Beacon : Cooldown Reduction", "Expressed in meters. Vanilla is N/A", 0.25f)]
+        [AutoConfig("Special (Resupply Beacon) : Cooldown Reduction", "Expressed in meters. Vanilla is N/A", 0.25f)]
         public static float supplyCdrPercent = 0.25f;
 
         public override string survivorName => "Captain";

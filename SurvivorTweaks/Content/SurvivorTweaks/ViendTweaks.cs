@@ -22,51 +22,51 @@ namespace SurvivorTweaks.SurvivorTweaks
     {
         public static GameObject viendPrimaryDamagePool;
         public static GameObject viendDelayKnockback;
-        [AutoConfig("Void Fiend : Base Max Health", "Scales 30% per level. Vanilla is 110", 130f)]
+        [AutoConfig(": Base Max Health", "Scales 30% per level. Vanilla is 110", 130f)]
         public static float baseMaxHealth = 130f;//110
-        [AutoConfig("Void Fiend : Base Damage", "Scales 20% per level. Vanilla is 12", 11f)]
+        [AutoConfig(": Base Damage", "Scales 20% per level. Vanilla is 12", 11f)]
         public static float baseDamage = 11f;//12f
 
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corrupt Mode Bonus Armor", "Vanilla is 100", 100f)]
+        [AutoConfig("Passive (Void Corruption) : Corrupt Mode Bonus Armor", "Vanilla is 100", 100f)]
         static float corruptModeArmor = 100; //100
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corrupt Mode Anti-Healing", "If true, ALL healing will be negated during Corrupt Mode. Vanilla is false", true)]
+        [AutoConfig("Passive (Void Corruption) : Corrupt Mode Anti-Healing", "If true, ALL healing will be negated during Corrupt Mode. Vanilla is false", true)]
         static bool corruptModeAntiHeal = true;
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Minimum Corruption Per Void Item", "Vanilla is 2", 2f)]
+        [AutoConfig("Passive (Void Corruption) : Minimum Corruption Per Void Item", "Vanilla is 2", 2f)]
         static float minimumCorruptionPerVoidItem = 2; //2
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Damage Taken", "Vanilla is 50", 50f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption For 100% Damage Taken", "Vanilla is 50", 50f)]
         static float corruptionForFullDamage = 50; //50
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption For 100% Health Healed", "Vanilla is -100", -50f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption For 100% Health Healed", "Vanilla is -100", -50f)]
         static float corruptionForFullHeal = -50; //-100
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (While Corrupted)", "Vanilla is -0.06666667", -0.06666667f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption Per Second (While Corrupted)", "Vanilla is -0.06666667", -0.06666667f)]
         static float corruptionFractionPerSecondWhileCorrupted = -0.06666667f; //aka 15s; -0.06666667f aka 15s
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (In Combat)", "Vanilla is 3", 2.22222222f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption Per Second (In Combat)", "Vanilla is 3", 2.22222222f)]
         static float corruptionPerSecondInCombat = 2.22222222f; //aka 45s; 3 aka 33.3s
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Second (Out Of Combat)", "Vanilla is 3", 2.22222222f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption Per Second (Out Of Combat)", "Vanilla is 3", 2.22222222f)]
         static float corruptionPerSecondOutOfCombat = 2.22222222f; //3
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Corruption Per Crit", "Vanilla is 2", 0f)]
+        [AutoConfig("Passive (Void Corruption) : Corruption Per Crit", "Vanilla is 2", 0f)]
         static float corruptionPerCrit = 0; //2
-        [AutoConfig("Ability Tweaks (Passive) : Void Corruption : Max Corruption", "Vanilla is 100", 100f)]
+        [AutoConfig("Passive (Void Corruption) : Max Corruption", "Vanilla is 100", 100f)]
         static float maxCorruption = 100; //100
 
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Damage Coefficient", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
+        [AutoConfig("Primary (Drown) : Damage Coefficient", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
         public static float primaryDamageCoefficientLight = 3.8f;
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Damage Coefficient (Final)", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
+        [AutoConfig("Primary (Drown) : Damage Coefficient (Final)", "Expressed as a percentage (eg 3.8 is 380%). Vanilla is 3", 3.8f)]
         public static float primaryDamageCoefficientHeavy = 3.8f;
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Pool Damage Coefficient Per Second", "Expressed as a percentage (eg 2.5 is 250%). Vanilla is N/A", 2.5f)]
+        [AutoConfig("Primary (Drown) : Pool Damage Coefficient Per Second", "Expressed as a percentage (eg 2.5 is 250%). Vanilla is N/A", 2.5f)]
         public static float primaryPoolDamageCoefficientPerSecond = 2.5f;
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Base Attack Duration", "Expressed in seconds. Vanilla is 0.6", 0.8f)]
+        [AutoConfig("Primary (Drown) : Base Attack Duration", "Expressed in seconds. Vanilla is 0.6", 0.8f)]
         public static float primaryBaseDurationLight = 0.8f; //0.6f
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Base Attack Duration (Final)", "Expressed in seconds. Vanilla is 0.6", 1.1f)]
+        [AutoConfig("Primary (Drown) : Base Attack Duration (Final)", "Expressed in seconds. Vanilla is 0.6", 1.1f)]
         public static float primaryBaseDurationHeavy = 1.1f; //0.6f
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Recoil Amplitude", "Vanilla is 1", 2f)]
+        [AutoConfig("Primary (Drown) : Recoil Amplitude", "Vanilla is 1", 2f)]
         public static float primaryRecoilAmplitudeLight = 2f; //1
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Recoil Amplitude (Final)", "Vanilla is 1", 3.5f)]
+        [AutoConfig("Primary (Drown) : Recoil Amplitude (Final)", "Vanilla is 1", 3.5f)]
         public static float primaryRecoilAmplitudeHeavy = 3.5f; //1
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Trajectory Aim Assist", "Vanilla is 0.75", 0.25f)]
+        [AutoConfig("Primary (Drown) : Trajectory Aim Assist", "Vanilla is 0.75", 0.25f)]
         public static float primaryTrajectoryAimAssistMultiplier = 0.25f; //0.75f
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Step Count", "Final step in combo fires a lingering void pool. Vanilla is N/A", 3)]
+        [AutoConfig("Primary (Drown) : Step Count", "Final step in combo fires a lingering void pool. Vanilla is N/A", 3)]
         public static int   primaryStepCount = 3;
-        [AutoConfig("Ability Tweaks (Primary) : Drown : Pool Duration", "Expressed in seconds. Vanilla is N/A", 3)]
+        [AutoConfig("Primary (Drown) : Pool Duration", "Expressed in seconds. Vanilla is N/A", 3)]
         public static int   primaryPoolDuration = 3;
         #region not gonna bother configging these unless asked for
         public static float maxSpread = 3; //3
@@ -77,29 +77,29 @@ namespace SurvivorTweaks.SurvivorTweaks
         public static float spreadBloomValue = 0.2f; //0.2f
         #endregion
 
-        [AutoConfig("Ability Tweaks (Primary) : Drown (Corrupted) : Damage Coefficient Per Second", "Expressed as a percentage (eg 20 is 2000%). Vanilla is 20", 20f)]
+        [AutoConfig("Primary (Corrupted Drown) : Damage Coefficient Per Second", "Expressed as a percentage (eg 20 is 2000%). Vanilla is 20", 20f)]
         public static float primaryCorruptDps = 20; //20
-        [AutoConfig("Ability Tweaks (Primary) : Drown (Corrupted) : Tick Frequency", "Expressed in ticks per second. Vanilla is 8", 8f)]
+        [AutoConfig("Primary (Corrupted Drown) : Tick Frequency", "Expressed in ticks per second. Vanilla is 8", 8f)]
         public static float primaryCorruptTickRate = 8; //8
 
-        [AutoConfig("Ability Tweaks (Secondary) : Flood : Rocket Jump", "If true, the blast from Flood projectiles will inflict self-knockback aka Rocket Jump. Vanilla is false", true)]
+        [AutoConfig("Secondary (Flood) : Rocket Jump", "If true, the blast from Flood projectiles will inflict self-knockback aka Rocket Jump. Vanilla is false", true)]
         public static bool secondaryRocketJump = true;
-        [AutoConfig("Ability Tweaks (Secondary) : Flood : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
+        [AutoConfig("Secondary (Flood) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
         public static float secondaryUncorruptCooldown = 7f; //4f
-        [AutoConfig("Ability Tweaks (Secondary) : Flood : Blast Radius", "Expressed in meters. Vanilla is 5", 6f)]
+        [AutoConfig("Secondary (Flood) : Blast Radius", "Expressed in meters. Vanilla is 5", 6f)]
         public static float secondaryUncorruptBlastRadius = 6f;//5f
-        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
+        [AutoConfig("Secondary (Corrupted Flood) : Base Cooldown", "Expressed in seconds. Vanilla is 4", 7f)]
         public static float secondaryCorruptCooldown = 7f; //4f
-        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Base Max Stock", "Vanilla is 1", 1)]
+        [AutoConfig("Secondary (Corrupted Flood) : Base Max Stock", "Vanilla is 1", 1)]
         public static int secondaryCorruptStock = 1; //1
-        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Recharge Stock", "Vanilla is 1", 1)]
+        [AutoConfig("Secondary (Corrupted Flood) : Recharge Stock", "Vanilla is 1", 1)]
         public static int secondaryCorruptRechargeStock = 1; //1
-        [AutoConfig("Ability Tweaks (Secondary) : Flood (Corrupted) : Blast Radius", "Expressed in meters. Vanilla is 5", 12f)]
+        [AutoConfig("Secondary (Corrupted Flood) : Blast Radius", "Expressed in meters. Vanilla is 5", 12f)]
         public static float secondaryCorruptBlastRadius = 12f;//10f
 
-        [AutoConfig("Ability Tweaks (Utility) : Corruption Per Cleanse", "Vanilla is 0", 3f)]
+        [AutoConfig("Utility (Trespass) : Corruption Per Cleanse", "Vanilla is 0", 3f)]
         static float corruptionPerCleanse = 3f; //0
-        [AutoConfig("Ability Tweaks (Utility) : Cleanse Debuffs", "If true, both forms of Trespass (Utility) will cleanse debuffs. Vanilla is false", true)]
+        [AutoConfig("Utility (Trespass) : Cleanse Debuffs", "If true, both forms of Trespass (Utility) will cleanse debuffs. Vanilla is false", true)]
         static bool utilityCleanse = true; //false
 
         public override string survivorName => "Void Fiend";

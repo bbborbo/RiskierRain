@@ -36,7 +36,7 @@ namespace SurvivorTweaks.SurvivorTweaks
             //mageUtility.variants = variants.ToArray();
             skillFamily.variants = skillFamily.variants.Where(x => x.skillDef.skillNameToken != nameToken).ToArray();
         }
-        public override string ConfigName => "Survivor Tweaks : " + survivorName;
+        public override string ConfigName => survivorName;
         public override AssetBundle assetBundle => SurvivorTweaksPlugin.mainAssetBundle;
         public override string TOKEN_PREFIX => "";
         public override string TOKEN_IDENTIFIER => "";

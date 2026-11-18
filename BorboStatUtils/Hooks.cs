@@ -1,16 +1,32 @@
 ﻿using RainrotSharedUtils.Components;
 using RainrotSharedUtils.Status;
 using RoR2;
+using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[assembly: HG.Reflection.SearchableAttribute.OptIn]
 namespace RainrotSharedUtils
 {
     public static class Hooks
     {
+        [SystemInitializer(typeof(SkillCatalog))]
+        private static void RegisterSkillToElements()
+        {
+            if (ElementCounter.skillToElementPreLoad == null || ElementCounter.skillToElementPreLoad.Count == 0)
+                return;
+            foreach(KeyValuePair<SkillDef, ElementCounter.CounterElement> kvp in ElementCounter.skillToElementPreLoad)
+            {
+                if (kvp.Key == null)
+                    continue;
+                ElementCounter.skillIndexToElement.Add(kvp.Key.skillIndex, kvp.Value);
+            }
+            ElementCounter.skillToElementPreLoad.Clear();
+        }
+
         public static void DoHooks()
         {
             On.RoR2.IcicleAuraController.Awake += AuraControllerFix;
@@ -19,6 +35,28 @@ namespace RainrotSharedUtils
             On.RoR2.Projectile.ProjectileOverlapLimitHits.OnEnable += DecayProjectileRecordInitialDamage;
             On.EntityStates.ShockState.OnExit += ShockSparkOnExit;
             On.EntityStates.ShockState.OnEnter += ShockBuffEnter;
+            On.RoR2.CharacterMaster.OnBodyStart += ElementCounterOnBodyStart;
+            On.RoR2.CharacterMaster.OnBodyDestroyed += ElementCounterOnBodyDestroyed;
+        }
+
+        public static void ElementCounterOnBodyStart(On.RoR2.CharacterMaster.orig_OnBodyStart orig, CharacterMaster self, CharacterBody body)
+        {
+            if (body.TryGetComponent(out ElementCounter elements))
+            {
+                elements.OnBodyStart(body);
+            }
+
+            orig(self, body);
+        }
+
+        public static void ElementCounterOnBodyDestroyed(On.RoR2.CharacterMaster.orig_OnBodyDestroyed orig, CharacterMaster self, CharacterBody body)
+        {
+            if (body.TryGetComponent(out ElementCounter elements))
+            {
+                elements.OnBodyEnd();
+            }
+
+            orig(self, body);
         }
 
         private static void DecayProjectileRecordInitialDamage(On.RoR2.Projectile.ProjectileOverlapLimitHits.orig_OnEnable orig, RoR2.Projectile.ProjectileOverlapLimitHits self)
